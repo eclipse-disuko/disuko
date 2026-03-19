@@ -121,6 +121,7 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_OVERALL_REVIEWS_SBOM", Do: startUpHandler.migrateOverallReviews},
 		{Name: "MIGRATE_SBOM_UPLOADED_FOR_DECISIONS", Do: startUpHandler.migrateSbomUploadedForDecisions},
 		{Name: "MIGRATE_SBOM_RETENTION_FOR_DECISIONS", Do: startUpHandler.migrateSbomRetentionForDecisions},
+		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
 	}
 
 	steps = append(steps, ext...)
@@ -621,4 +622,27 @@ func (startUpHandler *StartUpHandler) migrateSbomRetentionForDecisions(rs *logy.
 
 	logy.Infof(rs, "migrateSbomRetentionForDecisions - Marked %d SBOMs for retention, %d SBOMs not found", totalMarked, totalNotFound)
 	logy.Infof(rs, "migrateSbomRetentionForDecisions - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateSbomFromIsToRetainToIsInUseFlag(rs *logy.RequestSession) {
+	logy.Infof(rs, "migrateSbomFromIsToRetainToIsInUseFlag - START")
+	sbomLists := startUpHandler.SbomListRepository.FindAll(rs, false)
+	for _, sbomList := range sbomLists {
+		changed := false
+		for _, spdx := range sbomList.SpdxFileHistory {
+			if !spdx.IsToRetain {
+				continue
+			}
+			if !spdx.IsInUse {
+				spdx.IsInUse = true
+			}
+			spdx.IsToRetain = false
+			changed = true
+			logy.Infof(rs, "migrateSbomFromIsToRetainToIsInUseFlag - flag switched for channel/sbom: %s/%s", sbomList.Key, spdx.Key)
+		}
+		if changed {
+			startUpHandler.SbomListRepository.UpdateWithoutTimestamp(rs, sbomList)
+		}
+	}
+	logy.Infof(rs, "migrateSbomFromIsToRetainToIsInUseFlag - END")
 }

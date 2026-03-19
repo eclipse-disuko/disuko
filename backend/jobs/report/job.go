@@ -983,7 +983,7 @@ func (j *Job) processSbom(rs *logy.RequestSession, pr *project.Project, ci compo
 // countLockedSboms counts the number of manually locked SBOMs in the given SBOM list.
 func (j *Job) countLockedSboms(sboms *sbomlist.SbomList) (total, manual int) {
 	for _, sbom := range sboms.SpdxFileHistory {
-		if sbom.IsToRetain || sbom.IsLocked {
+		if sbom.IsInUse || sbom.IsLocked {
 			if sbom.IsLocked {
 				manual++
 			}

@@ -39,11 +39,11 @@ type SpdxFileBase struct {
 
 	OverallReview *overallreview.OverallReview
 
-	IsInUse  bool
-	IsLocked bool
+	IsInUse  bool // store in DB
+	IsLocked bool // store in DB
 
-	IsToDelete bool
-	IsToRetain bool
+	IsToDelete bool // do not store in DB, only for Frontend, based on conditions
+	IsToRetain bool // do not store in DB, only for Frontend, based on conditions
 }
 
 type ApprovalInfo struct {

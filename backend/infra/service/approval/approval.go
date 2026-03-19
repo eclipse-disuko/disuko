@@ -225,13 +225,23 @@ func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable)
 			continue
 		}
 
-		changed := false
 		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, projectApprovable.ApprovableSPDX.VersionKey, false)
+		if sbomList == nil {
+			continue
+		}
+
+		changed := false
 		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key == projectApprovable.ApprovableSPDX.SpdxKey && !sbom.IsInUse {
-				sbom.IsInUse = true
-				changed = true
+			if sbom.Key != projectApprovable.ApprovableSPDX.SpdxKey {
+				continue
 			}
+			if sbom.IsInUse {
+				break
+			}
+
+			sbom.IsInUse = true
+			changed = true
+			break
 		}
 		if changed {
 			s.SBOMListRepo.Update(s.RequestSession, sbomList)

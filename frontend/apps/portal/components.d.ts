@@ -95,6 +95,7 @@ declare module 'vue' {
     GridChildren: typeof import('./../../libs/portal/components/grids/GridChildren.vue')['default']
     GridCustomIds: typeof import('./../../libs/portal/components/grids/GridCustomIds.vue')['default']
     GridDecisions: typeof import('./../../libs/portal/components/grids/GridDecisions.vue')['default']
+    GridFilterHeader: typeof import('./../../libs/shared/layouts/GridFilterHeader.vue')['default']
     GridHeaderFilterIcon: typeof import('./../../libs/shared/components/GridHeaderFilterIcon.vue')['default']
     GridHeaderMenu: typeof import('./../../libs/shared/layouts/GridHeaderMenu.vue')['default']
     GridInternalToken: typeof import('./../../libs/portal/components/grids/GridInternalToken.vue')['default']

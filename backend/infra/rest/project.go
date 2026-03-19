@@ -2866,7 +2866,7 @@ func (projectHandler *ProjectHandler) CreateBulkPolicyDecisions(w http.ResponseW
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntriesByKey(requestSession, currentProject.Key, auditEntries)
-	projectHandler.markSbomForRetention(requestSession, currentVersion, sbomId)
+	projectHandler.markSbomIsInUse(requestSession, currentVersion, sbomId)
 
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
@@ -2999,7 +2999,7 @@ func (projectHandler *ProjectHandler) CreatePolicyDecision(w http.ResponseWriter
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.PolicyDecisionCreated, cmp.Diff, newPolicyDecision, policydecisions2.PolicyDecision{})
-	projectHandler.markSbomForRetention(requestSession, currentVersion, policyDecisionData.SBOMId)
+	projectHandler.markSbomIsInUse(requestSession, currentVersion, policyDecisionData.SBOMId)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "policy decision created",
@@ -3147,7 +3147,7 @@ func (projectHandler *ProjectHandler) CreateLicenseRule(w http.ResponseWriter, r
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.LicenseRuleCreated, cmp.Diff, licenseRule, licenserules2.LicenseRule{})
-	projectHandler.markSbomForRetention(requestSession, currentVersion, licenseRule.SBOMId)
+	projectHandler.markSbomIsInUse(requestSession, currentVersion, licenseRule.SBOMId)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "license rule created",
@@ -3327,7 +3327,7 @@ func (projectHandler *ProjectHandler) CheckProjectDeletionEligibility(
 	return ""
 }
 
-func (projectHandler *ProjectHandler) markSbomForRetention(requestSession *logy.RequestSession, version *project.ProjectVersion, sbomUuid string) {
+func (projectHandler *ProjectHandler) markSbomIsInUse(requestSession *logy.RequestSession, version *project.ProjectVersion, sbomUuid string) {
 	sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
 	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
 		exception.ThrowExceptionBadRequestResponse()
@@ -3342,10 +3342,10 @@ func (projectHandler *ProjectHandler) markSbomForRetention(requestSession *logy.
 	if spdxBase == nil {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-	if spdxBase.IsToRetain {
+	if spdxBase.IsInUse {
 		return
 	}
-	spdxBase.IsToRetain = true
+	spdxBase.IsInUse = true
 	projectHandler.SbomListRepository.Update(requestSession, sbomList)
 }
 

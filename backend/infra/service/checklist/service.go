@@ -126,7 +126,7 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
-	spdxBase.IsToRetain = true
+	spdxBase.IsInUse = true
 	s.SbomListRepo.Update(rs, sbomList)
 
 	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
