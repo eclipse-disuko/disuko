@@ -126,19 +126,6 @@ func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectR
 	return false
 }
 
-func CheckIfRetainedSbom(requestSession *logy.RequestSession, ProjectRepository Iproject.IProjectRepository, sbomListRepository sbomlist.ISbomListRepository, version *project.ProjectVersion, currentProject *project.Project) bool {
-	// 2. If a specific version is provided, check only its retained SBOM status.
-	if version != nil {
-		return CheckVersionHasNonDeletableSboms(requestSession, sbomListRepository, version)
-	}
-
-	// 3. For a project- (or group-) level deletion (version is nil), check each version (or each child project's version) for a retained SBOM.
-	if HasAnyVersionWithRetainedSbom(requestSession, ProjectRepository, sbomListRepository, currentProject) {
-		return true
-	}
-	return false
-}
-
 func IsSpdxToRetain(spdx *project.SpdxFileBase, version *project.ProjectVersion) bool {
 	spdxIsInUse := AnyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
 		spdx.ApprovalInfo.IsInApproval ||
