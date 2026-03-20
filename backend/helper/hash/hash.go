@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"hash"
 
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const suffix = "go@d1sco$f0r@ever!"

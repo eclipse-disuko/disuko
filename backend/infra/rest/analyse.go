@@ -9,17 +9,17 @@ import (
 	"strconv"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 
+	integrity2 "github.com/eclipse-disuko/disuko/domain/integrity"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
+	"github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	"github.com/eclipse-disuko/disuko/infra/service/integrity"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
-	integrity2 "mercedes-benz.ghe.com/foss/disuko/domain/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/dpconfig"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type AnalyseFilesHandler struct {

@@ -9,14 +9,14 @@ import (
 	"net/http"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/obligation"
 
-	license2 "mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	license2 "github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func CreateCSV(w *http.ResponseWriter, requestSession *logy.RequestSession, obligationsRepository obligation.IObligationRepository, licenseRepository license.ILicensesRepository) {

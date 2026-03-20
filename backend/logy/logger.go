@@ -11,10 +11,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
 )
 
 type ctxKey string

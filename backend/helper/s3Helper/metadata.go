@@ -5,9 +5,9 @@
 package s3Helper
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func MetadataForApplication(requestSession *logy.RequestSession, fileName, uploader string) map[string]string {

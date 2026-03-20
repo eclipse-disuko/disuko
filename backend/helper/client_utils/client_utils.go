@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func GetTransport(proxied bool) *http.Transport {

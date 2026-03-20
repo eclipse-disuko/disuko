@@ -7,8 +7,8 @@ package analytics
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user/approval"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/user/approval"
 )
 
 type RequestSearchOptions struct {

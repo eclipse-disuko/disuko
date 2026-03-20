@@ -7,8 +7,8 @@ package obligation
 import (
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/google/uuid"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
 )
 
 type Obligation struct {

@@ -5,8 +5,8 @@
 package approvallist
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const ApprovalListCollectionName = "approvalList"

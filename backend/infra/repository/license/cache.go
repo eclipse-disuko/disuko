@@ -8,9 +8,9 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/logy"
 	"golang.org/x/net/context"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type Cache struct {

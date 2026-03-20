@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func DoPostFormRequestWithBasicAuth(endpoint string, header map[string]string, data url.Values, username string, password string, client *http.Client) ([]byte, error) {

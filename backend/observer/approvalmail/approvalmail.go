@@ -5,14 +5,14 @@
 package approvalmail
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper/mail"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/observermngmt"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper/mail"
+	"github.com/eclipse-disuko/disuko/infra/repository/project"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/observermngmt"
 )
 
 type ApprovalMail struct {

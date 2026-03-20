@@ -12,6 +12,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/temp"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
@@ -19,11 +24,6 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/temp"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func StampPageNumbers(rs *logy.RequestSession, path string) error {

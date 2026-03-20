@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eclipse-disuko/disuko/domain/project"
+	sbomlist2 "github.com/eclipse-disuko/disuko/domain/project/sbomlist"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	sbomlist2 "mercedes-benz.ghe.com/foss/disuko/domain/project/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, repo project2.IProjectRepository, r *http.Request) (*project.Project, *project.ProjectVersion, *project.Token) {

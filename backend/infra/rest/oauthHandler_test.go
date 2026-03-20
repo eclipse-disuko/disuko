@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/domain/oauth"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/test"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/domain/oauth"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/test"
 )
 
 func TestOAuthHandler_convertUserInfoWithGroupsDto(t *testing.T) {

@@ -7,15 +7,15 @@ package project
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/logy"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/license"
 )
 
 func (entity *DisclosureDocumentMeta) ToDto(department *department.Department, missing bool) DisclosureDocumentMetaDto {

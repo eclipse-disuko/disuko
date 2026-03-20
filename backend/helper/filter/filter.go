@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/search"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
+	"github.com/eclipse-disuko/disuko/domain/search"
+	"github.com/eclipse-disuko/disuko/helper"
 )
 
 func MatchesCriteria[T any](item T, searchOptions search.SortableOptions, extractors map[string]func(T) string, arrayExtractors map[string]func(T) []string) bool {

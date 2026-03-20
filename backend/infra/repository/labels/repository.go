@@ -7,9 +7,9 @@ package labels
 import (
 	"sync"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type labelsRepositoryStruct struct {

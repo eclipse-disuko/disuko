@@ -5,10 +5,10 @@
 package export
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/domain/schema"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/domain/schema"
 )
 
 type ExportSchemaKnowledgeBaseDto struct {

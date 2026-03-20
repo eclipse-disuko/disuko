@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain"
 )
 
 const (

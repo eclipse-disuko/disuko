@@ -7,13 +7,13 @@ package departments
 import (
 	"time"
 
-	departmentConn "mercedes-benz.ghe.com/foss/disuko/connector/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	depRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/department"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	departmentConn "github.com/eclipse-disuko/disuko/connector/department"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	depRepo "github.com/eclipse-disuko/disuko/infra/repository/department"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 var waitDBWrite = time.Minute * 5

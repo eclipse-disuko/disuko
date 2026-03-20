@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper"
 )
 
 const (

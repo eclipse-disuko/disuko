@@ -7,12 +7,12 @@ package rest
 import (
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
 )
 
 func (projectHandler *ProjectHandler) BulkSetReviewRemarkStatus(w http.ResponseWriter, r *http.Request) {

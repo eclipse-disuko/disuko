@@ -4,7 +4,7 @@
 
 package approval
 
-import "mercedes-benz.ghe.com/foss/disuko/domain"
+import "github.com/eclipse-disuko/disuko/domain"
 
 type ApprovalList struct {
 	domain.RootEntity `bson:"inline"`

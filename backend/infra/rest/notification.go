@@ -7,14 +7,14 @@ package rest
 import (
 	"net/http"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/notification"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/dpconfig"
+	"github.com/eclipse-disuko/disuko/domain/notification"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type NotificationHandler struct {

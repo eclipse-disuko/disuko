@@ -8,22 +8,22 @@ import (
 	"net/http"
 	"time"
 
-	rt "mercedes-benz.ghe.com/foss/disuko/infra/repository/reviewtemplates"
+	rt "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/statistic"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	newsboxRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/newsbox"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/schema"
+	"github.com/eclipse-disuko/disuko/domain/statistic"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	newsboxRepo "github.com/eclipse-disuko/disuko/infra/repository/newsbox"
+	"github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/schema"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func GetDashboardCounts(adminRequest bool, requestSession *logy.RequestSession, projectRepository project2.IProjectRepository,

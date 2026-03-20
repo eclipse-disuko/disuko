@@ -8,15 +8,15 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	departmentRepo "github.com/eclipse-disuko/disuko/infra/repository/department"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	departmentRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/department"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type DepartmentHandler struct {

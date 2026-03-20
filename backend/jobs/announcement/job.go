@@ -8,15 +8,15 @@ import (
 	"regexp"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/announcement"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	announcementRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/announcements"
-	licenseRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/announcement"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	announcementRepo "github.com/eclipse-disuko/disuko/infra/repository/announcements"
+	licenseRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type Job struct {

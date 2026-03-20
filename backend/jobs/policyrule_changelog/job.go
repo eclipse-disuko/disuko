@@ -9,16 +9,16 @@ import (
 	"sort"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	changeloglist2 "mercedes-benz.ghe.com/foss/disuko/domain/changeloglist"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/changeloglist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/changelogs"
-	licenseRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	changeloglist2 "github.com/eclipse-disuko/disuko/domain/changeloglist"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/changeloglist"
+	"github.com/eclipse-disuko/disuko/infra/repository/changelogs"
+	licenseRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type Job struct {

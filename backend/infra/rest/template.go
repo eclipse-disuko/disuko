@@ -7,19 +7,19 @@ package rest
 import (
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	rt "github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	checklistRepo "github.com/eclipse-disuko/disuko/infra/repository/checklist"
+	reviewremarks "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
+	"github.com/eclipse-disuko/disuko/infra/service/template"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/observermngmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	rt "mercedes-benz.ghe.com/foss/disuko/domain/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	checklistRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/checklist"
-	reviewremarks "mercedes-benz.ghe.com/foss/disuko/infra/repository/reviewtemplates"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/template"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/observermngmt"
 )
 
 type TemplateHandler struct {

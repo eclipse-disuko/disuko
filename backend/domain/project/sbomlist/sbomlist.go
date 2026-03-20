@@ -7,8 +7,8 @@ package sbomlist
 import (
 	"sort"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/project"
 )
 
 type Histories []*project.SpdxFileBase

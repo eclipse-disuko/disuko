@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/client_utils"
+	"github.com/eclipse-disuko/disuko/helper/client_utils"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/infra/rest"
+	"github.com/eclipse-disuko/disuko/logy"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/infra/rest"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func (s *Server) setUpOAuth(rs *logy.RequestSession) {

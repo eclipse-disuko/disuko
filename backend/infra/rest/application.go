@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 
+	appConnector "github.com/eclipse-disuko/disuko/connector/application"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
-	appConnector "mercedes-benz.ghe.com/foss/disuko/connector/application"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type ApplicationHandler struct {

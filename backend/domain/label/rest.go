@@ -4,7 +4,7 @@
 
 package label
 
-import "mercedes-benz.ghe.com/foss/disuko/domain"
+import "github.com/eclipse-disuko/disuko/domain"
 
 type LabelRequestDto struct {
 	Name        string `json:"name" validate:"required,gte=3,lte=80"`

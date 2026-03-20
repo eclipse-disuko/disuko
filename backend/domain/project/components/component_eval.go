@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/policydecisions"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/helper/message"
 )
 
 type EvaluationResult struct {

@@ -8,12 +8,12 @@ import (
 	"encoding/csv"
 	"net/http"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	rt "mercedes-benz.ghe.com/foss/disuko/infra/repository/reviewtemplates"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	rt "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func CreateCSV(w *http.ResponseWriter, requestSession *logy.RequestSession, templateRepository rt.IReviewTemplateRepository) {

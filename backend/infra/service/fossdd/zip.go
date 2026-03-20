@@ -7,11 +7,11 @@ package fossdd
 import (
 	"os"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/notices"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/notices"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
 )
 
 type fileMeta struct {

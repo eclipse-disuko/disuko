@@ -5,12 +5,12 @@
 package license
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/audit"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/hash"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Alias struct {

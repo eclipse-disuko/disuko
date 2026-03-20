@@ -5,9 +5,9 @@
 package analytics
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/observermngmt"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/infra/service/analytics"
+	"github.com/eclipse-disuko/disuko/observermngmt"
 )
 
 type Analytics struct {

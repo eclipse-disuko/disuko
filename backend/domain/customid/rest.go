@@ -4,7 +4,7 @@
 
 package customid
 
-import "mercedes-benz.ghe.com/foss/disuko/domain"
+import "github.com/eclipse-disuko/disuko/domain"
 
 type CustomIdDto struct {
 	domain.BaseDto

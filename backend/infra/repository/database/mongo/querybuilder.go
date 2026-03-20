@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
 )
 
 const regexOperator = "$regex"

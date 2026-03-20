@@ -4,7 +4,7 @@
 
 package schema
 
-import "mercedes-benz.ghe.com/foss/disuko/domain"
+import "github.com/eclipse-disuko/disuko/domain"
 
 type SpdxSchemaDto struct {
 	domain.BaseDto

@@ -5,8 +5,8 @@
 package newsbox
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/newsbox"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/newsbox"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const collName = "newsbox"

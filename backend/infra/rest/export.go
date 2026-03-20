@@ -7,15 +7,15 @@ package rest
 import (
 	"net/http"
 
+	export2 "github.com/eclipse-disuko/disuko/domain/export"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/service/analytics"
+	"github.com/eclipse-disuko/disuko/infra/service/export"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
-	export2 "mercedes-benz.ghe.com/foss/disuko/domain/export"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/export"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type ExportHandler struct {

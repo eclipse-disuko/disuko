@@ -7,10 +7,10 @@ package user
 import (
 	"slices"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 // DeletionAction represents a planned or executed deletion action

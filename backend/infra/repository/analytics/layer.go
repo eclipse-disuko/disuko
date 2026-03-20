@@ -5,9 +5,9 @@
 package analytics
 
 import (
-	da "mercedes-benz.ghe.com/foss/disuko/domain/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	da "github.com/eclipse-disuko/disuko/domain/analytics"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const AnalyticsCollectionName = "analytics"

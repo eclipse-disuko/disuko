@@ -9,14 +9,14 @@ import (
 	"net/http"
 	"strings"
 
+	lic "github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	"github.com/eclipse-disuko/disuko/logy"
 	"golang.org/x/text/encoding/unicode"
-	lic "mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func CreateCSV(w *http.ResponseWriter, requestSession *logy.RequestSession, policyRepository policyrules.IPolicyRulesRepository, licenseRepository license.ILicensesRepository) {

@@ -16,13 +16,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper/jwt"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper/jwt"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 var requestSessionTest = &logy.RequestSession{ReqID: "TEST"}

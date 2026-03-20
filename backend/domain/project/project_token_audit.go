@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
 )
 
 func (token *Token) ToAudit() string {

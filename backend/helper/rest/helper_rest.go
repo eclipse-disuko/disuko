@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/go-chi/chi/v5"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
 )
 
 func GetURLParam(r *http.Request, paramName string) string {

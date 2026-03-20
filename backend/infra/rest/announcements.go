@@ -7,10 +7,10 @@ package rest
 import (
 	"net/http"
 
+	announcement2 "github.com/eclipse-disuko/disuko/domain/announcement"
+	announcement "github.com/eclipse-disuko/disuko/infra/repository/announcements"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
-	announcement2 "mercedes-benz.ghe.com/foss/disuko/domain/announcement"
-	announcement "mercedes-benz.ghe.com/foss/disuko/infra/repository/announcements"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type AnnouncementsHandler struct {

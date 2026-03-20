@@ -5,8 +5,8 @@
 package statistic
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/statistic"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/statistic"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const StatisticCollectionName = "statistics"

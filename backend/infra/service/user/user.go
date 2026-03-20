@@ -8,17 +8,17 @@ import (
 	"fmt"
 	"slices"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	approvallistRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/approvallist"
-	labelRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	approvallistRepo "github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	labelRepo "github.com/eclipse-disuko/disuko/infra/repository/labels"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Service struct {

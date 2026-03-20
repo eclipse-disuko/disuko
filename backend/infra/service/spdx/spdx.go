@@ -5,16 +5,16 @@
 package spdx
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/licenserules"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/cache"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/locks"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	"github.com/eclipse-disuko/disuko/infra/service/cache"
+	"github.com/eclipse-disuko/disuko/infra/service/locks"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Service struct {

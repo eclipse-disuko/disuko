@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/reflection"
+	"github.com/eclipse-disuko/disuko/logy"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/reflection"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type ExceptionHandler struct {

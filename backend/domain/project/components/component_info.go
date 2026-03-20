@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/licenserules"
-	"mercedes-benz.ghe.com/foss/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/domain/licenserules"
+	"github.com/eclipse-disuko/disuko/domain/policydecisions"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/helper"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type ComponentInfoList struct {
@@ -314,7 +314,7 @@ func (ci ComponentInfo) GetLicensesEffective() LicenseList {
 // GetLicenseEffective will return the right license value
 // When license (licenseConcluded) is defined we should use this attribute.
 // In all other circumstances we use the default licenseDeclared attribute
-// https://mercedes-benz.ghe.com/foss/disuko/issues/862
+// https://github.com/eclipse-disuko/disuko/issues/862
 func (ci ComponentInfo) GetLicenseEffective() string {
 	res := ci.LicenseDeclared
 	if !helper.IsUnasserted(ci.License) {
@@ -330,7 +330,7 @@ func (ci ComponentInfo) GetLicenseEffective() string {
 // GetLicenseAppliedType will return the type of the right license value
 // When license (licenseConcluded) is defined we should use this attribute.
 // In all other circumstances we use the default licenseDeclared attribute
-// https://mercedes-benz.ghe.com/foss/disuko/issues/862
+// https://github.com/eclipse-disuko/disuko/issues/862
 func (ci ComponentInfo) GetLicenseAppliedType() LicenseAppliedType {
 	if !helper.IsUnasserted(ci.License) {
 		return LicenseConcluded

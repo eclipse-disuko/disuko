@@ -11,10 +11,10 @@ import (
 	"net/http"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/internalToken"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	basicauthRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/internalToken"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/internalToken"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	basicauthRepo "github.com/eclipse-disuko/disuko/infra/repository/internalToken"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type CtxKey string

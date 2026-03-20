@@ -12,16 +12,16 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/internalToken"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/middlewareDisco"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	internalTokenRepo "github.com/eclipse-disuko/disuko/infra/repository/internalToken"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain/internalToken"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/middlewareDisco"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	internalTokenRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/internalToken"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func extractInternalToken(ctx context.Context) *internalToken.InternalToken {

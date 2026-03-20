@@ -11,9 +11,9 @@ import (
 	"log"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 const runS3Tests = false

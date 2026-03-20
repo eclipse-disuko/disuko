@@ -5,10 +5,10 @@
 package components
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/licenserules"
-	"mercedes-benz.ghe.com/foss/disuko/domain/policydecisions"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/licenserules"
+	"github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/helper/message"
 )
 
 type PolicyRuleStatusDto struct {

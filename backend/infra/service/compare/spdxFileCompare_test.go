@@ -11,14 +11,14 @@ package compare
 // 	"testing"
 // 	"time"
 //
-// 	"mercedes-benz.ghe.com/foss/disuko/helper/reflection"
+// 	"github.com/eclipse-disuko/disuko/helper/reflection"
 //
-// 	"mercedes-benz.ghe.com/foss/disuko/domain"
-// 	"mercedes-benz.ghe.com/foss/disuko/domain/compare"
-// 	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-// 	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-// 	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-// 	"mercedes-benz.ghe.com/foss/disuko/logy"
+// 	"github.com/eclipse-disuko/disuko/domain"
+// 	"github.com/eclipse-disuko/disuko/domain/compare"
+// 	"github.com/eclipse-disuko/disuko/domain/license"
+// 	"github.com/eclipse-disuko/disuko/domain/project"
+// 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+// 	"github.com/eclipse-disuko/disuko/logy"
 // 	"github.com/stretchr/testify/assert"
 // )
 //

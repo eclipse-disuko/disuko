@@ -8,13 +8,13 @@ import (
 	"sort"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	licenseRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	obligationRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	licenseRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
+	obligationRepo "github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type licenseremarks struct {

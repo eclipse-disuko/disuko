@@ -11,27 +11,27 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/oauth"
+	"github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/infra/service/locks"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/domain/oauth"
-	"mercedes-benz.ghe.com/foss/disuko/helper/audit"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/locks"
 
-	"mercedes-benz.ghe.com/foss/disuko/observermngmt"
+	"github.com/eclipse-disuko/disuko/observermngmt"
 
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/logy"
 
+	audit2 "github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jinzhu/copier"
-	audit2 "mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
 )
 
 func (projectHandler *ProjectHandler) ProjectChildrenMemberGetAllHandler(w http.ResponseWriter, r *http.Request) {

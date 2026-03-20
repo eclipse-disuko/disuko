@@ -7,7 +7,7 @@ package main
 import (
 	"context"
 
-	"mercedes-benz.ghe.com/foss/disuko/server"
+	"github.com/eclipse-disuko/disuko/server"
 )
 
 type ProjectTest struct {

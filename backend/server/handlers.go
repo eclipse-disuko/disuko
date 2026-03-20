@@ -5,11 +5,11 @@
 package server
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/rest"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/rights"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/startup"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/test"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/rest"
+	"github.com/eclipse-disuko/disuko/infra/service/rights"
+	"github.com/eclipse-disuko/disuko/infra/service/startup"
+	"github.com/eclipse-disuko/disuko/infra/service/test"
 )
 
 type handlers struct {

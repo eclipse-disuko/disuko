@@ -5,9 +5,9 @@
 package schema
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/schema"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/schema"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const SpdxSchemaCollectionName = "spdxSchemas"

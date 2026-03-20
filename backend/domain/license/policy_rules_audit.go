@@ -5,9 +5,9 @@
 package license
 
 import (
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type PolicyRulesAudit struct {

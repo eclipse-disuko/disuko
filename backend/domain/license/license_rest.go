@@ -5,10 +5,10 @@
 package license
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	obligation2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	obligation2 "github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type AliasDto struct {

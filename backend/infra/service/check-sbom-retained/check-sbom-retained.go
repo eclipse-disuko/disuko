@@ -5,11 +5,11 @@
 package sbomLockRetained
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	Iproject "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	Iproject "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 // Service handles SBOM retention checks

@@ -5,7 +5,7 @@
 package userstats
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/statistic"
+	"github.com/eclipse-disuko/disuko/domain/statistic"
 )
 
 func (entity *UserStatus) ToDashboardCounts() *statistic.DashboardCounts {

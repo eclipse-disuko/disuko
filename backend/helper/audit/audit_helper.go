@@ -7,9 +7,9 @@ package audit
 import (
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
 )
 
 func ConvertDateTime(t time.Time) string {

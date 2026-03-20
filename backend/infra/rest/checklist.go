@@ -8,17 +8,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/checklist"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	checklistRepo "github.com/eclipse-disuko/disuko/infra/repository/checklist"
+	checklistService "github.com/eclipse-disuko/disuko/infra/service/checklist"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/checklist"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	checklistRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/checklist"
-	checklistService "mercedes-benz.ghe.com/foss/disuko/infra/service/checklist"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type ChecklistHandler struct {

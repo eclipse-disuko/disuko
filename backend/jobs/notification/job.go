@@ -5,11 +5,11 @@
 package notification
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/helper/middlewareDisco"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/dpconfig"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/helper/middlewareDisco"
+	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type Job struct {

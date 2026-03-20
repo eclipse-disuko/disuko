@@ -5,10 +5,10 @@
 package dpconfig
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/dpconfig"
-	"mercedes-benz.ghe.com/foss/disuko/domain/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/domain/notification"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/dpconfig"
+	"github.com/eclipse-disuko/disuko/domain/integrity"
+	"github.com/eclipse-disuko/disuko/domain/notification"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const DPConfigCollectionName = "dpconfig"
