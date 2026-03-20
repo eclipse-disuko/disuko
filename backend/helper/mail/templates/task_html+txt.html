@@ -1,0 +1,29 @@
+{{define "subject"}} New task in Disclosure Portal{{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+a new task is waiting for you: {{ .Task }}.
+
+Thank you,
+The Disclosure Portal
+{{end}}
+
+{{define "htmlBody"}}
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+    <p>Hello {{ .Username }}</p>
+    <p>a new task is waiting for you: {{ .Task }}.</p>
+    <p>Thank you,</p>
+    <p>The Disclosure Portal</p>
+</body>
+
+</html>
+{{end}}

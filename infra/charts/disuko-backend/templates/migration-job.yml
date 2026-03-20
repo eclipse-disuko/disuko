@@ -1,0 +1,54 @@
+{{ if .Values.migration }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migration
+spec:
+  ttlSecondsAfterFinished: 500
+  backoffLimit: 0
+  template:
+    metadata:
+      name: {{ .Release.Name }}-migration
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Release.Name }}-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1
+        fsGroup: 1
+      containers:
+        - name: {{ .Release.Name }}
+          resources:
+            requests:
+              memory: "2000Mi"
+            limits:
+              memory: "2500Mi"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: {{ .Release.Name }}-secret
+          env:
+            - name: MIGRATE_ONLY
+              value: "true"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb-couchdb
+                  key: adminPassword
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb-couchdb
+                  key: adminUsername
+            - name: CACHE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.valkey.secret_ref_name_value }}
+                  key: {{ .Values.app.valkey.secret_ref_key_value }}
+{{ end }}

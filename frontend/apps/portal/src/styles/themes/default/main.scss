@@ -1,0 +1,137 @@
+@use 'vuetify/styles';
+@use 'vuetify/settings';
+@use 'variables';
+@use 'cards';
+@use 'nav';
+@use 'dialog';
+@use 'tables';
+@use 'text';
+@use 'various';
+@use 'utilities';
+.d-secondary-text {
+  color: rgb(var(--v-theme-inputColor));
+}
+
+body,
+html {
+  overflow: hidden;
+}
+
+.do-not-center {
+  margin-left: unset !important;
+  margin-right: unset !important;
+}
+
+.disco-full-height {
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom));
+  width: calc(100vw - var(--v-layout-left) - var(--v-layout-right));
+  overflow-y: auto;
+}
+
+.card-border {
+  border: 1px solid rgb(var(--v-theme-borderCard)) !important;
+}
+
+.error-message {
+  font-size: 11px;
+  color: rgb(var(--v-theme-errorMessageColor));
+}
+
+.border-data-table {
+  border: 1px solid rgb(var(--v-theme-borderCard));
+  border-radius: 4px !important;
+}
+
+.allow-border {
+  border: 1px solid #21a330 !important;
+}
+
+.deny-border {
+  border: 1px solid #ff5c5c !important;
+}
+
+.warning-border {
+  border: 1px solid #fec245 !important;
+}
+
+.tabs-border {
+  /* background-color: var(--v-backgroundColor); */
+  border: 4px solid rgb(var(--v-theme-tabsBackground));
+  border-top: none;
+}
+
+.bg-used-components {
+  background-color: rgb(var(--v-theme-surface));
+  width: 180px;
+}
+
+.editProjectSubheadline {
+  color: rgb(var(--v-theme-inputColor));
+  font-size: 0.8em !important;
+  padding-left: 15px;
+}
+
+.diff-component {
+  background-color: #8b7100 !important;
+}
+
+.v-field:has(input[required]) .v-label {
+  padding-inline-end: 8px;
+}
+.v-field:has(input[required]) .v-label::after {
+  position: absolute;
+  content: ' *';
+  top: 0;
+  inset-inline-end: 0; /* to support also RTL direction */
+}
+
+a {
+  text-decoration: none;
+  color: rgb(var(--v-theme-primary));
+}
+
+.v-tab-item--selected {
+  background-color: rgb(var(--v-theme-backgroundActiveTab)) !important;
+  color: rgb(var(--v-theme-secondary)) !important;
+  font-weight: bolder !important;
+}
+
+.v-tab-item--selected * {
+  font-weight: bold !important;
+}
+
+.policyLabelBorder {
+  border: rgb(var(--v-theme-mbti)) 1px dotted;
+}
+
+.placeholder-icon {
+  visibility: hidden;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+.dpTooltip {
+  background-color: rgb(var(--v-theme-backgroundColor)) !important;
+  max-width: 500px !important;
+  color: rgb(var(--v-theme-secondary)) !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgb(var(--v-theme-borderCard));
+}
+
+.text-button-more {
+  color: rgb(var(--v-theme-secondary)) !important;
+}
+
+.v-application {
+  color: rgb(var(--v-theme-font)) !important;
+}
+
+.v-data-table {
+  color: rgb(var(--v-theme-font)) !important;
+}
+
+.v-theme--light {
+  --v-theme-background: 255, 255, 255 !important;
+}

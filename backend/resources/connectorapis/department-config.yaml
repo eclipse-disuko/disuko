@@ -1,0 +1,5 @@
+package: department
+output: ../../connector/department/client.go
+generate:
+  models: true
+  client: true

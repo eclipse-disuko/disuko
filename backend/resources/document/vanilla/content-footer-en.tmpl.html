@@ -1,0 +1,94 @@
+<div>
+  <span class="listitem">Policy Rules</span>
+  <br /><br />
+  <span class=""
+    ><b>Allowed</b> means license is approved for this use case.</span
+  ><br />
+  <span class=""><b>Warned</b> means license is approved with conditions.</span
+  ><br />
+  <span class=""
+    ><b>Denied</b> means license must not be used for this use case.</span
+  ><br /><br />
+  {{ range .Rules }}
+    <span class="listitem">{{ .Name }}</span>
+    <table class="print">
+      <tbody>
+        <tr>
+          <th style="width: 140px">Name:</th>
+          <td>{{ .Name }}</td>
+        </tr>
+        <tr>
+          <th style="width: 140px">Description:</th>
+          <td>{{ .Description }}</td>
+        </tr>
+        <tr>
+          <th style="width: 140px">UUID:</th>
+          <td>{{ .ID }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+    <span class="listitem">Licenses</span>
+    <br />
+    <br />
+    <table class="print borderTable" width="100%">
+      <thead>
+        <tr>
+          <th class="paddingTable" style="width: 300px">License Name</th>
+          <th class="paddingTable" style="width: 140px">License Identifier</th>
+          <th class="paddingTable" style="width: 140px">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Allowed }}
+          <tr>
+            <td class="paddingTable">
+              {{ .Name }}<br />
+              <div class="url">{{ .URL }}</div>
+            </td>
+            <td class="paddingTable">{{ .ID }}</td>
+            <td class="paddingTable">Allowed</td>
+          </tr>
+        {{ end }}
+        {{ range .Warned }}
+          <tr>
+            <td class="paddingTable">
+              {{ .Name }}<br />
+              <div class="url">{{ .URL }}</div>
+            </td>
+            <td class="paddingTable">{{ .ID }}</td>
+            <td class="paddingTable">Warned</td>
+          </tr>
+        {{ end }}
+        {{ range .Denied }}
+          <tr>
+            <td class="paddingTable">
+              {{ .Name }}<br />
+              <div class="url">{{ .URL }}</div>
+            </td>
+            <td class="paddingTable">{{ .ID }}</td>
+            <td class="paddingTable">Denied</td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <br /><br />
+  {{ end }}
+  <br />
+  <br />
+  <div class="break"></div>
+  <br />
+  <br />
+  <span class="listitem">Licensetexts</span>
+  {{ range .Licenses }}
+    <br /><br />
+    <div class="together">
+      <span class="listitem">License Name:</span><span> {{ .Name }}</span><br />
+      <span class="listitem">License Identifier:</span><span> {{ .ID }}</span
+      ><br /><br />
+      <span class="listitem">License Text:</span><br />
+    </div>
+    <span> {{ nl2br .Text }}</span>
+  {{ end }}
+</div>

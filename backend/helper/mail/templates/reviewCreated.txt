@@ -1,0 +1,47 @@
+{{define "subject"}} New Status Review in FOSS Disclosure Portal / Neue Status-Prüfung im FOSS Disclosure Portal{{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+A new Status Review in FOSS Disclosure Portal is waiting for you!
+
+Project Name: {{ .ProjectName }}
+Reviewer: {{ .ReviewerFullName }}
+Status: {{ .Status }}
+Comment: {{ .Comment }}
+Review Remarks: {{ .ReviewsLink }}
+Project Link: {{ .ProjectLink }}
+Project Version Name: {{ .VersionName }}
+Project Version Link: {{ .VersionLink }}
+
+Thank you,
+your FOSS Disclosure Portal
+
+
+Please do NOT reply to this mail
+
+
+#################################
+
+Hallo {{ .Username }},
+
+eine neue Status-Prüfung erwartet Sie im FOSS Disclosure Portal!
+
+Projektname: {{ .ProjectName }}
+Ersteller: {{ .ReviewerFullName }}
+Status: {{ .StatusDE }}
+Kommentar: {{ .Comment }}
+Review-Bemerkungen: {{ .ReviewsLink }}
+Projektlink: {{ .ProjectLink }}
+Versionsname: {{ .VersionName }}
+Versionslink: {{ .VersionLink }}
+
+
+Vielen Dank,
+ihr FOSS Disclosure Portal
+
+
+Bitte antworten Sie NICHT auf diese Mail
+
+
+{{end}}

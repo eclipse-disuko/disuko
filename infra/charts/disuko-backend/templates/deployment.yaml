@@ -1,0 +1,96 @@
+{{ if not .Values.migration }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.service.replicas }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccountName: {{ .Release.Name }}-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1
+        fsGroup: 1
+      containers:
+        - name: {{ .Release.Name }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - wget -qO- http://localhost:{{ .Values.app.SERVER_PORT }}/shutdown || true; sleep 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.app.SERVER_PORT }}
+            initialDelaySeconds: 5      # wait a bit before first check
+            periodSeconds: 5            # check every x s
+            failureThreshold: 3         # need x failures in a row
+            successThreshold: 1         # x success is enough to mark ready
+            timeoutSeconds: 1           # timeout for the HTTP call
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          ports:
+            - containerPort: {{ .Values.app.SERVER_PORT }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: {{ .Release.Name }}-secret
+          env:
+            {{ if .Values.app.SERVER_UPLOAD_PATH }}
+            - name: SERVER_UPLOADPATH
+              value: {{ .Values.app.SERVER_UPLOAD_PATH }}
+              {{ end }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb-couchdb
+                  key: adminPassword
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb-couchdb
+                  key: adminUsername
+            - name: CACHE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.valkey.secret_ref_name_value }}
+                  key: {{ .Values.app.valkey.secret_ref_key_value }}
+            - name: INSTANCE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  selector:
+    app: {{ .Release.Name }}
+  type: {{ .Values.service.type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.app.SERVER_PORT }}
+      targetPort: {{ .Values.app.SERVER_PORT }}
+      {{ if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{ end }}
+{{ end }}

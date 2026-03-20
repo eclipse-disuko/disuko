@@ -1,0 +1,30 @@
+{
+  "verbatimModuleSyntax": false,
+  "compilerOptions": {
+    "include": ["eslint.config.*"],
+    "rootDir": ".",
+    "sourceMap": true,
+    "target": "ESNext",
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsxImportSource": "vue",
+    "lib": ["ES2023", "dom", "DOM.Iterable"],
+    "paths": {
+      "@disclosure-portal/*": ["./libs/portal/*"],
+      "@shared/*": ["./libs/shared/*"]
+    },
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "verbatimModuleSyntax": false
+  }
+}

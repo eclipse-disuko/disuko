@@ -1,0 +1,12 @@
+services:
+  valkey:
+    image: valkey/valkey
+    ports:
+      - 6379:6379
+  db:
+    image: couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5984:5984

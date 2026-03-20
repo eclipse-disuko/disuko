@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "engines": {
+    "node": "^22.15.0",
+    "npm": "^10.9.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "vitepress": "^2.0.0-alpha.15"
+  }
+}

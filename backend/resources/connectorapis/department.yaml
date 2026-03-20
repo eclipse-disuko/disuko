@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: department API
+  description: API for providing department information
+
+paths:
+  /departments:
+    get:
+      description: Get departments
+      responses:
+        "200":
+          description: Successfully returned departments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Departments"
+components:
+  schemas:
+    Department:
+      type: object
+      required:
+        - id
+        - parentId
+        - description
+        - abbrevation
+        - secondaryId
+        - companyCode
+        - companyName
+        - level
+      properties:
+        id:
+          type: string
+        parentId:
+          type: string
+        description:
+          type: string
+        abbrevation:
+          type: string
+        secondaryId:
+          type: string
+        companyCode:
+          type: string
+        companyName:
+          type: string
+        level:
+          type: integer
+    Departments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Department"

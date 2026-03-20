@@ -1,0 +1,12 @@
+{{define "subject"}} New task in Disclosure Portal{{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+a new task is waiting for you: {{ .Task }}.
+
+Please find the in the Disclosure Portal: {{ .Link }}.
+
+Thank you,
+The Disclosure Portal
+{{end}}

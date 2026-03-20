@@ -1,0 +1,67 @@
+{{define "subject"}} New Task in FOSS Disclosure Portal / Neue Aufgabe im FOSS Disclosure Portal{{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+A new task in FOSS Disclosure Portal is waiting for you!
+
+Task Type: {{ .Type }}
+Task Link: {{ .Link }}
+Requestor: {{ .Requestor }}
+Comment: {{ .Comment }}
+{{ if .IsGroup }}
+Group Name: {{ .GroupName }}
+Group Link: {{ .GroupLink }}
+{{ range .Versions }}
+Project Name {{ .Num }}: {{ .ProjectName }}
+Project Link {{ .Num }}: {{ .ProjectLink }}
+Version Name {{ .Num }}: {{ .VersionName }}
+Version Link {{ .Num }}: {{ .VersionLink }}
+{{ end }}
+{{ else }}
+Project Name: {{ (index .Versions 0).ProjectName }}
+Project Link: {{ (index .Versions 0).ProjectLink }}
+Version Namen: {{ (index .Versions 0).VersionName }}
+Version Link: {{ (index .Versions 0).VersionLink }}
+{{ end }}
+
+Thank you,
+your FOSS Disclosure Portal
+
+
+Please do NOT reply to this mail
+
+#################################
+
+Hallo {{ .Username }},
+
+eine neue Aufgabe wartet im FOSS Disclosure Portal auf Sie!
+
+Aufgabentyp: {{ .TypeDE }}
+Aufgabenlink: {{ .Link }}
+Aufgabenersteller: {{ .Requestor }}
+Kommentar: {{ .Comment }}
+{{ if .IsGroup }}
+Gruppenname: {{ .GroupName }}
+Gruppenlink: {{ .GroupLink }}
+{{ range .Versions }}
+Projektname {{ .Num }}: {{ .ProjectName }}
+Projektlink {{ .Num }}: {{ .ProjectLink }}
+Versionsname {{ .Num }}: {{ .VersionName }}
+Versionslink {{ .Num }}: {{ .VersionLink }}
+{{ end }}
+{{ else }}
+Projektname: {{ (index .Versions 0).ProjectName }}
+Projektlink: {{ (index .Versions 0).ProjectLink }}
+Versionsname: {{ (index .Versions 0).VersionName }}
+Versionslink: {{ (index .Versions 0).VersionLink }}
+{{ end }}
+
+Vielen Dank,
+ihr FOSS Disclosure Portal
+
+
+Bitte antworten Sie NICHT auf diese Mail
+
+
+{{end}}

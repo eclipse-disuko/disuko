@@ -1,0 +1,64 @@
+image:
+  name: disuko-backend
+  version: latest
+  pullPolicy: IfNotPresent
+tls:
+  enabled: false
+  hosts: []
+service:
+  port: 8530
+  # NodePort/ClusterIP
+  type: NodePort
+  nodePort: 30544
+  replicas: 1
+scheduler:
+  cron: "0 * * * *"
+app:
+  ENV: "local"
+  ENABLE_FIX_DATA_INTEGRITY: false
+  SERVER_ALLOWED_ORIGINS: ""
+  SERVER_UPLOADPATH: "./uploads"
+  SERVER_PORT: 3333
+
+  DATABASE_HOST: "REPLACE-ME"
+  DATABASE_PORT: REPLACE-ME
+  DATABASE_SCHEME: "REPLACE-ME"
+  DATABASE_TYPE: "REPLACE-ME"
+
+  OAUTH2_CLIENTID: ""
+  OAUTH2_REDIRECTURL: ""
+  OAUTH2_PROVIDER: "REPLACE-ME"
+  SBOM_COMPONENTS_PATH: ""
+  OAUTH2_PREVENT_TOKEN_HIJACKING: false
+  OAUTH2_DEBUG_LOG: false
+  MAX_UPLOAD_PER_HOUR_PER_PROJECT: "30"
+  # S3
+  S3_ENABLED: false
+  S3_REST_API_ENABLED: false
+  AWS_ACCESS_KEY_ID: ""
+  S3_BUCKET_NAME: ""
+  AWS_REGION: ""
+  AWS_ENDPOINT: ""
+  DISUKO_HOST: ""
+  APPLICATION_TOKEN: ""
+  CACHE_HOST: "REPLACE-ME"
+  valkey:
+    secret_ref_name_value: "REPLACE-ME"
+    secret_ref_key_value: "REPLACE-ME"
+  AUTO_DELETE_SBOMS: false
+  PROD_AUTO_DELETE_SBOMS: false
+
+  #PoolID
+  POOL_USER_ID: ""
+  ENFORCE_RD_CONFIRMATION: false
+secret:
+  OAUTH2_SECRET: ""
+  MY_STRUCTURE_API_APIKEY: ""
+  AWS_SECRET_ACCESS_KEY: ""
+
+imageCredentials:
+  registry: ""
+  username: ""
+  password: ""
+
+migration: false

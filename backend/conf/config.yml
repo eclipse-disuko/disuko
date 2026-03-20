@@ -1,0 +1,54 @@
+oauth2:
+  clientid: ""
+  secret: ""
+  provider: ""
+  redirecturl: ""
+  preventtokenhijacking: false
+  debuglog: true
+publicauth:
+  accessttlseconds: 90
+  refreshttlminutes: 30
+  signingkey: ""
+server:
+  autodeletesbomsafterupload: false
+  uploadpath: "/uploads/"
+  uploadmaxmb: 200
+  devlog: false
+  projectworkpath: "/srv/disuko/workdir/projects"
+  documents:
+    default:
+      de:
+        project: "project-de.html"
+        header: "header-de.html"
+      en:
+        project: "project-en.html"
+        header: "header-en.html"
+    vehicle:
+      de:
+        project: "vehicle-project-de.html"
+        header: "vehicle-header-de.html"
+      en:
+        project: "vehicle-project-en.html"
+        header: "vehicle-header-en.html"
+  pooluserid: ""
+database:
+  ip: ""
+  user: ""
+  password: ""
+proxy:
+  httpproxy: ""
+auth:
+  accesssecret: "dummy secret, please set a complex secret on prod environment"
+  refreshsecret: "dummy secret for refresh, please set a complex secret on prod environment"
+s3:
+  isenabled: true
+  isrestapienabled: false
+  awsaccesskeyid: ""
+  awssecretaccesskey: ""
+  awsregion: ""
+  awsendpoint: ""
+  bucketname: ""
+cache:
+  host: "localhost"
+  port: 6379
+  password: ""

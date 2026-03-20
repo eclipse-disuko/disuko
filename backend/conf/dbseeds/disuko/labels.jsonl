@@ -1,0 +1,210 @@
+{
+  "_key": "2cf2553a-7828-4f8d-a3a0-179b33ca9ba6",
+  "_id": "labels/2cf2553a-7828-4f8d-a3a0-179b33ca9ba6",
+  "_rev": "1-9e17d85689c57846ac5481a663259026",
+  "Created": "2023-10-18T06:43:59.830418684Z",
+  "Updated": "2023-10-18T06:43:59.830418684Z",
+  "name": "onboard",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "50229814-5572-4301-a5d0-cc2e92b87201",
+  "_id": "labels/50229814-5572-4301-a5d0-cc2e92b87201",
+  "_rev": "1-6c7f80f321177e4848cd4b8993799ac7",
+  "Created": "2023-11-22T07:53:36.699119+01:00",
+  "Updated": "2023-11-22T07:53:36.699119+01:00",
+  "name": "bp target",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "534dca49-5d69-4b52-b05e-88ad525d07c7",
+  "_id": "labels/534dca49-5d69-4b52-b05e-88ad525d07c7",
+  "_rev": "1-7f1e69614f78f7d72278e5fc0f1eed13",
+  "Created": "2022-10-04T12:31:01.077641021Z",
+  "Updated": "2022-10-04T12:31:01.077641148Z",
+  "name": "other platform",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+  "_id": "labels/5a9c7e16-a62a-490e-97b1-98b9e193c796",
+  "_rev": "1-861cb6331c33748950501d244b91fe07",
+  "Created": "2022-10-04T12:30:46.687739268Z",
+  "Updated": "2022-10-04T12:30:46.687739543Z",
+  "name": "mobile platform",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "6091e5b4-0f81-4b57-ba08-d27215457c76",
+  "_id": "labels/6091e5b4-0f81-4b57-ba08-d27215457c76",
+  "_rev": "1-a7f422deb50ab6a6375df2deb54128fe",
+  "Created": "2022-10-04T12:31:16.000171685Z",
+  "Updated": "2022-10-04T12:31:16.00017199Z",
+  "name": "backend layer",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "73315081-6dc6-40a8-b661-67554d934150",
+  "_id": "labels/73315081-6dc6-40a8-b661-67554d934150",
+  "_rev": "1-ebfa28160065411d1082c9fabee2f2b2",
+  "Created": "2024-04-17T07:58:24.109411446Z",
+  "Updated": "2024-04-17T07:58:24.109411446Z",
+  "name": "develop inhouse",
+  "description": "",
+  "type": 2
+}
+{
+  "_key": "739b4896-bafd-475b-860a-2482f7cc03cc",
+  "_id": "labels/739b4896-bafd-475b-860a-2482f7cc03cc",
+  "_rev": "1-4249e2f715d520c0d84a3df78e78f71c",
+  "Created": "2023-10-18T06:43:59.866668031Z",
+  "Updated": "2023-10-18T06:43:59.866668031Z",
+  "name": "offboard",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+  "_id": "labels/7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+  "_rev": "1-5d6d82a159c44c2a1ceba93c8e342b53",
+  "Created": "2023-11-22T07:53:36.699119+01:00",
+  "Updated": "2023-11-22T07:53:36.699119+01:00",
+  "name": "customer",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "83282982-f8c4-4bf1-9400-fd236a0f696b",
+  "_id": "labels/83282982-f8c4-4bf1-9400-fd236a0f696b",
+  "_rev": "1-285b056e34a853a2f7e2465e8d8c0424",
+  "Created": "2023-11-22T07:53:36.699119+01:00",
+  "Updated": "2023-11-22T07:53:36.699119+01:00",
+  "name": "business partner",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "8ea6ef0d-4219-455f-b838-dd9edd7bad9b",
+  "_id": "labels/8ea6ef0d-4219-455f-b838-dd9edd7bad9b",
+  "_rev": "1-7a6c9a9fcb7fac7c299ad016b35bd15c",
+  "Created": "2023-01-03T18:20:11.9310817+01:00",
+  "Updated": "2023-01-03T18:20:11.9310817+01:00",
+  "name": "vehicle platform",
+  "description": "Vehicle software, apps and dynamic contents are used in the vehicle.",
+  "type": 1
+}
+{
+  "_key": "9fc95951-1c6a-421e-b7c8-67eaf8405f9c",
+  "_id": "labels/9fc95951-1c6a-421e-b7c8-67eaf8405f9c",
+  "_rev": "2-51baee7555244cb27c9c60b570800563",
+  "Created": "2022-10-04T12:30:00.388794458Z",
+  "Updated": "2026-01-26T10:48:09.295277683Z",
+  "name": "common standard",
+  "description": "Common standard for Software Bill of Materials on Free & Open Source Software Components, based on the ISO Standard Software Package Data Exchange (SPDX). Schema version is SPDX JSON v2.2.2 with particular settings on required attributes.",
+  "type": 0
+}
+{
+  "_key": "a3173ccb-458a-4edd-95a6-c0cdc5b8461b",
+  "_id": "labels/a3173ccb-458a-4edd-95a6-c0cdc5b8461b",
+  "_rev": "1-8de37a8a684215ad81368e5c0a2dbfd9",
+  "Created": "2024-04-17T07:58:43.40682662Z",
+  "Updated": "2024-04-17T07:58:43.40682662Z",
+  "name": "develop internal",
+  "description": "",
+  "type": 2
+}
+{
+  "_key": "bea0b6d8-530d-455e-b716-93d708b6e379",
+  "_id": "labels/bea0b6d8-530d-455e-b716-93d708b6e379",
+  "_rev": "1-56cafc7b533900e4e035a0eb475549a6",
+  "Created": "2023-11-22T07:53:36.699119+01:00",
+  "Updated": "2023-11-22T07:53:36.699119+01:00",
+  "name": "company target",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+  "_id": "labels/c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+  "_rev": "1-032941f48f1d8fdf57ba267ccce639d6",
+  "Created": "2022-10-04T12:30:17.335514932Z",
+  "Updated": "2022-10-04T12:30:17.335515108Z",
+  "name": "enterprise platform",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "c60eb259-bea8-490e-ab55-da57419b33b5",
+  "_id": "labels/c60eb259-bea8-490e-ab55-da57419b33b5",
+  "_rev": "1-6cf87061ae4aec47a18f864bf8f40c16",
+  "Created": "2022-10-04T12:31:10.684389388Z",
+  "Updated": "2022-10-04T12:31:10.684389545Z",
+  "name": "frontend layer",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "c8fa98cc-bfd2-4f64-a85a-61799fe0388a",
+  "_id": "labels/c8fa98cc-bfd2-4f64-a85a-61799fe0388a",
+  "_rev": "1-0d5ed4945222f00a80fd15b51ff92586",
+  "Created": "2025-08-27T10:14:18.860931551Z",
+  "Updated": "2025-08-27T10:14:18.860931551Z",
+  "name": "dummy",
+  "description": "Dummy project label",
+  "type": 2
+}
+{
+  "_key": "eee7933c-c30b-42e0-84ca-e4f80c062122",
+  "_id": "labels/eee7933c-c30b-42e0-84ca-e4f80c062122",
+  "_rev": "1-b2031b571ab783e8f3da3ab7ff6faae8",
+  "Created": "2024-02-20T17:26:31.506354559+01:00",
+  "Updated": "2024-02-20T17:26:31.506354559+01:00",
+  "name": "develop inhouse",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "eee7933c-c30b-42e0-84ca-e4f80c062133",
+  "_id": "labels/eee7933c-c30b-42e0-84ca-e4f80c062133",
+  "_rev": "1-24a16782cf02e95d8de0d522055fa30f",
+  "Created": "2024-02-20T17:26:31.506354559+01:00",
+  "Updated": "2024-02-20T17:26:31.506354559+01:00",
+  "name": "develop external",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "eee7933c-c30b-42e0-84ca-e4f80c062144",
+  "_id": "labels/eee7933c-c30b-42e0-84ca-e4f80c062144",
+  "_rev": "1-24eb73c6dd5f43442df85fd5116f2f59",
+  "Created": "2024-02-20T17:26:31.506354559+01:00",
+  "Updated": "2024-02-20T17:26:31.506354559+01:00",
+  "name": "develop internal",
+  "description": "",
+  "type": 1
+}
+{
+  "_key": "f3f56cbf-4d75-4e41-8214-e3a778c9c72c",
+  "_id": "labels/f3f56cbf-4d75-4e41-8214-e3a778c9c72c",
+  "_rev": "2-45c4f72f00c03bc65a6568e43472fd54",
+  "Created": "2023-11-22T07:53:36.699119+01:00",
+  "Updated": "2025-12-02T13:38:08.959153305Z",
+  "name": "company user",
+  "description": "TESTESTESD",
+  "type": 1
+}
+{
+  "_key": "fe0bd6f8-54fa-4dbe-af9b-4a05b3ca1896",
+  "_id": "labels/fe0bd6f8-54fa-4dbe-af9b-4a05b3ca1896",
+  "_rev": "1-f66979907862c8cfcfff07b614521e70",
+  "Created": "2024-04-17T07:58:30.636747429Z",
+  "Updated": "2024-04-17T07:58:30.636747429Z",
+  "name": "develop external",
+  "description": "",
+  "type": 2
+}

@@ -1,0 +1,138 @@
+services:
+  setup-keycloak:
+    depends_on:
+      - server
+    image: alpine
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=master
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+      - DISUKO_CLIENT_ID=243e5c8-9b1a-4c3d-9f0e-7b2a1c8e5f6ac
+      - DISUKO_CLIENT_SECRET=RST845JLOP8x9Z2n1QFDA25A1B2C3D4k
+      - DISUKO_HOST=https://localhost:3009
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache curl jq
+        sh /tmp/setup-keycloak.sh
+    healthcheck:
+      test: ["CMD", "echo", "healthy"]
+    volumes:
+      - ./import:/tmp
+  disuko-nginx:
+    depends_on:
+      - server
+      - client
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: disuko-nginx
+    ports:
+      - 3009:3009 # 3009 is used as port 3000 is blocked on the GitHub runner
+    volumes:
+      - ./certs:/etc/nginx/certs
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  valkey:
+    image: valkey/valkey
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  db:
+    image: couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    ports:
+      - 5984:5984
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    healthcheck:
+      test: curl db:5984/_up
+      interval: 1s
+      timeout: 10s
+      retries: 10
+  client:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.build
+      args:
+        - APP=portal
+        - MODE=production
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:8080/index.html || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.0
+    environment:
+      KC_LOG_LEVEL: info
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: password
+      KC_HOSTNAME: http://localhost:8080/
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+    command: start-dev --health-enabled=true
+    ports:
+      - 8080:8080
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  server:
+    build: backend
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    environment:
+      - DATABASE_TYPE=CouchDB
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5984
+      - DATABASE_SCHEME=http
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=password
+      - CACHE_HOST=valkey
+      - DISUKO_HOST=https://localhost:3009
+      - SERVER_PORT=3009
+      - CLIENT_REDIRECT_URL=https://localhost:3009
+      - OAUTH2_INSECURE_PROVIDER=http://localhost:8080/realms/master
+      - OAUTH2_PROVIDER=http://keycloak:8080/realms/master
+      - OAUTH2_LOGOUT_ENDPOINT=http://localhost:8080/realms/master/protocol/openid-connect/logout
+      - OAUTH2_REDIRECTURL=https://localhost:3009/api/v1/login
+      - OAUTH2_SECRET=RST845JLOP8x9Z2n1QFDA25A1B2C3D4k
+      - OAUTH2_CLIENTID=243e5c8-9b1a-4c3d-9f0e-7b2a1c8e5f6ac
+      - OAUTH2_UPPERCASEUSERNAME=false
+      - OAUTH2_REGEXTOKEN=^[a-zA-Z0-9_\\.-]{10,150}$
+      - OAUTH2_PREVENT_TOKEN_HIJACKING=false
+      - S3_ENABLED=false
+      - SERVER_UPLOADPATH=/go/server/uploads
+      - VANILLA_DISUKO=true
+      - SERVER_ALLOWED_ORIGINS=https://localhost:3009
+    volumes:
+      - ./uploads:/go/server/uploads
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider server:3009/healthz || exit 1
+      interval: 10s
+      timeout: 60s
+      retries: 25
+
+volumes:
+  couchdb_data:
+  keycloak_data:

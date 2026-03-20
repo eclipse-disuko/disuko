@@ -1,0 +1,26 @@
+.DS_Store
+**/node_modules
+**/dist
+**/playwright-report
+**/test-results
+**/screenshots
+
+**/bundle-disclosure-portal.html
+**/components.d.ts
+
+# local env files
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

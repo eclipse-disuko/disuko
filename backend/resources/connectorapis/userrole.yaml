@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: userrole API
+  description: API for providing userrole and user active state information 
+
+paths:
+  /users/{userid}/active:
+    get:
+      description: Obtain user active information 
+      parameters:
+        - name: userid
+          in: path
+          required: true
+          schema:
+            type: string
+          
+      responses:
+        '200':
+          description: Successfully returned user active state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IsActive"
+components:
+  schemas:
+    IsActive:
+      type: object
+      required:
+        - active
+      properties:
+        active:
+          type: boolean

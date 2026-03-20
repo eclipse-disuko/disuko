@@ -1,0 +1,84 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: application API
+  description: API for providing application information
+
+paths:
+  /search:
+    post:
+      description: Search applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchQuery"
+            example:
+              query: "disco portal"
+      responses:
+        "200":
+          description: Successfully returned applications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchRes"
+  /application/{id}:
+    get:
+      description: Get application by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the application to get
+      responses:
+        "200":
+          description: Successfully returned application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+components:
+  schemas:
+    SearchQuery:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+    SearchResEntry:
+      type: object
+      required:
+        - id
+        - name
+        - link
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        link:
+          type: string
+    Application:
+      type: object
+      required:
+        - id
+        - secondaryId
+        - name
+        - link
+      properties:
+        id:
+          type: string
+        secondaryId:
+          type: string
+        name:
+          type: string
+        link:
+          type: string
+    SearchRes:
+      type: array
+      items:
+        $ref: "#/components/schemas/SearchResEntry"

@@ -1,0 +1,14 @@
+<script setup lang="ts">
+import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
+import {onMounted} from 'vue';
+
+const {dashboardCrumbs, projectsCrumb, ...breadcrumbs} = useBreadcrumbsStore();
+
+onMounted(() => {
+  breadcrumbs.setCurrentBreadcrumbs([...dashboardCrumbs, projectsCrumb]);
+});
+</script>
+
+<template>
+  <GridProjects></GridProjects>
+</template>

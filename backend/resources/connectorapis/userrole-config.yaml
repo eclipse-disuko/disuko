@@ -1,0 +1,5 @@
+package: userrole
+output: ../../connector/userrole/client.go
+generate:
+  models: true
+  client: true

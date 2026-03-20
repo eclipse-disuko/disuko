@@ -1,0 +1,341 @@
+{
+  "_key": "052bc825-33db-4dac-a77c-9c04b49798ba",
+  "_id": "rules/052bc825-33db-4dac-a77c-9c04b49798ba",
+  "_rev": "1-1b009ec4c478f044ad199e3758a0390b",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "Apache-2.0",
+    "MIT"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [
+    "GPL-3.0-or-later"
+  ],
+  "Created": "2025-12-09T14:23:12.694818664Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "bea0b6d8-530d-455e-b716-93d708b6e379"
+    ],
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "bea0b6d8-530d-455e-b716-93d708b6e379"
+    ],
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4"
+    ],
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ],
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270"
+    ]
+  ],
+  "Name": "Backend",
+  "Updated": "2026-03-11T17:00:05.522616646Z"
+}
+{
+  "_key": "3d248eda-2259-464c-9c4b-b3ebc21c8745",
+  "_id": "rules/3d248eda-2259-464c-9c4b-b3ebc21c8745",
+  "_rev": "1-e13c728421e709c0e6dffc7967f9d3a5",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "Apache-2.0",
+    "MIT"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later",
+    "GPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [],
+  "Created": "2025-12-09T14:01:12.033685817Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "534dca49-5d69-4b52-b05e-88ad525d07c7"
+    ]
+  ],
+  "Name": "Distribution unclear",
+  "Updated": "2026-03-11T17:00:05.580832284Z"
+}
+{
+  "_key": "4b331d85-b3f8-4914-b422-d24f10942fb5",
+  "_id": "rules/4b331d85-b3f8-4914-b422-d24f10942fb5",
+  "_rev": "1-b337c5fd2765855e7913a02a85d9b527",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "Apache-2.0",
+    "MIT"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later",
+    "GPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [],
+  "Created": "2025-12-09T14:10:17.965612398Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "c60eb259-bea8-490e-ab55-da57419b33b5",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ]
+  ],
+  "Name": "Mobile frontend",
+  "Updated": "2026-03-11T17:00:05.611293851Z"
+}
+{
+  "_key": "849a87b5-178d-4661-8d8d-ba92698d0fd2",
+  "_id": "rules/849a87b5-178d-4661-8d8d-ba92698d0fd2",
+  "_rev": "1-e412a1dc6b9d62db2be86e900ed89842",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "GPL-3.0-or-later",
+    "Apache-2.0",
+    "MIT",
+    "AGPL-3.0-or-later"
+  ],
+  "ComponentsDeny": [],
+  "ComponentsWarn": [],
+  "Created": "2025-12-09T14:04:35.598811921Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "5a9c7e16-a62a-490e-97b1-98b9e193c796",
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ],
+    [
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ],
+    [
+      "6091e5b4-0f81-4b57-ba08-d27215457c76",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ]
+  ],
+  "Name": "No external distribution",
+  "Updated": "2026-03-11T17:00:05.637129355Z"
+}
+{
+  "_key": "8f291f4b-8ec5-49ab-accf-eadc058fbd8b",
+  "_id": "rules/8f291f4b-8ec5-49ab-accf-eadc058fbd8b",
+  "_rev": "1-354b48f1991cefe25169c81765960f2a",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "Apache-2.0",
+    "MIT"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [
+    "GPL-3.0-or-later"
+  ],
+  "Created": "2025-12-09T14:13:53.31033918Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "7d90ffcb-2ad9-47c4-9589-5e694b4f2270",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "83282982-f8c4-4bf1-9400-fd236a0f696b",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "bea0b6d8-530d-455e-b716-93d708b6e379",
+      "c60eb259-bea8-490e-ab55-da57419b33b5"
+    ],
+    [
+      "50229814-5572-4301-a5d0-cc2e92b87201",
+      "c03f1ecf-3a8e-4055-9d8f-07543408d6f4",
+      "c60eb259-bea8-490e-ab55-da57419b33b5",
+      "f3f56cbf-4d75-4e41-8214-e3a778c9c72c"
+    ]
+  ],
+  "Name": "Frontend",
+  "Updated": "2026-03-11T17:00:05.678573222Z"
+}
+{
+  "_key": "a8e93266-4a41-4c02-9e2b-72ea3687c2d5",
+  "_id": "rules/a8e93266-4a41-4c02-9e2b-72ea3687c2d5",
+  "_rev": "1-db89cfcad7b3efce3137712eed4e87b5",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "GPL-3.0-or-later",
+    "Apache-2.0",
+    "MIT"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [],
+  "Created": "2025-10-17T07:11:34.451097117Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "8ea6ef0d-4219-455f-b838-dd9edd7bad9b",
+      "739b4896-bafd-475b-860a-2482f7cc03cc"
+    ]
+  ],
+  "Name": "Product Offboard",
+  "Updated": "2026-03-11T17:00:05.737781775Z"
+}
+{
+  "_key": "efc3f0fb-64ab-4a08-a051-ffcc32bf3684",
+  "_id": "rules/efc3f0fb-64ab-4a08-a051-ffcc32bf3684",
+  "_rev": "1-fda0900f126dfe28c930a3cfc4dadcf3",
+  "Active": true,
+  "ApplyToAll": false,
+  "Auxiliary": false,
+  "ComponentsAllow": [
+    "MIT",
+    "Apache-2.0"
+  ],
+  "ComponentsDeny": [
+    "AGPL-3.0-or-later",
+    "GPL-3.0-or-later"
+  ],
+  "ComponentsWarn": [],
+  "Created": "2023-07-27T07:02:40.839478501Z",
+  "Deleted": false,
+  "Deprecated": false,
+  "DeprecatedDate": "0001-01-01T00:00:00Z",
+  "Description": "EN: <Enter your details here.>\n\nDE: <Bitte hier Details eingeben.>",
+  "LabelSets": [
+    [
+      "8ea6ef0d-4219-455f-b838-dd9edd7bad9b"
+    ],
+    [
+      "8ea6ef0d-4219-455f-b838-dd9edd7bad9b",
+      "2cf2553a-7828-4f8d-a3a0-179b33ca9ba6"
+    ]
+  ],
+  "Name": "Product Onboard",
+  "Updated": "2026-03-11T17:00:05.794127867Z"
+}

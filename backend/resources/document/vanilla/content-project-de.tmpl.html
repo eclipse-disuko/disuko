@@ -1,0 +1,244 @@
+<li>
+  <div class="signChapter">
+    {{ if eq .Nr 0 }}
+      <br /><br />
+      <li><br /><br /></li>
+    {{ end }}
+    <span class="listitem">{{ inc .Nr }} {{ .Name }}</span>
+    <br />
+    Sämtliche Angaben über jegliche in dem Produkt enthaltene FOSS befinden sich
+    in diesem Dokument:
+    <br /><br />
+    <table class="print">
+      <tbody>
+        <tr>
+          <th style="width: 140px">Projekt Name:</th>
+          <td>{{ .Name }}</td>
+        </tr>
+        <tr>
+          <th>Projekt ID:</th>
+          <td>{{ .Key }}</td>
+        </tr>
+        <tr>
+          <th>Projekt Schema Label:</th>
+          <td>
+            {{ .SchemaLabel }}
+          </td>
+        </tr>
+        <tr>
+          <th>Projekt Policy Labels:</th>
+          <td>
+            {{ .PolicyLabels }}
+          </td>
+        </tr>
+        <tr>
+          <th>Projekt Version:</th>
+          <td>
+            {{ with .Version }}
+              {{ .Name }}
+            {{ end }}
+          </td>
+        </tr>
+        <tr>
+          <th>Version ID:</th>
+          <td>
+            {{ with .Version }}
+              {{ .Key }}
+            {{ end }}
+          </td>
+        </tr>
+        <tr>
+          <th>Referenz Datum:</th>
+          <td>{{ .ReferenceTime }}</td>
+        </tr>
+        {{ with .Spdx }}
+          <tr>
+            <th>SBOM Name:</th>
+            <td>{{ .Name }}</td>
+          </tr>
+          <tr>
+            <th>SBOM ID:</th>
+            <td>{{ .Key }}</td>
+          </tr>
+          <tr>
+            <th>Herkunft:</th>
+            <td>{{ .Origin }}</td>
+          </tr>
+          <tr>
+            <th>Uploader:</th>
+            <td>{{ .Uploader }}</td>
+          </tr>
+          <tr>
+            <th>Upload Datum:</th>
+            <td>{{ .Uploaded }}</td>
+          </tr>
+          <tr>
+            <th>SBOM SHA-256:</th>
+            <td>{{ .Hash }}</td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <br />
+    {{ with .Version }}
+      <br /><br />
+      <table class="print borderTable">
+        <thead>
+          <tr>
+            <th class="paddingTable">URL der Commit ID (Release, Tag etc.)</th>
+            <th class="paddingTable">Beschreibung (inkl. Versionsnummer)</th>
+            <th class="paddingTable">Herkunft</th>
+            <th class="paddingTable" style="width: 80px">Erstellt</th>
+            <th class="paddingTable" style="width: 80px">Verändert</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .Sources }}
+            <tr>
+              <td class="paddingTable">{{ .URL }}</td>
+              <td class="paddingTable">{{ .Comment }}</td>
+              <td class="paddingTable">{{ .Origin }}</td>
+              <td class="paddingTable">{{ .Created }}</td>
+              <td class="paddingTable">{{ .Updated }}</td>
+            </tr>
+          {{ end }}
+        </tbody>
+      </table>
+      <table>
+        <tbody>
+          {{ if eq (len .Sources) 0 }}
+            <tr height="20" valign="bottom">
+              <td>Keine Quelltext-Referenzen vorhanden</td>
+            </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    {{ end }}
+    <br /><br />
+    <br /><br />
+    <span class="listitem">Policy-Regeln (angewendet)</span>
+    <br /><br />
+    <table class="print borderTable">
+      <thead>
+        <tr>
+          <th class="paddingTable" style="width: 200px">Name</th>
+          <th class="paddingTable">Beschreibung</th>
+          <th class="paddingTable" style="width: 200px">UUID</th>
+          <th class="paddingTable" style="width: 80px">Erstellt</th>
+          <th class="paddingTable" style="width: 80px">Verändert</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .PolicyRules }}
+          <tr>
+            <td class="paddingTable">{{ .Name }}</td>
+            <td class="paddingTable">{{ .Description }}</td>
+            <td class="paddingTable">{{ .Key }}</td>
+            <td class="paddingTable">{{ .Created }}</td>
+            <td class="paddingTable">{{ .Updated }}</td>
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <br /><br />
+    {{ with .Licenses }}
+      <span class="listitem">Zusammenfassung der FOSS-Lizenzen (effektive)</span
+      ><br />
+      <span
+        >Dieser Abschnitt enthält nur Komponenten, die unter die Definition von
+        FOSS fallen.</span
+      >
+      <br /><br />
+      <table class="print borderTable">
+        <thead>
+          <tr>
+            <th class="paddingTable">Name</th>
+            <th class="paddingTable">Lizenz-ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+            <tr>
+              <td class="paddingTable">{{ .Name }}</td>
+              <td class="paddingTable">{{ .ID }}</td>
+            </tr>
+          {{- end }}
+        </tbody>
+      </table>
+      <br /><br />
+    {{ end }}
+    {{ with .Spdx }}
+      <div class="break"></div>
+      <br />
+      <br />
+      <span class="listitem">Vollständige Liste der FOSS-Komponenten</span>
+      <br /><br />
+      <span
+        >Dieser Abschnitt enthält nur Komponenten, die unter die Definition von
+        FOSS fallen.</span
+      >
+      <br /><br />
+      {{ range .Evaluation }}
+        <table class="print onpage">
+          <tbody>
+            <tr>
+              <td style="width: 140px">Name</td>
+              <td>{{ .Name }}</td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Version</td>
+              <td>{{ .Version }}</td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Deklarierte Lizenz</td>
+              <td>{{ .Declared }}</td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Gefolgerte Lizenz</td>
+              <td>{{ .Concluded }}</td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Effektive Lizenz</td>
+              <td>
+                {{ .Effective }}
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Bemerkung</td>
+              <td>
+                {{ if .IsRoot }}
+                  Root
+                {{ end }}
+                {{ if .RuleApplied }}
+                  Für diese Komponente wurde eine Lizenzentscheidung angewendet
+                {{ end }}
+                {{ if .AliasUsed }}
+                  Für diese Komponente wurde ein Lizenz-Alias verwendet
+                {{ end }}
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Herkunft</td>
+              <td>
+                Download Link:
+                {{ .DownloadLink }}
+                <br />
+                PURL:
+                {{ .PURL }}
+                <br />
+                Homepage:
+                {{ .Homepage }}
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 140px">Urheberrechte</td>
+              <td>{{ .CopyrightText }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <br /><br />
+        <br /><br />
+      {{ end }}
+    {{ end }}
+  </div>
+</li>

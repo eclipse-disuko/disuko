@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["vite-env.d.ts","env.d.ts", "components.d.ts", "src/**/*"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "types": ["vite/client"],
+    "typeRoots": ["node_modules/@types", "src/types", "vite-env.d.ts"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
+  }
+}

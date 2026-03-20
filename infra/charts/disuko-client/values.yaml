@@ -1,0 +1,9 @@
+image:
+  name: disuko-client
+  version: latest
+  pullPolicy: IfNotPresent
+service:
+  port: 8080
+  # NodePort/ClusterIP
+  type: NodePort
+  nodePort: 30580

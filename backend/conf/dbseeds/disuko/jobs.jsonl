@@ -1,0 +1,97 @@
+{
+  "_key": "ac26b78a-cecb-47ae-8a38-77698d4ed87d",
+  "_id": "jobs/ac26b78a-cecb-47ae-8a38-77698d4ed87d",
+  "_rev": "27-e1a8b6e71b9d0b287d8c61baa4e6cf1b",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 0,
+  "MultiExec": false,
+  "Name": "License import",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_key": "89d7e3a2-50de-47f7-8fb6-6ebd5ac94587",
+  "_id": "jobs/89d7e3a2-50de-47f7-8fb6-6ebd5ac94587",
+  "_rev": "125-ebebfafc7925ed52e093d7d91c4c3733",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 1,
+  "JobType": 2,
+  "MultiExec": false,
+  "Name": "Department Import",
+  "Schedule": "30 2 * * 1",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_key": "3f44b21a-c09f-4f86-bc90-8737bb808be0",
+  "_id": "jobs/3f44b21a-c09f-4f86-bc90-8737bb808be0",
+  "_rev": "9-187917ff0c1df70d4726656c3078b7aa",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 2,
+  "MultiExec": false,
+  "Name": "Department Import",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_key": "fa926caa-1553-4644-8c5f-281280016f9a",
+  "_id": "jobs/fa926caa-1553-4644-8c5f-281280016f9a",
+  "_rev": "222-fbe0db08d8c37dcbf2bceb9e48523569",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 3,
+  "MultiExec": true,
+  "Name": "Import departments from db",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_id": "jobs/5a11c8f5-64ed-4d0a-abc5-76dd2a3b1b4d",
+  "_key": "5a11c8f5-64ed-4d0a-abc5-76dd2a3b1b4d",
+  "_rev": "18-6fcf5542d7983ecea6e080359a6c00c8",
+  "Config": "",
+  "Execution": 0,
+  "JobType": 1,
+  "MultiExec": false,
+  "Name": "Reset Terms of Use Acceptance",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-01-15T12:27:31.18177256Z"
+}
+{
+  "_id": "jobs/ac4a3447-d8f5-485d-a51b-e78584f6036d",
+  "_key": "ac4a3447-d8f5-485d-a51b-e78584f6036d",
+  "_rev": "18-6fcf5542d7983ecea6e080359a6c00c8",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 14,
+  "MultiExec": true,
+  "Name": "Import labels from db",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_id": "jobs/315d3c7e-0856-4a8f-a8a8-08dca55586b3",
+  "_key": "315d3c7e-0856-4a8f-a8a8-08dca55586b3",
+  "_rev": "18-6fcf5542d7983ecea6e080359a6c00c8",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 9,
+  "MultiExec": true,
+  "Name": "Report creation",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}

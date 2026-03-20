@@ -1,0 +1,18 @@
+:root {
+  --spacing: 4px;
+}
+.grid {
+  display: grid;
+}
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+.gap-6 {
+  gap: calc(var(--spacing) * 6);
+}
+.w-full {
+  width: 100%;
+}

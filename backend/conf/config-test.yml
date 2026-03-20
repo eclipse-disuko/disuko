@@ -1,0 +1,20 @@
+server:
+  documents:
+    default:
+      de:
+        content: "NP.50.70.108.2022-02.DE.html"
+        header: "NP.50.70.108.2022-02-header.DE.html"
+        footer: "NP.50.70.108.2022-02-footer.DE.html"
+      en:
+        content: "NP.50.70.108.2022-02.EN.html"
+        header: "NP.50.70.108.2022-02-header.EN.html"
+        footer: "NP.50.70.108.2022-02-footer.EN.html"
+    vehicle:
+      de:
+        content: "vehicle-de-content"
+        header: "vehicle-de-header"
+        footer: "vehicle-de-footer"
+      en:
+        content: "vehicle-en-content"
+        header: "vehicle-en-header"
+        footer: "vehicle-en-footer"

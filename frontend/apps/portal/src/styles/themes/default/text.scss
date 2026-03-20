@@ -1,0 +1,80 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+*,
+.v-application {
+  font-family: 'Roboto', sans-serif;
+  font-weight: normal;
+}
+
+.grey-color-text {
+  color: rgb(var(--v-theme-breadcrumbColor)) !important;
+  .v-icon {
+    color: rgb(var(--v-theme-breadcrumbColor)) !important;
+  }
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 1;
+}
+
+h3 {
+  font-size: 16px;
+  line-height: 1;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+h5 {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.small-text {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  line-height: 1.25rem;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.0333333em !important;
+}
+
+.caption {
+  line-height: 1.25rem;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.0333333em !important;
+}
+
+p {
+  font-size: 14px;
+}
+
+.license-text {
+  white-space: pre-line;
+  overflow-y: auto;
+}
+
+.font-color-table {
+  color: rgb(var(--v-theme-fontColorTableSecond));
+}
+
+.tab-indent {
+  text-indent: 2em; /* Breite des "Tabs" (kann angepasst werden) */
+  margin-left: 2em; /* Gleiche Breite wie text-indent */
+  display: inline-block; /* Verhindert, dass der Margin den Text verschiebt */
+}

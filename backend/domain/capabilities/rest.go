@@ -1,0 +1,11 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
+package capabilities
+
+type CapabilitiesDto struct {
+	ApplicationConnector          bool `json:"applicationConnector"`
+	DepartmentConnector           bool `json:"departmentConnector"`
+	EnforceFOSSOfficeConfirmation bool `json:"enforceFOSSOfficeConfirmation"`
+}

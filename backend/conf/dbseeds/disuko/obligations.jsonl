@@ -1,0 +1,45 @@
+{
+  "_key": "473e0c2e-4d95-4419-90f3-6b6e62773114",
+  "_id": "obligations/473e0c2e-4d95-4419-90f3-6b6e62773114",
+  "_rev": "1-dab869500ebde4eaf77bccb0ebd8901a",
+  "Created": "2023-01-26T12:24:40.340896974Z",
+  "Deleted": false,
+  "Updated": "2023-10-05T14:47:52.007225821Z",
+  "autoApproved": false,
+  "description": "You must include a path to the source code or other description in the documentation how licensees can obtain the source code themselves. ",
+  "descriptionDe": "Sie müssen einen Hinweis zum Quellcode oder eine andere Beschreibung in die Dokumentation aufnehmen, wie Lizenznehmer den Quellcode selbst erhalten können.\n",
+  "name": "Provide source code location",
+  "nameDe": "Bereitstellung des Quellcodes",
+  "type": "obligation",
+  "warnLevel": "WARNING"
+}
+{
+  "_key": "8879740c-4954-4406-961b-9c1201be9473",
+  "_id": "obligations/8879740c-4954-4406-961b-9c1201be9473",
+  "_rev": "1-148373643be5a3e5218e6a0ec4bfa1cb",
+  "Created": "2024-05-27T08:39:59.439317678Z",
+  "Deleted": false,
+  "Updated": "2024-08-19T15:25:17.160920268Z",
+  "autoApproved": false,
+  "description": "A permissive open source license generally allows you to use, modify, and distribute software freely with minimal obligations like including copyright notices and disclaimers.",
+  "descriptionDe": "Eine permissive Open-Source-Lizenz erlaubt in der Regel die freie Nutzung, Veränderung und Verbreitung von Software mit minimalen Auflagen wie Copyright-Vermerken und Haftungsausschlüssen.",
+  "name": "Permissive",
+  "nameDe": "Permissiv",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "d217cc48-89e0-4c75-8b22-eb107fc9197b",
+  "_id": "obligations/d217cc48-89e0-4c75-8b22-eb107fc9197b",
+  "_rev": "1-025787516e703f40cf06e3935e9a9395",
+  "Created": "2022-06-08T09:02:52.063233463Z",
+  "Deleted": false,
+  "Updated": "2023-10-05T14:45:48.642417314Z",
+  "autoApproved": false,
+  "description": "You must display all copyright information of a FOSS component in a suitable way (usually in the documentation delivered with the product) with all distributed copies of software. You may find copyright information in additional files of a FOSS component.\n",
+  "descriptionDe": "Alle Copyright-Informationen einer FOSS-Komponente müssen in geeigneter Weise (üblicherweise in der mit dem Produkt gelieferten Dokumentation) mit allen verteilten Kopien der Software angezeigt werden. Copyright-Informationen finden Sie möglicherweise in zusätzlichen Dateien einer FOSS-Komponente. ",
+  "name": "Display copyright notice",
+  "nameDe": "Copyright-Hinweis anzeigen",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}

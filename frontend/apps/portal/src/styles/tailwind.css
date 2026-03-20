@@ -1,0 +1,165 @@
+@import "tailwindcss" important;
+@theme {
+    --breakpoint-sm: 600px;
+    --breakpoint-md: 960px;
+    --breakpoint-lg: 1264px;
+    --breakpoint-xl: 1904px;
+    --color-black: #000000;
+    --color-white: #ffffff;
+
+    /* Grey scale */
+    --color-grey-95: #F8F8F8;
+    --color-grey-90: #F4F4F4;
+    --color-grey-85: #E8E8E8;
+    --color-grey-80: #DBDBDB;
+    --color-grey-75: #C9C9C9;
+    --color-grey-70: #BBBBBB;
+    --color-grey-65: #ADADAD;
+    --color-grey-60: #9F9F9F;
+    --color-grey-55: #919191;
+    --color-grey-50: #848484;
+    --color-grey-45: #767676;
+    --color-grey-40: #696969;
+    --color-grey-35: #5C5C5C;
+    --color-grey-30: #4F4F4F;
+    --color-grey-25: #424242;
+    --color-grey-20: #333333;
+    --color-grey-15: #262626;
+    --color-grey-10: #1A1A1A;
+    --color-grey-5: #0D0D0D;
+
+    /* Blue scale */
+    --color-blue-95: #E6F5FF;
+    --color-blue-90: #CCE8FF;
+    --color-blue-85: #B4DDFE;
+    --color-blue-80: #9AD2FE;
+    --color-blue-75: #80C6FF;
+    --color-blue-70: #66BBFD;
+    --color-blue-65: #4EAFFD;
+    --color-blue-60: #33A4FD;
+    --color-blue-55: #1998FC;
+    --color-blue-50: #008DFC;
+    --color-blue-45: #0078D6;
+    --color-blue-40: #036DC1;
+    --color-blue-35: #0260AB;
+    --color-blue-30: #025497;
+    --color-blue-25: #014880;
+    --color-blue-20: #013C6B;
+    --color-blue-15: #003156;
+    --color-blue-10: #002441;
+    --color-blue-5: #00182C;
+
+    /* Red scale */
+    --color-red-95: #FFEDED;
+    --color-red-90: #FFDBDB;
+    --color-red-85: #FFC9C9;
+    --color-red-80: #FFB7B7;
+    --color-red-75: #FFA5A5;
+    --color-red-70: #FF9292;
+    --color-red-65: #FF8080;
+    --color-red-60: #FF6E6E;
+    --color-red-55: #FF5C5C;
+    --color-red-50: #FF4A4A;
+    --color-red-45: #D92121;
+    --color-red-40: #C31E1E;
+    --color-red-35: #AE1A1A;
+    --color-red-30: #981717;
+    --color-red-25: #821414;
+    --color-red-20: #6D1111;
+    --color-red-15: #570D0D;
+    --color-red-10: #410A0A;
+    --color-red-5: #2B0707;
+
+    /* Green scale */
+    --color-green-95: #E9F6EA;
+    --color-green-90: #D3EDD6;
+    --color-green-85: #BCE3C1;
+    --color-green-80: #A6DAAC;
+    --color-green-75: #90D198;
+    --color-green-70: #7AC883;
+    --color-green-65: #64BF6E;
+    --color-green-60: #4DB559;
+    --color-green-55: #37AC45;
+    --color-green-50: #21A330;
+    --color-green-45: #198025;
+    --color-green-40: #177321;
+    --color-green-35: #14661E;
+    --color-green-30: #125A1A;
+    --color-green-25: #0F4D16;
+    --color-green-20: #0D4013;
+    --color-green-15: #0A330F;
+    --color-green-10: #07260B;
+    --color-green-5: #051A07;
+
+    /* Yellow scale */
+    --color-yellow-95: #FFFAE6;
+    --color-yellow-90: #FEF5CC;
+    --color-yellow-85: #FEF0B3;
+    --color-yellow-80: #FDEB99;
+    --color-yellow-75: #FDE680;
+    --color-yellow-70: #FCE066;
+    --color-yellow-65: #FCDB4C;
+    --color-yellow-60: #FBD633;
+    --color-yellow-55: #FBD11A;
+    --color-yellow-50: #FACC00;
+    --color-yellow-45: #E8BD00;
+    --color-yellow-40: #D1AA00;
+    --color-yellow-35: #BA9700;
+    --color-yellow-30: #A28400;
+    --color-yellow-25: #8B7100;
+    --color-yellow-20: #745F00;
+    --color-yellow-15: #5D4C00;
+    --color-yellow-10: #463900;
+    --color-yellow-5: #2E2600;
+
+    /* Orange scale */
+    --color-orange-95: #FFF4E6;
+    --color-orange-90: #FFE8CC;
+    --color-orange-85: #FFDDB3;
+    --color-orange-80: #FFD199;
+    --color-orange-75: #FFC680;
+    --color-orange-70: #FFBA66;
+    --color-orange-65: #FFAF4D;
+    --color-orange-60: #FFA333;
+    --color-orange-55: #FF981A;
+    --color-orange-50: #FF6400;
+    --color-orange-45: #F04B0A;
+    --color-orange-40: #D94000;
+    --color-orange-35: #C23800;
+    --color-orange-30: #AB3100;
+    --color-orange-25: #942900;
+    --color-orange-20: #7D2200;
+    --color-orange-15: #661A00;
+    --color-orange-10: #4F1300;
+    --color-orange-5: #380B00;
+
+    /* Neutral scale */
+    --color-neutral-100: #ffffff;
+    --color-neutral-99: #fcfcfc;
+    --color-neutral-98: #fafafa;
+    --color-neutral-97: #f5f5f5;
+    --color-neutral-96: #f0f0f0;
+    --color-neutral-95: #e9e9e9;
+    --color-neutral-93: #e8e8e8;
+    --color-neutral-92: #e0e0e0;
+    --color-neutral-91: #d8d8d8;
+    --color-neutral-90: #d3d3d3;
+    --color-neutral-85: #BDBDBD;
+    --color-neutral-80: #bbb;
+    --color-neutral-75: #A1A1A1;
+    --color-neutral-65: #808080;
+    --color-neutral-60: #777777;
+    --color-neutral-55: #4B4B4B;
+    --color-neutral-50: #484848;
+    --color-neutral-45: #464646;
+    --color-neutral-40: #333;
+    --color-neutral-35: #2a2a2a;
+    --color-neutral-30: #212121;
+    --color-neutral-25: #1f1f1f;
+    --color-neutral-20: #141414;
+    --color-neutral-0: #000000;
+}
+
+@variant dark (.dark &);
+
+@source "../../../../libs"

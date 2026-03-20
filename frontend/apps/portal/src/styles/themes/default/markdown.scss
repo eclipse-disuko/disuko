@@ -1,0 +1,105 @@
+.md-editor-preview p {
+  word-break: break-word;
+  text-wrap: pretty;
+}
+
+.markdown {
+  background-color: rgb(var(--v-theme-background-base));
+  font-size: 0.8em;
+  overflow-y: auto;
+
+  p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 1.25rem 0 0.5rem;
+    font-weight: inherit;
+    line-height: 1.25;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  h6 {
+    font-size: 0.75rem;
+  }
+
+  img,
+  canvas,
+  iframe,
+  video,
+  svg,
+  select,
+  textarea {
+    max-width: 100%;
+  }
+
+  pre {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  blockquote {
+    margin: 0;
+    border-left: 5px solid #7a7a7a;
+    font-style: italic;
+    padding: 1.33em;
+    text-align: left;
+  }
+
+  ul {
+    font-size: 1rem;
+    padding-top: 0.2rem;
+    > li {
+      text-align: left;
+      padding-top: 0.2rem;
+      margin-left: 1.3rem;
+      &:before {
+        content: "•";
+        margin-left: -1rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  th, td {
+    border: 1px solid rgba(127, 127, 127, 0.5);
+    padding: 0.5rem;
+  }
+
+  thead th {
+    background-color: rgb(var(--v-theme-tableRowEvenBackgroundColor));
+    font-weight: bold;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: rgb(var(--v-theme-tableRowEvenBackgroundColor));
+  }
+}

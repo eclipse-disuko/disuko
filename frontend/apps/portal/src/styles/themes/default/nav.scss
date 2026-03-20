@@ -1,0 +1,18 @@
+.notification-bar {
+  background-color: rgb(var(--v-theme-notificationBarBackground)) !important;
+  height: 32px;
+  span {
+    font-size: 14px;
+  }
+  .v-btn.btn-close .v-icon,
+  span,
+  a,
+  b {
+    line-height: 0.9em;
+    color: rgb(var(--v-theme-notificationBarTextColor)) !important;
+  }
+}
+
+.navbar {
+  border-bottom: 1px solid rgb(var(--v-theme-cardBorder)) !important;
+}

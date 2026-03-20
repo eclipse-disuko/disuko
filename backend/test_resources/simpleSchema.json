@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties" : {
+    "spdxDocument": {
+      "additionalProperties": false,
+      "properties" : {
+        "dayCount": {
+          "minimum": 10,
+          "maximum": 22
+        }
+      }
+    }
+  }
+}

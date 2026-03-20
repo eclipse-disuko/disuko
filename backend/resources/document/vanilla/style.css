@@ -1,0 +1,314 @@
+@page {
+  size: A4;
+  /* oben rechts unten links*/
+  margin: 10mm 10mm 20mm 20mm !important;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+}
+
+table td {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+table th {
+  text-align: left;
+}
+
+td div {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.url {
+  color: #7a7a7a;
+}
+
+.together {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+table.onpage {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+#content {
+  display: table;
+}
+
+.break {
+  page-break-before: always;
+}
+
+#footer:after {
+  counter-increment: page;
+  content: counter(page);
+}
+
+#pagenumber:before {
+  content: counter(page);
+}
+
+#pagecount:before {
+  content: counter(pages);
+}
+
+.header1 {
+  font-size: 10pt;
+  font-weight: bold;
+  line-height: 12pt;
+}
+
+.contractor {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.headline {
+  font-size: 10pt;
+  font-weight: bold;
+  line-height: 12pt;
+}
+
+.break {
+  page-break-before: always;
+}
+
+.clear {
+  clear: both;
+}
+
+.content {
+}
+
+.listitem {
+  font-weight: bold;
+}
+
+/* THE FOLLOWING CSS IS REQUIRED AND SHOULD NOT BE MODIFIED. */
+div.fauxRow {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  page-break-inside: avoid;
+}
+
+table.fauxRow {
+  border-spacing: 0;
+}
+
+table.fauxRow > tbody > tr > td {
+  padding: 0;
+  overflow: hidden;
+}
+
+table.fauxRow > tbody > tr > td > table.print {
+  display: inline-table;
+  vertical-align: top;
+}
+
+table.fauxRow > tbody > tr > td > table.print > caption {
+  caption-side: top;
+}
+
+.noBreak {
+  float: right;
+  width: 100%;
+  visibility: hidden;
+}
+
+.noBreak:before,
+.noBreak:after {
+  display: block;
+  content: "";
+}
+
+.noBreak:after {
+  margin-top: -594mm;
+}
+
+.noBreak > div {
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  page-break-inside: avoid;
+}
+
+table.print > tbody > tr {
+  page-break-inside: avoid;
+}
+
+table.print > tbody > .metricsRow > td {
+  border-top: none !important;
+}
+
+/* THE FOLLOWING CSS IS REQUIRED, but the values may be adjusted. */
+/* NOTE: All size values that can affect an element's height should use the px unit! */
+table.fauxRow,
+table.print {
+  font-size: 8pt;
+  line-height: 10pt;
+}
+
+.noBreak .t1 > tbody > tr > :first-child:before {
+  /*counter-increment: pageNr;*/
+}
+
+/* Delete to remove row numbers. */
+.t1 > tbody > tr > :first-child:before {
+  /* Delete to remove row numbers. */
+  display: block;
+  text-align: right;
+  counter-increment: t1;
+  content: counter(t1);
+}
+
+.pagenumber::after {
+  /* Delete to remove row numbers. */
+  display: block;
+  text-align: right;
+  counter-increment: page;
+}
+
+/*.counter(t1);*/
+table.fauxRow,
+table.print {
+}
+
+div.header {
+  height: 140px;
+  display: block;
+  text-align: center;
+  top: 0;
+  position: fixed;
+}
+
+#pageCounter {
+  counter-reset: pageTotal;
+}
+
+#pageCounter table {
+  counter-increment: pageTotal;
+}
+
+#pageNumbers {
+  counter-reset: currentPage;
+}
+
+#pageNumbers div:before {
+  counter-increment: currentPage;
+  content: "Page " counter(pageX) " of ";
+}
+
+#pageNumbers div:after {
+  content: counter(pageX);
+}
+
+body {
+  counter-reset: page;
+  counter-increment: page;
+}
+
+table.print {
+  border-spacing: 0;
+}
+
+table.print > * > tr > * {
+  /*
+            border-right: 2px solid black;
+            border-bottom: 2px solid black;
+             */
+  padding: 0 5px 0 0px;
+}
+
+table.print > * > :first-child > * {
+  border-top: none;
+}
+
+table.print > thead ~ * > :first-child > *,
+table.print > tbody ~ * > :first-child > * {
+  border-top: none;
+}
+
+table.print > * > tr > :first-child {
+  border-left: none;
+}
+
+table.print > thead {
+  vertical-align: bottom;
+}
+
+table.print > thead > .borderRow > th {
+  border-bottom: none;
+}
+
+table.print > tbody {
+  vertical-align: top;
+}
+
+table.print > caption {
+  font-weight: bold;
+}
+
+.headerLogo img {
+  max-height: 70px;
+}
+
+table .borderTable {
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+.borderTable td {
+  border: 1px solid black;
+}
+
+.borderTable th {
+  border: 1px solid black;
+}
+
+.paddingTable {
+  padding: 2px 5px !important;
+}
+
+.middle {
+  text-align: center;
+}
+
+footer {
+  position: absolute;
+  margin-top: 10px;
+  font-size: 10px;
+  color: #212121;
+  height: 20px;
+  border-top: 1px solid;
+  width: 100%;
+  text-align: center;
+  vertical-align: bottom;
+  bottom: 0;
+  left: 0;
+}
+
+.signChapter {
+  page-break-inside: avoid;
+  page-break-after: auto;
+  page-break-before: auto;
+  position: relative;
+  display: block;
+}
+ul,
+li {
+  list-style: none;
+}

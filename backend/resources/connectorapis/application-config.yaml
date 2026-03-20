@@ -1,0 +1,5 @@
+package: application
+output: ../../connector/application/client.go
+generate:
+  models: true
+  client: true

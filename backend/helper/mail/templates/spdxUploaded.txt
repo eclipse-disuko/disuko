@@ -1,0 +1,33 @@
+
+{{define "subject"}} New SBOM Delivery in FOSS Disclosure Portal / Neue SBOM-Lieferung im FOSS Disclosure Portal{{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+A new SBOM delivery in FOSS Disclosure Portal is waiting for you!
+
+Project Name: {{ .ProjectName }}
+Project Link: {{ .ProjectLink }}
+Project Version Name: {{ .VersionName }}
+Project Version Link: {{ .VersionLink }}
+SBOM Delivery Link: {{ .SbomLink }}
+
+Thank you,
+your FOSS Disclosure Portal
+
+#################################
+
+Hallo {{ .Username }},
+
+eine neue SBOM-Lieferung erwartet Sie im FOSS Disclosure Portal!
+
+Projektname: {{ .ProjectName }}
+Projektlink: {{ .ProjectLink }}
+Versionsname: {{ .VersionName }}
+Versionslink: {{ .VersionLink }}
+SBOM-Lieferung: {{ .SbomLink }}
+
+Vielen Dank,
+ihr FOSS Disclosure Portal
+
+{{end}}

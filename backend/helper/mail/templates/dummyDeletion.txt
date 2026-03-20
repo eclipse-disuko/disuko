@@ -1,0 +1,33 @@
+{{define "subject"}} Dummy project will be deleted in {{ .Days }} days / Dummy Projekt wird in {{ .Days}} Tagen gelöscht {{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+your dummy project will be deleted in {{ .Days }} days.
+
+Project Name: {{ .ProjectName }}
+
+Thank you,
+your FOSS Disclosure Portal
+
+
+Please do NOT reply to this mail
+
+
+#################################
+
+Hallo {{ .Username }},
+
+Ihr Dummy Projekt wird in {{ .Days }} Tagen gelöscht.
+
+Projektname: {{ .ProjectName }}
+
+
+Vielen Dank,
+ihr FOSS Disclosure Portal
+
+
+Bitte antworten Sie NICHT auf diese Mail
+
+
+{{end}}

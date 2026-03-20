@@ -1,0 +1,2043 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "copyrightText": "NOASSERTION",
+  "creationInfo": {
+    "comment": "By creating the Scan Tool Project, your Use Case Selection was the following: Target Platform: Enterprise IT, Target User: External, Layer (Client-Server Architecture): Backend and Project Distribution Target: External. This is the Use Case for your individual Scan Tool Project. We (The FOSS Team) apply Policies Rules based on your Use Case in order to make it easier for you identifying critical licenses based on your use case. Be aware: Only scan code, which fits to this Use Case. Dont change or delete the Project Tags. They are an essential for the Policy Concept.",
+    "created": "2022-02-22T14:44:23.533761Z",
+    "creators": [
+      "Tool: Scan Tool SPDX export script https://github.com/matthewb66/bd_export_spdx2.2"
+    ],
+    "licenseListVersion": "3.9"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentDescribes": [
+    "SPDXRef-Package-ExampleBackend-10"
+  ],
+  "documentNamespace": "https://scan-tool.example.com/api/projects/2814bb68-6c95-44bc-a361-fa4ed479ded0/versions/2b04f0cf-8626-4936-9681-80e9236b162b",
+  "downloadLocation": "NOASSERTION",
+  "externalRefs": [
+    {
+      "referenceCategory": "OTHER",
+      "referenceLocator": "https://scan-tool.example.com/api/projects/2814bb68-6c95-44bc-a361-fa4ed479ded0",
+      "referenceType": "ScanTool-Project"
+    },
+    {
+      "referenceCategory": "OTHER",
+      "referenceLocator": "https://scan-tool.example.com/api/projects/2814bb68-6c95-44bc-a361-fa4ed479ded0/versions/2b04f0cf-8626-4936-9681-80e9236b162b",
+      "referenceType": "ScanTool-Project-Version"
+    }
+  ],
+  "filesAnalyzed": false,
+  "hasExtractedLicensingInfos": [
+    {
+      "extractedText": "",
+      "licenseID": "LicenseRef-MicrosoftNETLibraryLicense-MicrosoftAzureWebJobsProjectTemplates"
+    }
+  ],
+  "name": "Example Backend/1.0",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-ExampleBackend-10",
+      "copyrightText": "NOASSERTION",
+      "description": "By creating the Scan Tool Project, your Use Case Selection was the following: Target Platform: Enterprise IT, Target User: External, Layer (Client-Server Architecture): Backend and Project Distribution Target: External. This is the Use Case for your individual Scan Tool Project. We (The FOSS Team) apply Policies Rules based on your Use Case in order to make it easier for you identifying critical licenses based on your use case. Be aware: Only scan code, which fits to this Use Case. Dont change or delete the Project Tags. They are an essential for the Policy Concept.",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "Example Backend",
+      "packageComment": "Generated top level package representing Scan Tool project",
+      "versionInfo": "1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-arangodbgo-driver-20210304-snapshot-d7e0ea04",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/arangodb/go-driver@d7e0ea043b7f01d195be9365b734eeea9cb5083e",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/89361399-d1f9-406e-b347-93eeac29118c",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/89361399-d1f9-406e-b347-93eeac29118c/versions/eb9d0084-f2bc-4753-9305-922d90339c14",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "arangodb/go-driver",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20210304-snapshot-d7e0ea04"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-arangodbgo-velocypack-20200318-snapshot-5af53c29",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/arangodb/go-velocypack@5af53c29c67ed53ab59967f58b451e84b0e005d4",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5a8387cb-8f7c-4e6c-98fd-12c716733bbc",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5a8387cb-8f7c-4e6c-98fd-12c716733bbc/versions/64d9c12c-0bd8-47a8-a950-023b98158df1",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "arangodb/go-velocypack",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20200318-snapshot-5af53c29"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-v120",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.2.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/18588362-5afb-4b97-9d73-d6d028d00aac",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-v1100",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.10.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/17ba5f56-ce29-4419-ae14-535e15571c67",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.10.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-134",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.3.4",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/01e853d8-3017-4e33-98c4-80a39ebc502b",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "(Apache-2.0 AND BSD-3-Clause)",
+      "licenseDeclared": "(Apache-2.0 AND BSD-3-Clause)",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "1.3.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-v1130",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.13.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/0269a5ec-6340-4d84-a3fd-623be32d48c3",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.13.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-180",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.8.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/b025f1ed-75e5-4963-aed3-1572b76f787d",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "(Apache-2.0 AND BSD-3-Clause)",
+      "licenseDeclared": "(Apache-2.0 AND BSD-3-Clause)",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "1.8.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-v190",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.9.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/70183ce6-e011-4c0b-8dde-e79e9c3cb90c",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.9.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-170",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.7.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/1e3eeaac-fc01-40b1-9246-35c3f029985f",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "(Apache-2.0 AND BSD-3-Clause)",
+      "licenseDeclared": "(Apache-2.0 AND BSD-3-Clause)",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "1.7.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-awsaws-sdk-go-v2-v1110",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/aws-sdk-go-v2@v1.11.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/a3b4b398-8875-452a-b3cd-308d80a1c075/versions/bb1e6c92-2232-42c4-889d-710dffc2c2c6",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "aws/aws-sdk-go-v2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.11.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-BurntSushitoml-v031",
+      "annotations": [],
+      "copyrightText": "Copyright 2010 The Go Authors.  All rights reserved\nCopyright (C) 2004 Sam Hocevar <sam@hocevar.net>\nCopyright (c) 2013 TOML authors",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/BurntSushi/toml@v0.3.1",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/999f5c44-828a-4f2c-8a17-9b5fd22f3beb",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/999f5c44-828a-4f2c-8a17-9b5fd22f3beb/versions/e513f674-8efd-4899-baf3-d756c355bec0",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "BurntSushi/toml",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v0.3.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-decred-dcrd-20210810-snapshot-5444fa50",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/decred/dcrd@5444fa50b93dbcbd6a08c75da3eccc32490fb2b2",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2cf64f4e-f746-4bba-969c-4340200d0c21",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2cf64f4e-f746-4bba-969c-4340200d0c21/versions/1b51af36-3844-4ee4-b534-3b2b1e82d954",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "ISC",
+      "licenseDeclared": "ISC",
+      "name": "decred-dcrd",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20210810-snapshot-5444fa50"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-githubcomawssmithy-go-v1100",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/aws/smithy-go@v1.10.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/630838fb-c9bc-4165-8d81-49635d2e7374",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/630838fb-c9bc-4165-8d81-49635d2e7374/versions/bca1c743-e962-4d51-9c24-0b50f0c0cac5",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "github.com/aws/smithy-go",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.10.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-GoTestify-v122",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2012 - 2013 Mat Ryer and Tyler Bunnell\nCopyright (c) 2012-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2013-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2013, Patrick Mezard\nCopyright (c) 2014 Stretchr, Inc.\nCopyright (c) 2015-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2017-2018 objx contributors",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/stretchr/testify@v1.2.2",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5271cd46-d193-4af5-b2c2-50a07751f580",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5271cd46-d193-4af5-b2c2-50a07751f580/versions/1b89840a-da37-4363-9a36-858f34d3938c",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "Go Testify",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-GoTestify-v170",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "NOASSERTION",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5271cd46-d193-4af5-b2c2-50a07751f580",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5271cd46-d193-4af5-b2c2-50a07751f580/versions/1d35cf81-c3df-4ac1-a687-4aa552a47fe5",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "Go Testify",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: unknown",
+      "versionInfo": "v1.7.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-check-check-20180628-snapshot-788fd784",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2010-2013 Gustavo Niemeyer <gustavo@niemeyer.net>\nCopyright (c) 2012 The Go Authors. All rights reserved",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-check/check@788fd78401277ebd861206a03c884797c6ec5541",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5a28cde9-50e3-4c05-a3f7-257c6d69cb3c",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/5a28cde9-50e3-4c05-a3f7-257c6d69cb3c/versions/0d711b28-365d-4f9d-bd59-b133f959ed0a",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-2-Clause",
+      "licenseDeclared": "BSD-2-Clause",
+      "name": "go-check-check",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20180628-snapshot-788fd784"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-chi-v154",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2015-present\nCopyright (c) 2015-present Peter Kieltyka (https://github.com/pkieltyka), Google Inc.",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-chi/chi@v1.5.4",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9f45b197-d656-4e6a-9770-dd26c5d4d4a1",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9f45b197-d656-4e6a-9770-dd26c5d4d4a1/versions/c88b8385-e5b1-4f6c-b476-bdf86a940753",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "go-chi",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.5.4"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-chicors-v120",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2014 Olivier Poitrey <rs@dailymotion.com>\nCopyright (c) 2016-Present https://github.com/go-chi authors",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-chi/cors@v1.2.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/0334a618-6f73-4289-887f-e9961a2df62c",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/0334a618-6f73-4289-887f-e9961a2df62c/versions/728df90d-b0dd-4d8f-a85a-8bb22ff22e6b",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "go-chi/cors",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-chirender-v101",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2016-Present https://github.com/go-chi authors",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-chi/render@v1.0.1",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/e63d0961-b525-4bb7-950e-379c166856c5",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/e63d0961-b525-4bb7-950e-379c166856c5/versions/cb925daa-65ca-474b-932d-53350afaaf15",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "go-chi/render",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-jose-v260",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/square/go-jose@v2.6.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2dc7da6d-7851-4609-b0ea-893d0b2de776",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2dc7da6d-7851-4609-b0ea-893d0b2de776/versions/53b4cb80-5bb8-4475-975f-6e82b4992864",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "go-jose",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v2.6.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-jwx-v126",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/jwx@v1.2.6",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/242dea7d-d377-4722-b624-7bb680f4e647",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/242dea7d-d377-4722-b624-7bb680f4e647/versions/c2b689a4-c25b-44d3-8fed-384041cfd6cd",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "go-jwx",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-spew-v110",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2012-2013 Dave Collins <dave@davec.name>\nCopyright (c) 2012-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2013-2015 Dave Collins <dave@davec.name>\nCopyright (c) 2013-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2013 Dave Collins <dave@davec.name>\nCopyright (c) 2015-2016 Dave Collins <dave@davec.name>\nCopyright (c) 2015 Dave Collins <dave@davec.name>",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/davecgh/go-spew@v1.1.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9ebf2d1d-62b0-471e-a13b-c43746ccf4d0",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9ebf2d1d-62b0-471e-a13b-c43746ccf4d0/versions/c9e92b74-7f9b-4ef0-8b86-02a70d85d679",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "ISC",
+      "licenseDeclared": "ISC",
+      "name": "go-spew",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-goccygo-json-v076",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/goccy/go-json@v0.7.6",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/457c0603-9966-473f-85f9-601463b6cbc4",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/457c0603-9966-473f-85f9-601463b6cbc4/versions/1c0206a0-a8f9-4419-8960-39dfd1309c7e",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "goccy/go-json",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v0.7.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangprotobuf-142",
+      "annotations": [],
+      "copyrightText": "Copyright 2010 The Go Authors.  All rights reserved\nCopyright 2010 The Go Authors. All rights reserved\nCopyright 2011 The Go Authors. All rights reserved\nCopyright 2014 The Go Authors. All rights reserved\nCopyright 2015 The Go Authors.  All rights reserved\nCopyright 2015 The Go Authors. All rights reserved\nCopyright 2016 The Go Authors. All rights reserved\nCopyright 2017 The Go Authors. All rights reserved\nCopyright 2018 The Go Authors. All rights reserved\nCopyright 2019 The Go Authors. All rights reserved\nCopyright 2020 The Go Authors. All rights reserved",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/golang/protobuf@v1.4.2",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/ba8f049d-1c78-4a27-a8a4-40727f93b181",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/ba8f049d-1c78-4a27-a8a4-40727f93b181/versions/9da39c8e-7b09-4382-944c-e39b1e9938a2",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "golang protobuf",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "1.4.2"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golang-mock-v150",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/golang/mock@v1.5.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/88a56810-039f-431d-a19b-ed081fce5e03",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/88a56810-039f-431d-a19b-ed081fce5e03/versions/117ee681-5201-4af3-b0aa-8bb4044e06b5",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "golang-mock",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.5.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangorgxcrypto-20201111-snapshot-9d135275",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "golang.org/x/crypto",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: long_tail",
+      "versionInfo": "20201111-snapshot-9d135275"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangorgxnet-20211215-snapshot-fe4d6282",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "golang.org/x/net",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: long_tail",
+      "versionInfo": "20211215-snapshot-fe4d6282"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangorgxoauth2-20210819-snapshot-2bc19b11",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "golang.org/x/oauth2",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: long_tail",
+      "versionInfo": "20210819-snapshot-2bc19b11"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangorgxxerrors-20200804-snapshot-5ec99f83",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "golang.org/x/xerrors",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: long_tail",
+      "versionInfo": "20200804-snapshot-5ec99f83"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-golangappengine-v166",
+      "annotations": [],
+      "copyrightText": "Copyright 2011 Google Inc. All rights reserved\nCopyright 2011 Google Inc. All Rights Reserved\nCopyright 2011 The Go Authors.  All rights reserved\nCopyright 2011 The Go Authors. All rights reserved\nCopyright 2012 Google Inc. All rights reserved\nCopyright 2012 Google Inc. All Rights Reserved\nCopyright 2013 Google Inc. All rights reserved\nCopyright 2014 Google Inc. All rights reserved\nCopyright 2015 Google Inc. All rights reserved\nCopyright 2016 Google Inc. All rights reserved\nCopyright 2016 Google Inc. All Rights Reserved\nCopyright 2018 Google LLC. All rights reserved\nCopyright 2019 Google Inc. All rights reserved\nCopyright 2019 Google Inc. All Rights Reserved",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/golang/appengine@v1.6.6",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2c771167-95ec-4d9a-91ae-a08f7da10f1b",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2c771167-95ec-4d9a-91ae-a08f7da10f1b/versions/2c8a6987-b225-431a-92e2-85b8da85c825",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "golang/appengine",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.6.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-googlegolangorgprotobuf-v1250",
+      "annotations": [],
+      "copyrightText": "Copyright 2008 Google Inc.  All rights reserved\nCopyright 2018 The Go Authors. All rights reserved",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "google.golang.org/protobuf",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: long_tail",
+      "versionInfo": "v1.25.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-googlego-cmp-v056",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/google/go-cmp@v0.5.6",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/458e027c-e2ba-49eb-b32e-654a62244631",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/458e027c-e2ba-49eb-b32e-654a62244631/versions/afcf358d-a7a7-44fe-9231-a2d5dd639fde",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "google/go-cmp",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v0.5.6"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-googleuuid-v111",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "NOASSERTION",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1b05a3c0-7d30-450a-a2ce-8795376706be",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1b05a3c0-7d30-450a-a2ce-8795376706be/versions/cdc35ac2-6be0-41e4-8268-f8b5ae64fea4",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "google/uuid",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: unknown",
+      "versionInfo": "v1.1.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jinzhuconfigor-v121",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/jinzhu/configor@v1.2.1",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/8b1d5b7c-1c72-4c97-b4f2-e8003d1077eb",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/8b1d5b7c-1c72-4c97-b4f2-e8003d1077eb/versions/5c161192-aa7f-4b70-9879-b22c66b7a090",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "jinzhu/configor",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jmespath-go-jmespath-v040",
+      "annotations": [],
+      "copyrightText": "Copyright 2015 James Saryerwinnie\nCopyright (c) 2012-2018 Mat Ryer and Tyler Bunnell",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/jmespath/go-jmespath@v0.4.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2497aa3b-ab1b-44b1-a6d1-438a7a8159c5",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/2497aa3b-ab1b-44b1-a6d1-438a7a8159c5/versions/dcb38bf6-a47c-48e9-8126-61db0b2fa31b",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "jmespath-go-jmespath",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v0.4.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-jwt-go-v320",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2012 Dave Grijalva",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/dgrijalva/jwt-go@v3.2.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/d12ed85f-09cb-4f26-9c18-d64ccded2b2c",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/d12ed85f-09cb-4f26-9c18-d64ccded2b2c/versions/5522d99b-0e02-46e2-84cd-9e97a23b1445",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "jwt-go",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v3.2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lestrrat-gobackoff-v208",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/backoff@v2.0.8",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/026f81f1-30e0-4371-8fce-17c83f04711a",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/026f81f1-30e0-4371-8fce-17c83f04711a/versions/50cccf0f-9948-43f8-b24d-7b25590e0ab7",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "lestrrat-go/backoff",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v2.0.8"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lestrrat-goblackmagic-v100",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/blackmagic@v1.0.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/908333aa-388f-487a-86dd-33e39ff666fc",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/908333aa-388f-487a-86dd-33e39ff666fc/versions/d39b1d60-8253-4b34-a050-e512ab08dabf",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "lestrrat-go/blackmagic",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lestrrat-gohttpcc-v100",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/httpcc@v1.0.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/cfc3f70a-8f63-4e76-a12c-e6b6c5dd4306",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/cfc3f70a-8f63-4e76-a12c-e6b6c5dd4306/versions/c2574c15-aad2-4ffe-9056-945ef2efacc8",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "lestrrat-go/httpcc",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lestrrat-goiter-v101",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2020 lestrrat-go",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/iter@v1.0.1",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9d2a828c-f432-47c0-94e0-2aab5bad2dbd",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/9d2a828c-f432-47c0-94e0-2aab5bad2dbd/versions/613ad74a-3b14-422e-84fa-95f1d3e90591",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "lestrrat-go/iter",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-lestrrat-gooption-v100",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/lestrrat-go/option@v1.0.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/7e2ebe3e-babd-4d73-94a4-8f132d60d301",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/7e2ebe3e-babd-4d73-94a4-8f132d60d301/versions/9d3745d8-460e-4098-a814-c2d0eaa78b75",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "lestrrat-go/option",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-MicrosoftAzureWebJobsProjectTemplates-401964",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:nuget/Microsoft.Azure.WebJobs.ProjectTemplates@4.0.1964",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1832a74d-5b0a-40e7-8682-c602af6b647b",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1832a74d-5b0a-40e7-8682-c602af6b647b/versions/2b817d0c-5742-46f8-869f-46a198b04a41",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "LicenseRef-MicrosoftNETLibraryLicense-MicrosoftAzureWebJobsProjectTemplates",
+      "licenseDeclared": "LicenseRef-MicrosoftNETLibraryLicense-MicrosoftAzureWebJobsProjectTemplates",
+      "name": "Microsoft.Azure.WebJobs.ProjectTemplates",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was manually added, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: nuget",
+      "versionInfo": "4.0.1964"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pkgerrors-v091",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2015, Dave Cheney <dave@cheney.net>",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/pkg/errors@v0.9.1",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/388c0d45-4bce-4849-af71-7c01455d0e5b",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/388c0d45-4bce-4849-af71-7c01455d0e5b/versions/53f04c37-067e-4597-a695-0b68ded07687",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-2-Clause",
+      "licenseDeclared": "BSD-2-Clause",
+      "name": "pkg/errors",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v0.9.1"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pmezard-go-difflib-100",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2013, Patrick Mezard",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/pmezard/go-difflib@v1.0.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/b17e8536-f6a6-455f-a660-0f40479eaf40",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/b17e8536-f6a6-455f-a660-0f40479eaf40/versions/d1de4ee2-14d9-46be-9755-0dc7cd89c0d4",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "name": "pmezard-go-difflib",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tidwallgjson-v190",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/tidwall/gjson@v1.9.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/798d1500-c6d2-42bb-b68e-0fd2c988aac7",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/798d1500-c6d2-42bb-b68e-0fd2c988aac7/versions/71a6add2-63ef-4c60-8a52-28712b98a01c",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "tidwall/gjson",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.9.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tidwallmatch-v103",
+      "annotations": [],
+      "copyrightText": "NOASSERTION",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "NOASSERTION",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/70699a16-57f9-4159-b2ca-28fd60cdfd8c",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/70699a16-57f9-4159-b2ca-28fd60cdfd8c/versions/628c7186-5752-4795-8b04-fac1d2aa4cea",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "tidwall/match",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: unknown",
+      "versionInfo": "v1.0.3"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tidwallpretty-v110",
+      "annotations": [],
+      "copyrightText": "Copyright (c) 2017 Josh Baker",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/tidwall/pretty@v1.1.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/d986a47e-90a1-4c52-b343-c56405bf7ee4",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/d986a47e-90a1-4c52-b343-c56405bf7ee4/versions/0db9b708-13fb-4125-b918-3a5e26ed7c5e",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "tidwall/pretty",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-twinj-uuid-v100",
+      "annotations": [],
+      "copyrightText": "Copyright (C) 2011 by Krzysztof Kowalik <chris@nu7hat.ch>\nCopyright (C) 2016 by Daniel Kemp <twinj@github.com> Derivative work\nCopyright (C) 2016 myesui@github.com  2014 MIT licence\nCopyright (C) 2016 myesui@github.com  2016 MIT licence",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/twinj/uuid@v1.0.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/de63e28b-d982-4f84-bcbb-c1dcb7c0f2a4",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/de63e28b-d982-4f84-bcbb-c1dcb7c0f2a4/versions/c268967b-af64-4f13-ae27-64810cce74f1",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "name": "twinj-uuid",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-xeipuuv-gojsonpointer-20180127-snapshot-4e3ac276",
+      "annotations": [],
+      "copyrightText": "Copyright 2015 xeipuuv\nCopyright 2015 xeipuuv ( https://github.com/xeipuuv )",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/xeipuuv/gojsonpointer@4e3ac2762d5f479393488629ee9370b50873b3a6",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/109ac0af-7da8-4836-a5f8-dc07e78cc5c9",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/109ac0af-7da8-4836-a5f8-dc07e78cc5c9/versions/9f9d10b0-73a5-4a73-9a52-acf203b89b50",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "xeipuuv-gojsonpointer",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20180127-snapshot-4e3ac276"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-xeipuuv-gojsonreference-20180127-snapshot-bd5ef7bd",
+      "annotations": [],
+      "copyrightText": "Copyright 2015 xeipuuv\nCopyright 2015 xeipuuv ( https://github.com/xeipuuv )",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/xeipuuv/gojsonreference@bd5ef7bd5415a7ac448318e64f11a24cd21e594b",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1b8dc492-5f24-45d1-a0a3-06b1754da3fa",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/1b8dc492-5f24-45d1-a0a3-06b1754da3fa/versions/33f9b045-c570-4d4e-83eb-2b462b849304",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "xeipuuv-gojsonreference",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20180127-snapshot-bd5ef7bd"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-xeipuuvgojsonschema-v120",
+      "annotations": [],
+      "copyrightText": "Copyright 2013 MongoDB, Inc.\nCopyright 2015 xeipuuv\nCopyright 2015 xeipuuv ( https://github.com/xeipuuv )\nCopyright 2017 johandorland ( https://github.com/johandorland )\nCopyright 2018 johandorland ( https://github.com/johandorland )",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/xeipuuv/gojsonschema@v1.2.0",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/851d67fe-d918-464a-b5dd-70fe100e20cd",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/851d67fe-d918-464a-b5dd-70fe100e20cd/versions/bbc3cf01-7d32-4c56-a640-aaa21005e654",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "xeipuuv/gojsonschema",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a directly declared dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v1.2.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-yamlforGo-20200512-snapshot-9f266ea9",
+      "annotations": [],
+      "copyrightText": "Copyright 2011-2016 Canonical Ltd.\nCopyright (c) 2006-2010 Kirill Simonov\nCopyright (c) 2006-2011 Kirill Simonov\nCopyright (c) 2011-2019 Canonical Ltd\ncopyright staring in 2011 when the project was ported over:",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-yaml/yaml@9f266ea9e77c4c7aab4cf02650570e7c7b3031a5",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/45badf4c-c022-42ba-b294-b7193a79b6b8",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/45badf4c-c022-42ba-b294-b7193a79b6b8/versions/7355877c-5672-4b4f-ba48-3cad0f47edc6",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "yaml for Go",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "20200512-snapshot-9f266ea9"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-yamlforGo-v228",
+      "annotations": [],
+      "copyrightText": "Copyright 2011-2016 Canonical Ltd.\nCopyright (c) 2006 Kirill Simonov\nCopyright {yyyy",
+      "description": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceLocator": "pkg:github/go-yaml/yaml@v2.2.8",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/45badf4c-c022-42ba-b294-b7193a79b6b8",
+          "referenceType": "ScanTool-Component"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "https://scan-tool.example.com/api/components/45badf4c-c022-42ba-b294-b7193a79b6b8/versions/8e25da86-c742-40af-93cb-2c1f6c59317e",
+          "referenceType": "ScanTool-Component-Version"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseComments": "The concluded license was taken from the package level",
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "name": "yaml for Go",
+      "packageComment": "This is an open source component from the Scan Tool Knowledge Base which was automatically detected as a transitive dependency, the PackageSupplier was based on the externalNamespace",
+      "packageFileName": "NOASSERTION",
+      "packageHomepage": "NOASSERTION",
+      "packageSupplier": "Organization: github",
+      "versionInfo": "v2.2.8"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Package-ExampleBackend-10",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-arangodbgo-driver-20210304-snapshot-d7e0ea04",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-arangodbgo-velocypack-20200318-snapshot-5af53c29",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-v120",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-v1100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-134",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-v1130",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-180",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-v190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-170",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-awsaws-sdk-go-v2-v1110",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-BurntSushitoml-v031",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-decred-dcrd-20210810-snapshot-5444fa50",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-githubcomawssmithy-go-v1100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-GoTestify-v122",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-GoTestify-v170",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-check-check-20180628-snapshot-788fd784",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-chi-v154",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-chicors-v120",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-chirender-v101",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-jose-v260",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-jwx-v126",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-go-spew-v110",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-goccygo-json-v076",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangprotobuf-142",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golang-mock-v150",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangorgxcrypto-20201111-snapshot-9d135275",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangorgxnet-20211215-snapshot-fe4d6282",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangorgxoauth2-20210819-snapshot-2bc19b11",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangorgxxerrors-20200804-snapshot-5ec99f83",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-golangappengine-v166",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-googlegolangorgprotobuf-v1250",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-googlego-cmp-v056",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-googleuuid-v111",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-jinzhuconfigor-v121",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-jmespath-go-jmespath-v040",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-jwt-go-v320",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-lestrrat-gobackoff-v208",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-lestrrat-goblackmagic-v100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-lestrrat-gohttpcc-v100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-lestrrat-goiter-v101",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-lestrrat-gooption-v100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-MicrosoftAzureWebJobsProjectTemplates-401964",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-pkgerrors-v091",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-pmezard-go-difflib-100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-tidwallgjson-v190",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-tidwallmatch-v103",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-tidwallpretty-v110",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-twinj-uuid-v100",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-xeipuuv-gojsonpointer-20180127-snapshot-4e3ac276",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-xeipuuv-gojsonreference-20180127-snapshot-bd5ef7bd",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-xeipuuvgojsonschema-v120",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-yamlforGo-20200512-snapshot-9f266ea9",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-yamlforGo-v228",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-ExampleBackend-10"
+    }
+  ],
+  "snippets": [],
+  "spdxVersion": "SPDX-2.2"
+}

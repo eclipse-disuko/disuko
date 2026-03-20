@@ -1,0 +1,231 @@
+// various element styles which have no own dedicated file
+
+// tooltips
+:root .v-tooltip__content {
+  max-width: 500px !important;
+  word-wrap: break-word;
+  background-color: var(--v-tooltipBackgroundColor-base) !important;
+  border: 1px solid var(--v-tooltipBorder-base);
+  color: var(--v-textColor-base);
+  opacity: 1 !important;
+
+  span {
+    color: var(--v-textColor-base);
+  }
+}
+
+// labels
+:root .dlabel {
+  span {
+    color: var(--v-labelColor-base) !important;
+  }
+
+  i.v-icon {
+    color: var(--v-labelIconColor-base) !important;
+  }
+}
+
+//snackbar
+:root .v-snack span {
+  color: var(--v-textColor-base) !important;
+}
+
+:root .v-snack__wrapper.v-sheet {
+  background-color: var(--v-snackbarBackground-base);
+  border: 1px solid var(--v-mbti-base) !important;
+}
+
+:root .snack-content {
+  text-align: center;
+}
+
+.no-link-decoration {
+  color: var(--v-textColor-base) !important;
+  text-decoration: none;
+}
+
+.dashboard-card {
+  color: var(--v-textColor-base) !important;
+  text-decoration: none;
+}
+
+.dashboard-card-icon {
+  color: var(--v-secondary-base) !important;
+  text-decoration: none;
+}
+
+.required label::after {
+  content: ' *';
+}
+
+.diff-component {
+  background-color: rgba(186, 151, 0, 0.5) !important;
+}
+
+.labelSetGroup {
+  border-radius: 5px;
+  width: fit-content;
+  background: var(--v-labelSetBackground-base);
+}
+
+// json viewer
+:root .jv-container .jv-code {
+  padding: 0;
+}
+
+.jv-container,
+.jv-code {
+  height: inherit;
+}
+
+.jv-code {
+  overflow: auto !important;
+}
+
+:root .v-list {
+  padding: 0px;
+}
+
+.v-menu__content {
+  box-shadow: none;
+  border: 1px solid var(--v-cardBorder-base);
+}
+
+.v-subheader {
+  background-color: var(--v-selectHeaderBackground-base);
+  border-bottom: 1px solid var(--v-cardBorder-base);
+}
+
+:not(.v-navigation-drawer a.v-list-item--link):not(.drawer-menu).v-list-item--link {
+  border-bottom: 1px solid var(--v-cardBorder-base);
+}
+
+.v-menu {
+  border: 1px solid var(--v-cardBorder-base);
+}
+
+.v-expansion-panels:not(.v-expansion-panels--accordion):not(.v-expansion-panels--tile) > .v-expansion-panel--active {
+  border-radius: 0px;
+}
+
+.v-expansion-panel-header,
+.v-expansion-panel-content__wrap {
+  padding: 0 16px;
+}
+
+.v-expansion-panels.noPadding {
+  padding: 0;
+
+  .v-expansion-panel,
+  .v-expansion-panel-header,
+  .v-expansion-panel-content__wrap {
+    padding: 0;
+  }
+}
+
+.unknown-license {
+  border-bottom: 1px solid var(--v-tableBorderColor-base);
+  border-radius: 0px;
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+.headline-unknown-license {
+  border-bottom: 1px solid var(--v-tableBorderColor-base);
+  background: var(--v-tableRowEvenBackgroundColor-base);
+}
+
+.theme--dark.v-expansion-panels .v-expansion-panel {
+  background-color: transparent;
+}
+
+.v-expansion-panels .v-expansion-panel:not(:first-child)::after {
+  border-color: transparent;
+  border: none;
+}
+
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel {
+  margin-top: 0px;
+}
+
+:root .v-picker__body {
+  background: transparent;
+}
+
+:root button.v-btn.v-date-picker-table__current {
+  border: thin solid var(--v-primary-base) !important;
+}
+
+.error-stacktrace {
+  max-height: 200px;
+  overflow: auto;
+}
+
+:root .error-text {
+  color: var(--v-error-base);
+}
+
+.v-stepper {
+  background: transparent !important;
+}
+
+.file-header {
+  .file-info .diff-stat .diff-stat-added {
+    color: var(--v-success-base) !important;
+  }
+
+  .file-info .diff-stat .diff-stat-deleted {
+    color: var(--v-error-base) !important;
+  }
+}
+
+.theme--dark .code-diff-view {
+  .file-header {
+    background-color: var(--v-backgroundcolor-base);
+
+    .file-info .diff-stat .diff-stat-added {
+      color: var(--v-success-base) !important;
+    }
+
+    .file-info .diff-stat .diff-stat-deleted {
+      color: var(--v-error-base) !important;
+    }
+  }
+
+  .diff-table {
+    .blob-code-addition,
+    .blob-num-addition {
+      color: white;
+      background-color: var(--v-success-darken4);
+
+      .x {
+        background-color: var(--v-success-darken1);
+      }
+    }
+
+    .blob-code-deletion,
+    .blob-num-deletion {
+      color: white;
+      background-color: var(--v-error-darken4);
+
+      .x {
+        background-color: var(--v-error-darken1);
+      }
+    }
+
+    .blob-code-hunk {
+      background-color: var(--v-primary-darken4);
+      color: white;
+    }
+
+    .blob-num-empty,
+    .blob-code-empty {
+      background-color: transparent;
+    }
+  }
+}
+
+.icon-filled {
+  font-variation-settings: 'FILL' 1;
+}
