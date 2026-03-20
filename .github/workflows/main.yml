@@ -1,0 +1,61 @@
+name: Create Pull Request in downstream repository
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create-pull-requests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Checkout everything
+
+      - name: Send pull-request
+        run: |
+          REPOSITORY=${{ vars.REPOSITORY_NAME }}
+          BRANCH_NAME=${{ vars.BRANCH_NAME }}
+          ORIGIN_BRANCH=${{ vars.ORIGIN_BRANCH }}
+
+          # Clone downstream repository 
+          git clone \
+            --branch=main \
+            https://${{ secrets.USERNAME }}:${{ secrets.USER_TOKEN }}@${{ secrets.HOSTNAME }}/$REPOSITORY
+
+          cd ${{ vars.PROJECT_DIRECTORY }}
+          
+          # Change user if different token is used
+          git config user.name ${{ secrets.USERNAME }}
+          git config user.email ${{ secrets.USER_EMAIL }}
+          
+          # Add upstream repository as remote 
+          git remote add other ../
+          git fetch --all
+          
+          # Check if branch already exists, if yes then delete it
+          if git show-ref --verify --quiet refs/remotes/origin/$BRANCH_NAME; then
+            echo "Branch $BRANCH_NAME already exists. Deleting it."
+            git push origin --delete $BRANCH_NAME
+            git fetch origin --prune
+          fi
+          
+          git fetch --all && git pull
+          git switch -c $BRANCH_NAME
+          git reset --hard $ORIGIN_BRANCH
+          git push -u origin $BRANCH_NAME
+          
+          # Auth to GH CLI
+          echo "${{ secrets.USER_TOKEN }}" > token.txt
+          gh auth login --hostname ${{ secrets.HOSTNAME }} --with-token < token.txt
+          
+          # Create merge pull request
+          gh pr create \
+            --body "This PR was created automatically, please double check the content" \
+            --title "Merge upstream repository" \
+            --head "$BRANCH_NAME" \
+            --base "main"
+          
