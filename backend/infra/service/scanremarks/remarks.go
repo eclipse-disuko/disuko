@@ -9,14 +9,14 @@ import (
 	"strings"
 	"unicode"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/helper"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const OrLinksThreshold = 4

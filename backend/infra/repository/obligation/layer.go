@@ -5,9 +5,9 @@
 package obligation
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const ObligationCollectionName = "obligations"

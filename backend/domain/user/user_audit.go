@@ -7,7 +7,7 @@ package user
 import (
 	"fmt"
 
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
 )
 
 func (user *User) ToProjectMemberAudit() string {

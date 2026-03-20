@@ -8,8 +8,8 @@ import (
 	"net/textproto"
 	"testing"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/test"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/test"
 )
 
 func TestCheckExpectedContentType2_OK_1(t *testing.T) {

@@ -5,9 +5,9 @@
 package server
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func (s *Server) setupS3(requestSession *logy.RequestSession) {

@@ -7,15 +7,15 @@ package server
 import (
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/infra/rest"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/infra/rest"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/jwt"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/jwt"
+	"github.com/eclipse-disuko/disuko/helper/message"
 )
 
 type RouteExtender func(r chi.Router)

@@ -7,24 +7,24 @@ package server
 import (
 	"context"
 
-	"mercedes-benz.ghe.com/foss/disuko/jobs/labels"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/userstats"
+	"github.com/eclipse-disuko/disuko/jobs/labels"
+	"github.com/eclipse-disuko/disuko/jobs/userstats"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/announcement"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/departments"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/deprovisioning"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/dummy"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/fossdd"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/licenserefresh"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/notification"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/policyrule_changelog"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/report"
-	"mercedes-benz.ghe.com/foss/disuko/jobs/termsofuse"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/jobs/analytics"
+	"github.com/eclipse-disuko/disuko/jobs/announcement"
+	"github.com/eclipse-disuko/disuko/jobs/departments"
+	"github.com/eclipse-disuko/disuko/jobs/deprovisioning"
+	"github.com/eclipse-disuko/disuko/jobs/dummy"
+	"github.com/eclipse-disuko/disuko/jobs/fossdd"
+	"github.com/eclipse-disuko/disuko/jobs/licenserefresh"
+	"github.com/eclipse-disuko/disuko/jobs/notification"
+	"github.com/eclipse-disuko/disuko/jobs/policyrule_changelog"
+	"github.com/eclipse-disuko/disuko/jobs/report"
+	"github.com/eclipse-disuko/disuko/jobs/termsofuse"
+	"github.com/eclipse-disuko/disuko/logy"
 
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {

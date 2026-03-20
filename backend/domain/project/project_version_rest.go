@@ -7,7 +7,7 @@ package project
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
 )
 
 type VersionSlimDto struct {

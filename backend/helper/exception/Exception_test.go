@@ -8,8 +8,8 @@ import (
 	"log"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type testStruct struct {

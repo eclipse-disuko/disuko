@@ -10,15 +10,15 @@ import (
 	"sort"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	license2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/helper"
+	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func GenerateJSONNotices(requestSession *logy.RequestSession, currentProject project.Project,

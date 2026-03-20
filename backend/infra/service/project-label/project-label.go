@@ -7,11 +7,11 @@ package ProjectLabelsService
 import (
 	"slices"
 
-	label2 "mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	label2 "github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type ProjectLabelService struct {

@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/middlewareDisco"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/middlewareDisco"
 )
 
 func (s *Server) setupMW() {

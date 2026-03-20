@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5/middleware"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func Logging(next http.Handler) http.Handler {

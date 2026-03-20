@@ -5,14 +5,14 @@
 package approval
 
 import (
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/google/uuid"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/approvable"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
 )
 
 func (s *ApprovalService) CreateExternalApproval(pr *project.Project, req approval.RequestExternalApprovalDto, creator string, vehicle bool) string {

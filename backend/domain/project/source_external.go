@@ -7,7 +7,7 @@ package project
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain"
 )
 
 type SourceExternal struct {

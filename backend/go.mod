@@ -1,4 +1,4 @@
-module mercedes-benz.ghe.com/foss/disuko
+module github.com/eclipse-disuko/disuko
 
 go 1.26.1
 

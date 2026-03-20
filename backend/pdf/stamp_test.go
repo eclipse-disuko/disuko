@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
 )
 
 func Test_createWaterMarkFile(t *testing.T) {

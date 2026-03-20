@@ -14,7 +14,7 @@ import (
 	"net/smtp"
 	"text/template"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
+	"github.com/eclipse-disuko/disuko/conf"
 )
 
 //go:embed templates

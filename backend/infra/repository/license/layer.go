@@ -5,9 +5,9 @@
 package license
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const LicensesCollectionName = "licenses"

@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func TryNewFileUpload(requestSession *logy.RequestSession, projectKey string, projectRepo project2.IProjectRepository) {

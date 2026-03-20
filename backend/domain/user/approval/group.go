@@ -4,7 +4,7 @@
 
 package approval
 
-import "mercedes-benz.ghe.com/foss/disuko/domain/project/approvable"
+import "github.com/eclipse-disuko/disuko/domain/project/approvable"
 
 type ChildApprovable struct {
 	Key             string

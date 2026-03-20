@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/connector/application"
-	"mercedes-benz.ghe.com/foss/disuko/connector/department"
-	"mercedes-benz.ghe.com/foss/disuko/connector/userrole"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/connector/application"
+	"github.com/eclipse-disuko/disuko/connector/department"
+	"github.com/eclipse-disuko/disuko/connector/userrole"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type connectors struct {

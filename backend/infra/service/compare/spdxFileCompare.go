@@ -7,8 +7,8 @@ package compare
 import (
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/compare"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/compare"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
 )
 
 func MultiCompareSpdxFiles(evalOld, evalNew *components.EvaluationResult, isResponsible bool) []*compare.ComponentMultiDiffDto {

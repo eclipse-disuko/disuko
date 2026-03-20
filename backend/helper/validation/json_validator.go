@@ -13,15 +13,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 var UserRepository user.IUsersRepository

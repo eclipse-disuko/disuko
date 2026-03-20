@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
 )
 
 const (

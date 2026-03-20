@@ -7,9 +7,9 @@ package analytics
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user/approval"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/user/approval"
 )
 
 type Analytics struct {

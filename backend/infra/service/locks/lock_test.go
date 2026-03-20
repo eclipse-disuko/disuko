@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 // TODO: move these tests into integration tests after they are moved from old repo

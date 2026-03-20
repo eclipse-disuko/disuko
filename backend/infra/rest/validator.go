@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
 )
 
 var Val = newValidator()

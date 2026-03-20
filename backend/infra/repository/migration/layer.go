@@ -5,8 +5,8 @@
 package migration
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/migration"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/migration"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const MigrationCollectionName = "migrations"

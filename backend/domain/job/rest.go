@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/adhocore/gronx"
+	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/gorhill/cronexpr"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
 )
 
 type JobDto struct {

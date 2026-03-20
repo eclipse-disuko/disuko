@@ -5,11 +5,11 @@
 package server
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/observer/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/observer/approvalmail"
-	"mercedes-benz.ghe.com/foss/disuko/observer/reviewmail"
-	"mercedes-benz.ghe.com/foss/disuko/observer/spdxsubscribe"
-	"mercedes-benz.ghe.com/foss/disuko/observer/userstats"
+	"github.com/eclipse-disuko/disuko/observer/analytics"
+	"github.com/eclipse-disuko/disuko/observer/approvalmail"
+	"github.com/eclipse-disuko/disuko/observer/reviewmail"
+	"github.com/eclipse-disuko/disuko/observer/spdxsubscribe"
+	"github.com/eclipse-disuko/disuko/observer/userstats"
 )
 
 type observer interface {

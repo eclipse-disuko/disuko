@@ -5,9 +5,9 @@
 package checklist
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/checklist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/checklist"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type checklistRepositoryStruct struct {

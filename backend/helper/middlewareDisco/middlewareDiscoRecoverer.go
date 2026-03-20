@@ -7,8 +7,8 @@ package middlewareDisco
 import (
 	"net/http"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func Recoverer(next http.Handler) http.Handler {

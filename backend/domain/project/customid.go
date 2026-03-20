@@ -4,7 +4,7 @@
 
 package project
 
-import "mercedes-benz.ghe.com/foss/disuko/domain"
+import "github.com/eclipse-disuko/disuko/domain"
 
 type ProjectCustomIdDto struct {
 	Key         string `json:"_key" validate:"lte=36"`

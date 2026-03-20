@@ -7,13 +7,13 @@ package rest
 import (
 	"net/http"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	mail2 "mercedes-benz.ghe.com/foss/disuko/domain/mail"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/mail"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	mail2 "github.com/eclipse-disuko/disuko/domain/mail"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/mail"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type MailHandler struct {

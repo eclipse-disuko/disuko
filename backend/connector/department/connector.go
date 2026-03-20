@@ -10,9 +10,9 @@ import (
 	"context"
 	"fmt"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Connector struct {

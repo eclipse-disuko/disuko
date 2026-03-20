@@ -5,11 +5,11 @@
 package observermngmt
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/oauth"
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/oauth"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type EventId int

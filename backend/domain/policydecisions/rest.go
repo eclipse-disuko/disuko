@@ -7,7 +7,7 @@ package policydecisions
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/decisions"
+	"github.com/eclipse-disuko/disuko/domain/decisions"
 )
 
 type PolicyDecisionRequestDto struct {

@@ -13,16 +13,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/helper"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/helper/stopwatch"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/minio/minio-go/v7"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/helper/stopwatch"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type S3 struct {

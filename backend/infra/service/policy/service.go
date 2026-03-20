@@ -5,11 +5,11 @@
 package policy
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	license2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Service struct {

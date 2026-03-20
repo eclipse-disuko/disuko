@@ -5,9 +5,9 @@
 package migration
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/helper/hash"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Migration struct {

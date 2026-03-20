@@ -9,15 +9,15 @@ import (
 	"strings"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/integrity"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func checkIfAllFilesFromDbExistOnS3(requestSession *logy.RequestSession, projectRepository project2.IProjectRepository,

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"go.uber.org/zap/zapcore"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type HttpError struct {

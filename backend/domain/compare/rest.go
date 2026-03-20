@@ -5,7 +5,7 @@
 package compare
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
 )
 
 type ComponentDiffType string

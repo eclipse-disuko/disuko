@@ -5,13 +5,13 @@
 package userstats
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/userstats"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	job_userstats "mercedes-benz.ghe.com/foss/disuko/jobs/userstats"
-	"mercedes-benz.ghe.com/foss/disuko/observermngmt"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/userstats"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	job_userstats "github.com/eclipse-disuko/disuko/jobs/userstats"
+	"github.com/eclipse-disuko/disuko/observermngmt"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type UserStats struct {

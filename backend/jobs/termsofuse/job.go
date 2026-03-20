@@ -7,14 +7,14 @@ package termsofuse
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type Job struct {

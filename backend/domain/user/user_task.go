@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/approval"
 )
 
 type Task struct {

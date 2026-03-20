@@ -5,9 +5,9 @@
 package startup
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func (startUpHandler *StartUpHandler) migrateOverallReviews(requestSession *logy.RequestSession) {

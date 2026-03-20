@@ -5,19 +5,19 @@
 package project
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/approvallist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/auditloglist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	license2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/licenserules"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	sbomListRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	schema2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/schema"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/sbomlist"
+	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	sbomListRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	schema2 "github.com/eclipse-disuko/disuko/infra/repository/schema"
+	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type spdxRetriever interface {

@@ -9,17 +9,17 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/integrity"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/minio/minio-go/v7"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 const (

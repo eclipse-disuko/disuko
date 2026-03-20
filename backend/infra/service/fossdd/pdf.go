@@ -12,17 +12,17 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/pdf"
 	"golang.org/x/text/language"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/pdf"
 )
 
 type tmpl struct {

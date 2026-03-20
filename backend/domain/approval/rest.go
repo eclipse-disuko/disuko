@@ -7,9 +7,9 @@ package approval
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/approvable"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
 )
 
 type DocumentFlagsDto struct {

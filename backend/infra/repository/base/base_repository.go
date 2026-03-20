@@ -8,14 +8,14 @@ import (
 	"errors"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database/couch"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database/mongo"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/database/couch"
+	"github.com/eclipse-disuko/disuko/infra/repository/database/mongo"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 var defaultIndexes = [][]string{

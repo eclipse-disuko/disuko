@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
 )
 
 func HasPrefix(t *testing.T, prefix string, textData string) {

@@ -5,8 +5,8 @@
 package analyticsoccurrences
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/analytics"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/analytics"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const OccurrencesCollectionName = "analyticsoccurrences"

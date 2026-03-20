@@ -5,8 +5,8 @@
 package reviewremarks
 
 import (
-	rt "mercedes-benz.ghe.com/foss/disuko/domain/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	rt "github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 type IReviewTemplateRepository interface {

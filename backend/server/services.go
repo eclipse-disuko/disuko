@@ -5,19 +5,19 @@
 package server
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/analytics"
-	sbomRetained "mercedes-benz.ghe.com/foss/disuko/infra/service/check-sbom-retained"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/checklist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/export"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/fossdd"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/locks"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/policy"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/project"
-	projectLabelService "mercedes-benz.ghe.com/foss/disuko/infra/service/project-label"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/scanremarks"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/spdx"
-	userService "mercedes-benz.ghe.com/foss/disuko/infra/service/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/infra/service/analytics"
+	sbomRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
+	"github.com/eclipse-disuko/disuko/infra/service/checklist"
+	"github.com/eclipse-disuko/disuko/infra/service/export"
+	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
+	"github.com/eclipse-disuko/disuko/infra/service/locks"
+	"github.com/eclipse-disuko/disuko/infra/service/policy"
+	"github.com/eclipse-disuko/disuko/infra/service/project"
+	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/scanremarks"
+	"github.com/eclipse-disuko/disuko/infra/service/spdx"
+	userService "github.com/eclipse-disuko/disuko/infra/service/user"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type services struct {

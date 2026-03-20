@@ -7,10 +7,10 @@ package user
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type IUserDtoProvider interface {

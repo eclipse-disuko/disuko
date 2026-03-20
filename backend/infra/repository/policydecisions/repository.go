@@ -5,9 +5,9 @@
 package policydecisions
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/policydecisions"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type policyDecisionsRepositoryStruct struct {

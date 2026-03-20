@@ -7,9 +7,9 @@ package internalToken
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/internalToken"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/internalToken"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 const collectionName = "basicauths"

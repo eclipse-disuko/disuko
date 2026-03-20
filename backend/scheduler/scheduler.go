@@ -16,14 +16,14 @@ import (
 	"github.com/valkey-io/valkey-go"
 
 	"github.com/adhocore/gronx"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/jobs"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/locks"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/jobs"
+	"github.com/eclipse-disuko/disuko/infra/service/locks"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Scheduler struct {

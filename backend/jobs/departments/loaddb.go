@@ -5,10 +5,10 @@
 package departments
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/department"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/infra/repository/department"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type LoadDbJob struct {

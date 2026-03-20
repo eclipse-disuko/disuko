@@ -7,11 +7,11 @@ package userstats
 import (
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/domain/userstats"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/userstats"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type usersStatsRepositoryStruct struct {

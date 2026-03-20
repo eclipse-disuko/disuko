@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/test"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/test"
 )
 
 func compareUsers(a, b *UserManagementEntity) bool {

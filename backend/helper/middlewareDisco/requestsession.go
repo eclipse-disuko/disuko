@@ -7,7 +7,7 @@ package middlewareDisco
 import (
 	"net/http"
 
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 func RequestSession(next http.Handler) http.Handler {

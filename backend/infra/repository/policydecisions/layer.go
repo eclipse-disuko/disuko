@@ -5,8 +5,8 @@
 package policydecisions
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/policydecisions"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const PolicyDecisionsCollectionName = "policydecisions"

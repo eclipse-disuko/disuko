@@ -8,15 +8,15 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/helper/temp"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/pdf"
 	"golang.org/x/text/language"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/helper/temp"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/pdf"
 )
 
 func (s *Service) SignDocuments(rs *logy.RequestSession, pr *project.Project, approvalID, signingTetxt string, version int) {

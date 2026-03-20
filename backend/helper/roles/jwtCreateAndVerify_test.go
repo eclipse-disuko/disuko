@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"testing"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/domain/user"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/jwt"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/test"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/jwt"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/test"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 var requestSessionTest = &logy.RequestSession{ReqID: "TEST"}

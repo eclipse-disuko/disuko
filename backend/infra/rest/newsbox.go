@@ -7,17 +7,17 @@ package rest
 import (
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/newsbox"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	newsboxRepo "github.com/eclipse-disuko/disuko/infra/repository/newsbox"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/newsbox"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	newsboxRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/newsbox"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type NewsboxHandler struct {

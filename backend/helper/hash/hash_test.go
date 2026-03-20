@@ -7,7 +7,7 @@ package hash
 import (
 	"testing"
 
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 var requestSessionTest = &logy.RequestSession{ReqID: "TEST"}

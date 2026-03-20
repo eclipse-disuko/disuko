@@ -7,11 +7,11 @@ package license
 import (
 	"fmt"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	obligation2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	obligation2 "github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type LicenseAudit struct {

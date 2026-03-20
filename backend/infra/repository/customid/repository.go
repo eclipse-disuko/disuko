@@ -5,9 +5,9 @@
 package customid
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/customid"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/customid"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type customIdRepositoryStruct struct {

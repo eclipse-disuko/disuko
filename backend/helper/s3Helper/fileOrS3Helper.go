@@ -16,15 +16,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/helper"
 	"github.com/minio/minio-go/v7"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
 
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/hash"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/stopwatch"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/stopwatch"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 var S3Client *MinioS3Client

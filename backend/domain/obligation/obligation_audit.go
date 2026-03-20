@@ -7,7 +7,7 @@ package obligation
 import (
 	"fmt"
 
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
 )
 
 func (entity *Obligation) ToAuditString() string {

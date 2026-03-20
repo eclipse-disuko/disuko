@@ -7,14 +7,14 @@ package integrity
 import (
 	"strconv"
 
+	approval2 "github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/integrity"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/logy"
 	"golang.org/x/text/language"
-	approval2 "mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/integrity"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/approvallist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	project2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func checkIfEachApprovalHasDocumentsOnProject(requestSession *logy.RequestSession,

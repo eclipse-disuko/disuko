@@ -7,7 +7,7 @@ package license
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
 )
 
 type MetaDataMigration struct {

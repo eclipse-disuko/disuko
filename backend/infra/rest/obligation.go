@@ -9,21 +9,21 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
+	obligation2 "github.com/eclipse-disuko/disuko/infra/repository/obligation"
 	"github.com/google/go-cmp/cmp"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/auditloglist"
-	obligation2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/obligation"
 
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/service/obligationcsv"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/obligationcsv"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type ObligationsHandler struct {

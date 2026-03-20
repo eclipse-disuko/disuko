@@ -8,14 +8,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/project/pdocument"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/logy"
 	"golang.org/x/text/language"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/pdocument"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/s3Helper"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func (g *gen) finalize() {

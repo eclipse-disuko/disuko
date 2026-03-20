@@ -9,16 +9,16 @@ import (
 	"errors"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/licenserules"
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/licenserules"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/schema"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/tidwall/gjson"
 	"github.com/xeipuuv/gojsonschema"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/domain/schema"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type SpdxFileBase struct {

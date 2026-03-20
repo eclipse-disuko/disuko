@@ -5,8 +5,8 @@
 package checklist
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/project"
 )
 
 type TriggerType string

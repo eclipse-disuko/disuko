@@ -8,10 +8,10 @@ import (
 	"regexp"
 	"sync"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/helper"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type departmentRepository struct {

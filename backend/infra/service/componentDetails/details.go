@@ -9,17 +9,17 @@ import (
 	"strings"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/license"
 
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/helper"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
+	projectService "github.com/eclipse-disuko/disuko/infra/service/project"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/tidwall/gjson"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/helper"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	license2 "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	projectService "mercedes-benz.ghe.com/foss/disuko/infra/service/project"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func GetComponentDetails(requestSession *logy.RequestSession, holder projectService.RepositoryHolder, projectKey string, spdxId string, spdxContent string, spdxUpload *time.Time, spdxKey string, isResponsible bool) project.ComponentDetails {

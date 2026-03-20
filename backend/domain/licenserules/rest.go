@@ -7,7 +7,7 @@ package licenserules
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/decisions"
+	"github.com/eclipse-disuko/disuko/domain/decisions"
 )
 
 type LicenseRuleRequestDto struct {

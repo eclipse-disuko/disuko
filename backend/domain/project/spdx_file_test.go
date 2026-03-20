@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
 )
 
 func TestSpdxFileBase_GetFileName(t *testing.T) {

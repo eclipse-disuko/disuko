@@ -7,17 +7,17 @@ package dummy
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/label"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	"mercedes-benz.ghe.com/foss/disuko/helper/mail"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/labels"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	"github.com/eclipse-disuko/disuko/helper/mail"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type MailJob struct {

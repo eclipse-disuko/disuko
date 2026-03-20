@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/notification"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/notification"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 var CurrentNotification *notification.Notification

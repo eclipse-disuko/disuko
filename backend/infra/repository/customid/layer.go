@@ -5,8 +5,8 @@
 package customid
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/customid"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/domain/customid"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
 )
 
 const collName = "customids"

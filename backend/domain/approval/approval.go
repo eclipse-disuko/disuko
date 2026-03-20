@@ -7,10 +7,10 @@ package approval
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/approvable"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
 )
 
 type ApproveState struct {

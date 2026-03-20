@@ -11,8 +11,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 func UploadTempFileToS3(requestSession *logy.RequestSession, sizeInMb int, filePath string) *TempFile {

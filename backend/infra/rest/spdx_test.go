@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/xeipuuv/gojsonschema"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 var basePath = "./../.."

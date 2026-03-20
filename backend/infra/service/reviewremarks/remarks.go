@@ -5,23 +5,23 @@
 package reviewremarks
 
 import (
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/project/sbomlist"
+	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
+	licenseRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	reviewRemarksRepo "github.com/eclipse-disuko/disuko/infra/repository/reviewremarks"
+	"github.com/eclipse-disuko/disuko/infra/service/spdx"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jinzhu/copier"
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/components"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/sbomlist"
-	"mercedes-benz.ghe.com/foss/disuko/domain/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/auditloglist"
-	licenseRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/license"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/licenserules"
-	reviewRemarksRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/reviewremarks"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/spdx"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type spdxRetriever interface {

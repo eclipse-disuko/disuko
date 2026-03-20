@@ -8,15 +8,15 @@ import (
 	"net/http"
 	"time"
 
+	filterSetDomain "github.com/eclipse-disuko/disuko/domain/filterset"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/roles"
+	"github.com/eclipse-disuko/disuko/helper/validation"
+	filtersets "github.com/eclipse-disuko/disuko/infra/repository/filterset"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	filterSetDomain "mercedes-benz.ghe.com/foss/disuko/domain/filterset"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/helper/roles"
-	"mercedes-benz.ghe.com/foss/disuko/helper/validation"
-	filtersets "mercedes-benz.ghe.com/foss/disuko/infra/repository/filterset"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 )
 
 type FilterSetHandler struct {

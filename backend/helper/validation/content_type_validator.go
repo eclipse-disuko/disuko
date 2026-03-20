@@ -9,8 +9,8 @@ import (
 	"net/textproto"
 	"strings"
 
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 )
 
 type ContentType string

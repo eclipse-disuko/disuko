@@ -7,18 +7,18 @@ package fossdd
 import (
 	"encoding/json"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/approval"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/approvallist"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/policyrules"
-	projectRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/project"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	approvalService "mercedes-benz.ghe.com/foss/disuko/infra/service/approval"
-	"mercedes-benz.ghe.com/foss/disuko/infra/service/fossdd"
-	projectLabelService "mercedes-benz.ghe.com/foss/disuko/infra/service/project-label"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	approvalService "github.com/eclipse-disuko/disuko/infra/service/approval"
+	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
+	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 type Config struct {

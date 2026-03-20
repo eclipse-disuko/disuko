@@ -7,11 +7,11 @@ package rest
 import (
 	"net/http"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/connector/application"
+	"github.com/eclipse-disuko/disuko/connector/department"
+	"github.com/eclipse-disuko/disuko/domain/capabilities"
 	"github.com/go-chi/render"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/connector/application"
-	"mercedes-benz.ghe.com/foss/disuko/connector/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain/capabilities"
 )
 
 type CapabilitiesHandler struct {

@@ -5,9 +5,9 @@
 package announcement
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain/announcement"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/base"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain/announcement"
+	"github.com/eclipse-disuko/disuko/infra/repository/base"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type announcementsRepositoryStruct struct {

@@ -5,8 +5,8 @@
 package base
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type IBaseRepositoryWithHardDelete[ENTITY domain.IRootEntity] interface {

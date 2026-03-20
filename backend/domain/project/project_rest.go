@@ -7,10 +7,10 @@ package project
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/department"
-	"mercedes-benz.ghe.com/foss/disuko/domain/oauth"
-	"mercedes-benz.ghe.com/foss/disuko/domain/project/approvable"
-	"mercedes-benz.ghe.com/foss/disuko/domain/schema"
+	"github.com/eclipse-disuko/disuko/domain/department"
+	"github.com/eclipse-disuko/disuko/domain/oauth"
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
+	"github.com/eclipse-disuko/disuko/domain/schema"
 )
 
 type ProjectDto struct {

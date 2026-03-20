@@ -11,13 +11,13 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/logy"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"mercedes-benz.ghe.com/foss/disuko/conf"
-	"mercedes-benz.ghe.com/foss/disuko/helper/exception"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
 
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )

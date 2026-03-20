@@ -5,10 +5,10 @@
 package search
 
 import (
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/license"
-	obligation2 "mercedes-benz.ghe.com/foss/disuko/domain/obligation"
-	sorthelper "mercedes-benz.ghe.com/foss/disuko/helper/sort"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
+	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
 	"testing"
 	"time"
 )

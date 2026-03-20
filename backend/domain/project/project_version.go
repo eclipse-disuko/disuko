@@ -7,10 +7,10 @@ package project
 import (
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain/overallreview"
+	"github.com/eclipse-disuko/disuko/domain/overallreview"
 
-	"mercedes-benz.ghe.com/foss/disuko/domain"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/audit"
 )
 
 type SourcesExternal []*SourceExternal

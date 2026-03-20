@@ -8,16 +8,16 @@ import (
 	"encoding/json"
 	"time"
 
-	"mercedes-benz.ghe.com/foss/disuko/connector/userrole"
-	"mercedes-benz.ghe.com/foss/disuko/domain/audit"
-	"mercedes-benz.ghe.com/foss/disuko/domain/job"
-	"mercedes-benz.ghe.com/foss/disuko/domain/user"
-	auditHelper "mercedes-benz.ghe.com/foss/disuko/helper/audit"
-	"mercedes-benz.ghe.com/foss/disuko/helper/message"
-	"mercedes-benz.ghe.com/foss/disuko/infra/repository/database"
-	userRepo "mercedes-benz.ghe.com/foss/disuko/infra/repository/user"
-	"mercedes-benz.ghe.com/foss/disuko/logy"
-	"mercedes-benz.ghe.com/foss/disuko/scheduler"
+	"github.com/eclipse-disuko/disuko/connector/userrole"
+	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/user"
+	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
 var (
