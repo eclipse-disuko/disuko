@@ -204,7 +204,6 @@ declare module 'vue' {
     TabDecisions: typeof import('./../../libs/portal/components/projects/projectsDetail/TabDecisions.vue')['default']
     TabGeneralRemarks: typeof import('./../../libs/portal/components/projects/projectsVersions/sbom-quality/TabGeneralRemarks.vue')['default']
     TableActionButtons: typeof import('./../../libs/shared/components/TableActionButtons.vue')['default']
-    TableHeaderSelector: typeof import('./../../libs/shared/components/TableHeaderSelector.vue')['default']
     TableLayout: typeof import('./../../libs/shared/layouts/TableLayout.vue')['default']
     TableUser: typeof import('./../../libs/portal/components/user/TableUser.vue')['default']
     TabLicenseRemarks: typeof import('./../../libs/portal/components/projects/projectsVersions/sbom-quality/TabLicenseRemarks.vue')['default']
