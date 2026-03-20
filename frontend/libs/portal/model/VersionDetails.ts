@@ -82,6 +82,7 @@ export interface IComponentInfo {
   purl: string;
 }
 
+/** @deprecated: never used and will be deleted */
 export class SpdxFileHistory {
   public SpdxId = '';
   public Name = '';
