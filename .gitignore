@@ -1,0 +1,33 @@
+# Compiled class file
+*.class
+
+# Docker compose env variables
+*.cert
+*.crt
+*.key
+
+
+# Log file
+*.log
+
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+.vagrant
+.idea
+out
+**/node_modules
+.vscode
+*launch.json
+*config-local*
+*config_local*
+**/.DS_Store
+**/.vitepress/cache
+
+/backend/uploads/
+/backend/documents/
+/backend/cache/
