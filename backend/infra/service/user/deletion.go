@@ -13,20 +13,19 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
-// DeletionAction represents a planned or executed deletion action
 type DeletionAction struct {
-	ActionType  string `json:"action_type"`            // "cancel_task", "remove_role", "delete_trace", "delete_profile"
-	EntityID    string `json:"entity_id"`              // Identifier of affected entity
-	EntityType  string `json:"entity_type"`            // "task", "role", "trace", "profile"
-	Status      string `json:"status"`                 // "planned", "completed", "skipped"
-	Reason      string `json:"reason"`                 // Reason for status (e.g., why skipped)
-	ProjectID   string `json:"project_id,omitempty"`   // Project ID for hyperlink (optional)
-	ProjectName string `json:"project_name,omitempty"` // Project name for display
-	TaskID      string `json:"task_id,omitempty"`      // Task ID for hyperlink (optional)
-	TaskType    string `json:"task_type,omitempty"`    // Task type (e.g., "APPROVAL_REQUEST")
-	Priority    string `json:"priority,omitempty"`     // Task priority (e.g., "HIGH", "MEDIUM")
-	RoleName    string `json:"role_name,omitempty"`    // Role name (e.g., "OWNER", "CONTRIBUTOR")
-	TraceType   string `json:"trace_type,omitempty"`   // Trace type (e.g., "PROJECT_AUDIT_LOG")
+	ActionType  string `json:"action_type"`
+	EntityID    string `json:"entity_id"`
+	EntityType  string `json:"entity_type"`
+	Status      string `json:"status"`
+	Reason      string `json:"reason"`
+	ProjectID   string `json:"project_id,omitempty"`
+	ProjectName string `json:"project_name,omitempty"`
+	TaskID      string `json:"task_id,omitempty"`
+	TaskType    string `json:"task_type,omitempty"`
+	Priority    string `json:"priority,omitempty"`
+	RoleName    string `json:"role_name,omitempty"`
+	TraceType   string `json:"trace_type,omitempty"`
 }
 
 type DeletionPlan struct {
@@ -39,15 +38,6 @@ type DeletionPlan struct {
 	service        *DeletionService `json:"-"`
 }
 
-type RoleDeletionResult struct {
-	ProjectID     string `json:"projectId"`
-	ProjectName   string `json:"projectName"`
-	RoleName      string `json:"roleName"` // UserType: OWNER, SUPPLIER, VIEWER, etc.
-	IsResponsible bool   `json:"isResponsible"`
-	Deleted       bool   `json:"deleted"`
-	Skipped       bool   `json:"skipped"`
-	SkipReason    string `json:"skipReason,omitempty"`
-}
 type DeletionService struct {
 	rs                *logy.RequestSession
 	userRepository    userRepo.IUsersRepository
@@ -242,7 +232,6 @@ func (s *DeletionService) ExecuteTraceDeletion(username string, traceID string) 
 }
 
 func (s *DeletionService) GetUserDeletionStats(u *user.User) (taskCount, roleCount, traceCount int) {
-	//Mock details for now
 	taskCount = len(u.Tasks)
 	roleCount = 5
 	traceCount = 8

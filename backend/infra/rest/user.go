@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/eclipse-disuko/disuko/connector/userrole"
+	"github.com/eclipse-disuko/disuko/domain/deletionaudit"
 	"github.com/eclipse-disuko/disuko/helper/stopwatch"
 
 	"github.com/eclipse-disuko/disuko/helper/filter"
@@ -28,6 +29,7 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/sort"
 
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	deletionAuditRepo "github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
 	labels "github.com/eclipse-disuko/disuko/infra/repository/labels"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 
@@ -64,7 +66,17 @@ type UserHandler struct {
 	NewsBoxRepository      newsboxRepo.IRepo
 	DeletionService        *userService.DeletionService
 	UserService            *userService.Service
-	DeletionAuditService   *userService.DeletionAuditService
+	DeletionAuditRepo      deletionAuditRepo.IDeletionAuditRepository
+}
+
+type RoleDeletionResult struct {
+	ProjectID     string `json:"projectId"`
+	ProjectName   string `json:"projectName"`
+	RoleName      string `json:"roleName"`
+	IsResponsible bool   `json:"isResponsible"`
+	Deleted       bool   `json:"deleted"`
+	Skipped       bool   `json:"skipped"`
+	SkipReason    string `json:"skipReason,omitempty"`
 }
 
 type DeletePersonalDataEffectedEntities struct {
@@ -1256,16 +1268,15 @@ func (handler *UserHandler) GetDeletionAuditTrailHandler(w http.ResponseWriter, 
 	if username == "" {
 		render.JSON(w, r, SuccessResponse{
 			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Code,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Text,
 		})
 		return
 	}
 
-	entries := handler.DeletionAuditService.GetAuditTrailForUser(username)
-	render.JSON(w, r, entries)
+	entries := handler.DeletionAuditRepo.FindByTargetUser(requestSession, username)
+	render.JSON(w, r, deletionaudit.ToDtos(entries))
 }
 
-// GetDeletionAuditByOperationHandler returns a grouped summary of a deletion operation.
 func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
@@ -1278,13 +1289,13 @@ func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWr
 	if operationId == "" {
 		render.JSON(w, r, SuccessResponse{
 			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "operationId").Code,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "operationId").Text,
 		})
 		return
 	}
 
-	summary := handler.DeletionAuditService.GetAuditByOperation(operationId)
-	if summary == nil {
+	entries := handler.DeletionAuditRepo.FindByOperationID(requestSession, operationId)
+	if len(entries) == 0 {
 		render.JSON(w, r, SuccessResponse{
 			Success: false,
 			Message: "No audit entries found for this operation",
@@ -1292,10 +1303,10 @@ func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWr
 		return
 	}
 
+	summary := buildAuditSummary(operationId, entries)
 	render.JSON(w, r, summary)
 }
 
-// GetDeletionAuditByAdminHandler returns all deletion audit entries performed by a given admin.
 func (handler *UserHandler) GetDeletionAuditByAdminHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
@@ -1308,11 +1319,52 @@ func (handler *UserHandler) GetDeletionAuditByAdminHandler(w http.ResponseWriter
 	if adminUser == "" {
 		render.JSON(w, r, SuccessResponse{
 			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "adminUser").Code,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "adminUser").Text,
 		})
 		return
 	}
 
-	entries := handler.DeletionAuditService.GetAuditTrailByAdmin(adminUser)
-	render.JSON(w, r, entries)
+	entries := handler.DeletionAuditRepo.FindByPerformedBy(requestSession, adminUser)
+	render.JSON(w, r, deletionaudit.ToDtos(entries))
+}
+
+func buildAuditSummary(operationID string, entries []*deletionaudit.DeletionAuditEntry) *deletionaudit.DeletionAuditSummaryDto {
+	summary := &deletionaudit.DeletionAuditSummaryDto{
+		OperationID:  operationID,
+		PerformedBy:  entries[0].PerformedBy,
+		TargetUser:   entries[0].TargetUser,
+		Timestamp:    entries[0].Timestamp,
+		TotalActions: len(entries),
+		TaskEntries:  make([]deletionaudit.DeletionAuditEntryDto, 0),
+		RoleEntries:  make([]deletionaudit.DeletionAuditEntryDto, 0),
+		TraceEntries: make([]deletionaudit.DeletionAuditEntryDto, 0),
+		ProfileEntry: make([]deletionaudit.DeletionAuditEntryDto, 0),
+	}
+
+	for _, e := range entries {
+		dto := e.ToDto()
+		switch e.Category {
+		case deletionaudit.CategoryTask:
+			summary.TaskEntries = append(summary.TaskEntries, dto)
+		case deletionaudit.CategoryRole:
+			summary.RoleEntries = append(summary.RoleEntries, dto)
+		case deletionaudit.CategoryTrace:
+			summary.TraceEntries = append(summary.TraceEntries, dto)
+		case deletionaudit.CategoryProfile:
+			summary.ProfileEntry = append(summary.ProfileEntry, dto)
+		}
+
+		switch e.Result {
+		case deletionaudit.ResultSuccess:
+			summary.Succeeded++
+		case deletionaudit.ResultSkipped:
+			summary.Skipped++
+		case deletionaudit.ResultFailed:
+			summary.Failed++
+		case deletionaudit.ResultRetained:
+			summary.Retained++
+		}
+	}
+
+	return summary
 }

@@ -13,23 +13,11 @@ import (
 
 const DeletionAuditCollectionName = "deletionAuditLog"
 
-// IDeletionAuditRepository defines CRUD + query operations for deletion audit entries.
 type IDeletionAuditRepository interface {
 	base.IBaseRepository[*deletionaudit.DeletionAuditEntry]
 
-	// SaveEntry persists a single audit entry.
-	SaveEntry(rs *logy.RequestSession, entry *deletionaudit.DeletionAuditEntry)
-
-	// SaveEntries persists multiple audit entries in bulk.
-	SaveEntries(rs *logy.RequestSession, entries []*deletionaudit.DeletionAuditEntry)
-
-	// FindByOperationID returns all entries for a given operation.
 	FindByOperationID(rs *logy.RequestSession, operationID string) []*deletionaudit.DeletionAuditEntry
-
-	// FindByTargetUser returns all deletion audit entries for a given target user.
 	FindByTargetUser(rs *logy.RequestSession, targetUser string) []*deletionaudit.DeletionAuditEntry
-
-	// FindByPerformedBy returns all entries initiated by a given admin.
 	FindByPerformedBy(rs *logy.RequestSession, performedBy string) []*deletionaudit.DeletionAuditEntry
 }
 
@@ -51,11 +39,11 @@ func NewDeletionAuditRepository(rs *logy.RequestSession) IDeletionAuditRepositor
 		{"Updated"},
 		{"Deleted"},
 		{"_id", "Deleted"},
-		{"performedBy"},
-		{"targetUser"},
-		{"operationId"},
-		{"category"},
-		{"timestamp"},
+		{"PerformedBy"},
+		{"TargetUser"},
+		{"OperationID"},
+		{"Category"},
+		{"Timestamp"},
 	})
 
 	return &deletionAuditRepositoryStruct{
@@ -63,37 +51,29 @@ func NewDeletionAuditRepository(rs *logy.RequestSession) IDeletionAuditRepositor
 	}
 }
 
-func (r *deletionAuditRepositoryStruct) SaveEntry(rs *logy.RequestSession, entry *deletionaudit.DeletionAuditEntry) {
-	r.Save(rs, entry)
-}
-
-func (r *deletionAuditRepositoryStruct) SaveEntries(rs *logy.RequestSession, entries []*deletionaudit.DeletionAuditEntry) {
-	r.SaveList(rs, entries, true)
-}
-
 func (r *deletionAuditRepositoryStruct) FindByOperationID(rs *logy.RequestSession, operationID string) []*deletionaudit.DeletionAuditEntry {
 	qc := &db.QueryConfig{}
-	qc.SetMatcher(db.AttributeMatcher("operationId", db.EQ, operationID))
+	qc.SetMatcher(db.AttributeMatcher("OperationID", db.EQ, operationID))
 	qc.SetSort(db.SortConfig{
-		db.SortAttribute{Name: "timestamp", Order: db.ASC},
+		db.SortAttribute{Name: "Timestamp", Order: db.ASC},
 	})
 	return r.Query(rs, qc)
 }
 
 func (r *deletionAuditRepositoryStruct) FindByTargetUser(rs *logy.RequestSession, targetUser string) []*deletionaudit.DeletionAuditEntry {
 	qc := &db.QueryConfig{}
-	qc.SetMatcher(db.AttributeMatcher("targetUser", db.EQ, targetUser))
+	qc.SetMatcher(db.AttributeMatcher("TargetUser", db.EQ, targetUser))
 	qc.SetSort(db.SortConfig{
-		db.SortAttribute{Name: "timestamp", Order: db.DESC},
+		db.SortAttribute{Name: "Timestamp", Order: db.DESC},
 	})
 	return r.Query(rs, qc)
 }
 
 func (r *deletionAuditRepositoryStruct) FindByPerformedBy(rs *logy.RequestSession, performedBy string) []*deletionaudit.DeletionAuditEntry {
 	qc := &db.QueryConfig{}
-	qc.SetMatcher(db.AttributeMatcher("performedBy", db.EQ, performedBy))
+	qc.SetMatcher(db.AttributeMatcher("PerformedBy", db.EQ, performedBy))
 	qc.SetSort(db.SortConfig{
-		db.SortAttribute{Name: "timestamp", Order: db.DESC},
+		db.SortAttribute{Name: "Timestamp", Order: db.DESC},
 	})
 	return r.Query(rs, qc)
 }

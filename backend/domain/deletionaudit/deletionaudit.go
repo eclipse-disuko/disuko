@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ActionCategory classifies which part of user data is being deleted.
 type ActionCategory string
 
 const (
@@ -21,7 +20,6 @@ const (
 	CategoryProfile ActionCategory = "PROFILE"
 )
 
-// ActionResult captures the outcome of a single deletion action.
 type ActionResult string
 
 const (
@@ -33,63 +31,25 @@ const (
 	ResultDryRun   ActionResult = "DRY_RUN"
 )
 
-// DeletionAuditEntry is the core entity stored in the "deletionAuditLog" collection.
-// Each entry represents one auditable deletion action (or batch), immutably recorded.
 type DeletionAuditEntry struct {
 	domain.RootEntity `bson:",inline"`
-
-	// Who performed the deletion (admin user ID / "SYSTEM" for automated jobs).
-	PerformedBy string `bson:"performedBy" json:"performedBy"`
-
-	// The target user whose data is being deleted.
-	TargetUser string `bson:"targetUser" json:"targetUser"`
-
-	// High-level operation identifier grouping related actions.
-	// All actions within one "Delete All" call share the same OperationID.
-	OperationID string `bson:"operationId" json:"operationId"`
-
-	// Category of the entity being deleted.
-	Category ActionCategory `bson:"category" json:"category"`
-
-	// The specific action taken (e.g. "cancel_task", "remove_role", "delete_trace", "delete_profile").
-	ActionType string `bson:"actionType" json:"actionType"`
-
-	// Result of the action.
-	Result ActionResult `bson:"result" json:"result"`
-
-	// --- Entity-specific detail fields (populated based on Category) ---
-
-	// EntityID is the database key of the deleted entity.
-	EntityID string `bson:"entityId" json:"entityId"`
-
-	// EntityType further qualifies the entity (e.g. "APPROVAL_REQUEST", "OWNER", "USER_SESSION_LOG").
-	EntityType string `bson:"entityType" json:"entityType"`
-
-	// ProjectID for project-scoped entities (tasks, roles).
-	ProjectID string `bson:"projectId,omitempty" json:"projectId,omitempty"`
-
-	// ProjectName at the time of deletion (denormalized for historical reference).
-	ProjectName string `bson:"projectName,omitempty" json:"projectName,omitempty"`
-
-	// Additional context — human-readable reason when an action is skipped/retained/failed.
-	Reason string `bson:"reason,omitempty" json:"reason,omitempty"`
-
-	// SnapshotJSON stores a JSON-serialized snapshot of the entity *before* deletion.
-	// This ensures we have a complete record of what was removed, even after the original
-	// entity no longer exists.
-	SnapshotJSON string `bson:"snapshotJson,omitempty" json:"snapshotJson,omitempty"`
-
-	// Timestamp of when the action was executed.
-	Timestamp time.Time `bson:"timestamp" json:"timestamp"`
-
-	// IPAddress of the requester (captured at REST boundary for traceability).
-	IPAddress string `bson:"ipAddress,omitempty" json:"ipAddress,omitempty"`
-
-	// RequestID ties back to the HTTP request for correlation with application logs.
-	RequestID string `bson:"requestId,omitempty" json:"requestId,omitempty"`
+	PerformedBy       string
+	TargetUser        string
+	OperationID       string
+	Category          ActionCategory
+	ActionType        string
+	Result            ActionResult
+	EntityID          string
+	EntityType        string
+	ProjectID         string
+	ProjectName       string
+	Reason            string
+	SnapshotJSON      string
+	Timestamp         time.Time
+	IPAddress         string
+	RequestID         string
 }
 
-// NewDeletionAuditEntry creates a new audit entry with a generated UUID key and current timestamp.
 func NewDeletionAuditEntry(performedBy, targetUser, operationID string, category ActionCategory, actionType string, result ActionResult) *DeletionAuditEntry {
 	return &DeletionAuditEntry{
 		RootEntity:  domain.NewRootEntity(),
@@ -103,12 +63,9 @@ func NewDeletionAuditEntry(performedBy, targetUser, operationID string, category
 	}
 }
 
-// NewOperationID generates a unique identifier to group related deletion actions.
 func NewOperationID() string {
 	return uuid.NewString()
 }
-
-// --- DTO for API responses ---
 
 type DeletionAuditEntryDto struct {
 	Key         string         `json:"_key"`
@@ -148,7 +105,6 @@ func (e *DeletionAuditEntry) ToDto() DeletionAuditEntryDto {
 	}
 }
 
-// ToDtos converts a slice of entries to DTOs.
 func ToDtos(entries []*DeletionAuditEntry) []DeletionAuditEntryDto {
 	dtos := make([]DeletionAuditEntryDto, 0, len(entries))
 	for _, e := range entries {
@@ -157,7 +113,6 @@ func ToDtos(entries []*DeletionAuditEntry) []DeletionAuditEntryDto {
 	return dtos
 }
 
-// DeletionAuditSummaryDto provides a grouped view of a deletion operation.
 type DeletionAuditSummaryDto struct {
 	OperationID  string                  `json:"operationId"`
 	PerformedBy  string                  `json:"performedBy"`
