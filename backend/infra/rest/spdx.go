@@ -623,6 +623,10 @@ func (spdxHandler *SPDXHandler) updateSpdxTag(requestSession *logy.RequestSessio
 
 func (spdxHandler *SPDXHandler) ExportNoticeFileForSbomAsTextHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession, currentProject, compInfos, contactMeta := spdxHandler.prepareExportNoticeFileForSbom(r)
+	if len(compInfos) == 0 {
+		w.WriteHeader(200)
+		return
+	}
 	sb := notices.GenerateTextNotices(requestSession, *currentProject, spdxHandler.LicensesRepository, compInfos, contactMeta, spdxHandler.LabelRepository)
 
 	_, err := w.Write([]byte(sb.String()))
@@ -777,9 +781,6 @@ func (spdxHandler SPDXHandler) prepareExportNoticeFileForSbom(r *http.Request) (
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.NoSbom), "")
 	}
 	compInfos := spdxHandler.SpdxService.GetComponentInfos(requestSession, currentProject, version.Key, selectedSpdx)
-	if len(compInfos) == 0 {
-		exception.ThrowExceptionClientMessage(message.GetI18N(message.WarnNotExists), "Currently notice file not exists")
-	}
 
 	contactMeta := getContactMetaOfGroupOrProject(requestSession, spdxHandler.ProjectRepository, currentProject)
 	return requestSession, currentProject, compInfos, contactMeta
@@ -787,12 +788,20 @@ func (spdxHandler SPDXHandler) prepareExportNoticeFileForSbom(r *http.Request) (
 
 func (spdxHandler *SPDXHandler) ExportNoticeFileForSbomAsJSONHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession, currentProject, compInfos, contactMeta := spdxHandler.prepareExportNoticeFileForSbom(r)
+	if len(compInfos) == 0 {
+		w.WriteHeader(200)
+		return
+	}
 	notice := notices.GenerateJSONNotices(requestSession, *currentProject, spdxHandler.LicensesRepository, compInfos, contactMeta, spdxHandler.LabelRepository)
 	render.JSON(w, r, notice)
 }
 
 func (spdxHandler *SPDXHandler) ExportNoticeFileForSbomAsHTMLHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession, currentProject, compInfos, contactMeta := spdxHandler.prepareExportNoticeFileForSbom(r)
+	if len(compInfos) == 0 {
+		w.WriteHeader(200)
+		return
+	}
 	sb := notices.GenerateHTMLNotices(requestSession, *currentProject, spdxHandler.LicensesRepository, compInfos, contactMeta, spdxHandler.LabelRepository)
 
 	_, err := w.Write([]byte(sb.String()))

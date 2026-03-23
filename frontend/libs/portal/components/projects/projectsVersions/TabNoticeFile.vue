@@ -59,6 +59,9 @@ const loadContent = async (format: NoticeFileFormat) => {
 };
 
 const updateContentsByType = (content: string) => {
+  if (content === '') {
+    return;
+  }
   showPreview.value = true;
 
   switch (selectedFormat.value) {
@@ -188,8 +191,7 @@ onMounted(async () => {
           style="height: 52px"
           v-if="showProgressBar && !dataAreLoaded"
           align="center"
-          justify="center"
-        >
+          justify="center">
           <v-col cols="12" sm="8" md="6">
             <v-progress-linear indeterminate color="primary" height="3"></v-progress-linear>
           </v-col>
@@ -200,8 +202,7 @@ onMounted(async () => {
               v-if="sbomStats.PolicyState.NoAssertion > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="red" icon="mdi-lightning-bolt-circle" class="mr-2"></v-icon>
@@ -214,8 +215,7 @@ onMounted(async () => {
               v-if="sbomStats.PolicyState.Denied > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="red" icon="mdi-minus-circle" class="mr-2"></v-icon>
@@ -228,8 +228,7 @@ onMounted(async () => {
               v-if="sbomStats.PolicyState.Warned > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="warning" icon="mdi-alert" class="mr-2"></v-icon>
@@ -242,8 +241,7 @@ onMounted(async () => {
               v-if="sbomStats.notChartFossLicense.total > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="red" icon="mdi-shield-off-outline" class="mr-2"></v-icon>
@@ -256,15 +254,13 @@ onMounted(async () => {
               v-if="sbomStats.scanRemarkType.missingCopyrights > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon
                     :color="getIconColorScanRemarkLevel(sbomStats.scanRemarkType.missingCopyrightsLevel)"
                     icon="mdi-circle"
-                    class="mr-2"
-                  ></v-icon>
+                    class="mr-2"></v-icon>
                   {{ `${sbomStats.scanRemarkType.missingCopyrights} ${t('BTN_MISSING_COPYRIGHT')}` }}
                 </v-btn>
               </template>
@@ -274,8 +270,7 @@ onMounted(async () => {
               v-if="sbomStats.scanRemarkType.malformedCopyrights > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
-              content-class="dpTooltip"
-            >
+              content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="grey" icon="mdi-circle" class="mr-2"></v-icon>
@@ -293,8 +288,7 @@ onMounted(async () => {
               :variant="isHTMLSelected ? 'tonal' : 'text'"
               :class="{active: isHTMLSelected}"
               class="ma-2 text-none card-border ml-0"
-              @click="loadStyledHTML"
-            >
+              @click="loadStyledHTML">
               <v-icon color="primary">mdi-code-brackets</v-icon>
               HTML
             </v-btn>
@@ -303,8 +297,7 @@ onMounted(async () => {
               :variant="isTextSelected ? 'tonal' : 'text'"
               :class="{active: isTextSelected}"
               class="ma-2 text-none card-border"
-              @click="loadPlainText"
-            >
+              @click="loadPlainText">
               <v-icon color="primary">mdi-format-text</v-icon>
               Plain Text
             </v-btn>
@@ -313,8 +306,7 @@ onMounted(async () => {
               :variant="isJSONFormat ? 'tonal' : 'text'"
               :class="{active: isJSONFormat}"
               class="ma-2 text-none card-border"
-              @click="loadJSON"
-            >
+              @click="loadJSON">
               <v-icon color="primary">mdi-code-json</v-icon>
               JSON
             </v-btn>
@@ -326,8 +318,7 @@ onMounted(async () => {
               :text="t('BTN_EDIT_3RD_ADDRESS')"
               size="small"
               class="mr-2"
-              @click.stop="showProjectSettingsDialog"
-            />
+              @click.stop="showProjectSettingsDialog" />
           </v-col>
         </v-row>
       </template>
@@ -345,8 +336,7 @@ onMounted(async () => {
             class="mt-3"
             :tableButton="true"
             :hint="t('TT_noticeCopyText')"
-            :content="downloadContent"
-          />
+            :content="downloadContent" />
           <v-spacer />
           <v-col md="auto" class="d-flex justify-end">
             <DCActionButton
@@ -355,8 +345,7 @@ onMounted(async () => {
               :text="t('BTN_DOWNLOAD')"
               :hint="t('TT_download_notice')"
               class="mr-2"
-              @click="downloadNoticeFile"
-            />
+              @click="downloadNoticeFile" />
           </v-col>
         </v-row>
         <v-row v-if="isJSONFormat">
@@ -369,8 +358,7 @@ onMounted(async () => {
             <div
               class="d-text pt-2 html-notice-file"
               v-html="htmlOrPlainContent"
-              v-if="htmlOrPlainContent && htmlOrPlainContent.length > 0"
-            />
+              v-if="htmlOrPlainContent && htmlOrPlainContent.length > 0" />
           </v-col>
         </v-row>
       </v-card>
