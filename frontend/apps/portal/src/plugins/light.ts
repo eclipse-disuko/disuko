@@ -21,8 +21,8 @@ const light: ThemeDefinition = {
     sidebar: neutral[95],
 
     // project status
-    projectNew: orange[100],
-    projectActive: blue[100],
+    projectNew: orange[72],
+    projectActive: blue[58],
     projectArchived: grey[30],
     projectGroup: orange[45],
     projectDeprecated: grey[30],
