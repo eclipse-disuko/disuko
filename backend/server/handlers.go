@@ -224,6 +224,7 @@ func (s *Server) setupHandlers() {
 		UserroleConnector:      s.connectors.userrole,
 		NewsBoxRepository:      s.repos.newsbox,
 		DeletionService:        s.services.deletionService,
+		DeletionAuditService:   s.services.deletionAuditService,
 		UserService:            s.services.userService,
 	}
 	s.handlers.auth.UserRepository = s.repos.user

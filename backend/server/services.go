@@ -21,20 +21,21 @@ import (
 )
 
 type services struct {
-	lock                *locks.Service
-	spdx                *spdx.Service
-	analytics           analytics.Analytics
-	policyRules         policy.Service
-	export              *export.Service
-	checklist           checklist.Service
-	sbomRetained        *sbomRetained.Service
-	scanRemarks         scanremarks.Service
-	wizard              project.WizardService
-	projectLabelService projectLabelService.ProjectLabelService
-	fossdd              fossdd.Service
-	overallReview       project.OverallReviewService
-	deletionService     *userService.DeletionService
-	userService         *userService.Service
+	lock                 *locks.Service
+	spdx                 *spdx.Service
+	analytics            analytics.Analytics
+	policyRules          policy.Service
+	export               *export.Service
+	checklist            checklist.Service
+	sbomRetained         *sbomRetained.Service
+	scanRemarks          scanremarks.Service
+	wizard               project.WizardService
+	projectLabelService  projectLabelService.ProjectLabelService
+	fossdd               fossdd.Service
+	overallReview        project.OverallReviewService
+	deletionService      *userService.DeletionService
+	deletionAuditService *userService.DeletionAuditService
+	userService          *userService.Service
 }
 
 func (s *Server) setupServices(rs *logy.RequestSession) {

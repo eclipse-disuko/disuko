@@ -28,6 +28,7 @@ import (
 	announcement "github.com/eclipse-disuko/disuko/infra/repository/announcements"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
+	"github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
 	"github.com/eclipse-disuko/disuko/infra/repository/department"
 	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
 	"github.com/eclipse-disuko/disuko/infra/repository/jobs"
@@ -64,6 +65,7 @@ type dbRepos struct {
 	user                 user.IUsersRepository
 	sbomList             sbomlist.ISbomListRepository
 	auditLogList         auditloglist.IAuditLogListRepository
+	deletionAudit        deletionaudit.IDeletionAuditRepository
 	department           department.IDepartmentRepository
 	spdxLicense          spdx_license.ISpdxLicensesRepository
 	approvalList         approvallist.IApprovalListRepository
@@ -102,6 +104,7 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		user:                 user.NewUsersRepository(requestSession),
 		sbomList:             sbomlist.NewSbomListRepository(requestSession),
 		auditLogList:         auditloglist.NewAuditLogListRepository(requestSession),
+		deletionAudit:        deletionaudit.NewDeletionAuditRepository(requestSession),
 		department:           department.NewDepartmentRepository(requestSession),
 		spdxLicense:          spdx_license.NewSpdxLicenseRepository(requestSession),
 		approvalList:         approvallist.NewApprovalListRepository(requestSession),

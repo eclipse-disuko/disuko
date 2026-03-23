@@ -64,6 +64,7 @@ type UserHandler struct {
 	NewsBoxRepository      newsboxRepo.IRepo
 	DeletionService        *userService.DeletionService
 	UserService            *userService.Service
+	DeletionAuditService   *userService.DeletionAuditService
 }
 
 type DeletePersonalDataEffectedEntities struct {
@@ -1241,4 +1242,77 @@ func (handler *UserHandler) DeletePersonalDataByEntityHandler(w http.ResponseWri
 		Success: true,
 		Message: message.GetI18N(message.UserManagementEntityDeleted).Code,
 	})
+}
+
+func (handler *UserHandler) GetDeletionAuditTrailHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	username := chi.URLParam(r, "username")
+	if username == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Code,
+		})
+		return
+	}
+
+	entries := handler.DeletionAuditService.GetAuditTrailForUser(username)
+	render.JSON(w, r, entries)
+}
+
+// GetDeletionAuditByOperationHandler returns a grouped summary of a deletion operation.
+func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	operationId := chi.URLParam(r, "operationId")
+	if operationId == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "operationId").Code,
+		})
+		return
+	}
+
+	summary := handler.DeletionAuditService.GetAuditByOperation(operationId)
+	if summary == nil {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: "No audit entries found for this operation",
+		})
+		return
+	}
+
+	render.JSON(w, r, summary)
+}
+
+// GetDeletionAuditByAdminHandler returns all deletion audit entries performed by a given admin.
+func (handler *UserHandler) GetDeletionAuditByAdminHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	adminUser := chi.URLParam(r, "adminUser")
+	if adminUser == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "adminUser").Code,
+		})
+		return
+	}
+
+	entries := handler.DeletionAuditService.GetAuditTrailByAdmin(adminUser)
+	render.JSON(w, r, entries)
 }

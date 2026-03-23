@@ -39,6 +39,15 @@ type DeletionPlan struct {
 	service        *DeletionService `json:"-"`
 }
 
+type RoleDeletionResult struct {
+	ProjectID     string `json:"projectId"`
+	ProjectName   string `json:"projectName"`
+	RoleName      string `json:"roleName"` // UserType: OWNER, SUPPLIER, VIEWER, etc.
+	IsResponsible bool   `json:"isResponsible"`
+	Deleted       bool   `json:"deleted"`
+	Skipped       bool   `json:"skipped"`
+	SkipReason    string `json:"skipReason,omitempty"`
+}
 type DeletionService struct {
 	rs                *logy.RequestSession
 	userRepository    userRepo.IUsersRepository
