@@ -1,0 +1,91 @@
+import {useTableActionSliderStore} from '@shared/stores/tableActionSlider.store';
+import {storeToRefs} from 'pinia';
+import {computed, ref, watch} from 'vue';
+
+export const useTableActionSlider = () => {
+  // Need the store to have one timeout across all sliders
+  const tableActionSliderStore = useTableActionSliderStore();
+  const {slideInTimeout} = storeToRefs(tableActionSliderStore);
+
+  const baseWidth = ref<number>(100);
+  const buttonsLength = ref<number>(1);
+  const sliderWidth = ref<number>(baseWidth.value);
+  const slideInTimer = ref<number>(0);
+
+  const slideOutAction = ref<() => unknown>(() => {});
+  const slideInAction = ref<() => unknown>(() => {});
+
+  const setupTableActionSlider = (
+    newSlideOutAction: () => unknown,
+    newSlideInAction: () => unknown,
+    newButtonsLength?: number,
+    newBaseWidth?: number,
+  ) => {
+    if (newBaseWidth && newBaseWidth > baseWidth.value) {
+      baseWidth.value = newBaseWidth;
+    }
+
+    if (newButtonsLength && newButtonsLength > buttonsLength.value) {
+      buttonsLength.value = newButtonsLength;
+    }
+
+    if (newSlideOutAction) {
+      slideOutAction.value = newSlideOutAction;
+    }
+
+    if (newSlideInAction) {
+      slideInAction.value = newSlideInAction;
+    }
+  };
+
+  const expandedMaxWidth = computed(() => buttonsLength.value * 40 + baseWidth.value);
+
+  const startSlideInTimer = () => {
+    slideInTimer.value = 300;
+
+    if (slideInTimeout.value) {
+      clearTimeout(slideInTimeout.value);
+      slideInTimeout.value = null;
+    }
+
+    slideInTimeout.value = setTimeout(() => {
+      slideInTimer.value = 0;
+    }, slideInTimer.value);
+  };
+
+  const slideOut = () => {
+    sliderWidth.value = expandedMaxWidth.value;
+    slideOutAction.value();
+  };
+
+  const slideIn = () => {
+    sliderWidth.value = baseWidth.value;
+    slideInAction.value();
+  };
+
+  const stopSlideInTimerAndSlideOut = () => {
+    if (slideInTimeout.value) {
+      clearTimeout(slideInTimeout.value);
+      slideInTimeout.value = null;
+    }
+
+    slideOut();
+  };
+
+  watch(slideInTimer, () => {
+    if (slideInTimer.value === 0) {
+      slideIn();
+    }
+  });
+
+  return {
+    baseWidth,
+    sliderWidth,
+    expandedMaxWidth,
+    slideOut,
+    slideIn,
+    setupTableActionSlider,
+    startSlideInTimer,
+    stopSlideInTimerAndSlideOut,
+  };
+};

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ExtraMenu from '@shared/components/disco/ExtraMenu.vue';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {computed} from 'vue';
 
 interface Button {
@@ -13,22 +13,36 @@ interface Button {
 
 export interface TableActionButtonsProps {
   buttons: Button[];
-  variant?: 'normal' | 'minimal' | 'compact';
+  variant?: 'normal' | 'minimal' | 'compact' | 'slider';
 }
 const props = withDefaults(defineProps<TableActionButtonsProps>(), {
   variant: 'normal',
 });
 const emit = defineEmits<{
-  [key: string]: [];
+  slideOut: [value: number];
+  slideIn: [value: number];
+  [key: string]: [value?: number];
 }>();
 
 const shownButtons = computed(() => props.buttons.filter((button) => button.show ?? true));
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
+
+const {sliderWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
+
+if (props.variant === 'slider') {
+  setupTableActionSlider(
+    () => emit('slideOut', sliderWidth.value),
+    () => emit('slideIn', sliderWidth.value),
+    props.buttons.length,
+  );
+}
 </script>
 
 <template>
-  <div class="flex justify-center items-center">
+  <div
+    class="flex items-center"
+    :class="{'justify-center': variant !== 'slider', 'justify-start': variant === 'slider'}">
     <!-- Minimal Variant: All buttons in an extra menu -->
     <template v-if="variant === 'minimal'">
       <ExtraMenu>
@@ -53,6 +67,39 @@ const remainingButtons = computed(() => shownButtons.value.slice(1));
           :color="button.color"
           :disabled="button.disabled"
           @clicked="emit(button.event)"></DIconButton>
+      </div>
+    </template>
+
+    <!-- Normal Variant: All buttons displayed -->
+    <template v-else-if="variant === 'slider'">
+      <div class="flex justify-start pl-8">
+        <v-btn
+          plain
+          size="small"
+          variant="text"
+          icon
+          color="primary"
+          class="size-10"
+          @click.stop
+          @mouseenter="stopSlideInTimerAndSlideOut"
+          @mouseleave="startSlideInTimer">
+          <v-icon>mdi-dots-horizontal</v-icon>
+          <Tooltip location="bottom" text="Actions"></Tooltip>
+        </v-btn>
+        <div
+          v-for="button in buttons"
+          :key="button.icon"
+          class="size-10"
+          @mouseenter="stopSlideInTimerAndSlideOut"
+          @mouseleave="startSlideInTimer">
+          <DIconButton
+            v-if="button.show ?? true"
+            :icon="button.icon"
+            :hint="button.hint"
+            :color="button.color"
+            :disabled="button.disabled"
+            @clicked="emit(button.event)"></DIconButton>
+        </div>
       </div>
     </template>
 
@@ -94,3 +141,14 @@ const remainingButtons = computed(() => shownButtons.value.slice(1));
     </template>
   </div>
 </template>
+
+<style lang="scss">
+.action-slider-table > .v-table > .v-table__wrapper > table {
+  > thead > tr > th:first-child {
+    transition: width ease-in-out 0.2s;
+  }
+  > tbody > tr > td:first-child {
+    padding-right: 0 !important;
+  }
+}
+</style>
