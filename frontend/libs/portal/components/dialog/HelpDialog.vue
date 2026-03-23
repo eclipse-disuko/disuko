@@ -13,7 +13,7 @@
               :key="item.id"
               :href="`#${item.id}`"
               :class="[
-                'block my-1 text-sm border-l-2 border-transparent',
+                'block my-1 text-sm border-l-2 border-transparent text-font',
                 'hover:text-yellow-45 hover:border-l-yellow-45 ',
                 {
                   'pl-1 font-semibold': item.level === 1,

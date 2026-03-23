@@ -29,6 +29,8 @@
     --color-grey-5: #0D0D0D;
 
     /* Blue scale */
+    --color-blue-88: #2EF0F0;
+    --color-blue-58: #1FA3A3;
     --color-blue-95: #E6F5FF;
     --color-blue-90: #CCE8FF;
     --color-blue-85: #B4DDFE;
@@ -113,6 +115,8 @@
     --color-yellow-5: #2E2600;
 
     /* Orange scale */
+    --color-orange-42: #B38000;
+    --color-orange-72: #F7B100;
     --color-orange-95: #FFF4E6;
     --color-orange-90: #FFE8CC;
     --color-orange-85: #FFDDB3;
