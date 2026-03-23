@@ -13,6 +13,6 @@ The following people have contributed to this repository:
 * Marcel Wagner, Mercedes-Benz Tech Innovation GmbH, https://github.com/marcelwagner
 * Rebecca Koch, Mercedes-Benz Tech Innovation GmbH, https://github.com/rebecca1401
 * Sugam Shiva Prasad, Mercedes-Benz Tech Innovation GmbH, https://github.com/Sugamks
-* Prathamesh Bhat, Mercedes-Benz Innovation GmbH, https://github.com/prathameshbhat-king
+* Prathamesh Bhat, Mercedes-Benz Tech Innovation GmbH, https://github.com/prathameshbhat-king
   
 Please add yourself to this list, if you contribute to the content.
