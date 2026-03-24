@@ -383,7 +383,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
     :config="confirmationDialogConfig"
     @confirm="doAbort"></ConfirmationDialog>
   <DFormDialog v-model:showDialog="fillCustomerDialogOpen">
-    <FillCustomerApproverDialog
+    <FillCustomerApprover
       :title="t('UM_DIALOG_TITLE_FILL_OWNER')"
       :confirm-text="t('NP_DIALOG_BTN_CREATE')"
       :customer1User="customer1User"

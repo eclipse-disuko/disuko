@@ -21,7 +21,6 @@ import DFormDialog from '@shared/components/disco/DFormDialog.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
-import FillCustomerApproverDialog from './FillCustomerApprover.vue';
 
 const showDialog = defineModel<boolean>('showDialog');
 const props = defineProps<{selectedRow: TaskDto | null}>();
@@ -411,7 +410,7 @@ watch(
           :config="confirmationDialogConfig"
           @confirm="doAbort"></ConfirmationDialog>
         <DFormDialog v-model:showDialog="fillCustomerDialogOpen">
-          <FillCustomerApproverDialog
+          <FillCustomerApprover
             :title="t('UM_DIALOG_TITLE_FILL_OWNER')"
             :confirm-text="t('NP_DIALOG_BTN_CREATE')"
             :customer1User="customer1User"
