@@ -45,13 +45,9 @@ const tasksSearch = ref('');
 const rolesSearch = ref('');
 const logsSearch = ref('');
 
-const tasksFilterMenu = ref(false);
 const selectedTasksStatusFilter = ref<string[]>([]);
-const tasksNameFilterMenu = ref(false);
 const selectedTasksNameFilter = ref<string[]>([]);
-const rolesNameFilterMenu = ref(false);
 const selectedRolesNameFilter = ref<string[]>([]);
-const logsFilterMenu = ref(false);
 const selectedLogsFilter = ref<string[]>([]);
 
 const filteredTasksData = computed(() => {
@@ -526,120 +522,28 @@ const executeEntityDeletion = async () => {
                     :footer-props="{'items-per-page-options': [5, 10, 25, 50]}"
                     item-key="entityID">
                     <template v-slot:[`header.entitySubType`]="{column, toggleSort, getSortIcon}">
-                      <div class="v-data-table-header__content">
-                        <span>{{ column.title }}</span>
-                        <v-menu :close-on-content-click="false" v-model="tasksNameFilterMenu">
-                          <template v-slot:activator="{props}">
-                            <DIconButton
-                              :parentProps="props"
-                              icon="mdi-filter-variant"
-                              :hint="t('TT_SHOW_FILTER')"
-                              :color="selectedTasksNameFilter.length > 0 ? 'primary' : 'default'"
-                              location="top" />
-                          </template>
-                          <div class="bg-background" style="width: 280px">
-                            <v-row class="d-flex justify-end ma-1 mr-2">
-                              <DIconButton icon="mdi-close" @click="tasksNameFilterMenu = false" color="default" />
-                            </v-row>
-                            <v-select
-                              v-model="selectedTasksNameFilter"
-                              :items="tasksNameOptions"
-                              class="mx-2 pa-2 pb-4"
-                              :label="t('Lbl_filter_name')"
-                              clearable
-                              multiple
-                              item-title="text"
-                              item-value="value"
-                              variant="outlined"
-                              density="compact"
-                              menu
-                              transition="scale-transition"
-                              persistent-clear
-                              :list-props="{class: 'striped-filter-dd py-0'}">
-                              <template v-slot:item="{props}">
-                                <v-list-item v-bind="props" class="py-0 px-2">
-                                  <template v-slot:prepend="{isSelected}">
-                                    <v-checkbox hide-details :model-value="isSelected" />
-                                  </template>
-                                  <template v-slot:title="{title}">
-                                    <span class="pFilterEntry">{{ title }}</span>
-                                  </template>
-                                </v-list-item>
-                              </template>
-                              <template v-slot:selection="{item, index}">
-                                <div v-if="index === 0" class="d-flex align-center">
-                                  <span class="pFilterEntry">{{ item.title }}</span>
-                                </div>
-                                <span v-if="index === 1" class="pAdditionalFilter">
-                                  +{{ selectedTasksNameFilter.length - 1 }} others
-                                </span>
-                              </template>
-                            </v-select>
-                          </div>
-                        </v-menu>
-                        <v-icon
-                          class="v-data-table-header__sort-icon"
-                          :icon="getSortIcon(column)"
-                          @click="toggleSort(column)" />
-                      </div>
+                      <span class="mr-1">{{ column.title }}</span>
+                      <GridHeaderFilterIcon
+                        v-model="selectedTasksNameFilter"
+                        :column="column"
+                        :label="t('Lbl_filter_name')"
+                        :allItems="tasksNameOptions" />
+                      <v-icon
+                        class="v-data-table-header__sort-icon"
+                        :icon="getSortIcon(column)"
+                        @click="toggleSort(column)" />
                     </template>
                     <template v-slot:[`header.entityStatus`]="{column, toggleSort, getSortIcon}">
-                      <div class="v-data-table-header__content">
-                        <span>{{ column.title }}</span>
-                        <v-menu :close-on-content-click="false" v-model="tasksFilterMenu">
-                          <template v-slot:activator="{props}">
-                            <DIconButton
-                              :parentProps="props"
-                              icon="mdi-filter-variant"
-                              :hint="t('TT_SHOW_FILTER')"
-                              :color="selectedTasksStatusFilter.length > 0 ? 'primary' : 'default'"
-                              location="top" />
-                          </template>
-                          <div class="bg-background" style="width: 280px">
-                            <v-row class="d-flex justify-end ma-1 mr-2">
-                              <DIconButton icon="mdi-close" @click="tasksFilterMenu = false" color="default" />
-                            </v-row>
-                            <v-select
-                              v-model="selectedTasksStatusFilter"
-                              :items="tasksStatusOptions"
-                              class="mx-2 pa-2 pb-4"
-                              :label="t('Lbl_filter_status')"
-                              clearable
-                              multiple
-                              item-title="text"
-                              item-value="value"
-                              variant="outlined"
-                              density="compact"
-                              menu
-                              transition="scale-transition"
-                              persistent-clear
-                              :list-props="{class: 'striped-filter-dd py-0'}">
-                              <template v-slot:item="{props}">
-                                <v-list-item v-bind="props" class="py-0 px-2">
-                                  <template v-slot:prepend="{isSelected}">
-                                    <v-checkbox hide-details :model-value="isSelected" />
-                                  </template>
-                                  <template v-slot:title="{title}">
-                                    <span class="pFilterEntry">{{ title }}</span>
-                                  </template>
-                                </v-list-item>
-                              </template>
-                              <template v-slot:selection="{item, index}">
-                                <div v-if="index === 0" class="d-flex align-center">
-                                  <span class="pFilterEntry">{{ item.title }}</span>
-                                </div>
-                                <span v-if="index === 1" class="pAdditionalFilter">
-                                  +{{ selectedTasksStatusFilter.length - 1 }} others
-                                </span>
-                              </template>
-                            </v-select>
-                          </div>
-                        </v-menu>
-                        <v-icon
-                          class="v-data-table-header__sort-icon"
-                          :icon="getSortIcon(column)"
-                          @click="toggleSort(column)" />
-                      </div>
+                      <span class="mr-1">{{ column.title }}</span>
+                      <GridHeaderFilterIcon
+                        v-model="selectedTasksStatusFilter"
+                        :column="column"
+                        :label="t('Lbl_filter_status')"
+                        :allItems="tasksStatusOptions" />
+                      <v-icon
+                        class="v-data-table-header__sort-icon"
+                        :icon="getSortIcon(column)"
+                        @click="toggleSort(column)" />
                     </template>
                     <template v-slot:[`item.projectName`]="{item}">
                       <a
@@ -717,62 +621,16 @@ const executeEntityDeletion = async () => {
                     :footer-props="{'items-per-page-options': [5, 10, 25, 50]}"
                     item-key="entityID">
                     <template v-slot:[`header.entitySubType`]="{column, toggleSort, getSortIcon}">
-                      <div class="v-data-table-header__content">
-                        <span>{{ column.title }}</span>
-                        <v-menu :close-on-content-click="false" v-model="rolesNameFilterMenu">
-                          <template v-slot:activator="{props}">
-                            <DIconButton
-                              :parentProps="props"
-                              icon="mdi-filter-variant"
-                              :hint="t('TT_SHOW_FILTER')"
-                              :color="selectedRolesNameFilter.length > 0 ? 'primary' : 'default'"
-                              location="top" />
-                          </template>
-                          <div class="bg-background" style="width: 280px">
-                            <v-row class="d-flex justify-end ma-1 mr-2">
-                              <DIconButton icon="mdi-close" @click="rolesNameFilterMenu = false" color="default" />
-                            </v-row>
-                            <v-select
-                              v-model="selectedRolesNameFilter"
-                              :items="rolesNameOptions"
-                              class="mx-2 pa-2 pb-4"
-                              :label="t('Lbl_filter_role')"
-                              clearable
-                              multiple
-                              item-title="text"
-                              item-value="value"
-                              variant="outlined"
-                              density="compact"
-                              menu
-                              transition="scale-transition"
-                              persistent-clear
-                              :list-props="{class: 'striped-filter-dd py-0'}">
-                              <template v-slot:item="{props}">
-                                <v-list-item v-bind="props" class="py-0 px-2">
-                                  <template v-slot:prepend="{isSelected}">
-                                    <v-checkbox hide-details :model-value="isSelected" />
-                                  </template>
-                                  <template v-slot:title="{title}">
-                                    <span class="pFilterEntry">{{ title }}</span>
-                                  </template>
-                                </v-list-item>
-                              </template>
-                              <template v-slot:selection="{item, index}">
-                                <div v-if="index === 0" class="d-flex align-center">
-                                  <span class="pFilterEntry">{{ item.title }}</span>
-                                </div>
-                                <span v-if="index === 1" class="pAdditionalFilter">
-                                  +{{ selectedRolesNameFilter.length - 1 }} others
-                                </span>
-                              </template>
-                            </v-select>
-                          </div>
-                        </v-menu>
-                        <v-icon
-                          class="v-data-table-header__sort-icon"
-                          :icon="getSortIcon(column)"
-                          @click="toggleSort(column)" />
-                      </div>
+                      <span class="mr-1">{{ column.title }}</span>
+                      <GridHeaderFilterIcon
+                        v-model="selectedRolesNameFilter"
+                        :column="column"
+                        :label="t('Lbl_filter_role')"
+                        :allItems="rolesNameOptions" />
+                      <v-icon
+                        class="v-data-table-header__sort-icon"
+                        :icon="getSortIcon(column)"
+                        @click="toggleSort(column)" />
                     </template>
                     <template v-slot:[`item.projectName`]="{item}">
                       <a
@@ -846,62 +704,16 @@ const executeEntityDeletion = async () => {
                     :footer-props="{'items-per-page-options': [5, 10, 25, 50]}"
                     item-key="entityID">
                     <template v-slot:[`header.entityName`]="{column, toggleSort, getSortIcon}">
-                      <div class="v-data-table-header__content">
-                        <span>{{ column.title }}</span>
-                        <v-menu :close-on-content-click="false" v-model="logsFilterMenu">
-                          <template v-slot:activator="{props}">
-                            <DIconButton
-                              :parentProps="props"
-                              icon="mdi-filter-variant"
-                              :hint="t('TT_SHOW_FILTER')"
-                              :color="selectedLogsFilter.length > 0 ? 'primary' : 'default'"
-                              location="top" />
-                          </template>
-                          <div class="bg-background" style="width: 280px">
-                            <v-row class="d-flex justify-end ma-1 mr-2">
-                              <DIconButton icon="mdi-close" @click="logsFilterMenu = false" color="default" />
-                            </v-row>
-                            <v-select
-                              v-model="selectedLogsFilter"
-                              :items="logsOptions"
-                              class="mx-2 pa-2 pb-4"
-                              :label="t('Lbl_filter_log_type')"
-                              clearable
-                              multiple
-                              item-title="text"
-                              item-value="value"
-                              variant="outlined"
-                              density="compact"
-                              menu
-                              transition="scale-transition"
-                              persistent-clear
-                              :list-props="{class: 'striped-filter-dd py-0'}">
-                              <template v-slot:item="{props}">
-                                <v-list-item v-bind="props" class="py-0 px-2">
-                                  <template v-slot:prepend="{isSelected}">
-                                    <v-checkbox hide-details :model-value="isSelected" />
-                                  </template>
-                                  <template v-slot:title="{title}">
-                                    <span class="pFilterEntry">{{ title }}</span>
-                                  </template>
-                                </v-list-item>
-                              </template>
-                              <template v-slot:selection="{item, index}">
-                                <div v-if="index === 0" class="d-flex align-center">
-                                  <span class="pFilterEntry">{{ item.title }}</span>
-                                </div>
-                                <span v-if="index === 1" class="pAdditionalFilter">
-                                  +{{ selectedLogsFilter.length - 1 }} others
-                                </span>
-                              </template>
-                            </v-select>
-                          </div>
-                        </v-menu>
-                        <v-icon
-                          class="v-data-table-header__sort-icon"
-                          :icon="getSortIcon(column)"
-                          @click="toggleSort(column)" />
-                      </div>
+                      <span class="mr-1">{{ column.title }}</span>
+                      <GridHeaderFilterIcon
+                        v-model="selectedLogsFilter"
+                        :column="column"
+                        :label="t('Lbl_filter_log_type')"
+                        :allItems="logsOptions" />
+                      <v-icon
+                        class="v-data-table-header__sort-icon"
+                        :icon="getSortIcon(column)"
+                        @click="toggleSort(column)" />
                     </template>
                     <template v-slot:[`item.entityName`]="{item}">
                       {{
