@@ -170,7 +170,11 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 		}
 		md.DelegatedTo = "-"
 		if data.DelegatedTo != "" {
-			md.DelegatedTo = data.DelegatedTo
+			delegationUser := a.userRepo.FindByUserId(data.RequestSession, data.DelegatedTo)
+			if delegationUser == nil || delegationUser.Email == "" {
+				break
+			}
+			md.DelegatedTo = delegationUser.Forename + " " + delegationUser.Lastname
 		}
 		approverUser := a.userRepo.FindByUserId(data.RequestSession, data.Approval.Plausibility.Approver)
 		if approverUser == nil || approverUser.Email == "" {
