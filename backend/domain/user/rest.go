@@ -166,3 +166,13 @@ func (entity *User) ToUserMailDto() *UserMailDto {
 		Email:    entity.Email,
 	}
 }
+
+type RoleDeletionResult struct {
+	ProjectID     string `json:"projectId"`
+	ProjectName   string `json:"projectName"`
+	RoleName      string `json:"roleName"`
+	IsResponsible bool   `json:"isResponsible"`
+	Deleted       bool   `json:"deleted"`
+	Skipped       bool   `json:"skipped"`
+	SkipReason    string `json:"skipReason,omitempty"`
+}

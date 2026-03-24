@@ -69,16 +69,6 @@ type UserHandler struct {
 	DeletionAuditRepo      deletionAuditRepo.IDeletionAuditRepository
 }
 
-type RoleDeletionResult struct {
-	ProjectID     string `json:"projectId"`
-	ProjectName   string `json:"projectName"`
-	RoleName      string `json:"roleName"`
-	IsResponsible bool   `json:"isResponsible"`
-	Deleted       bool   `json:"deleted"`
-	Skipped       bool   `json:"skipped"`
-	SkipReason    string `json:"skipReason,omitempty"`
-}
-
 type DeletePersonalDataEffectedEntities struct {
 	UserTasksCount  int `json:"user_tasks_count"`
 	UserRolesCount  int `json:"user_roles_count"`
@@ -1273,7 +1263,12 @@ func (handler *UserHandler) GetDeletionAuditTrailHandler(w http.ResponseWriter, 
 		return
 	}
 
-	entries := handler.DeletionAuditRepo.FindByTargetUser(requestSession, username)
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("TargetUser", database.EQ, username))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.DESC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
 	render.JSON(w, r, deletionaudit.ToDtos(entries))
 }
 
@@ -1294,7 +1289,12 @@ func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWr
 		return
 	}
 
-	entries := handler.DeletionAuditRepo.FindByOperationID(requestSession, operationId)
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("OperationID", database.EQ, operationId))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.ASC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
 	if len(entries) == 0 {
 		render.JSON(w, r, SuccessResponse{
 			Success: false,
@@ -1324,7 +1324,12 @@ func (handler *UserHandler) GetDeletionAuditByAdminHandler(w http.ResponseWriter
 		return
 	}
 
-	entries := handler.DeletionAuditRepo.FindByPerformedBy(requestSession, adminUser)
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("PerformedBy", database.EQ, adminUser))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.DESC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
 	render.JSON(w, r, deletionaudit.ToDtos(entries))
 }
 
