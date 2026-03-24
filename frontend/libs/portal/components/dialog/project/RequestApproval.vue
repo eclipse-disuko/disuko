@@ -7,10 +7,9 @@ import {UserDto} from '@disclosure-portal/model/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
-import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
@@ -22,7 +21,7 @@ import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 
 const projectStore = useProjectStore();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
@@ -216,8 +215,8 @@ const autoSelect = async () => {
     selectedChannel.value =
       channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
   }
-  if (Object.keys(appStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
-    selectedChannel.value = appStore.currentVersion;
+  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+    selectedChannel.value = sbomStore.currentVersion;
   }
   if (selectedChannel.value) {
     await loadSBOMHist();
@@ -227,7 +226,7 @@ const autoSelect = async () => {
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
     if (selectedSbom.value === null) {
-      selectedSbom.value = appStore.selectedSpdx ?? null;
+      selectedSbom.value = sbomStore.selectedSpdx ?? null;
     }
     await loadStats();
   }

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import Stack from '@shared/layouts/Stack.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, defineAsyncComponent, ref, watch} from 'vue';
@@ -30,7 +31,7 @@ const componentMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
 
 const route = useRoute();
 const router = useRouter();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {t} = useI18n();
 
 const tabs = ref<QualityTab[]>([
@@ -82,7 +83,7 @@ const reload = () => {
   }
 };
 
-const version = appStore.getCurrentVersion;
+const version = sbomStore.getCurrentVersion;
 
 const changeTab = (currentTab: QualityTab, query = '') => {
   const tabName = 'sbomQuality';

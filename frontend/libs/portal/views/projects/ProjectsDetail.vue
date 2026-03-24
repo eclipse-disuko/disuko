@@ -99,7 +99,7 @@ const reload = async () => {
 
 const initPage = async () => {
   await nextTick();
-  appStore.setDummyDesignMode();
+  appStore.setDummyDesignMode(currentProject.value?.isDummy ?? false);
   initBreadcrumbs();
 };
 

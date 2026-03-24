@@ -6,8 +6,8 @@ import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import {ComponentInfoSlim, SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
@@ -20,7 +20,7 @@ import {VForm} from 'vuetify/components';
 const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
 
 const {t} = useI18n();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
 const {minMax} = useRules();
 const {info: snack} = useSnackbar();
@@ -71,7 +71,7 @@ const licenses = computed((): LicenseMeta[] => {
 });
 
 const projectModel = computed((): Project => projectStore.currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
+const version = computed(() => sbomStore.getCurrentVersion);
 const versionID = computed(() => config.value.versionID || version.value._key);
 
 const dialogConfig = computed((): DialogLayoutConfig => {

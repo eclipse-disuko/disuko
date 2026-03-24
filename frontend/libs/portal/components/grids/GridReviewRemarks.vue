@@ -12,8 +12,8 @@ import {
 import type {BulkSetReviewRemarkStatusRequest} from '@disclosure-portal/model/ReviewRemarkBulkOperations';
 import {default as ProjectService} from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
@@ -29,7 +29,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
 const route = useRoute();
 const {t} = useI18n();
@@ -73,7 +73,7 @@ const bulkCancelVisible = ref(false);
 const lists = ref<Checklist[]>([]);
 
 const projectModel = computed((): Project => projectStore.currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
+const version = computed(() => sbomStore.getCurrentVersion);
 const checklistAvailable = computed(() => lists.value.length > 0);
 
 const possibleLevel = computed((): DataTableHeaderFilterItems[] => {

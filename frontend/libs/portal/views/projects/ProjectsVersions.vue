@@ -9,6 +9,7 @@ import versionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -24,13 +25,14 @@ const router = useRouter();
 const route = useRoute();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const {info: snack} = useSnackbar();
 const idle = useIdleStore();
 const {dashboardCrumbs, projectsCrumb, ...breadcrumbs} = useBreadcrumbsStore();
 const {useReactiveTitle} = usePageTitle();
 const {currentProject} = storeToRefs(projectStore);
 
-const {selectedSpdx, currentVersion, channelSpdxs} = storeToRefs(appStore);
+const {selectedSpdx, currentVersion, channelSpdxs} = storeToRefs(sbomStore);
 
 const reviewDia = ref(null);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -105,23 +107,23 @@ const reload = async () => {
   }
   if (!versionDetails.value || versionDetails.value._key !== versionKey.value) {
     const vd = currentProject.value?.versions[versionKey.value] ?? '';
-    appStore.setCurrentVersion(vd);
+    sbomStore.setCurrentVersion(vd);
     const spdxFileHistory = (await versionService.getSbomHistory(projectId.value, versionKey.value)).data;
     if (spdxFileHistory[0]) {
       spdxFileHistory[0].isRecent = true;
     }
-    appStore.setChannelSpdxs(spdxFileHistory);
+    sbomStore.setChannelSpdxs(spdxFileHistory);
   }
   let selectedByRoute = false;
   if (spdxKey.value) {
     const sel = spdxFileHistory.value.find((spdx) => spdx._key === spdxKey.value);
     if (sel) {
-      appStore.setSelectedSpdx(sel);
+      sbomStore.setSelectedSpdx(sel);
       selectedByRoute = true;
     }
   }
   if (!selectedByRoute) {
-    appStore.setSelectedSpdx(spdxFileHistory.value[0] || null);
+    sbomStore.setSelectedSpdx(spdxFileHistory.value[0] || null);
     await resetUrl();
   }
   if (route.name === 'VersionSubTap') {
@@ -132,7 +134,7 @@ const reload = async () => {
 
 const initPage = async () => {
   await nextTick();
-  appStore.setDummyDesignMode();
+  appStore.setDummyDesignMode(currentProject.value?.isDummy ?? false);
   initBreadcrumbs();
 };
 
@@ -300,8 +302,8 @@ watch(
 );
 
 onUnmounted(() => {
-  appStore.setCurrentVersion({} as VersionSlim);
-  appStore.setSelectedSpdx({} as SpdxFile);
+  sbomStore.setCurrentVersion({} as VersionSlim);
+  sbomStore.setSelectedSpdx({} as SpdxFile);
   appStore.unsetDummyDesignMode();
 });
 </script>

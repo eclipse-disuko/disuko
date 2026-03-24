@@ -3,8 +3,8 @@ import {Tags} from '@disclosure-portal/constants/ruleValidations';
 import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
@@ -43,8 +43,8 @@ export default defineComponent({
     const {t} = useI18n();
     const isVisible = ref(false);
     const tag = ref('');
-    const appStore = useAppStore();
     const projectStore = useProjectStore();
+    const sbomStore = useSbomStore();
     const dialog = ref<VForm | null>(null);
     const {info: snack} = useSnackbar();
     const showDialog = () => {
@@ -79,10 +79,10 @@ export default defineComponent({
             if (spdxFileHistory[0]) {
               spdxFileHistory[0].isRecent = true;
             }
-            appStore.setChannelSpdxs(spdxFileHistory);
-            await appStore.fetchAllSBOMs();
+            sbomStore.setChannelSpdxs(spdxFileHistory);
+            await sbomStore.fetchAllSBOMs();
           } else {
-            await appStore.fetchAllSBOMsFlat();
+            await sbomStore.fetchAllSBOMsFlat();
           }
           dialog.value?.reset();
           isVisible.value = false;
@@ -90,7 +90,7 @@ export default defineComponent({
       });
     };
     const projectModel = computed(() => projectStore.currentProject!);
-    const versionDetails = computed((): VersionSlim => appStore.getCurrentVersion);
+    const versionDetails = computed((): VersionSlim => sbomStore.getCurrentVersion);
 
     const activeRules = ref({
       tag: useRules().minMax(t('COL_SBOM_TAG'), Tags.TAG_MIN_LENGTH, Tags.TAG_MAX_LENGTH, false),

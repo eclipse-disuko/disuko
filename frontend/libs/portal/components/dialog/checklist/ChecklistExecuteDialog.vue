@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {Checklist} from '@disclosure-portal/model/Checklist';
 import projectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref} from 'vue';
@@ -12,10 +12,10 @@ import {useRoute} from 'vue-router';
 const {t} = useI18n();
 const {info: snack} = useSnackbar();
 const route = useRoute();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 
 const currentProject = computed(() => useProjectStore().currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
+const version = computed(() => sbomStore.getCurrentVersion);
 const sbom = computed(() =>
   Array.isArray(route.params.currentSbom) ? route.params.currentSbom[0] : route.params.currentSbom,
 );

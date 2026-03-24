@@ -8,7 +8,7 @@ import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';
 import {default as projectService} from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {defineStore} from 'pinia';
@@ -24,8 +24,6 @@ export enum ProjectStatusType {
 export const useProjectStore = defineStore('project', () => {
   const {info} = useSnackbar();
   const {t} = useI18n();
-  // TODO backwards-compatibility remove when appStore.currentProject is removed
-  const appStore = useAppStore();
 
   const state = reactive({
     projects: [] as ProjectSlim[],
@@ -45,9 +43,7 @@ export const useProjectStore = defineStore('project', () => {
 
   const resetCurrentProject = () => {
     state.currentProject = null;
-    appStore.selectedSpdx = {};
-    appStore.currentVersion = {};
-    appStore.resetCurrentProject();
+    useSbomStore().reset();
   };
 
   watch(
@@ -93,7 +89,6 @@ export const useProjectStore = defineStore('project', () => {
 
       const project = createProjectModel(await projectService.get(projectKey));
 
-      appStore.currentProject = project;
       state.currentProject = project;
       if (project.isGroup) {
         state.currentProject.projectChildren = await projectService.getChildren(projectKey);

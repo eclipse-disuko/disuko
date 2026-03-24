@@ -2,14 +2,14 @@
 import GridAuditLog from '@disclosure-portal/components/grids/GridAuditLog.vue';
 import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {computed} from 'vue';
 
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 
 const currentProject = computed(() => useProjectStore().currentProject!);
-const currentVersionId = computed(() => appStore.getCurrentVersion._key);
+const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
 const currentProjectId = computed(() => currentProject.value._key!);
 
 const fetchMethod = () => {
