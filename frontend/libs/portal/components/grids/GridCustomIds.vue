@@ -6,7 +6,6 @@ import adminService from '@disclosure-portal/services/admin';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -32,6 +31,12 @@ const reload = async () => {
 };
 
 const headers = computed(() => [
+  {
+    title: t('COL_ACTIONS'),
+    align: 'center',
+    width: 120,
+    value: 'actions',
+  },
   {
     title: t('COL_TID'),
     width: 140,
@@ -91,12 +96,6 @@ const headers = computed(() => [
     align: 'start',
     width: 120,
   },
-  {
-    title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 120,
-    value: 'actions',
-  },
 ]);
 
 const doDelete = async (config: IConfirmationDialogConfig) => {
@@ -155,8 +154,13 @@ onMounted(async () => {
           <DDateCellWithTooltip :value="item.updated" />
         </template>
         <template v-slot:[`item.actions`]="{item}">
-          <DIconButton icon="mdi-pencil" @clicked="dialog?.open(item)" />
-          <DIconButton icon="mdi-delete" @clicked="showConfirm(item)" />
+          <TableActionButtons
+            :buttons="[
+              {icon: 'mdi-pencil', event: 'edit'},
+              {icon: 'mdi-delete', event: 'delete'},
+            ]"
+            @edit="dialog?.open(item)"
+            @delete="showConfirm(item)" />
         </template>
       </v-data-table>
     </template>

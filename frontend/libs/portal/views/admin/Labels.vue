@@ -37,6 +37,12 @@ const icons = Icons;
 
 const headers = computed<DataTableHeader[]>(() => [
   {
+    title: t('COL_ACTIONS'),
+    align: 'center',
+    width: 120,
+    value: 'actions',
+  },
+  {
     title: t('CD_NAME'),
     align: 'start',
     value: 'name',
@@ -55,12 +61,6 @@ const headers = computed<DataTableHeader[]>(() => [
     width: 120,
     value: 'created',
     sortable: true,
-  },
-  {
-    title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 200,
-    value: 'actions',
   },
 ]);
 
@@ -148,6 +148,34 @@ const showCreateProjectLabelDialog = () => {
 
 const sortItems = [{key: 'name', order: 'asc'} as SortItem];
 
+const labelButtons = computed(() => {
+  const editHints = {
+    schema: t('TT_edit_schema_label'),
+    policy: t('TT_edit_policy_label'),
+    project: t('TT_edit_project_label'),
+  };
+  const deleteHints = {
+    schema: t('TT_delete_schema_label'),
+    policy: t('TT_delete_policy_label'),
+    project: t('TT_delete_project_label'),
+  };
+  const tab = selectedTab.value as 'schema' | 'policy' | 'project';
+  return [
+    {
+      icon: 'mdi-pencil',
+      event: 'edit',
+      hint: editHints[tab],
+      show: !!(rights.value.allowLabel && rights.value.allowLabel.update),
+    },
+    {
+      icon: 'mdi-delete',
+      event: 'delete',
+      hint: deleteHints[tab],
+      show: !!(rights.value.allowLabel && rights.value.allowLabel.delete),
+    },
+  ];
+});
+
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs([
     ...dashboardCrumbs,
@@ -204,31 +232,25 @@ const updateTableHeight = () => {
             <v-tabs-window-item value="schema" @click="releaseKeys()">
               <TableLayout has-title has-tab>
                 <template #buttons>
-                  <div class="grid grid-cols-12 gap-4 w-full">
-                    <div class="lg:col-span-4 md:col-span-4 sm:col-span-8">
-                      <span class="text-h6">{{ t('TITLE_SCHEMA_LABELS') }}</span>
-                      <DCActionButton
-                        v-if="rights.allowLabel && rights.allowLabel.create"
-                        large
-                        :text="t('BTN_ADD')"
-                        class="mx-2"
-                        icon="mdi-plus"
-                        :hint="t('TT_add_schema_label')"
-                        @click="showCreateSchemaLabelDialog" />
-                    </div>
-                    <v-spacer class="lg:col-span-5 md:col-span-4 sm:col-span-0"></v-spacer>
-                    <div class="lg:col-span-3 md:col-span-4 sm:col-span-8">
-                      <v-text-field
-                        autocomplete="off"
-                        v-model="schemaLabelSearch"
-                        hide-details="auto"
-                        variant="outlined"
-                        density="compact"
-                        append-inner-icon="mdi-magnify"
-                        clearable
-                        :label="t('labelSearch')" />
-                    </div>
-                  </div>
+                  <span class="text-h6">{{ t('TITLE_SCHEMA_LABELS') }}</span>
+                  <DCActionButton
+                    v-if="rights.allowLabel && rights.allowLabel.create"
+                    large
+                    :text="t('BTN_ADD')"
+                    class="mx-2"
+                    icon="mdi-plus"
+                    :hint="t('TT_add_schema_label')"
+                    @click="showCreateSchemaLabelDialog" />
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="schemaLabelSearch"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    append-inner-icon="mdi-magnify"
+                    clearable
+                    :label="t('labelSearch')" />
                 </template>
                 <template #table>
                   <v-data-table
@@ -255,16 +277,10 @@ const updateTableHeight = () => {
                     </template>
 
                     <template #[`item.actions`]="{item}">
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.update"
-                        icon="mdi-pencil"
-                        :hint="t('TT_edit_schema_label')"
-                        @clicked="showEditLabelDialog(item)"></DIconButton>
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.delete"
-                        icon="mdi-delete"
-                        :hint="t('TT_delete_schema_label')"
-                        @clicked="showConfirm(item)"></DIconButton>
+                      <TableActionButtons
+                        :buttons="labelButtons"
+                        @edit="showEditLabelDialog(item)"
+                        @delete="showConfirm(item)" />
                     </template>
                   </v-data-table>
                 </template>
@@ -273,39 +289,32 @@ const updateTableHeight = () => {
             <v-tabs-window-item value="policy" @click="releaseKeys()">
               <TableLayout has-title has-tab>
                 <template #buttons>
-                  <div class="grid grid-cols-12 gap-4 w-full">
-                    <div class="lg:col-span-5 md:col-span-5 sm:col-span-8">
-                      <span class="text-h6">{{ t('TITLE_POLICY_LABELS') }}</span>
-                      <DCActionButton
-                        large
-                        :text="t('BTN_ADD')"
-                        class="mx-2"
-                        icon="mdi-plus"
-                        :hint="t('TT_add_policy_label')"
-                        @click="showCreatePolicyLabelDialog"
-                        v-if="rights.allowLabel && rights.allowLabel.create" />
-                    </div>
-                    <v-spacer class="lg:col-span-2 md:col-span-1 sm:col-span-0"></v-spacer>
-                    <div class="lg:col-span-5 md:col-span-6 sm:col-span-10">
-                      <div class="flex gap-4 justify-space-between">
-                        <DCActionButton
-                          large
-                          icon="mdi-download"
-                          :text="t('BTN_DOWNLOAD')"
-                          :hint="t('TT_download_label_csv')"
-                          @click="downloadCsv" />
-                        <v-text-field
-                          autocomplete="off"
-                          v-model="policyLabelSearch"
-                          hide-details="auto"
-                          variant="outlined"
-                          density="compact"
-                          append-inner-icon="mdi-magnify"
-                          clearable
-                          :label="t('labelSearch')" />
-                      </div>
-                    </div>
-                  </div>
+                  <span class="text-h6">{{ t('TITLE_POLICY_LABELS') }}</span>
+                  <DCActionButton
+                    large
+                    :text="t('BTN_ADD')"
+                    class="mx-2"
+                    icon="mdi-plus"
+                    :hint="t('TT_add_policy_label')"
+                    @click="showCreatePolicyLabelDialog"
+                    v-if="rights.allowLabel && rights.allowLabel.create" />
+                  <v-spacer></v-spacer>
+
+                  <DCActionButton
+                    large
+                    icon="mdi-download"
+                    :text="t('BTN_DOWNLOAD')"
+                    :hint="t('TT_download_label_csv')"
+                    @click="downloadCsv" />
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="policyLabelSearch"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    append-inner-icon="mdi-magnify"
+                    clearable
+                    :label="t('labelSearch')" />
                 </template>
                 <template #table>
                   <v-data-table
@@ -329,16 +338,10 @@ const updateTableHeight = () => {
                     </template>
 
                     <template #[`item.actions`]="{item}">
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.update"
-                        icon="mdi-pencil"
-                        :hint="t('TT_edit_policy_label')"
-                        @clicked="showEditLabelDialog(item)"></DIconButton>
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.delete"
-                        icon="mdi-delete"
-                        :hint="t('TT_delete_policy_label')"
-                        @clicked="showConfirm(item)"></DIconButton>
+                      <TableActionButtons
+                        :buttons="labelButtons"
+                        @edit="showEditLabelDialog(item)"
+                        @delete="showConfirm(item)" />
                     </template>
 
                     <template #[`item.description`]="{item}">
@@ -351,39 +354,31 @@ const updateTableHeight = () => {
             <v-tabs-window-item value="project" @click="releaseKeys()">
               <TableLayout has-title has-tab>
                 <template #buttons>
-                  <div class="grid grid-cols-12 gap-4 w-full">
-                    <div class="lg:col-span-5 md:col-span-5 sm:col-span-8">
-                      <span class="text-h6">{{ t('TITLE_PROJECT_LABELS') }}</span>
-                      <DCActionButton
-                        v-if="rights.allowLabel && rights.allowLabel.create"
-                        large
-                        :text="t('BTN_ADD')"
-                        class="mx-2"
-                        icon="mdi-plus"
-                        :hint="t('TT_add_project_label')"
-                        @click="showCreateProjectLabelDialog" />
-                    </div>
-                    <v-spacer class="lg:col-span-2 md:col-span-1 sm:col-span-0"></v-spacer>
-                    <div class="lg:col-span-5 md:col-span-6 sm:col-span-10">
-                      <div class="flex gap-4 justify-space-between">
-                        <DCActionButton
-                          :text="t('BTN_DOWNLOAD')"
-                          large
-                          icon="mdi-download"
-                          :hint="t('TT_download_label_csv')"
-                          @click="downloadCsv" />
-                        <v-text-field
-                          autocomplete="off"
-                          v-model="projectLabelSearch"
-                          hide-details="auto"
-                          variant="outlined"
-                          density="compact"
-                          append-inner-icon="mdi-magnify"
-                          clearable
-                          :label="t('labelSearch')" />
-                      </div>
-                    </div>
-                  </div>
+                  <span class="text-h6">{{ t('TITLE_PROJECT_LABELS') }}</span>
+                  <DCActionButton
+                    v-if="rights.allowLabel && rights.allowLabel.create"
+                    large
+                    :text="t('BTN_ADD')"
+                    class="mx-2"
+                    icon="mdi-plus"
+                    :hint="t('TT_add_project_label')"
+                    @click="showCreateProjectLabelDialog" />
+                  <v-spacer></v-spacer>
+                  <DCActionButton
+                    :text="t('BTN_DOWNLOAD')"
+                    large
+                    icon="mdi-download"
+                    :hint="t('TT_download_label_csv')"
+                    @click="downloadCsv" />
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="projectLabelSearch"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    append-inner-icon="mdi-magnify"
+                    clearable
+                    :label="t('labelSearch')" />
                 </template>
                 <template #table>
                   <v-data-table
@@ -411,16 +406,10 @@ const updateTableHeight = () => {
                     </template>
 
                     <template #[`item.actions`]="{item}">
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.update"
-                        icon="mdi-pencil"
-                        :hint="t('TT_edit_project_label')"
-                        @clicked="showEditLabelDialog(item)"></DIconButton>
-                      <DIconButton
-                        v-if="rights.allowLabel && rights.allowLabel.delete"
-                        icon="mdi-delete"
-                        :hint="t('TT_delete_project_label')"
-                        @clicked="showConfirm(item)"></DIconButton>
+                      <TableActionButtons
+                        :buttons="labelButtons"
+                        @edit="showEditLabelDialog(item)"
+                        @delete="showConfirm(item)" />
                     </template>
 
                     <template #[`item.description`]="{item}">

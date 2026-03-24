@@ -4,7 +4,6 @@ import InternalTokenDialog from '@disclosure-portal/components/dialog/InternalTo
 import {InternalToken} from '@disclosure-portal/model/InternalToken';
 import adminService from '@disclosure-portal/services/admin';
 import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -32,7 +31,6 @@ const reload = async () => {
   }
 };
 
-// Function to determine status based on revoked and expiry
 const getStatus = (item: InternalToken) => {
   if (item.revoked) {
     return {text: t('STATUS_REVOKED'), color: 'error', icon: 'mdi-cancel'};
@@ -52,6 +50,12 @@ const getStatus = (item: InternalToken) => {
 
 const headers = computed(() => {
   return [
+    {
+      title: t('COL_ACTIONS'),
+      align: 'center' as const,
+      width: 120,
+      value: 'actions',
+    },
     {
       title: t('COL_NAME'),
       align: 'start' as const,
@@ -85,13 +89,6 @@ const headers = computed(() => {
       align: 'start' as const,
       width: 160,
     },
-
-    {
-      title: t('COL_ACTIONS'),
-      align: 'center' as const,
-      width: 200,
-      value: 'actions',
-    },
   ];
 });
 
@@ -105,16 +102,11 @@ const handleAddToken = () => {
 
 const doDelete = async (config: IConfirmationDialogConfig) => {
   if (config.okButton === 'BTN_RENEW') {
-    // Handle renew action
     const response = await adminService.renewInternalToken(config.key);
     const renewedToken = response.data;
-
-    // Show success message
     snack(t('DIALOG_internal_token_renew_success'));
-
     dialog.value?.showToken(renewedToken, true);
   } else {
-    // Handle revoke action
     await adminService.revokeInternalToken(config.key);
     snack(t('DIALOG_internal_token_revoke_success'));
   }
@@ -183,19 +175,21 @@ const showConfirm = async (item: InternalToken) => {
           </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{item}">
-          <DIconButton
-            v-if="
-              !item.revoked &&
-              item.expiry &&
-              !isNaN(new Date(item.expiry).getTime()) &&
-              new Date(item.expiry) > new Date()
-            "
-            icon="mdi-refresh"
-            @clicked="showRenewConfirm(item)" />
-          <DIconButton
-            v-if="!item.revoked && (!item.expiry || new Date(item.expiry) > new Date())"
-            icon="mdi-delete"
-            @clicked="showConfirm(item)" />
+          <TableActionButtons
+            :buttons="[
+              {
+                icon: 'mdi-refresh',
+                event: 'renew',
+                show: !item.revoked && !!item.expiry && new Date(item.expiry) > new Date(),
+              },
+              {
+                icon: 'mdi-delete',
+                event: 'revoke',
+                show: !item.revoked && (!item.expiry || new Date(item.expiry) > new Date()),
+              },
+            ]"
+            @renew="showRenewConfirm(item)"
+            @revoke="showConfirm(item)" />
         </template>
       </v-data-table>
     </template>
