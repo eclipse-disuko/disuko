@@ -1,11 +1,11 @@
 <template>
   <DSimpleDialog v-model="modelValue" :title="title">
     <Stack direction="row" align="start" class="gap-4">
-      <div ref="contentRef" :class="tableOfContents.length > 0 ? 'flex-[3]' : 'flex-1'">
+      <div ref="contentRef" :class="tableOfContents.length > 0 ? 'flex-[3]' : 'flex-1'" class="pr-4 border-r border-grey-70/50">
         <Markdown :text="enhancedText"></Markdown>
       </div>
-      <div v-if="tableOfContents.length > 0" class="flex-1 self-start sticky top-0">
-        <Stack class="max-h-[70vh] p-4 rounded-lg border">
+      <div v-if="tableOfContents.length > 0" class="flex-1 self-start sticky top-0 pl-4">
+        <Stack class="max-h-[70vh]">
           <div class="text-sm font-semibold sticky top-0">Table of Contents</div>
           <nav class="flex flex-col">
             <a
@@ -14,8 +14,9 @@
               :href="`#${item.id}`"
               :class="[
                 'block my-1 text-sm border-l-2 border-transparent text-font',
-                'hover:text-yellow-45 hover:border-l-yellow-45 ',
+                'hover:text-yellow-45 hover:border-l-yellow-45',
                 {
+                  'text-yellow-45 border-l-yellow-45': activeId === item.id,
                   'pl-1 font-semibold': item.level === 1,
                   'pl-3': item.level === 2,
                   'pl-5 text-xs': item.level === 3,
@@ -24,7 +25,7 @@
                   'pl-[60px] text-[11px]': item.level === 6,
                 },
               ]"
-              @click.prevent="scrollToHeading(item.id)">
+              @click.prevent="scrollToHeading(item.id); activeId = item.id">
               {{ item.text }}
             </a>
           </nav>
@@ -38,7 +39,7 @@
 import Markdown from '@shared/components/Markdown.vue';
 import DSimpleDialog from '@shared/components/disco/DSimpleDialog.vue';
 import Stack from '@shared/layouts/Stack.vue';
-import {computed, ref} from 'vue';
+import {computed, ref, watchEffect} from 'vue';
 
 interface Props {
   title: string;
@@ -55,6 +56,7 @@ const modelValue = defineModel<boolean>({required: true});
 const props = defineProps<Props>();
 
 const contentRef = ref<HTMLElement | null>(null);
+const activeId = ref<string>('');
 
 const cleanHeaderText = (text: string): string => {
   return text
@@ -98,6 +100,12 @@ const tableOfContents = computed<TocItem[]>(() => {
   });
 
   return headings;
+});
+
+watchEffect(() => {
+  if (tableOfContents.value.length > 0 && !activeId.value) {
+    activeId.value = tableOfContents.value[0].id;
+  }
 });
 
 const enhancedText = computed(() => {
