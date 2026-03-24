@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/eclipse-disuko/disuko/connector/userrole"
+	"github.com/eclipse-disuko/disuko/domain/deletionaudit"
 	"github.com/eclipse-disuko/disuko/helper/stopwatch"
 
 	"github.com/eclipse-disuko/disuko/helper/filter"
@@ -28,6 +29,7 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/sort"
 
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	deletionAuditRepo "github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
 	labels "github.com/eclipse-disuko/disuko/infra/repository/labels"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 
@@ -64,6 +66,7 @@ type UserHandler struct {
 	NewsBoxRepository      newsboxRepo.IRepo
 	DeletionService        *userService.DeletionService
 	UserService            *userService.Service
+	DeletionAuditRepo      deletionAuditRepo.IDeletionAuditRepository
 }
 
 type DeletePersonalDataEffectedEntities struct {
@@ -1241,4 +1244,132 @@ func (handler *UserHandler) DeletePersonalDataByEntityHandler(w http.ResponseWri
 		Success: true,
 		Message: message.GetI18N(message.UserManagementEntityDeleted).Code,
 	})
+}
+
+func (handler *UserHandler) GetDeletionAuditTrailHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	username := chi.URLParam(r, "username")
+	if username == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Text,
+		})
+		return
+	}
+
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("TargetUser", database.EQ, username))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.DESC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
+	render.JSON(w, r, deletionaudit.ToDtos(entries))
+}
+
+func (handler *UserHandler) GetDeletionAuditByOperationHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	operationId := chi.URLParam(r, "operationId")
+	if operationId == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "operationId").Text,
+		})
+		return
+	}
+
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("OperationID", database.EQ, operationId))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.ASC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
+	if len(entries) == 0 {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: "No audit entries found for this operation",
+		})
+		return
+	}
+
+	summary := buildAuditSummary(operationId, entries)
+	render.JSON(w, r, summary)
+}
+
+func (handler *UserHandler) GetDeletionAuditByAdminHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	adminUser := chi.URLParam(r, "adminUser")
+	if adminUser == "" {
+		render.JSON(w, r, SuccessResponse{
+			Success: false,
+			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "adminUser").Text,
+		})
+		return
+	}
+
+	qc := &database.QueryConfig{}
+	qc.SetMatcher(database.AttributeMatcher("PerformedBy", database.EQ, adminUser))
+	qc.SetSort(database.SortConfig{
+		database.SortAttribute{Name: "Timestamp", Order: database.DESC},
+	})
+	entries := handler.DeletionAuditRepo.Query(requestSession, qc)
+	render.JSON(w, r, deletionaudit.ToDtos(entries))
+}
+
+func buildAuditSummary(operationID string, entries []*deletionaudit.DeletionAuditEntry) *deletionaudit.DeletionAuditSummaryDto {
+	summary := &deletionaudit.DeletionAuditSummaryDto{
+		OperationID:  operationID,
+		PerformedBy:  entries[0].PerformedBy,
+		TargetUser:   entries[0].TargetUser,
+		Timestamp:    entries[0].Timestamp,
+		TotalActions: len(entries),
+		TaskEntries:  make([]deletionaudit.DeletionAuditEntryDto, 0),
+		RoleEntries:  make([]deletionaudit.DeletionAuditEntryDto, 0),
+		TraceEntries: make([]deletionaudit.DeletionAuditEntryDto, 0),
+		ProfileEntry: make([]deletionaudit.DeletionAuditEntryDto, 0),
+	}
+
+	for _, e := range entries {
+		dto := e.ToDto()
+		switch e.Category {
+		case deletionaudit.CategoryTask:
+			summary.TaskEntries = append(summary.TaskEntries, dto)
+		case deletionaudit.CategoryRole:
+			summary.RoleEntries = append(summary.RoleEntries, dto)
+		case deletionaudit.CategoryTrace:
+			summary.TraceEntries = append(summary.TraceEntries, dto)
+		case deletionaudit.CategoryProfile:
+			summary.ProfileEntry = append(summary.ProfileEntry, dto)
+		}
+
+		switch e.Result {
+		case deletionaudit.ResultSuccess:
+			summary.Succeeded++
+		case deletionaudit.ResultSkipped:
+			summary.Skipped++
+		case deletionaudit.ResultFailed:
+			summary.Failed++
+		case deletionaudit.ResultRetained:
+			summary.Retained++
+		}
+	}
+
+	return summary
 }
