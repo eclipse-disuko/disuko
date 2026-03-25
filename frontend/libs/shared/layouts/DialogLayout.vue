@@ -46,33 +46,39 @@ const {t} = useI18n();
 
       <v-spacer></v-spacer>
 
-      <DCActionButton
-        v-if="!config?.secondaryButton && !config?.primaryButton"
-        is-dialog-button
-        size="small"
-        variant="flat"
-        @click="emit('close')"
-        :text="t('BTN_CLOSE')" />
+      <template v-if="$slots.right">
+        <slot name="right"></slot>
+      </template>
 
-      <DCActionButton
-        v-if="config?.secondaryButton"
-        is-dialog-button
-        size="small"
-        variant="text"
-        @click="emit('secondaryAction')"
-        :disabled="config?.secondaryButton?.disabled"
-        :loading="config?.secondaryButton?.loading"
-        :text="config?.secondaryButton?.text" />
+      <template v-else>
+        <DCActionButton
+          v-if="!config?.secondaryButton && !config?.primaryButton"
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="emit('close')"
+          :text="t('BTN_CLOSE')" />
 
-      <DCActionButton
-        v-if="config?.primaryButton"
-        is-dialog-button
-        size="small"
-        variant="flat"
-        @click="emit('primaryAction')"
-        :disabled="config?.primaryButton?.disabled"
-        :loading="config?.primaryButton?.loading"
-        :text="config?.primaryButton?.text" />
+        <DCActionButton
+          v-if="config?.secondaryButton"
+          is-dialog-button
+          size="small"
+          variant="text"
+          @click="emit('secondaryAction')"
+          :disabled="config?.secondaryButton?.disabled"
+          :loading="config?.secondaryButton?.loading"
+          :text="config?.secondaryButton?.text" />
+
+        <DCActionButton
+          v-if="config?.primaryButton"
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="emit('primaryAction')"
+          :disabled="config?.primaryButton?.disabled"
+          :loading="config?.primaryButton?.loading"
+          :text="config?.primaryButton?.text" />
+      </template>
     </Stack>
   </v-card>
 </template>

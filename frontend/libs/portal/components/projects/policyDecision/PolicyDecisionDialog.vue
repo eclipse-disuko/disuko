@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import {DialogPolicyDecisionConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import Icons from '@disclosure-portal/constants/icons';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
@@ -14,9 +12,10 @@ import useRules from '@disclosure-portal/utils/Rules';
 import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {computed, ref, watch} from 'vue';
+import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {DialogPolicyDecisionConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 
 const {t} = useI18n();
 const {info} = useSnackbar();
@@ -33,8 +32,6 @@ const comment = ref<string | undefined>(undefined);
 const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
 const selectedPolicy = ref<PolicyRuleStatus | undefined>(undefined);
-const policyDecision = ref<'allow' | 'deny' | null>(null);
-const policyDecisionError = ref(false);
 
 const policyDecisionRule = rules.required(t('POLICY_DECISION'));
 const commentRulesMinMaxRule = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
@@ -74,7 +71,6 @@ const verificationText = computed(() =>
     : t('DENIED_POLICY_DECISION_VERIFICATION_NOTE_TEXT'),
 );
 
-const policyDecisionBorderColor = computed(() => (policyDecisionError.value ? 'border-rose-400' : 'border-grey-500'));
 const commentRequired = computed(() => config.value.type === 'deny');
 const commentRules = computed(() => {
   return commentRequired.value ? [...commentRulesMinMaxRule, ...commentRequiredRule] : [...commentRulesMinMaxRule];
@@ -91,16 +87,11 @@ const open = async (
   if (policies.value.length === 1) {
     selectedPolicy.value = policies.value[0];
   }
-  policyDecision.value = null;
-  policyDecisionError.value = false;
   isVisible.value = true;
 };
 
-const doDialogAction = async () => {
-  if (!(await form.value?.validate())?.valid || !policyDecision.value) {
-    if (!policyDecision.value) {
-      policyDecisionError.value = true;
-    }
+const doDialogAction = async (decision: 'allow' | 'deny') => {
+  if (!(await form.value?.validate())?.valid) {
     return;
   }
 
@@ -115,7 +106,7 @@ const doDialogAction = async () => {
     licenseId: licenseMatched.value,
     policyId: selectedPolicy.value!.key,
     policyEvaluated: policyType.value,
-    policyDecision: policyDecision.value!,
+    policyDecision: decision,
     comment: comment.value ?? '',
     creator: userStore.getProfile.user,
   };
@@ -131,7 +122,6 @@ const doDialogAction = async () => {
     return;
   }
   form.value?.reset();
-  policyDecision.value = null;
   emit('reload');
   close();
   info(t('POLICY_DECISION_CREATED'));
@@ -139,8 +129,6 @@ const doDialogAction = async () => {
 
 const dialogConfig = computed(() => ({
   title: t('POLICY_DECISION_CREATE'),
-  primaryButton: {text: t('BTN_CREATE'), disabled: !verification.value},
-  secondaryButton: {text: t('BTN_CANCEL')},
 }));
 
 const close = () => {
@@ -153,28 +141,41 @@ const closeAndTriggerBulk = () => {
   emit('triggerBulk');
 };
 
-watch(policyDecision, (newValue) => {
-  if (newValue !== null) {
-    policyDecisionError.value = false;
-  }
-});
-
 defineExpose({open});
 </script>
 
 <template>
   <v-dialog v-model="isVisible" width="650" persistent>
-    <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
+    <DialogLayout :config="dialogConfig" @close="close">
       <template v-if="isWarned" #left>
         <DCActionButton
           size="small"
           is-dialog-button
-          variant="outlined"
           @click="closeAndTriggerBulk"
           :text="t('BTN_BULK_POLICY_DECISION')"
           icon="mdi-checkbox-marked-circle-plus-outline" />
       </template>
-      <v-form ref="form" @submit.prevent="doDialogAction">
+      <template #right>
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="doDialogAction('allow')"
+          :disabled="!verification"
+          :color="!verification ? 'gray' : 'success'"
+          :text="t('ALLOW')" />
+
+        <DCActionButton
+          v-if="isWarned"
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="doDialogAction('deny')"
+          :disabled="!verification"
+          :color="!verification ? 'gray' : 'error'"
+          :text="t('DENY')" />
+      </template>
+      <v-form ref="form">
         <Stack>
           <v-text-field
             autocomplete="off"
@@ -241,21 +242,6 @@ defineExpose({open});
             persistent-placeholder
             :class="commentRequired ? 'required' : ''"
             :rules="commentRules" />
-          <div :class="`relative rounded border ${policyDecisionBorderColor} px-4`">
-            <label class="opacity-100 absolute left-2 -top-2 v-label text-xs px-2 bg-[rgb(var(--v-theme-surface))]">
-              {{ t('POLICY_DECISION') }}
-            </label>
-            <v-chip-group v-model="policyDecision" mandatory class="my-1 py-0" variant="outlined">
-              <v-chip value="allow" color="success" size="small">
-                <v-icon start>{{ Icons.ALLOW }}</v-icon>
-                <span class="font-bold">{{ t('ALLOW') }}</span>
-              </v-chip>
-              <v-chip v-if="isWarned" value="deny" color="error" size="small">
-                <v-icon start>{{ Icons.DENY }}</v-icon>
-                <span class="font-bold">{{ t('DENY') }}</span>
-              </v-chip>
-            </v-chip-group>
-          </div>
           <v-checkbox v-model="verification" :label="verificationText" hide-details />
         </Stack>
       </v-form>
