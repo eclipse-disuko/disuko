@@ -503,10 +503,18 @@ func (spdxHandler *SPDXHandler) PublicSpdxLockHandler(w http.ResponseWriter, r *
 		spdx.IsLocked = true
 		spdxHandler.SbomListRepository.Update(rs, l)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(rs, version.Key, project.OriginApi, message.SpdxFileLocked, spdx)
+		spdxHandler.markProjectSbomRetainFlag(rs, currentProject)
 		render.JSON(w, r, SuccessResponse{
 			Success: true,
 			Message: "Spdx locked",
 		})
+	}
+}
+
+func (spdxHandler *SPDXHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
+	if !prj.HasSBOMToRetain {
+		prj.HasSBOMToRetain = true
+		spdxHandler.ProjectRepository.Update(requestSession, prj)
 	}
 }
 

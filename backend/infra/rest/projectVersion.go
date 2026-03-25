@@ -2496,18 +2496,21 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 		return
 	}
 
-	if len(createData.SBOMId) > 0 {
+	if createData.SBOMId != "" {
 		sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
-		changed := false
 		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key == createData.SBOMId && !sbom.IsInUse {
-				sbom.IsInUse = true
-				changed = true
+			if sbom.Key != createData.SBOMId {
+				continue
 			}
-		}
-		if changed {
+			if sbom.IsInUse {
+				break
+			}
+
+			sbom.IsInUse = true
 			projectHandler.SbomListRepository.Update(requestSession, sbomList)
+			break
 		}
+		projectHandler.markProjectSbomRetainFlag(requestSession, currentProject)
 	}
 
 	responseData := SuccessResponse{

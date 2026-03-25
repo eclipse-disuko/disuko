@@ -118,6 +118,7 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 			ScanRemarksService:  &srS,
 			ProjectLabelService: &plS,
 			PolicyDecisionsRepo: s.repos.policyDecisions,
+			ProjectRepo:         s.repos.project,
 		},
 		wizard: project.WizardService{
 			LabelRepository:        s.repos.label,

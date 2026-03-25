@@ -221,18 +221,19 @@ func (s *ApprovalService) deletePending(app *approval.Approval) {
 
 func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable) {
 	for _, projectApprovable := range projects {
-		if projectApprovable.ApprovableSPDX.SpdxKey == "" || projectApprovable.ApprovableSPDX.VersionKey == "" {
+		spdxKey := projectApprovable.ApprovableSPDX.SpdxKey
+		versionKey := projectApprovable.ApprovableSPDX.VersionKey
+		if spdxKey == "" || versionKey == "" {
 			continue
 		}
 
-		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, projectApprovable.ApprovableSPDX.VersionKey, false)
+		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, versionKey, false)
 		if sbomList == nil {
 			continue
 		}
 
-		changed := false
 		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key != projectApprovable.ApprovableSPDX.SpdxKey {
+			if sbom.Key != spdxKey {
 				continue
 			}
 			if sbom.IsInUse {
@@ -240,11 +241,8 @@ func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable)
 			}
 
 			sbom.IsInUse = true
-			changed = true
-			break
-		}
-		if changed {
 			s.SBOMListRepo.Update(s.RequestSession, sbomList)
+			break
 		}
 	}
 }

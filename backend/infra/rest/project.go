@@ -1461,10 +1461,18 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 	if len(currentProject.Children) > 0 {
 		projects := projectHandler.ProjectRepository.FindByKeys(requestSession, currentProject.Children, false)
 
+		var projectsToUpdate []*project.Project
+
 		for _, pr := range projects {
-			pr.HasSBOMToRetain = true
+			if !pr.HasSBOMToRetain {
+				pr.HasSBOMToRetain = true
+				projectsToUpdate = append(projectsToUpdate, pr)
+			}
 		}
-		projectHandler.ProjectRepository.UpdateList(requestSession, projects)
+
+		if len(projectsToUpdate) > 0 {
+			projectHandler.ProjectRepository.UpdateList(requestSession, projectsToUpdate)
+		}
 	}
 
 	if approvalType != approvable.APPROVAL_TYPE_PLAUSI {
@@ -2866,7 +2874,7 @@ func (projectHandler *ProjectHandler) CreateBulkPolicyDecisions(w http.ResponseW
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntriesByKey(requestSession, currentProject.Key, auditEntries)
-	projectHandler.markSbomIsInUse(requestSession, currentVersion, sbomId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, sbomId)
 
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
@@ -2999,7 +3007,7 @@ func (projectHandler *ProjectHandler) CreatePolicyDecision(w http.ResponseWriter
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.PolicyDecisionCreated, cmp.Diff, newPolicyDecision, policydecisions2.PolicyDecision{})
-	projectHandler.markSbomIsInUse(requestSession, currentVersion, policyDecisionData.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, policyDecisionData.SBOMId)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "policy decision created",
@@ -3147,7 +3155,7 @@ func (projectHandler *ProjectHandler) CreateLicenseRule(w http.ResponseWriter, r
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.LicenseRuleCreated, cmp.Diff, licenseRule, licenserules2.LicenseRule{})
-	projectHandler.markSbomIsInUse(requestSession, currentVersion, licenseRule.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, licenseRule.SBOMId)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "license rule created",
@@ -3327,26 +3335,38 @@ func (projectHandler *ProjectHandler) CheckProjectDeletionEligibility(
 	return ""
 }
 
+func (projectHandler *ProjectHandler) markSbomUsageFlags(requestSession *logy.RequestSession, prj *project.Project, version *project.ProjectVersion, sbomUuid string) {
+	projectHandler.markSbomIsInUse(requestSession, version, sbomUuid)
+	projectHandler.markProjectSbomRetainFlag(requestSession, prj)
+}
+
 func (projectHandler *ProjectHandler) markSbomIsInUse(requestSession *logy.RequestSession, version *project.ProjectVersion, sbomUuid string) {
 	sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
 	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-	var spdxBase *project.SpdxFileBase
+
 	for _, spdx := range sbomList.SpdxFileHistory {
-		if spdx.Key == sbomUuid {
-			spdxBase = spdx
-			break
+		if spdx.Key != sbomUuid {
+			continue
 		}
-	}
-	if spdxBase == nil {
-		exception.ThrowExceptionBadRequestResponse()
-	}
-	if spdxBase.IsInUse {
+		if spdx.IsInUse {
+			return
+		}
+
+		spdx.IsInUse = true
+		projectHandler.SbomListRepository.Update(requestSession, sbomList)
 		return
 	}
-	spdxBase.IsInUse = true
-	projectHandler.SbomListRepository.Update(requestSession, sbomList)
+
+	exception.ThrowExceptionBadRequestResponse()
+}
+
+func (projectHandler *ProjectHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
+	if !prj.HasSBOMToRetain {
+		prj.HasSBOMToRetain = true
+		projectHandler.ProjectRepository.Update(requestSession, prj)
+	}
 }
 
 func hasActiveDeniedDecision(policyDecisions *policydecisions2.PolicyDecisions) bool {

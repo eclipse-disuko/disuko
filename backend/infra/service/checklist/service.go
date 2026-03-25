@@ -19,6 +19,7 @@ import (
 	licRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	policyrulesRepo "github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	reviewRemarksRepo "github.com/eclipse-disuko/disuko/infra/repository/reviewremarks"
 	templateRepo "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 	sbomlistRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
@@ -39,6 +40,7 @@ type Service struct {
 	ScanRemarksService  *scanremarks.Service
 	ProjectLabelService *projectLabelService.ProjectLabelService
 	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
+	ProjectRepo         project2.IProjectRepository
 }
 
 type execution struct {
@@ -80,13 +82,7 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-	var spdxBase *project.SpdxFileBase
-	for _, spdx := range sbomList.SpdxFileHistory {
-		if spdx.Key == spdxID {
-			spdxBase = spdx
-			break
-		}
-	}
+	spdxBase := sbomList.SpdxFileHistory.GetByKey(spdxID)
 	if spdxBase == nil {
 		exception.ThrowExceptionBadRequestResponse()
 	}
@@ -126,8 +122,14 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
-	spdxBase.IsInUse = true
-	s.SbomListRepo.Update(rs, sbomList)
+	if !spdxBase.IsInUse {
+		spdxBase.IsInUse = true
+		s.SbomListRepo.Update(rs, sbomList)
+	}
+	if !pr.HasSBOMToRetain {
+		pr.HasSBOMToRetain = true
+		s.ProjectRepo.Update(rs, pr)
+	}
 
 	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
 	if rr == nil {
