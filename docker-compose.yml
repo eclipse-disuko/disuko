@@ -82,7 +82,7 @@ services:
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
     command: start-dev --health-enabled=true
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
     volumes:
       - keycloak_data:/opt/keycloak/data
     healthcheck:
