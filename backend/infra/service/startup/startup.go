@@ -122,6 +122,7 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_SBOM_UPLOADED_FOR_DECISIONS", Do: startUpHandler.migrateSbomUploadedForDecisions},
 		{Name: "MIGRATE_SBOM_RETENTION_FOR_DECISIONS", Do: startUpHandler.migrateSbomRetentionForDecisions},
 		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
+		{Name: "MIGRATE_SYNC_PROJECT_AND_SBOM_RETENTION_FLAGS", Do: startUpHandler.migrateSyncProjectAndSbomRetentionFlags},
 	}
 
 	steps = append(steps, ext...)
@@ -645,4 +646,45 @@ func (startUpHandler *StartUpHandler) migrateSbomFromIsToRetainToIsInUseFlag(rs 
 		}
 	}
 	logy.Infof(rs, "migrateSbomFromIsToRetainToIsInUseFlag - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateSyncProjectAndSbomRetentionFlags(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - START")
+
+	exception.TryCatchAndLog(requestSession, func() {
+		projectKeys := startUpHandler.ProjectRepository.FindAllKeys(requestSession)
+		logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - Found %d projects to process", len(projectKeys))
+
+		processedCount := 0
+		failedCount := 0
+		successCount := 0
+
+		for _, projectKey := range projectKeys {
+			exception.TryCatch(func() {
+				prj := startUpHandler.ProjectRepository.FindByKey(requestSession, projectKey, false)
+				if prj == nil {
+					logy.Warnf(requestSession, "migrateSyncProjectAndSbomRetentionFlags - Project not found: %s", projectKey)
+					failedCount++
+					return
+				}
+
+				processedCount++
+
+				prj.HasSBOMToRetain = startUpHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, prj)
+
+				startUpHandler.ProjectRepository.UpdateWithoutTimestamp(requestSession, prj)
+				successCount++
+
+				logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - Updated project flags for: %s", prj.Key)
+			}, func(e exception.Exception) {
+				exception.LogException(requestSession, e)
+				failedCount++
+			})
+		}
+
+		logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - Project flags migration completed. Processed: %d, Success: %d, Failed: %d",
+			processedCount, successCount, failedCount)
+	})
+
+	logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - END")
 }
