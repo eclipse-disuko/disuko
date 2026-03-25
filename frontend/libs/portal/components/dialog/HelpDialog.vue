@@ -25,7 +25,7 @@
                   'pl-[60px] text-[11px]': item.level === 6,
                 },
               ]"
-              @click.prevent="scrollToHeading(item.id); activeId = item.id">
+              @click.prevent="onTocItemClick(item.id)">
               {{ item.text }}
             </a>
           </nav>
@@ -127,5 +127,10 @@ const scrollToHeading = (id: string) => {
   if (element) {
     element.scrollIntoView({behavior: 'smooth', block: 'start'});
   }
+};
+
+const onTocItemClick = (id: string) => {
+  scrollToHeading(id);
+  activeId.value = id;
 };
 </script>
