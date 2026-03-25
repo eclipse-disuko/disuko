@@ -5,7 +5,6 @@ import {
 } from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import Icons from '@disclosure-portal/constants/icons';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import projectService from '@disclosure-portal/services/projects';
@@ -24,6 +23,7 @@ import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 
 type TableItem = DialogBulkPolicyDecisionEntry & {
   key: string;
@@ -43,8 +43,6 @@ const isVisible = ref(false);
 const comment = ref<string | undefined>(undefined);
 const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
-const policyDecision = ref<'allow' | 'deny' | null>(null);
-const policyDecisionError = ref(false);
 
 const tableItems = ref<TableItem[]>([]);
 const selected = ref<TableItem[]>([]);
@@ -105,8 +103,7 @@ const currentVersionKey = computed(() => appStore.getCurrentVersion._key);
 const currentSbomId = computed(() => appStore.getSelectedSpdx._key);
 const currentSbomName = computed(() => appStore.getSelectedSpdx.MetaInfo.Name);
 const currentSbomUploaded = computed(() => appStore.getSelectedSpdx.Uploaded);
-
-const policyDecisionBorderColor = computed(() => (policyDecisionError.value ? 'border-rose-400' : 'border-grey-500'));
+const buttonsDisabled = computed(() => !verification.value || selected.value.length === 0);
 
 const open = async (
   newConfig: DialogBulkPolicyDecisionsConfig = {
@@ -118,16 +115,11 @@ const open = async (
   tableItems.value = (config.value.items ?? []).map((item) => ({...item, key: crypto.randomUUID()}));
   selected.value = tableItems.value.slice();
 
-  policyDecision.value = null;
-  policyDecisionError.value = false;
   isVisible.value = true;
 };
 
-const doDialogAction = async () => {
-  if (!(await form.value?.validate())?.valid || !policyDecision.value) {
-    if (!policyDecision.value) {
-      policyDecisionError.value = true;
-    }
+const doDialogAction = async (decision: 'allow' | 'deny') => {
+  if (!(await form.value?.validate())?.valid) {
     return;
   }
 
@@ -144,7 +136,7 @@ const doDialogAction = async () => {
       licenseId: item.policy.licenseMatched,
       policyId: item.policy.key,
       policyEvaluated: item.policy.type,
-      policyDecision: policyDecision.value!,
+      policyDecision: decision,
       comment: comment.value ?? '',
       creator: userStore.getProfile.user,
     };
@@ -163,7 +155,6 @@ const doDialogAction = async () => {
   }
 
   form.value?.reset();
-  policyDecision.value = null;
   emit('reload');
   close();
   info(t('POLICY_DECISION_CREATED'));
@@ -171,8 +162,6 @@ const doDialogAction = async () => {
 
 const dialogConfig = computed(() => ({
   title: t('POLICY_DECISION_CREATE'),
-  primaryButton: {text: t('BTN_CREATE'), disabled: !verification.value || selected.value.length === 0},
-  secondaryButton: {text: t('BTN_CANCEL')},
 }));
 
 const close = () => {
@@ -195,8 +184,27 @@ defineExpose({open});
 
 <template>
   <v-dialog v-model="isVisible" width="1300" persistent>
-    <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
-      <v-form ref="form" @submit.prevent="doDialogAction">
+    <DialogLayout :config="dialogConfig" @close="close">
+      <template #right>
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="doDialogAction('allow')"
+          :disabled="buttonsDisabled"
+          :color="buttonsDisabled ? 'gray' : 'success'"
+          :text="t('ALLOW')" />
+
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          variant="flat"
+          @click="doDialogAction('deny')"
+          :disabled="buttonsDisabled"
+          :color="buttonsDisabled ? 'gray' : 'error'"
+          :text="t('DENY')" />
+      </template>
+      <v-form ref="form">
         <Stack>
           <v-data-table
             :headers="headers"
@@ -229,21 +237,6 @@ defineExpose({open});
             hide-details="auto"
             persistent-placeholder
             :rules="commentRules" />
-          <div :class="`relative rounded border ${policyDecisionBorderColor} px-4`">
-            <label class="opacity-100 absolute left-2 -top-2 v-label text-xs px-2 bg-[rgb(var(--v-theme-surface))]">
-              {{ t('POLICY_DECISION') }}
-            </label>
-            <v-chip-group v-model="policyDecision" mandatory class="my-1 py-0" variant="outlined">
-              <v-chip value="allow" color="success" size="small">
-                <v-icon start>{{ Icons.ALLOW }}</v-icon>
-                <span class="font-bold">{{ t('ALLOW') }}</span>
-              </v-chip>
-              <v-chip value="deny" color="error" size="small">
-                <v-icon start>{{ Icons.DENY }}</v-icon>
-                <span class="font-bold">{{ t('DENY') }}</span>
-              </v-chip>
-            </v-chip-group>
-          </div>
           <v-checkbox v-model="verification" :label="t('WARNED_POLICY_DECISION_VERIFICATION_NOTE_TEXT')" hide-details />
         </Stack>
       </v-form>
