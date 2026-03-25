@@ -20,6 +20,7 @@ import {SearchOptions} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, openUrl} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
@@ -81,73 +82,73 @@ const abort = ref<AbortController | null>(null);
 const possibleIsLicenseChart = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleCharts)
-        .map(([k, count]) => ({
-          text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
-          value: k,
-          chip: String(count),
-        }))
-        .sort()
+      .map(([k, count]) => ({
+        text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
+        value: k,
+        chip: String(count),
+      }))
+      .sort()
     : [],
 );
 
 const possibleSources = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleSources).map(([k, count]) => ({
-        text: k,
-        value: k,
-        chip: String(count),
-      }))
+      text: k,
+      value: k,
+      chip: String(count),
+    }))
     : [],
 );
 
 const possibleFamilies = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleFamilies)
-        .sort((a, b) => compareFamily(a[0], b[0]))
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
-          value: k.length === 0 ? 'not declared' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleApproval)
-        .sort(
-          ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
-        )
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LT_APP_', k),
-          value: k.length === 0 ? 'not set' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleType = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
-        text: getI18NTextOfPrefixKey('LT_', k),
+      .sort((a, b) => compareFamily(a[0], b[0]))
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
         value: k.length === 0 ? 'not declared' : k,
         chip: String(count),
       }))
     : [],
 );
 
+const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleApproval)
+      .sort(
+        ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
+      )
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LT_APP_', k),
+        value: k.length === 0 ? 'not set' : k,
+        chip: String(count),
+      }))
+    : [],
+);
+
+const possibleType = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
+      text: getI18NTextOfPrefixKey('LT_', k),
+      value: k.length === 0 ? 'not declared' : k,
+      chip: String(count),
+    }))
+    : [],
+);
+
 const possibleClassifications = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? metaData.value.possibleClassifications.map(({classification, count}: ClassificationWithCount) => {
-        const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
-        return {
-          text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
-          value: value,
-          icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
-          iconColor: getIconColorOfLevel(getWarnLevel(value)),
-          chip: String(count),
-        };
-      })
+      const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
+      return {
+        text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
+        value: value,
+        icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
+        iconColor: getIconColorOfLevel(getWarnLevel(value)),
+        chip: String(count),
+      };
+    })
     : [],
 );
 
@@ -303,18 +304,27 @@ const getActionButtons = (item: LicenseSlim): TableActionButtonsProps['buttons']
       show: canCreate,
     },
     {
-      icon: 'mdi-delete',
-      hint: t('TT_delete_license'),
-      event: 'delete',
-      show: canDelete,
-    },
-    {
       icon: 'mdi-bank-outline',
       hint: t('CONFIGURE_POLICIES_FOR_LICENSE_TOOLTIP'),
       event: 'configure',
       show: canConfigurePolicies,
     },
+    {
+      icon: 'mdi-delete',
+      hint: t('TT_delete_license'),
+      event: 'delete',
+      show: canDelete,
+    },
   ];
+};
+
+const {baseWidth} = useTableActionSlider();
+
+const expandedWidth = ref<number>(baseWidth.value);
+
+const headerExpands = (value: number) => {
+  expandedWidth.value = value;
+  headerSettingsStore.setupStore(gridName, headers.value);
 };
 
 const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtils.hasPolicyAccess());
@@ -322,15 +332,13 @@ const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtil
 const headers = computed((): DataTableHeader[] => [
   ...(allowActions.value
     ? [
-        {
-          title: 'COL_ACTIONS',
-          align: 'center',
-          width: 120,
-          maxWidth: 130,
-          value: 'actions',
-          sortable: false,
-        } as DataTableHeader,
-      ]
+      {
+        title: 'COL_ACTIONS',
+        align: 'center',
+        width: expandedWidth.value,
+        value: 'actions',
+      } as DataTableHeader,
+    ]
     : []),
   {
     title: 'COL_LICENSE_CHART_STATUS',
@@ -374,7 +382,6 @@ const headers = computed((): DataTableHeader[] => [
     align: 'start',
     value: 'aliases',
     width: 220,
-    sortable: false,
   },
   {
     title: 'COL_APPROVAL_STATUS',
@@ -661,7 +668,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TableLayout data-testid="licenses">
+  <TableLayout data-testid="licenses" @mouseleave="headerExpands(baseWidth)">
     <template #description>
       <div class="d-flex flex-row align-center ga-3">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
@@ -732,7 +739,7 @@ onMounted(async () => {
         return-object></v-select>
     </template>
     <template #table>
-      <div ref="dataGridLicenses" class="table-wrapper fill-height">
+      <div ref="dataGridLicenses" class="table-wrapper fill-height action-slider-table">
         <v-data-table-server
           :headers="filteredHeaders"
           fixed-header
@@ -749,69 +756,86 @@ onMounted(async () => {
           v-model:options="options">
           <!-- Settings column header slot -->
           <template v-if="allowActions" #[`header.actions`]="{column}">
-            <HeaderSettings :grid-name="gridName" :column="column" />
-            <span class="ml-6">{{ column.title }}</span>
+            <GridFilterHeader :column="column">
+              <template #settings>
+                <HeaderSettings :grid-name="gridName" :column="column" />
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.meta.isLicenseChart`]="{column, getSortIcon, toggleSort}">
-            <HeaderSettings v-if="!allowActions" :grid-name="gridName" :column="column" />
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterIsLicenseChart"
-              :column="column"
-              :label="t('LICENSE_CHART_STATUS')"
-              :allItems="possibleIsLicenseChart">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #settings>
+                <HeaderSettings v-if="!allowActions" :grid-name="gridName" :column="column" />
+              </template>
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterIsLicenseChart"
+                  :column="column"
+                  :label="t('LICENSE_CHART_STATUS')"
+                  :allItems="possibleIsLicenseChart">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.source`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterSource"
-              :column="column"
-              :label="t('SOURCE')"
-              :allItems="possibleSources">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterSource"
+                  :column="column"
+                  :label="t('SOURCE')"
+                  :allItems="possibleSources">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.meta.family`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterFamily"
-              :column="column"
-              :label="t('LICENSE_FAMILY')"
-              :allItems="possibleFamilies">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterFamily"
+                  :column="column"
+                  :label="t('LICENSE_FAMILY')"
+                  :allItems="possibleFamilies">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.meta.approvalState`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterApproval"
-              :column="column"
-              :label="t('APPROVAL_STATUS')"
-              :allItems="possibleApproval">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterApproval"
+                  :column="column"
+                  :label="t('APPROVAL_STATUS')"
+                  :allItems="possibleApproval">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.meta.licenseType`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterType"
-              :column="column"
-              :label="t('LICENSE_TYPE')"
-              :allItems="possibleType">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterType"
+                  :column="column"
+                  :label="t('LICENSE_TYPE')"
+                  :allItems="possibleType">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`header.meta.classifications`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterClassification"
-              :column="column"
-              :label="t('CLASSIFICATION')"
-              :allItems="possibleClassifications">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterClassification"
+                  :column="column"
+                  :label="t('CLASSIFICATION')"
+                  :allItems="possibleClassifications">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template #[`item.meta.classifications`]="{item}">
             <span @click.stop="openClassifications(item.meta.classifications, item.name, item.licenseId)">
@@ -819,7 +843,7 @@ onMounted(async () => {
               <v-icon
                 :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'"
                 :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"
-                >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
+              >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
               </v-icon>
               <Tooltip location="bottom">
                 {{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}
@@ -852,12 +876,14 @@ onMounted(async () => {
           </template>
           <template v-if="allowActions" #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"
               @delete="showDeletionConfirmationDialog(item)"
-              @configure="configurePoliciesForLicense(item)" />
+              @configure="configurePoliciesForLicense(item)"
+              @slideOut="headerExpands($event as number)"
+              @slideIn="headerExpands($event as number)" />
           </template>
           <template #[`item.aliases`]="{item}">
             <span v-if="Array.isArray(item.aliases) && item.aliases.length > 0">

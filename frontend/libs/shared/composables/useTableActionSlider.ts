@@ -7,6 +7,9 @@ export const useTableActionSlider = () => {
   const tableActionSliderStore = useTableActionSliderStore();
   const {slideInTimeout} = storeToRefs(tableActionSliderStore);
 
+  const buttonWidth = 40;
+  const spaceAfter = 20;
+
   const baseWidth = ref<number>(100);
   const buttonsLength = ref<number>(1);
   const sliderWidth = ref<number>(baseWidth.value);
@@ -38,19 +41,21 @@ export const useTableActionSlider = () => {
     }
   };
 
-  const expandedMaxWidth = computed(() => buttonsLength.value * 40 + baseWidth.value);
+  const expandedMaxWidth = computed(() => buttonsLength.value * buttonWidth + baseWidth.value + spaceAfter);
 
   const startSlideInTimer = () => {
-    slideInTimer.value = 300;
+    if (buttonsLength.value >= 2) {
+      slideInTimer.value = 300;
 
-    if (slideInTimeout.value) {
-      clearTimeout(slideInTimeout.value);
-      slideInTimeout.value = null;
+      if (slideInTimeout.value) {
+        clearTimeout(slideInTimeout.value);
+        slideInTimeout.value = null;
+      }
+
+      slideInTimeout.value = setTimeout(() => {
+        slideInTimer.value = 0;
+      }, slideInTimer.value);
     }
-
-    slideInTimeout.value = setTimeout(() => {
-      slideInTimer.value = 0;
-    }, slideInTimer.value);
   };
 
   const slideOut = () => {
@@ -64,12 +69,14 @@ export const useTableActionSlider = () => {
   };
 
   const stopSlideInTimerAndSlideOut = () => {
-    if (slideInTimeout.value) {
-      clearTimeout(slideInTimeout.value);
-      slideInTimeout.value = null;
-    }
+    if (buttonsLength.value >= 2) {
+      if (slideInTimeout.value) {
+        clearTimeout(slideInTimeout.value);
+        slideInTimeout.value = null;
+      }
 
-    slideOut();
+      slideOut();
+    }
   };
 
   watch(slideInTimer, () => {

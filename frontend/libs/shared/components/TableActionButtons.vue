@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {computed} from 'vue';
+import {useI18n} from 'vue-i18n';
 
 interface Button {
   icon: string;
@@ -15,14 +16,18 @@ export interface TableActionButtonsProps {
   buttons: Button[];
   variant?: 'normal' | 'minimal' | 'compact' | 'slider';
 }
+
 const props = withDefaults(defineProps<TableActionButtonsProps>(), {
   variant: 'normal',
 });
+
 const emit = defineEmits<{
   slideOut: [value: number];
   slideIn: [value: number];
   [key: string]: [value?: number];
 }>();
+
+const {t} = useI18n();
 
 const shownButtons = computed(() => props.buttons.filter((button) => button.show ?? true));
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
@@ -52,7 +57,7 @@ if (props.variant === 'slider') {
             :hint="button.hint"
             :color="button.color"
             :disabled="button.disabled"
-            @clicked="emit(button.event)"></DIconButton>
+            @clicked="emit(button.event)" />
         </div>
       </ExtraMenu>
     </template>
@@ -66,40 +71,45 @@ if (props.variant === 'slider') {
           :hint="button.hint"
           :color="button.color"
           :disabled="button.disabled"
-          @clicked="emit(button.event)"></DIconButton>
+          @clicked="emit(button.event)" />
       </div>
     </template>
 
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
-      <div class="flex justify-start pl-8">
+      <div
+        class="flex justify-start pl-8 pr-5"
+        @click.stop
+        @mouseenter="stopSlideInTimerAndSlideOut"
+        @mouseleave="startSlideInTimer">
         <v-btn
+          v-if="shownButtons.length >= 2"
           plain
           size="small"
           variant="text"
           icon
           color="primary"
           class="size-10"
-          @click.stop
-          @mouseenter="stopSlideInTimerAndSlideOut"
-          @mouseleave="startSlideInTimer">
+          @click.stop>
           <v-icon>mdi-dots-horizontal</v-icon>
-          <Tooltip location="bottom" text="Actions"></Tooltip>
+          <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
         </v-btn>
-        <div
-          v-for="button in buttons"
-          :key="button.icon"
-          class="size-10"
-          @mouseenter="stopSlideInTimerAndSlideOut"
-          @mouseleave="startSlideInTimer">
-          <DIconButton
-            v-if="button.show ?? true"
-            :icon="button.icon"
-            :hint="button.hint"
-            :color="button.color"
-            :disabled="button.disabled"
-            @clicked="emit(button.event)"></DIconButton>
-        </div>
+        <template v-for="button in buttons" :key="button.icon">
+          <div
+            v-if="button?.show ?? true"
+            class="d-inline size-10"
+            @click.stop="!button?.disabled ? emit(button.event) : null">
+            <v-btn
+              plain
+              size="small"
+              variant="text"
+              density="default"
+              :icon="button.icon"
+              :color="button.color || 'primary'"
+              :disabled="Boolean(button?.disabled) || false" />
+            <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
+          </div>
+        </template>
       </div>
     </template>
 
@@ -123,7 +133,7 @@ if (props.variant === 'slider') {
           :hint="button.hint"
           :color="button.color"
           :disabled="button.disabled"
-          @clicked="emit(button.event)"></DIconButton>
+          @clicked="emit(button.event)" />
       </div>
 
       <div v-if="remainingButtons.length > 0" class="size-10">
@@ -134,7 +144,7 @@ if (props.variant === 'slider') {
               :hint="button.hint"
               :color="button.color"
               :disabled="button.disabled"
-              @clicked="emit(button.event)"></DIconButton>
+              @clicked="emit(button.event)" />
           </div>
         </ExtraMenu>
       </div>
