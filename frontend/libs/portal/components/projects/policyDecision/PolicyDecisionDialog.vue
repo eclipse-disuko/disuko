@@ -157,23 +157,25 @@ defineExpose({open});
       </template>
       <template #right>
         <DCActionButton
-          is-dialog-button
-          size="small"
-          variant="flat"
-          @click="doDialogAction('allow')"
-          :disabled="!verification"
-          :color="!verification ? 'gray' : 'success'"
-          :text="t('ALLOW')" />
-
-        <DCActionButton
           v-if="isWarned"
           is-dialog-button
           size="small"
-          variant="flat"
+          :variant="!verification ? 'flat' : 'tonal'"
           @click="doDialogAction('deny')"
           :disabled="!verification"
           :color="!verification ? 'gray' : 'error'"
+          icon="mdi-minus-circle"
           :text="t('DENY')" />
+
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          :variant="!verification ? 'flat' : 'tonal'"
+          @click="doDialogAction('allow')"
+          :disabled="!verification"
+          :color="!verification ? 'gray' : 'success'"
+          icon="mdi-check-circle"
+          :text="t('ALLOW')" />
       </template>
       <v-form ref="form">
         <Stack>
