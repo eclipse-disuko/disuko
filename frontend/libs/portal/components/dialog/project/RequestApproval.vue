@@ -332,10 +332,6 @@ const doDialogAction = async () => {
   });
 };
 
-const isEnterpriseOrMobileOrOther = computed(() => {
-  return !isVehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
-});
-
 const close = () => {
   isVisible.value = false;
 };
