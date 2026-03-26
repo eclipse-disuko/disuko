@@ -333,16 +333,16 @@ const executeEntityDeletion = async () => {
 </script>
 
 <template>
-  <v-card class="pa-4 mb-3" style="height: auto; border: none !important">
+  <v-card class="pa-4 mb-3 h-auto border-none" flat color="transparent">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h5 pr-2 mb-3">{{ t('USER_MANAGEMENT_DRY_RUN_TITLE') }}</h1>
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col cols="12" md="6" lg="4">
-        <p class="text-body-1 mb-4">
+    <v-row align="start" no-gutters>
+      <v-col cols="12" md="6" lg="4" class="pr-md-4">
+        <p class="mb-4 text-xs">
           {{ t('USER_MANAGEMENT_DRY_RUN_DESCRIPTION') }}
         </p>
 
@@ -354,25 +354,25 @@ const executeEntityDeletion = async () => {
           required
           @user-changed="onUserChanged" />
 
-        <DCActionButton
-          v-if="!dryRunExecuted"
-          :loading="loading"
-          :disabled="loading"
-          class="mt-4"
-          :text="t('USER_MANAGEMENT_DRY_RUN_BUTTON')"
-          @click="executeDryRun" />
+        <div class="d-flex align-center mt-6 mb-4 ga-2">
+          <DCActionButton
+            :loading="loading"
+            :disabled="loading"
+            :text="t('USER_MANAGEMENT_DRY_RUN_BUTTON')"
+            @click="executeDryRun" />
 
-        <DCActionButton
-          v-if="dryRunExecuted"
-          variant="outlined"
-          class="mt-4 ml-2"
-          :text="t('BTN_RESET')"
-          @click="resetForm" />
+          <DCActionButton
+            v-if="dryRunExecuted"
+            variant="outlined"
+            class="ml-2"
+            :text="t('BTN_RESET')"
+            @click="resetForm" />
+        </div>
       </v-col>
 
       <!-- User Details Panel -->
       <v-col cols="12" md="6" lg="8" v-if="selectedUserDetails">
-        <v-card class="pa-4" style="border: 1px solid rgb(var(--v-theme-primary)) !important">
+        <v-card class="px-4 pb-4 pt-0" flat color="transparent">
           <div class="d-flex align-center mb-3">
             <v-icon class="mr-2" color="primary">mdi-account-circle</v-icon>
             <span class="text-h6">{{ t('USER_MANAGEMENT_USER_DETAILS') }}</span>
@@ -481,7 +481,7 @@ const executeEntityDeletion = async () => {
             <v-expansion-panel class="mb-2 border" value="tasks">
               <v-expansion-panel-title>
                 <template v-slot:default>
-                  <v-icon class="mr-2">mdi-chevron-down</v-icon>
+                  <v-icon class="mr-2" color="primary">mdi-chevron-down</v-icon>
                   <v-icon class="mr-2">mdi-checkbox-marked-circle-outline</v-icon>
                   <span class="font-weight-medium">
                     {{ t('USER_MANAGEMENT_ENTITY_TASKS') }} ({{ affectedEntities.user_tasks_count }})
@@ -580,7 +580,7 @@ const executeEntityDeletion = async () => {
             <v-expansion-panel class="mb-2 border" value="roles">
               <v-expansion-panel-title>
                 <template v-slot:default>
-                  <v-icon class="mr-2">mdi-chevron-down</v-icon>
+                  <v-icon class="mr-2" color="primary">mdi-chevron-down</v-icon>
                   <v-icon class="mr-2">mdi-account-group</v-icon>
                   <span class="font-weight-medium">
                     {{ t('USER_MANAGEMENT_ENTITY_ROLES') }} ({{ affectedEntities.user_roles_count }})
@@ -663,7 +663,7 @@ const executeEntityDeletion = async () => {
             <v-expansion-panel class="mb-2 border" value="logs">
               <v-expansion-panel-title>
                 <template v-slot:default>
-                  <v-icon class="mr-2">mdi-chevron-down</v-icon>
+                  <v-icon class="mr-2" color="primary">mdi-chevron-down</v-icon>
                   <v-icon class="mr-2">mdi-database</v-icon>
                   <span class="font-weight-medium">
                     {{ t('USER_MANAGEMENT_ENTITY_TRACES') }} ({{ affectedEntities.data_traces_count }})
@@ -800,3 +800,4 @@ const executeEntityDeletion = async () => {
     </v-dialog>
   </v-card>
 </template>
+
