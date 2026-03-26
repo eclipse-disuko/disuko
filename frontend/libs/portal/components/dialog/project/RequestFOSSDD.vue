@@ -395,6 +395,10 @@ const isEnterpriseOrMobileOrOther = computed(() => {
   return !vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
 });
 
+const showRedWarnDeniedDecisionsMessage = computed(
+  () => !isDeniedOrUnassareted.value && approvableInfo.value.hasDeniedDecisions,
+);
+
 defineExpose({open});
 </script>
 
@@ -416,7 +420,7 @@ defineExpose({open});
 
         <v-card-text>
           <Stack class="gap-4">
-            <Stack v-if="approvableInfo.hasDeniedDecisions">
+            <Stack v-if="showRedWarnDeniedDecisionsMessage">
               <v-alert color="error" type="warning" class="mb-1" density="compact">
                 <template #prepend>
                   <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
