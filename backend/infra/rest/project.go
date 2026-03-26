@@ -2984,7 +2984,7 @@ func (projectHandler *ProjectHandler) CreatePolicyDecision(w http.ResponseWriter
 	} else {
 		for _, prDecision := range policyDecisions.Decisions {
 
-			cmpNameMatches := prDecision.ComponentName == newPolicyDecision.ComponentName
+			cmpNameMatches := strings.EqualFold(prDecision.ComponentName, newPolicyDecision.ComponentName)
 			licExprMatches := strings.EqualFold(prDecision.LicenseExpression, newPolicyDecision.LicenseExpression)
 			versionMatches := !isVehicle || prDecision.ComponentVersion == newPolicyDecision.ComponentVersion
 			licMatches := strings.EqualFold(prDecision.LicenseId, newPolicyDecision.LicenseId)
@@ -3141,7 +3141,13 @@ func (projectHandler *ProjectHandler) CreateLicenseRule(w http.ResponseWriter, r
 		projectHandler.LicenseRulesRepository.Save(requestSession, licenseRules)
 	} else {
 		for _, lr := range licenseRules.Rules {
-			if lr.Active && strings.EqualFold(lr.ComponentName, licenseRule.ComponentName) {
+
+			cmpNameMatches := strings.EqualFold(lr.ComponentName, licenseRule.ComponentName)
+			licExprMatches := strings.EqualFold(lr.LicenseExpression, licenseRule.LicenseExpression)
+
+			nameAndExprMatches := cmpNameMatches && licExprMatches
+
+			if lr.Active && nameAndExprMatches {
 				render.JSON(w, r, SuccessResponse{
 					Success: false,
 					Message: message.ActiveLicenseRuleExists,

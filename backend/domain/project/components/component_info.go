@@ -129,7 +129,7 @@ func (cis ComponentInfos) ApplyLicenseRules(licenseRules *licenserules.LicenseRu
 	for i := 0; i < len(cis); i++ {
 		compLicenseExpression := cis[i].EffectiveLicensesString()
 		for _, lr := range licenseRules.Rules {
-			cmpNameMatches := lr.ComponentName == cis[i].Name
+			cmpNameMatches := strings.EqualFold(lr.ComponentName, cis[i].Name)
 			licExprMatches := strings.EqualFold(lr.LicenseExpression, compLicenseExpression)
 
 			nameAndExprMatches := cmpNameMatches && licExprMatches

@@ -173,7 +173,7 @@ func (cmpRes *ComponentResult) applyPolicyDecision(policyDecisions *policydecisi
 	}
 	compLicenseExpression := cmpRes.Component.EffectiveLicensesString()
 	for _, prDecision := range policyDecisions.Decisions {
-		cmpNameMatches := prDecision.ComponentName == cmpRes.Component.Name
+		cmpNameMatches := strings.EqualFold(prDecision.ComponentName, cmpRes.Component.Name)
 		licExprMatches := strings.EqualFold(prDecision.LicenseExpression, compLicenseExpression)
 		versionMatches := !isVehicle || prDecision.ComponentVersion == cmpRes.Component.Version
 
