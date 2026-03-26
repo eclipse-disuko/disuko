@@ -337,7 +337,7 @@ const executeEntityDeletion = async () => {
 </script>
 
 <template>
-  <v-card class="pa-4 mb-3" flat color="transparent" style="height: auto; border: none !important">
+  <v-card class="pa-4 mb-3 h-auto border-none" flat color="transparent">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h5 pr-2 mb-3">{{ t('USER_MANAGEMENT_DRY_RUN_TITLE') }}</h1>
@@ -346,7 +346,7 @@ const executeEntityDeletion = async () => {
 
     <v-row align="start" no-gutters>
       <v-col cols="12" md="6" lg="4" class="pr-md-4">
-        <p class="mb-4" style="font-size: 12px;">
+        <p class="mb-4 text-xs">
           {{ t('USER_MANAGEMENT_DRY_RUN_DESCRIPTION') }}
         </p>
 
