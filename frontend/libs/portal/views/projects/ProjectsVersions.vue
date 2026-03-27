@@ -261,7 +261,7 @@ watch(
 );
 
 watch(
-  [spdxFileHistory, spdxKey, versionKey, projectId],
+  [spdxKey, versionKey, projectId],
   async () => {
     await reload();
   },
