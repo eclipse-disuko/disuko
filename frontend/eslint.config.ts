@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 import {defineConfigWithVueTs, vueTsConfigs} from '@vue/eslint-config-typescript';
 import oxlint from 'eslint-plugin-oxlint';

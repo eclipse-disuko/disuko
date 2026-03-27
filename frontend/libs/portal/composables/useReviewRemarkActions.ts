@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {ReviewRemark, ReviewRemarkStatus, SetReviewRemarkStatusRequest} from '@disclosure-portal/model/Quality';
 import versionService from '@disclosure-portal/services/version';

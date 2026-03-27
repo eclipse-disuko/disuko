@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <template>
   <Stack class="h-full p-6">
     <h1 class="text-h5 pb-3 ga-2">{{ t('ANALYTICS') }}</h1>

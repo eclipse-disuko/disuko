@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {architectures, targetPlatforms} from '@disclosure-portal/model/NewWizard';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {createTestingPinia} from '@pinia/testing';
