@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {CustomId} from '@disclosure-portal/model/CustomId';
 import {Department} from '@disclosure-portal/model/Department';
 import type Label from '@disclosure-portal/model/Label';
