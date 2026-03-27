@@ -42,21 +42,6 @@ const reload = async () => {
   emit('reloads-approvals');
 };
 
-const radioGroup = computed(() => {
-  if (props.item.external && props.item.external.vehicle) {
-    if (props.item.flags.c1) {
-      return 1;
-    }
-    if (props.item.flags.c2) {
-      return 2;
-    }
-    if (props.item.flags.c3) {
-      return 3;
-    }
-  }
-  return 0;
-});
-
 watch(
   () => props.item,
   () => {
