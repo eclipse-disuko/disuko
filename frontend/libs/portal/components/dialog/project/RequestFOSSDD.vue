@@ -381,7 +381,7 @@ const doDialogAction = async () => {
   }
 };
 
-const isDeniedOrUnassareted = computed(() => {
+const isDeniedOrUnasserted = computed(() => {
   return vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
 });
 
@@ -396,7 +396,7 @@ const isEnterpriseOrMobileOrOther = computed(() => {
 });
 
 const showRedWarnDeniedDecisionsMessage = computed(
-  () => !isDeniedOrUnassareted.value && approvableInfo.value.hasDeniedDecisions,
+  () => !isDeniedOrUnasserted.value && approvableInfo.value.hasDeniedDecisions,
 );
 
 defineExpose({open});
@@ -512,9 +512,9 @@ defineExpose({open});
 
             <section
               id="warning"
-              v-if="isDeniedOrUnassareted || isEnterpriseOrMobileOrOther || noFOSS || isRdConfirmationMissing">
+              v-if="isDeniedOrUnasserted || isEnterpriseOrMobileOrOther || noFOSS || isRdConfirmationMissing">
               <v-alert color="warning" type="warning">
-                <span v-if="isDeniedOrUnassareted">
+                <span v-if="isDeniedOrUnasserted">
                   {{ t('DENIED_OR_UNASSARETED_MESSAGE') }}
                 </span>
                 <span v-else-if="isRdConfirmationMissing">
@@ -597,7 +597,7 @@ defineExpose({open});
 
           <DCActionButton
             isDialogButton
-            v-if="!isDeniedOrUnassareted"
+            v-if="!isDeniedOrUnasserted"
             size="small"
             variant="flat"
             @click="doDialogAction"
