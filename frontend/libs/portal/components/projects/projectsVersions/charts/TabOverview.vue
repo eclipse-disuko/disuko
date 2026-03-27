@@ -34,6 +34,7 @@ import {Bar, Doughnut} from 'vue-chartjs';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {applyChartDefaults} from './ChartSettings';
+import {useAppStore} from '@disclosure-portal/stores/app';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);
 
@@ -73,7 +74,7 @@ const legendItemsLicenseRemarks = ref<any[]>([]);
 const testColor = ref('#ffffff');
 const legendItemsPolicyStates = ref<any[]>([]);
 const legendItemsLicenseFamily = ref<any[]>([]);
-const alternateRender = ref(appStore.alternateRender);
+const alternateRender = ref(useAppStore().alternateRender);
 
 onMounted(async () => {
   testColor.value = getColor('--v-theme-licenceChartIcon');

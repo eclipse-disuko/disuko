@@ -8,6 +8,7 @@ import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/Ve
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
