@@ -279,36 +279,29 @@ watch(
         <v-card-text class="pt-2">
           <v-row>
             <v-col cols="12" xs="12" class="pa-0">
-              <section v-if="approval.info?.hasDeniedDecisions">
-                <v-alert color="error" type="warning" class="mb-3 mt-1" density="compact">
-                  <template #prepend>
-                    <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
-                  </template>
-                  {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
-                </v-alert>
-              </section>
-
               <ApprovalInfoTabs
                 v-if="approval.type == ApprovalType.Internal"
                 :item="approval"
                 :projectUuid="projectModel._key"
                 :project-name="projectModel.name"
                 :taskDescription="approvalTaskDescription"
-                :tabs-list="['task', 'details', 'history']"></ApprovalInfoTabs>
+                :tabs-list="['task', 'details', 'history']"
+                :showRedWarnDeniedDecisionsMessage="approval.info?.hasDeniedDecisions" />
               <ApprovalInfoTabs
                 v-if="approval.type == ApprovalType.Plausibility"
                 :item="approval"
                 :projectUuid="projectModel._key"
                 :project-name="projectModel.name"
                 :taskDescription="plausibilityTaskDescription"
-                :tabs-list="['task', 'details']"></ApprovalInfoTabs>
+                :tabs-list="['task', 'details']" />
               <ApprovalInfoTabs
                 v-if="approval.type == ApprovalType.External"
                 :item="approval"
                 :projectUuid="projectModel._key"
                 :project-name="projectModel.name"
                 :taskDescription="plausibilityTaskDescription"
-                :tabs-list="['generalExternal', 'task', 'details']"></ApprovalInfoTabs>
+                :tabs-list="['generalExternal', 'task', 'details']"
+                :showRedWarnDeniedDecisionsMessage="approval.info?.hasDeniedDecisions" />
             </v-col>
           </v-row>
           <v-row class="shrink" justify="end">

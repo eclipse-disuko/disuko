@@ -22,11 +22,17 @@ export type ApprovalTabs =
 const {t} = useI18n();
 const currentTab = ref(0);
 
-const props = defineProps<{
-  item: Approval;
-  taskDescription: string;
-  tabsList: ApprovalTabs[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    item: Approval;
+    taskDescription: string;
+    tabsList: ApprovalTabs[];
+    showRedWarnDeniedDecisionsMessage?: boolean;
+  }>(),
+  {
+    showRedWarnDeniedDecisionsMessage: false,
+  },
+);
 
 const emit = defineEmits<{
   'reloads-approvals': [];
@@ -78,10 +84,15 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
             <blockquote class="taskMessage" v-html="taskDescription"></blockquote>
           </v-col>
           <v-col cols="12" xs="12" class="pt-8 px-0">
-            <DApprovalComponents :stats="item.info.stats"></DApprovalComponents>
+            <DApprovalComponents
+              :stats="item.info.stats"
+              :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
           </v-col>
         </template>
-        <DApprovalComponents v-if="tab == 'general'" :stats="item.info.stats"></DApprovalComponents>
+        <DApprovalComponents
+          v-if="tab == 'general'"
+          :stats="item.info.stats"
+          :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
         <template v-if="tab == 'generalReview'">
           <v-row>
             <v-col cols="6" class="pb-0 px-0">
@@ -143,11 +154,15 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
                 hide-details></v-textarea>
             </v-col>
           </v-row>
-          <DApprovalComponents :stats="item.info.stats"></DApprovalComponents>
+          <DApprovalComponents
+            :stats="item.info.stats"
+            :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
         </template>
         <template v-if="tab == 'generalExternal'">
           <DExternalApprovalReview :external-approval="item" @reloading="reload"></DExternalApprovalReview>
-          <DApprovalComponents :stats="item.info.stats"></DApprovalComponents>
+          <DApprovalComponents
+            :stats="item.info.stats"
+            :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
         </template>
         <template v-if="tab == 'details'">
           <GridSPDXList :projects="item.info.projects" :approval-items="[item]"></GridSPDXList>

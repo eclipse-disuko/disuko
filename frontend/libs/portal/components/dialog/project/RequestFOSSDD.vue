@@ -420,15 +420,6 @@ defineExpose({open});
 
         <v-card-text>
           <Stack class="gap-4">
-            <Stack v-if="showRedWarnDeniedDecisionsMessage">
-              <v-alert color="error" type="warning" class="mb-1" density="compact">
-                <template #prepend>
-                  <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
-                </template>
-                {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
-              </v-alert>
-            </Stack>
-
             <Stack v-if="!projectModel.isGroup">
               <v-select
                 v-model="selectedChannel"
@@ -548,7 +539,9 @@ defineExpose({open});
             </v-tabs>
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="general">
-                <DApprovalComponents :stats="stats!" />
+                <DApprovalComponents
+                  :stats="stats!"
+                  :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
               </v-tabs-window-item>
               <v-tabs-window-item value="approvable" v-if="projectModel.isGroup">
                 <GridSPDXList
