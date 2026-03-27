@@ -59,10 +59,12 @@ const licenses = computed((): LicenseMeta[] => {
   if (!sbomAllLicenses.value) {
     return [];
   }
-  const known = sbomAllLicenses.value.known.map((license) => ({
-    licenseId: license.id,
-    licenseName: license.name,
-  }));
+  const known = sbomAllLicenses.value.known
+    ? sbomAllLicenses.value.known.map((license) => ({
+        licenseId: license.id,
+        licenseName: license.name,
+      }))
+    : [];
   const unknown = sbomAllLicenses.value.unknown
     ? sbomAllLicenses.value.unknown.map((str) => ({licenseId: str, licenseName: str}))
     : [];
