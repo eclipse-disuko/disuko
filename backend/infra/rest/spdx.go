@@ -280,9 +280,9 @@ func (spdxHandler *SPDXHandler) SpdxDeleteFileHandler(w http.ResponseWriter, r *
 		exception.ThrowExceptionClientWithHttpCode(message.ErrorSpdxInUse, message.GetI18N(message.ErrorSpdxInUse).Text, "", exception.HTTP_CODE_SHOW_NO_REQUEST_ID)
 	}
 
-	filename := currentProject.GetFilePathSbom(spdxFileKey, version.Key)
+	filename := currentProject.GetFilePathSbom(spdxToDelete.Key, version.Key)
 	s3Helper.DeleteFile(requestSession, filename)
-	cacheFilePath := fmt.Sprintf(cache.CachePath, spdxFileKey)
+	cacheFilePath := fmt.Sprintf(cache.CachePath, spdxToDelete.Key)
 	s3Helper.DeleteFile(requestSession, cacheFilePath)
 
 	newSbomHistory := make([]*project.SpdxFileBase, 0)
