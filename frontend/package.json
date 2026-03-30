@@ -39,7 +39,7 @@
     "pinia": "3.0.4",
     "sanitize-html": "2.17.0",
     "screenfull": "6.0.2",
-    "unplugin-vue-markdown": "29.2.0",
+    "unplugin-vue-markdown": "30.0.0",
     "v-code-diff": "1.13.1",
     "vue": "3.5.18",
     "vue-chartjs": "5.3.2",
