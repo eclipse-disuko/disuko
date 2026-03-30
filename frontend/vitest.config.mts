@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import vue from '@vitejs/plugin-vue';
 import path from 'node:path';
 import {defineConfig} from 'vitest/config';

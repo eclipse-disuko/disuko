@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {ProjectSettingsModel} from '@disclosure-portal/model/Project';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {UserDto} from '@disclosure-portal/model/Users';

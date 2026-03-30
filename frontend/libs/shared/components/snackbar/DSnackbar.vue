@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <template>
   <v-snackbar v-model="visible" :timeout="timeout" bottom color="mbti">
     <div class="text-center">{{ message }}</div>

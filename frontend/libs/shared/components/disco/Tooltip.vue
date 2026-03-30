@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed} from 'vue';

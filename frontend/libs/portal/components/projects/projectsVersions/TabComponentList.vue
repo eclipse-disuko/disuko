@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DecisionType, DialogBulkPolicyDecisionEntry} from '@disclosure-portal/components/dialog/DialogConfigs';
 import useDimensions from '@disclosure-portal/composables/useDimensions';
