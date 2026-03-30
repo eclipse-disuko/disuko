@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
@@ -14,6 +18,7 @@ import versionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@disclosure-portal/utils/View';
@@ -48,14 +53,15 @@ const emit = defineEmits(['openVersion']);
 const {t} = useI18n();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const route = useRoute();
 const router = useRouter();
 const idle = useIdleStore();
 const {copyToClipboard} = useClipboard();
 
 const projectModel = computed(() => projectStore.currentProject!);
-const versionDetails = computed(() => appStore.getCurrentVersion);
-const spdxFileHistory = computed(() => appStore.getChannelSpdxs);
+const versionDetails = computed(() => sbomStore.getCurrentVersion);
+const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
 const labelTools = computed(() => appStore.getLabelsTools);
 
 const search = ref('');
@@ -172,7 +178,7 @@ const items = computed((): DataTableItems[] => {
   };
 
   if (!props.channelView) {
-    return appStore.getAllSBOMsFlat.map((file) => ({
+    return sbomStore.getAllSBOMsFlat.map((file) => ({
       ...file,
       searchIndex: getSearchIndex(file),
     }));
@@ -255,10 +261,10 @@ const reloadSboms = async () => {
     if (spdxFileHistory[0]) {
       spdxFileHistory[0].isRecent = true;
     }
-    appStore.setChannelSpdxs(spdxFileHistory);
-    await appStore.fetchAllSBOMs();
+    sbomStore.setChannelSpdxs(spdxFileHistory);
+    await sbomStore.fetchAllSBOMs();
   } else {
-    await appStore.fetchAllSBOMsFlat();
+    await sbomStore.fetchAllSBOMsFlat();
   }
 };
 const toggleLock = async (item: VersionSbomsFlat) => {
@@ -278,7 +284,7 @@ const setApprovable = async (item: VersionSbomsFlat) => {
   await projectService
     .updateApprovableSpdx(approvableSpdx, projectModel.value._key)
     .then(() => (projectModel.value.approvablespdx = approvableSpdx));
-  await appStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMs();
 };
 const downloadFile = (item: VersionSbomsFlat) => {
   const link = document.createElement('a');
@@ -302,8 +308,8 @@ const downloadFile = (item: VersionSbomsFlat) => {
 
 onMounted(async () => {
   if (!props.channelView) {
-    appStore.fetchAllSBOMsFlat().then(() => {
-      branches.value = appStore.allVersions;
+    sbomStore.fetchAllSBOMsFlat().then(() => {
+      branches.value = sbomStore.allVersions;
       selectedBranch.value = branches.value[0];
       if (versionDetails.value) {
         const branchFromVersion = branches.value.find((g) => g.key == versionDetails.value._key);

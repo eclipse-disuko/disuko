@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <template>
   <div class="h-[calc(100%-56px)]">
     <Stack direction="row" class="pb-1">
@@ -238,8 +242,8 @@ import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
 import {ScanRemark, ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {
   getIconColorScanRemarkLevel,
@@ -254,8 +258,8 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 
-const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const {t} = useI18n();
 
 const search = ref('');
@@ -380,8 +384,8 @@ onMounted(async () => {
 });
 
 const projectModel = computed(() => projectStore.currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
-const spdx = computed(() => appStore.selectedSpdx);
+const version = computed(() => sbomStore.getCurrentVersion);
+const spdx = computed(() => sbomStore.selectedSpdx);
 
 const filteredList = computed(() => {
   return tableItems.value.filter((item: ScanRemark) => {

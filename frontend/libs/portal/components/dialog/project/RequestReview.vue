@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DocumentMeta, PlausibilityCheckRequest} from '@disclosure-portal/model/ApprovalRequest';
 import {ApprovableInfoDto, ApprovableSPDXDto} from '@disclosure-portal/model/Project';
@@ -6,9 +10,9 @@ import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/Ve
 import profileService from '@disclosure-portal/services/profile';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
@@ -19,7 +23,7 @@ import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 
 const projectStore = useProjectStore();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
@@ -120,8 +124,8 @@ const autoSelect = async () => {
     return;
   }
 
-  if (Object.keys(appStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
-    selectedChannel.value = appStore.currentVersion;
+  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+    selectedChannel.value = sbomStore.currentVersion;
   } else {
     selectedChannel.value =
       channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
@@ -133,8 +137,8 @@ const autoSelect = async () => {
     }
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
-    if (Object.keys(appStore.selectedSpdx).length > 0) {
-      selectedSbom.value = appStore.selectedSpdx ?? null;
+    if (Object.keys(sbomStore.selectedSpdx).length > 0) {
+      selectedSbom.value = sbomStore.selectedSpdx ?? null;
     }
     await loadStats();
   }

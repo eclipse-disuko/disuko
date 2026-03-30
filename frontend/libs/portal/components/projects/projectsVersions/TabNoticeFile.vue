@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import {NoticeFileFormat, SbomStats} from '@disclosure-portal/model/VersionDetails';
@@ -5,6 +9,7 @@ import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile, getIconColorScanRemarkLevel} from '@disclosure-portal/utils/View';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
@@ -15,11 +20,12 @@ import {VIcon} from 'vuetify/components';
 const {t} = useI18n();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const currentProject = computed(() => projectStore.currentProject!);
-const currentVersionId = computed(() => appStore.getCurrentVersion._key);
+const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
 const currentProjectId = computed(() => currentProject.value._key);
-const spdx = computed(() => appStore.selectedSpdx);
-const spdxFileHistory = computed(() => appStore.getChannelSpdxs);
+const spdx = computed(() => sbomStore.selectedSpdx);
+const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
 const labelTools = computed(() => appStore.getLabelsTools);
 const isVehicleProject = computed(() =>
   currentProject.value.policyLabels.some(

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {DocumentMeta, InternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
@@ -7,10 +11,10 @@ import {UserDto} from '@disclosure-portal/model/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
@@ -22,7 +26,7 @@ import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 
 const projectStore = useProjectStore();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
@@ -216,8 +220,8 @@ const autoSelect = async () => {
     selectedChannel.value =
       channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
   }
-  if (Object.keys(appStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
-    selectedChannel.value = appStore.currentVersion;
+  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+    selectedChannel.value = sbomStore.currentVersion;
   }
   if (selectedChannel.value) {
     await loadSBOMHist();
@@ -227,7 +231,7 @@ const autoSelect = async () => {
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
     if (selectedSbom.value === null) {
-      selectedSbom.value = appStore.selectedSpdx ?? null;
+      selectedSbom.value = sbomStore.selectedSpdx ?? null;
     }
     await loadStats();
   }
@@ -348,15 +352,6 @@ defineExpose({open});
     <v-dialog v-model="isVisible" content-class="large" scrollable width="850">
       <DialogLayout :config="dialogConfig" @close="close" @secondary-action="close" @primary-action="doDialogAction">
         <Stack class="gap-4">
-          <Stack v-if="approvableInfo.hasDeniedDecisions">
-            <v-alert color="error" type="warning" density="compact">
-              <template #prepend>
-                <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
-              </template>
-              {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
-            </v-alert>
-          </Stack>
-
           <v-tabs v-model="approverTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
             <v-tab value="owner">{{ t('TAB_TITLE_OWNER_APPROVER') }}</v-tab>
             <v-tab value="developer">{{ t('TAB_TITLE_DEVELOPER_APPROVER') }}</v-tab>
@@ -508,7 +503,9 @@ defineExpose({open});
           </v-tabs>
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="general">
-              <DApprovalComponents :stats="stats!" />
+              <DApprovalComponents
+                :stats="stats!"
+                :showRedWarnDeniedDecisionsMessage="approvableInfo.hasDeniedDecisions" />
             </v-tabs-window-item>
             <v-tabs-window-item eager value="approvable" v-if="projectModel.isGroup">
               <GridSPDXList :projects="approvableInfo.projects" :channels="projectModel.versions" showSbomExtras />

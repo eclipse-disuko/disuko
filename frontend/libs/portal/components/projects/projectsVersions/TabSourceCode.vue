@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script lang="ts" setup>
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import useDimensions from '@disclosure-portal/composables/useDimensions';
@@ -5,6 +9,7 @@ import {ExternalSource} from '@disclosure-portal/model/VersionDetails';
 import VersionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTimeShort, getStrWithMaxLength} from '@disclosure-portal/utils/View';
@@ -19,6 +24,7 @@ import {useI18n} from 'vue-i18n';
 
 const appStore = useAppStore();
 const currentProject = computed(() => useProjectStore().currentProject!);
+const sbomStore = useSbomStore();
 const {t} = useI18n();
 const snackbar = useSnackbar();
 const {copyToClipboard} = useClipboard();
@@ -35,7 +41,7 @@ const tableHeight = ref(0);
 const scGrid = ref<HTMLElement | null>(null);
 
 const labelTools = computed(() => appStore.getLabelsTools);
-const version = computed(() => appStore.currentVersion);
+const version = computed(() => sbomStore.currentVersion);
 const headersSources = computed<DataTableHeader[]>(() => {
   return [
     {

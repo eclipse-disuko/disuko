@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {useView} from '@disclosure-portal/composables/useView';
 import {IDefaultSelectItem, IObligation, ObligationDTO} from '@disclosure-portal/model/IObligation';
@@ -6,6 +10,7 @@ import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects'
 import VersionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, getStrWithMaxLength} from '@disclosure-portal/utils/View';
@@ -18,6 +23,7 @@ import {useI18n} from 'vue-i18n';
 const {t} = useI18n();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const viewTools = useViewTools();
 const {getTextOfLevel, getTextOfType} = useView();
 
@@ -122,8 +128,8 @@ watch(menu3, () => (menu.value = menu2.value = false));
 const searchFieldInput = ref<string>('');
 
 const projectModel = computed(() => projectStore.currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
-const spdx = computed(() => appStore.selectedSpdx);
+const version = computed(() => sbomStore.getCurrentVersion);
+const spdx = computed(() => sbomStore.selectedSpdx);
 
 const possibleTypes = computed(() => {
   if (!selectedLicenseRemarks.value.obligations) {

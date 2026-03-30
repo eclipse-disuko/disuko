@@ -1,9 +1,13 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DialogVersionFormConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import ProjectVersionPostRequest from '@disclosure-portal/model/ProjectVersionPostRequest';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -11,7 +15,7 @@ import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
 const {info: snack} = useSnackbar();
 const {minMax, longText} = useRules();
@@ -59,7 +63,7 @@ const doDialogAction = async () => {
     snack(t('DIALOG_version_create_success'));
   }
   await projectStore.fetchProjectByKey(config.value.projectID);
-  appStore.resetCurrentVersion();
+  sbomStore.resetCurrentVersion();
   versionDialog.value?.reset();
   isVisible.value = false;
 };

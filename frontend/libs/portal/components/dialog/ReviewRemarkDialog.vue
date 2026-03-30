@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DialogReviewRemarkConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {type Project, SbomLicenses} from '@disclosure-portal/model/Project';
@@ -6,8 +10,8 @@ import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import {ComponentInfoSlim, SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
@@ -20,7 +24,7 @@ import {VForm} from 'vuetify/components';
 const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
 
 const {t} = useI18n();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
 const {minMax} = useRules();
 const {info: snack} = useSnackbar();
@@ -59,10 +63,12 @@ const licenses = computed((): LicenseMeta[] => {
   if (!sbomAllLicenses.value) {
     return [];
   }
-  const known = sbomAllLicenses.value.known.map((license) => ({
-    licenseId: license.id,
-    licenseName: license.name,
-  }));
+  const known = sbomAllLicenses.value.known
+    ? sbomAllLicenses.value.known.map((license) => ({
+        licenseId: license.id,
+        licenseName: license.name,
+      }))
+    : [];
   const unknown = sbomAllLicenses.value.unknown
     ? sbomAllLicenses.value.unknown.map((str) => ({licenseId: str, licenseName: str}))
     : [];
@@ -71,7 +77,7 @@ const licenses = computed((): LicenseMeta[] => {
 });
 
 const projectModel = computed((): Project => projectStore.currentProject!);
-const version = computed(() => appStore.getCurrentVersion);
+const version = computed(() => sbomStore.getCurrentVersion);
 const versionID = computed(() => config.value.versionID || version.value._key);
 
 const dialogConfig = computed((): DialogLayoutConfig => {

@@ -4,13 +4,8 @@
 
 import INavItem, {INavItemGroup} from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
-import {ProjectModel} from '@disclosure-portal/model/Project';
-import {NameKeyIdentifier, VersionSboms, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
-import {SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import {GetDashboardCounts} from '@disclosure-portal/services/admin';
-import ProjectService from '@disclosure-portal/services/projects';
 import sessionService from '@disclosure-portal/services/session';
-import versionService from '@disclosure-portal/services/version';
 import {LabelsTools} from '@disclosure-portal/utils/Labels';
 import {useStorage} from '@vueuse/core';
 import {defineStore} from 'pinia';
@@ -36,13 +31,6 @@ export const useAppStore = defineStore('app', () => {
   const state = reactive({
     appLanguage: resolveInitialAppLanguage(),
     LabelsTools: new LabelsTools(),
-    currentProject: {} as ProjectModel,
-    currentVersion: {} as VersionSlim,
-    channelSpdxs: [] as SpdxFile[],
-    selectedSpdx: {} as SpdxFile,
-    allSBOMSFlat: [] as VersionSbomsFlat[],
-    allSBOMS: [] as VersionSboms[],
-    allVersions: [] as NameKeyIdentifier[],
     tiles: [] as ITile[],
     alternateRender: false,
     navItemGroup: {
@@ -154,61 +142,8 @@ export const useAppStore = defineStore('app', () => {
     setLanguage(state.appLanguage === 'en' ? 'de' : 'en');
   };
 
-  const resetCurrentProject = () => {
-    state.currentProject = {} as ProjectModel;
-  };
-
-  const fetchCurrentProject = async (id: string) => {
-    state.currentProject = await ProjectService.get(id);
-  };
-
-  const refetchCurrentProject = async () => {
-    if (typeof state.currentProject._key === 'undefined') {
-      return;
-    }
-    await fetchCurrentProject(state.currentProject?._key);
-  };
-
-  const resetCurrentVersion = () => {
-    if (!state.currentVersion) {
-      return;
-    }
-    state.currentVersion = state.currentProject.versions[state.currentVersion._key];
-  };
-
-  const setCurrentVersion = (version: VersionSlim) => {
-    state.currentVersion = version;
-  };
-
-  const setSelectedSpdx = (spdx: SpdxFile) => {
-    state.selectedSpdx = spdx;
-  };
-
-  const setChannelSpdxs = (spdxs: SpdxFile[]) => {
-    state.channelSpdxs = spdxs;
-  };
-
-  const fetchAllSBOMsFlat = async () => {
-    const data = await ProjectService.getAllSbomsFlat(state.currentProject._key);
-    state.allSBOMSFlat = data.items;
-    state.allVersions = data.versions;
-  };
-
-  const fetchAllSBOMs = async () => {
-    state.allSBOMS = await ProjectService.getAllSboms(state.currentProject._key);
-  };
-
-  const fetchSBOMHistory = async () => {
-    const spdxFileHistory = (await versionService.getSbomHistory(state.currentProject._key, state.currentVersion._key))
-      .data;
-    if (spdxFileHistory[0]) {
-      spdxFileHistory[0].isRecent = true;
-    }
-    setChannelSpdxs(spdxFileHistory);
-  };
-
-  const setDummyDesignMode = () => {
-    state.dummyDesignMode = state.currentProject.isDummy;
+  const setDummyDesignMode = (isDummy: boolean) => {
+    state.dummyDesignMode = isDummy;
   };
 
   const unsetDummyDesignMode = () => {
@@ -238,12 +173,6 @@ export const useAppStore = defineStore('app', () => {
   // Getters
   const getLabelsTools = computed(() => state.LabelsTools);
   const getAppLanguage = computed(() => state.appLanguage);
-  const getCurrentProject = computed(() => state.currentProject);
-  const getCurrentVersion = computed(() => state.currentVersion);
-  const getChannelSpdxs = computed(() => state.channelSpdxs);
-  const getSelectedSpdx = computed(() => state.selectedSpdx);
-  const getAllSBOMsFlat = computed(() => state.allSBOMSFlat);
-  const getAllSBOMs = computed(() => state.allSBOMS);
 
   return {
     // State
@@ -260,16 +189,6 @@ export const useAppStore = defineStore('app', () => {
     startTokenRefresher,
     toggleLanguage,
     setLanguage,
-    resetCurrentProject,
-    fetchCurrentProject,
-    refetchCurrentProject,
-    resetCurrentVersion,
-    setCurrentVersion,
-    setSelectedSpdx,
-    setChannelSpdxs,
-    fetchAllSBOMsFlat,
-    fetchAllSBOMs,
-    fetchSBOMHistory,
     setDummyDesignMode,
     unsetDummyDesignMode,
     setShouldReloadApprovals,
@@ -277,11 +196,5 @@ export const useAppStore = defineStore('app', () => {
     // Getters
     getLabelsTools,
     getAppLanguage,
-    getCurrentProject,
-    getCurrentVersion,
-    getChannelSpdxs,
-    getSelectedSpdx,
-    getAllSBOMsFlat,
-    getAllSBOMs,
   };
 });

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {
   DialogBulkPolicyDecisionEntry,
@@ -8,8 +12,8 @@ import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import projectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import useRules from '@disclosure-portal/utils/Rules';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
@@ -23,7 +27,6 @@ import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 
 type TableItem = DialogBulkPolicyDecisionEntry & {
   key: string;
@@ -32,7 +35,7 @@ type TableItem = DialogBulkPolicyDecisionEntry & {
 const {t} = useI18n();
 const {info} = useSnackbar();
 const rules = useRules();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const userStore = useUserStore();
 const emit = defineEmits(['reload']);
 const projectStore = useProjectStore();
@@ -99,10 +102,11 @@ const headers: DataTableHeader[] = [
 ];
 
 const projectKey = computed(() => projectStore.currentProject!._key);
-const currentVersionKey = computed(() => appStore.getCurrentVersion._key);
-const currentSbomId = computed(() => appStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => appStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => appStore.getSelectedSpdx.Uploaded);
+const currentVersionKey = computed(() => sbomStore.getCurrentVersion._key);
+const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
+
 const buttonsDisabled = computed(() => !verification.value || selected.value.length === 0);
 
 const open = async (

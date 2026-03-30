@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DialogLicenseRuleConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
@@ -8,8 +12,8 @@ import {ComponentLicenses} from '@disclosure-portal/model/Project';
 import {ComponentInfoSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import useRules from '@disclosure-portal/utils/Rules';
 import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
@@ -29,7 +33,7 @@ interface LicenseItemWithPolicyStatus {
 const {t} = useI18n();
 const {info} = useSnackbar();
 const rules = useRules();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const userStore = useUserStore();
 const emit = defineEmits(['reload']);
 const projectStore = useProjectStore();
@@ -58,10 +62,10 @@ const config = ref<DialogLicenseRuleConfig>({
 });
 
 const projectKey = computed(() => projectStore.currentProject!._key);
-const currentVersionId = computed(() => appStore.getCurrentVersion._key);
-const currentSbomId = computed(() => appStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => appStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => appStore.getSelectedSpdx.Uploaded);
+const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
+const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
 
 const policyTypeMap = computed(() => {
   const statuses = config.value.policyStatus ?? [];

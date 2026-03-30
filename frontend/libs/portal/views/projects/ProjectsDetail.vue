@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
 import {ProjectSubscriptions} from '@disclosure-portal/model/Project';
@@ -99,7 +103,7 @@ const reload = async () => {
 
 const initPage = async () => {
   await nextTick();
-  appStore.setDummyDesignMode();
+  appStore.setDummyDesignMode(currentProject.value?.isDummy ?? false);
   initBreadcrumbs();
 };
 

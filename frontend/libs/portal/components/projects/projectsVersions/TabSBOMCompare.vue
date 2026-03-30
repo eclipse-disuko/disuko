@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import ComponentCompareDialog from '@disclosure-portal/components/dialog/ComponentCompareDialog.vue';
 import Icons from '@disclosure-portal/constants/icons';
@@ -10,8 +14,8 @@ import {
   PolicyRuleStatus,
 } from '@disclosure-portal/model/VersionDetails';
 import ProjectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
   getIconColorForPolicyType,
@@ -106,11 +110,11 @@ class CellValueWithLicenseInformation {
 }
 
 const currentProject = computed(() => useProjectStore().currentProject!);
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {t} = useI18n();
 
-const version = computed(() => appStore.getCurrentVersion);
-const allSboms = computed(() => appStore.getAllSBOMs);
+const version = computed(() => sbomStore.getCurrentVersion);
+const allSboms = computed(() => sbomStore.getAllSBOMs);
 const groupedSpdxs = computed(() => {
   const res: SpdxIdentifier[] = [];
   allSboms.value.forEach((vs) => {
@@ -391,7 +395,7 @@ const reloadInternal = async (forceReload: boolean) => {
   if (!currentProject.value._key) {
     return;
   }
-  await appStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMs();
   selectedFilterLicenses.value = [];
   resetErrors();
 
@@ -399,7 +403,7 @@ const reloadInternal = async (forceReload: boolean) => {
 };
 
 const setSelection = () => {
-  const selectedSpdx = appStore.getSelectedSpdx;
+  const selectedSpdx = sbomStore.getSelectedSpdx;
   if (selectedSpdx === null) {
     selectedSpdxCurrent.value = groupedSpdxs.value.find((s) => s.versionKey === version.value._key) || null;
   } else {

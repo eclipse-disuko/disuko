@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
@@ -5,8 +9,8 @@ import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import useRules from '@disclosure-portal/utils/Rules';
 import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
@@ -20,7 +24,7 @@ import {DialogPolicyDecisionConfig} from '@disclosure-portal/components/dialog/D
 const {t} = useI18n();
 const {info} = useSnackbar();
 const rules = useRules();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const userStore = useUserStore();
 const emit = defineEmits(['reload', 'triggerBulk']);
 const projectStore = useProjectStore();
@@ -44,10 +48,10 @@ const config = ref<DialogPolicyDecisionConfig>({
 });
 
 const projectKey = computed(() => projectStore.currentProject!._key);
-const currentVersionKey = computed(() => appStore.getCurrentVersion._key);
-const currentSbomId = computed(() => appStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => appStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => appStore.getSelectedSpdx.Uploaded);
+const currentVersionKey = computed(() => sbomStore.getCurrentVersion._key);
+const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
 
 const selectedComponent = computed(() => config.value.component);
 const policies = computed(() => config.value.policies);

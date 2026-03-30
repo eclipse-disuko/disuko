@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {DocumentMeta, ExternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
@@ -5,10 +9,10 @@ import {ApprovableInfoDto, ApprovableSPDXDto} from '@disclosure-portal/model/Pro
 import {ComponentStats, OverallReviewState, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
-import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useJobStore} from '@disclosure-portal/stores/jobs';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import config from '@shared/utils/config';
@@ -18,7 +22,7 @@ import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 
 const projectStore = useProjectStore();
-const appStore = useAppStore();
+const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const idle = useIdleStore();
@@ -304,8 +308,8 @@ const autoSelect = async () => {
     selectedChannel.value =
       channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
   }
-  if (Object.keys(appStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
-    selectedChannel.value = appStore.currentVersion;
+  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+    selectedChannel.value = sbomStore.currentVersion;
   }
   if (selectedChannel.value) {
     await loadSBOMHist();
@@ -315,7 +319,7 @@ const autoSelect = async () => {
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
     if (selectedSbom.value === null) {
-      selectedSbom.value = appStore.selectedSpdx ?? null;
+      selectedSbom.value = sbomStore.selectedSpdx ?? null;
     }
     await loadStats();
   }
@@ -381,7 +385,7 @@ const doDialogAction = async () => {
   }
 };
 
-const isDeniedOrUnassareted = computed(() => {
+const isDeniedOrUnasserted = computed(() => {
   return vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
 });
 
@@ -396,7 +400,7 @@ const isEnterpriseOrMobileOrOther = computed(() => {
 });
 
 const showRedWarnDeniedDecisionsMessage = computed(
-  () => !isDeniedOrUnassareted.value && approvableInfo.value.hasDeniedDecisions,
+  () => !isDeniedOrUnasserted.value && approvableInfo.value.hasDeniedDecisions,
 );
 
 defineExpose({open});
@@ -420,15 +424,6 @@ defineExpose({open});
 
         <v-card-text>
           <Stack class="gap-4">
-            <Stack v-if="showRedWarnDeniedDecisionsMessage">
-              <v-alert color="error" type="warning" class="mb-1" density="compact">
-                <template #prepend>
-                  <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
-                </template>
-                {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
-              </v-alert>
-            </Stack>
-
             <Stack v-if="!projectModel.isGroup">
               <v-select
                 v-model="selectedChannel"
@@ -512,9 +507,9 @@ defineExpose({open});
 
             <section
               id="warning"
-              v-if="isDeniedOrUnassareted || isEnterpriseOrMobileOrOther || noFOSS || isRdConfirmationMissing">
+              v-if="isDeniedOrUnasserted || isEnterpriseOrMobileOrOther || noFOSS || isRdConfirmationMissing">
               <v-alert color="warning" type="warning">
-                <span v-if="isDeniedOrUnassareted">
+                <span v-if="isDeniedOrUnasserted">
                   {{ t('DENIED_OR_UNASSARETED_MESSAGE') }}
                 </span>
                 <span v-else-if="isRdConfirmationMissing">
@@ -548,7 +543,9 @@ defineExpose({open});
             </v-tabs>
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="general">
-                <DApprovalComponents :stats="stats!" />
+                <DApprovalComponents
+                  :stats="stats!"
+                  :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
               </v-tabs-window-item>
               <v-tabs-window-item value="approvable" v-if="projectModel.isGroup">
                 <GridSPDXList
@@ -597,7 +594,7 @@ defineExpose({open});
 
           <DCActionButton
             isDialogButton
-            v-if="!isDeniedOrUnassareted"
+            v-if="!isDeniedOrUnasserted"
             size="small"
             variant="flat"
             @click="doDialogAction"

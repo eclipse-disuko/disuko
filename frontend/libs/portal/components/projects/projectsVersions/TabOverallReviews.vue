@@ -1,10 +1,14 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import useDimensions from '@disclosure-portal/composables/useDimensions';
 import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import {OverallReview, OverallReviewState} from '@disclosure-portal/model/VersionDetails';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {formatDateAndTime, getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
@@ -13,9 +17,9 @@ import {computed, nextTick, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
-const appStore = useAppStore();
 const labelStore = useLabelStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const {calculateHeight} = useDimensions();
 
 const sortBy: SortItem[] = [{key: 'created', order: 'desc'}];
@@ -26,9 +30,9 @@ const overallReviewDialog = ref();
 const overallAuditDialog = ref();
 
 const currentProject = computed(() => projectStore.currentProject!);
-const spdxHistory = computed(() => appStore.getChannelSpdxs);
-const selectedSpdx = computed(() => appStore.getSelectedSpdx);
-const version = computed(() => appStore.getCurrentVersion);
+const spdxHistory = computed(() => sbomStore.getChannelSpdxs);
+const selectedSpdx = computed(() => sbomStore.getSelectedSpdx);
+const version = computed(() => sbomStore.getCurrentVersion);
 const hasVehiclePlatformChildren = computed(() => projectStore.hasVehiclePlatformChildren);
 
 const isVehiclePlatform = computed(() => {

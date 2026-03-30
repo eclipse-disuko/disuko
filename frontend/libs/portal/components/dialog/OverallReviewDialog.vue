@@ -1,8 +1,12 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script lang="ts">
 import {OverallReviewRequest, OverallReviewState, SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import versionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime, getOverallReviewTranslationKey} from '@disclosure-portal/utils/Table';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
@@ -23,7 +27,7 @@ export default defineComponent({
     const {t} = useI18n();
     const {info: snack} = useSnackbar();
     const projectStore = useProjectStore();
-    const appStore = useAppStore();
+    const sbomStore = useSbomStore();
     const isVisible = ref(false);
     const selectedState = ref<OverallReviewState>(OverallReviewState.UNREVIEWED);
     const selectedSBOM = ref<SpdxFile | null>(null);
@@ -87,8 +91,8 @@ export default defineComponent({
         }
         await versionService.createOverallReview(prId.value, vId.value, req); // Replace with actual IDs
         await projectStore.fetchProjectByKey(projectStore.currentProject!._key);
-        await appStore.fetchSBOMHistory();
-        appStore.resetCurrentVersion();
+        await sbomStore.fetchSBOMHistory();
+        sbomStore.resetCurrentVersion();
         emit('reload');
         close();
         snack(t('DIALOG_overallreview_create_success'));

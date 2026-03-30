@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import {DecisionType, DialogBulkPolicyDecisionEntry} from '@disclosure-portal/components/dialog/DialogConfigs';
 import useDimensions from '@disclosure-portal/composables/useDimensions';
@@ -12,9 +16,9 @@ import {
 } from '@disclosure-portal/model/VersionDetails';
 import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
@@ -41,8 +45,8 @@ type TabelItem = ComponentInfo & {
 const route = useRoute();
 const {t} = useI18n();
 const {getI18NTextOfPrefixKey} = useLicense();
-const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const idle = useIdleStore();
 
 const gridName = 'ComponentList';
@@ -50,9 +54,9 @@ const headerSettingsStore = useHeaderSettingsStore();
 const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const projectModel = computed(() => projectStore.currentProject!);
-const versionDetails = computed(() => appStore.getCurrentVersion);
-const spdxFileHistory = computed(() => appStore.getChannelSpdxs);
-const currentSpdx = computed(() => appStore.getSelectedSpdx);
+const versionDetails = computed(() => sbomStore.getCurrentVersion);
+const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
+const currentSpdx = computed(() => sbomStore.getSelectedSpdx);
 
 const search = ref('');
 const sortBy = ref<SortItem[]>([{key: 'prStatus', order: 'desc'}]);

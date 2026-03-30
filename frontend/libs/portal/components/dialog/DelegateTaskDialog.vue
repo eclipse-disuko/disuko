@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
 <script setup lang="ts">
 import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
