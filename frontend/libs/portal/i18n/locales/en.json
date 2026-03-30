@@ -886,6 +886,7 @@
   "ATTR_PACKAGEFILENAME": "Package Filename",
   "ATTR_COPYRIGHTTEXT": "Copyright Text",
   "ATTR_HOMEPAGE": "Homepage",
+  "TEST": "somehow this is allowed",
   "ATTR_COMMENT": "Comment",
   "ATTR_SNIPPETFROMFILE": "Snippet from File",
   "ATTR_SUPPLIER": "Supplier",
