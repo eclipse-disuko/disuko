@@ -354,11 +354,12 @@ watch(
             <DCActionButton
               isDialogButton
               v-if="showFill"
-              class="px-3"
+              class="px-2"
               :text="t('TAD_BTN_FILL')"
-              :hint="t('TT_TAD_BTN_ABORT')"
+              :hint="t('TT_TAD_BTN_FILL')"
               @click="openFillDialog"
               :disabled="approval.status == 'GENERATING'" />
+            &nbsp;
             <DCActionButton
               isDialogButton
               class="px-3"
