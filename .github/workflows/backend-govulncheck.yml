@@ -13,7 +13,7 @@ defaults:
 jobs:
   govulncheck:
     name: govulncheck
-    runs-on: [ ubuntu-4core-amd64 ]
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
