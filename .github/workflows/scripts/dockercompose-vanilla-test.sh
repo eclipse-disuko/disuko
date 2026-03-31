@@ -27,7 +27,8 @@ isContainerExitedSuccessful() {
     fi
 }
 
-docker compose up -d --build >> /dev/null 2>&1
+#docker compose up -d --build >> /dev/null 2>&1
+docker compose up --build
 container_names=$(docker ps --format "{{.Names}}" --filter "name=disuko")
 remaining_container_count=$(echo "$container_names" | wc -l)
 container_checked_count=0
