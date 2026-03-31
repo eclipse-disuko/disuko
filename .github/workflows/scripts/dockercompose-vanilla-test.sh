@@ -33,7 +33,7 @@ generateSelfSignedCertificate() {
     return
   fi
   mkdir -p certs && chmod 757 certs
-  openssl req -x509 -newkey rsa:4096 -keyout certs/localhost-key.pem -out certs/localhost.pem -days 1 -nodes -subj "/CN=localhost"
+  openssl req -x509 -newkey rsa:4096 -keyout certs/localhost-key.pem -out certs/localhost.pem -days 1 -nodes -subj "/CN=localhost" >> /dev/null 2>&1
 }
 
 generateSelfSignedCertificate
@@ -50,6 +50,7 @@ for container_name in $container_names; do
     container_checked_count=$((container_checked_count + 1))
     container_names=$(echo "$container_names" | grep -v $container_name || true)
   fi
+  sleep 5
 done
 if [ $(( $(date +%s) - start_time )) -ge $timeout ]; then
   echo "Timeout ${timeout}s reached while waiting for containers to become healthy."
