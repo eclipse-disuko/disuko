@@ -32,13 +32,11 @@ export const useHeaderSettingsStore = defineStore(STORE_KEY, () => {
   const selectedHeaders = computed(() => localStorage.value[tableName.value] ?? []);
   const selectableHeaders = computed((): DataTableHeaderFilterItems[] =>
     headers.value.map(
-      (header, headerIndex) =>
+      (header) =>
         ({
           ...header,
-          text: headers.value[headerIndex].title.includes(',')
-            ? getMultiTitle(headers.value[headerIndex].title)
-            : t(headers.value[headerIndex].title),
-          disabled: settingsColumn.value?.value === headers.value[headerIndex]?.value,
+          disabled: header?.value === settingsColumn.value?.value || header?.value === 'actionButtons',
+          text: header.title.includes(',') ? getMultiTitle(header.title) : t(header.title),
         }) as DataTableHeaderFilterItems,
     ),
   );
@@ -47,11 +45,7 @@ export const useHeaderSettingsStore = defineStore(STORE_KEY, () => {
     tableName.value = newTableName;
 
     if (!state[tableName.value]) {
-      state[tableName.value] = {
-        headers: [],
-        hideInitially: initiallyHiddenList,
-        initialSelectedHeaders: [],
-      };
+      state[tableName.value] = {hideInitially: initiallyHiddenList} as HeaderSettings;
     }
 
     const headersBefore = [...(state[tableName.value].headers ?? [])];

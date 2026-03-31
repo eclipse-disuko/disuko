@@ -47,6 +47,8 @@ const snackbar = useSnackbar();
 const route = useRoute();
 const userStore = useUserStore();
 const viewTools = useViewTools();
+const {stopSlideInTimerAndSlideOut, startSlideInTimer, slideIn, sliderWidth, setupTableActionSlider} =
+  useTableActionSlider();
 
 const gridName = 'License';
 const headerSettingsStore = useHeaderSettingsStore();
@@ -322,14 +324,7 @@ const getActionButtons = (item: LicenseSlim): TableActionButtonsProps['buttons']
   ];
 };
 
-const {baseWidth} = useTableActionSlider();
-
-const expandedWidth = ref<number>(baseWidth.value);
-
-const headerExpands = (value: number) => {
-  expandedWidth.value = value;
-  headerSettingsStore.setupStore(gridName, headers.value);
-};
+setupTableActionSlider(getActionButtons({source: 'spdx'} as LicenseSlim).length);
 
 const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtils.hasPolicyAccess());
 
@@ -338,9 +333,15 @@ const headers = computed((): DataTableHeader[] => [
     ? [
       {
         title: 'COL_ACTIONS',
-        align: 'center',
-        width: expandedWidth.value,
+        align: 'end',
+        width: 110,
         value: 'actions',
+      } as DataTableHeader,
+      {
+        title: '',
+        align: 'start',
+        width: sliderWidth.value,
+        value: 'actionButtons',
       } as DataTableHeader,
     ]
     : []),
@@ -643,6 +644,10 @@ watch(
   debouncedSearch,
 );
 
+watch(sliderWidth, () => {
+  headerSettingsStore.setupStore(gridName, headers.value);
+});
+
 onMounted(async () => {
   rights.value = userStore.getRights;
 
@@ -672,7 +677,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TableLayout data-testid="licenses" @mouseleave="headerExpands(baseWidth)">
+  <TableLayout data-testid="licenses" @mouseleave="slideIn">
     <template #description>
       <div class="d-flex flex-row align-center ga-3">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
@@ -878,16 +883,22 @@ onMounted(async () => {
           <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated" />
           </template>
-          <template v-if="allowActions" #[`item.actions`]="{item}">
+          <template v-if="allowActions" #[`item.actions`]>
+            <div @mouseenter="stopSlideInTimerAndSlideOut" @mouseleave="startSlideInTimer" class="pr-6">
+              <v-btn plain size="small" variant="text" icon color="primary" class="size-10" @click.stop>
+                <v-icon>mdi-dots-horizontal</v-icon>
+                <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
+              </v-btn>
+            </div>
+          </template>
+          <template v-if="allowActions" #[`item.actionButtons`]="{item}">
             <TableActionButtons
               variant="slider"
               :buttons="getActionButtons(item)"
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"
               @delete="showDeletionConfirmationDialog(item)"
-              @configure="configurePoliciesForLicense(item)"
-              @slideOut="headerExpands($event as number)"
-              @slideIn="headerExpands($event as number)" />
+              @configure="configurePoliciesForLicense(item)" />
           </template>
           <template #[`item.aliases`]="{item}">
             <span v-if="Array.isArray(item.aliases) && item.aliases.length > 0">

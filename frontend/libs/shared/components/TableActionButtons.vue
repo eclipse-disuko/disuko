@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {computed} from 'vue';
-import {useI18n} from 'vue-i18n';
 
 interface Button {
   icon: string;
@@ -31,26 +30,25 @@ const emit = defineEmits<{
   [key: string]: [value?: number];
 }>();
 
-const {t} = useI18n();
-
 const shownButtons = computed(() => props.buttons.filter((button) => button.show ?? true));
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
 
-const {sliderWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
+const {sliderWidth, expandedMaxWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} =
+  useTableActionSlider();
 
 if (props.variant === 'slider') {
   setupTableActionSlider(
+    props.buttons.length,
     () => emit('slideOut', sliderWidth.value),
     () => emit('slideIn', sliderWidth.value),
-    props.buttons.length,
   );
 }
 </script>
 
 <template>
   <div
-    class="flex items-center"
+    class="h-[100%] flex items-center"
     :class="{'justify-center': variant !== 'slider', 'justify-start': variant === 'slider'}">
     <!-- Minimal Variant: All buttons in an extra menu -->
     <template v-if="variant === 'minimal'">
@@ -82,38 +80,28 @@ if (props.variant === 'slider') {
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
       <div
-        class="flex justify-start pl-8 pr-5"
+        class="h-full flex items-center justify-start pr-5"
         @click.stop
         @mouseenter="stopSlideInTimerAndSlideOut"
         @mouseleave="startSlideInTimer">
-        <v-btn
-          v-if="shownButtons.length >= 2"
-          plain
-          size="small"
-          variant="text"
-          icon
-          color="primary"
-          class="size-10"
-          @click.stop>
-          <v-icon>mdi-dots-horizontal</v-icon>
-          <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
-        </v-btn>
-        <template v-for="button in buttons" :key="button.icon">
-          <div
-            v-if="button?.show ?? true"
-            class="d-inline size-10"
-            @click.stop="!button?.disabled ? emit(button.event) : null">
-            <v-btn
-              plain
-              size="small"
-              variant="text"
-              density="default"
-              :icon="button.icon"
-              :color="button.color || 'primary'"
-              :disabled="Boolean(button?.disabled) || false" />
-            <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
-          </div>
-        </template>
+        <div class="flex h-[40px]" :style="{width: expandedMaxWidth + 'px'}">
+          <template v-for="button in buttons" :key="button.icon">
+            <div
+              v-if="button?.show ?? true"
+              class="d-inline size-10"
+              @click.stop="!button?.disabled ? emit(button.event) : null">
+              <v-btn
+                plain
+                size="small"
+                variant="text"
+                density="default"
+                :icon="button.icon"
+                :color="button.color || 'primary'"
+                :disabled="Boolean(button?.disabled) || false" />
+              <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
+            </div>
+          </template>
+        </div>
       </div>
     </template>
 
@@ -158,11 +146,18 @@ if (props.variant === 'slider') {
 
 <style lang="scss">
 .action-slider-table > .v-table > .v-table__wrapper > table {
-  > thead > tr > th:first-child {
+  > thead > tr > th:nth-child(2) {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
     transition: width ease-in-out 0.2s;
   }
   > tbody > tr > td:first-child {
     padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+  > tbody > tr > td:nth-child(2) {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
   }
 }
 </style>

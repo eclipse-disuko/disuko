@@ -19,7 +19,13 @@ const slots = useSlots();
 </script>
 
 <template>
-  <div class="flex justify-start items-center">
+  <div
+    class="flex items-center"
+    :class="{
+      'justify-start': column.align === 'start',
+      'justify-center': column.align === 'center',
+      'justify-end': column.align === 'end',
+    }">
     <slot v-if="slots.settings" name="settings" />
     <span v-if="column.title" :class="{'ml-6': slots.settings}" class="mr-1">{{ column.title }}</span>
     <slot v-if="slots.filter" name="filter" />

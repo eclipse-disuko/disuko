@@ -3,12 +3,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {defineStore} from 'pinia';
-import {ref} from 'vue';
+import {reactive, toRefs} from 'vue';
 
 export const useTableActionSliderStore = defineStore('tableActionSlider', () => {
-  const slideInTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+  const sliderState = reactive({
+    baseWidth: 0,
+    slideInTimeout: null as ReturnType<typeof setTimeout> | null,
+    sliderWidth: 0,
+  });
 
   return {
-    slideInTimeout,
+    ...toRefs(sliderState),
   };
 });

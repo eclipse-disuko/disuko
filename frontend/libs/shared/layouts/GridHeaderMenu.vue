@@ -60,7 +60,7 @@ const showMenu = ref(false);
             transition="scale-transition"
             @update:modelValue="(value: string[]) => emit('update', value)">
             <template v-slot:item="{props, item}">
-              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="py-0 px-2">
+              <v-list-item v-if="!item.raw?.disabled" v-bind="props" :title="undefined" class="py-0 px-2">
                 <template v-slot:prepend="{isSelected}">
                   <v-checkbox hide-details :model-value="isSelected" />
                 </template>
