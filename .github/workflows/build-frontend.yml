@@ -1,0 +1,26 @@
+name: Build Frontend Image
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build image
+    runs-on: [ ubuntu-4core-amd64 ]
+    steps:
+      - uses: actions/checkout@v6
+      - name: build image
+        run: |
+          docker build \
+            -f ./frontend/Dockerfile.build \
+            --build-arg APP=portal \
+            --build-arg MODE=production \
+            -t disuko-client \
+            ./frontend
+      - name: remove local image
+        run: |
+          docker image rm disuko-client

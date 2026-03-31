@@ -1,0 +1,16 @@
+name: Test Vanilla Docker Compose Build
+on:
+  pull_request:
+    branches:
+      - main
+
+defaults:
+   run:
+    working-directory: ./
+
+jobs:
+  build:
+    runs-on: [ ubuntu-4core-amd64 ]
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker compose build
