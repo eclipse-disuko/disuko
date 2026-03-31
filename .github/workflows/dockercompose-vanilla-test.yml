@@ -13,4 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
-      - run: docker compose build
+      - name: Test Vanilla Docker Compose Build
+        run: |
+          bash ./.github/workflows/scripts/dockercompose-vanilla-test.sh
