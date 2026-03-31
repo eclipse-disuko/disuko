@@ -27,8 +27,17 @@ isContainerExitedSuccessful() {
     fi
 }
 
-#docker compose up -d --build >> /dev/null 2>&1
-docker compose up --build
+generateSelfSignedCertificate() {
+  if [ -f "certs/localhost.pem" ] && [ -f "certs/localhost-key.pem" ]; then
+    echo "TLS certificate already exists, skipping generation."
+    return
+  fi
+  mkdir -p certs && chmod 757 certs
+  openssl req -x509 -newkey rsa:4096 -keyout certs/localhost-key.pem -out certs/localhost.pem -days 1 -nodes -subj "/CN=localhost"
+}
+
+generateSelfSignedCertificate
+docker compose up -d --build >> /dev/null 2>&1
 container_names=$(docker ps --format "{{.Names}}" --filter "name=disuko")
 remaining_container_count=$(echo "$container_names" | wc -l)
 container_checked_count=0
