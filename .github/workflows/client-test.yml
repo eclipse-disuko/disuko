@@ -30,3 +30,4 @@ jobs:
       - run: npm install
       - run: npm run check:unknown-tags:ci
       - run: MODE=production npm run build-ignore-errors
+      - run: npm run check:unknown-tags:ci
