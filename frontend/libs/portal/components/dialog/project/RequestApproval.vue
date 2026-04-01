@@ -1,12 +1,10 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG // // SPDX-License-Identifier: Apache-2.0
 
 <script setup lang="ts">
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {DocumentMeta, InternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
-import {ApprovableInfoDto, ApprovableSPDXDto} from '@disclosure-portal/model/Project';
+import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {UserDto} from '@disclosure-portal/model/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
@@ -24,6 +22,7 @@ import dayjs from 'dayjs';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
@@ -40,7 +39,7 @@ const selectedSbom = ref<SpdxFile | null>(null);
 const sbomStats = ref<ComponentStats>({} as ComponentStats);
 const tab = ref(0);
 const approverTab = ref(0);
-const approvableInfo = ref<ApprovableInfoDto>({} as ApprovableInfoDto);
+const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const comment = ref('');
 const c1 = ref(false);
 const c2 = ref(false);

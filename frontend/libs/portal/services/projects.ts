@@ -3,7 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {getApi} from '@disclosure-portal/api';
-import {Approval, ApprovalUpdate, ApproverRoles, CreateApprovalResponse} from '@disclosure-portal/model/Approval';
+import {
+  Approval,
+  ApprovableInfo,
+  ApprovalUpdate,
+  ApproverRoles,
+  CreateApprovalResponse,
+} from '@disclosure-portal/model/Approval';
 import {
   ExternalApprovalRequest,
   InternalApprovalRequest,
@@ -18,7 +24,6 @@ import type {WizardProject} from '@disclosure-portal/model/NewWizard';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import PolicyRule, {PolicyRuleDto} from '@disclosure-portal/model/PolicyRule';
 import {
-  ApprovableInfoDto,
   ApprovableSPDXDto,
   ComponentDetails,
   FillCustomerReq,
@@ -101,7 +106,7 @@ class ProjectService {
 
   public async getApprovableInfo(projectUid: string) {
     projectUid = encodeURIComponent('' + projectUid).replace(/\./g, '%2E');
-    return (await api.get<ApprovableInfoDto>(`/api/v1/${modelName}/${projectUid}/approvableinfo`)).data;
+    return (await api.get<ApprovableInfo>(`/api/v1/${modelName}/${projectUid}/approvableinfo`)).data;
   }
 
   public async getAllApprovals(projectUid: string) {

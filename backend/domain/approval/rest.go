@@ -156,13 +156,13 @@ func (p *PlausibilityCheck) ToDto(approverFullName string) PlausibilityDto {
 	}
 }
 
-type InfoDto struct {
+type ApprovableInfoDto struct {
 	CompStats          *components.ComponentStats `json:"stats"`
 	Projects           []ProjectApprovableDto     `json:"projects"`
 	HasDeniedDecisions bool                       `json:"hasDeniedDecisions"`
 }
 
-func (i *Info) ToDto() (res InfoDto) {
+func (i *Info) ToDto() (res ApprovableInfoDto) {
 	res.CompStats = i.CompStats
 	for _, p := range i.Projects {
 		res.Projects = append(res.Projects, p.ToDto())
@@ -179,7 +179,7 @@ type ApprovalDto struct {
 	Creator         string                   `json:"creator"`
 	CreatorFullName string                   `json:"creatorFullName"`
 	Comment         string                   `json:"comment"`
-	Info            InfoDto                  `json:"info"`
+	Info            ApprovableInfoDto        `json:"info"`
 	Documents       []pdocument.PDocumentDto `json:"documents"`
 	DocumentFlags   DocumentFlagsDto         `json:"flags"`
 
