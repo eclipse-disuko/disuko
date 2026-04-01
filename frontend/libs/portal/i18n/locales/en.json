@@ -1508,7 +1508,7 @@
   "TT_REQUEST_PLAUSI": "request review",
   "TAD_BTN_ABORT": "ABORT",
   "TAD_BTN_FILL": "Fill remaining owners",
-  "TT_TAD_BTN_FILL": "fill remaining owners",
+  "TT_TAD_BTN_FILL": "Fill remaining owners",
   "TT_TAD_BTN_ABORT": "abort approval now",
   "DLG_CONFIRMATION_DESCRIPTION_ABORT_TASK_APPROVAL": "Are you sure, you want to abort this approval?",
   "DLG_CONFIRMATION_DESCRIPTION_ABORT_TASK_REVIEW": "Are you sure, you want to abort this review?",
