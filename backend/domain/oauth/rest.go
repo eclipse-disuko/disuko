@@ -580,7 +580,8 @@ func (r *AccessAndRolesRights) SetSupplierRights() {
 	r.AllowProjectUserManagement.SetReadOnly()
 	r.AllowProjectTokenManagement.SetAll(true)
 	r.AllowProjectGroup.SetReadOnly()
-	r.AllowSBOMAction.SetAll(true)
+	r.AllowSBOMAction.Upload = true
+	r.AllowSBOMAction.Download = true
 	r.AllowCCSAction.SetAll(true)
 	r.AllowDisclosureDocument.Download = true
 	r.AllowExecuteChecklist = true
