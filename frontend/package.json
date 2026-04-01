@@ -16,6 +16,8 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "check:unknown-tags": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -r -s",
+    "check:unknown-tags:ci": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -q",
     "e2e:ci": "playwright test --project='chromium tests portal'",
     "playwright-install": "playwright install"
   },
@@ -92,7 +94,7 @@
     "vite-plugin-vue-devtools": "~8.0.7",
     "vite-plugin-vuetify": "~2.1.1",
     "vitest": "^4.0.10",
-    "vue-auto-import-checker": "^0.9.2",
+    "vue-auto-import-checker": "^1.0.5",
     "vue-tsc": "~2.2.6"
   },
   "optionalDependencies": {
