@@ -28,5 +28,5 @@ jobs:
           node-version: ${{ vars.NODE_VERSION }}
           registry-url: https://registry.npmjs.org/
       - run: npm install
-      - run: npm run check:unknown-tags
+      - run: npm run check:unknown-tags:ci
       - run: MODE=production npm run build-ignore-errors
