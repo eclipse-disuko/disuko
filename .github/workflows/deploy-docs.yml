@@ -1,0 +1,41 @@
+name: Deploy Documentation
+permissions:
+  contents: write
+on:
+  push:
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      clean_branch:
+        description: 'Clean gh-pages branch (removes history)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  build-and-deploy:
+    runs-on: [ ubuntu-4core-amd64 ]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+      - name: Install dependencies
+        working-directory: ./docs/app
+        run: npm ci
+      - name: Build VitePress site
+        working-directory: ./docs/app
+        run: npm run docs:build
+      - name: Deploy Documentation
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/app/.vitepress/dist
+          destination_dir: docs
+          keep_files: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.clean_branch == 'false' }}
+          force_orphan: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.clean_branch == 'true' }}
