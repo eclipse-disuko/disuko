@@ -89,7 +89,6 @@ export default defineConfig(({mode}) => {
         template: 'sunburst',
       }),
       oxlintPlugin({
-        configFile: 'eslint.config.ts',
         lintOnStart: false,
         failOnError: false,
       }),
