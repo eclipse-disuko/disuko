@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts">
 import {Tags} from '@disclosure-portal/constants/ruleValidations';
@@ -103,8 +103,7 @@ export default defineComponent({
               variant="outlined"
               v-model="tag"
               :label="t('COL_SBOM_TAG')"
-              autofocus
-            />
+              autofocus />
           </v-col>
         </v-row>
       </v-card-text>

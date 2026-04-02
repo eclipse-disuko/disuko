@@ -39,7 +39,7 @@ export const useNewsboxStore = defineStore('newsbox', () => {
     try {
       state.adminLoading = true;
       const newsItems = await newsboxService.getAllNewsboxItems();
-      state.adminNewsItems = { items: newsItems.data };
+      state.adminNewsItems = {items: newsItems.data};
     } catch (error) {
       console.error('Error fetching newsbox items:', error);
     } finally {
@@ -88,7 +88,7 @@ export const useNewsboxStore = defineStore('newsbox', () => {
   };
 
   const getNewsItemByKey = (key: string): NewsboxItem | undefined => {
-    return state.adminNewsItems?.items.find(item => item._key === key);
+    return state.adminNewsItems?.items.find((item) => item._key === key);
   };
 
   const deleteItemsAdmin = async (id: string) => {

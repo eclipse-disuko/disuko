@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import Icons from '@disclosure-portal/constants/icons';
@@ -123,7 +123,7 @@ const getProjectAccessRights = async () => {
     allProjectAccessRightsForTable.value = _.orderBy(
       allProjectAccessRightsForTable.value,
       [(item) => (item.group === 'CRUD' ? 0 : 1)],
-      ['asc']
+      ['asc'],
     );
     allProjectAccessRightsForTable.value.forEach((item) => {
       item.entry = new Map(_.orderBy([...item.entry.entries()], (el) => forProject(el[0]), 'asc'));

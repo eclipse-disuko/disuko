@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "bracketSpacing": false,
+  "printWidth": 120,
+  "bracketSameLine": true,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    ".DS_Store",
+    "**/node_modules",
+    "**/dist",
+    "**/playwright-report",
+    "**/test-results",
+    "**/screenshots",
+    "**/bundle-disclosure-portal.html",
+    "**/components.d.ts",
+    "npm-debug.log*",
+    "yarn-debug.log*",
+    "yarn-error.log*",
+    "pnpm-debug.log*",
+    ".idea",
+    ".vscode",
+    "*.suo",
+    "*.ntvs*",
+    "*.njsproj",
+    "*.sln",
+    "*.sw?"
+  ]
+}

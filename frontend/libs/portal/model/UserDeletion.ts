@@ -18,7 +18,6 @@ export interface DeletionAction {
   trace_type?: string;
 }
 
-
 export interface DeletionPlan {
   username: string;
   total_actions: number;
@@ -35,5 +34,5 @@ export interface DeletePersonalDataResponse {
     user_tasks_count: number;
     user_roles_count: number;
     data_traces_count: number;
-  }
+  };
 }

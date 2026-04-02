@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 import {defineConfigWithVueTs, vueTsConfigs} from '@vue/eslint-config-typescript';
 import oxlint from 'eslint-plugin-oxlint';
 import pluginVue from 'eslint-plugin-vue';

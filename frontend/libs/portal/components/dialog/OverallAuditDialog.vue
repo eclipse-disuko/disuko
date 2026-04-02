@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts">
 import {OverallReviewRequest, OverallReviewState, SpdxFile} from '@disclosure-portal/model/VersionDetails';
@@ -45,7 +45,13 @@ export default defineComponent({
       comment: minMax(t('ATTR_COMMENT'), 0, 500, false),
     };
 
-    const open = (projectId: string, versionKey: string, spdxFileHistory: SpdxFile[], selectedSpdx: SpdxFile, approvableSpdxKey: string) => {
+    const open = (
+      projectId: string,
+      versionKey: string,
+      spdxFileHistory: SpdxFile[],
+      selectedSpdx: SpdxFile,
+      approvableSpdxKey: string,
+    ) => {
       prId.value = projectId;
       vId.value = versionKey;
       sbomHistory.value = spdxFileHistory;
@@ -62,38 +68,38 @@ export default defineComponent({
     const save = async () => {
       await nextTick();
       form.value?.validate().then(async (info) => {
-          if (!info.valid) {
-            return;
-          }
-          const req = {
-            state: OverallReviewState.UNREVIEWED,
-            comment: '',
-            sbomId: '',
-            sbomName: '',
-            sbomUploaded: '',
-          } as OverallReviewRequest;
+        if (!info.valid) {
+          return;
+        }
+        const req = {
+          state: OverallReviewState.UNREVIEWED,
+          comment: '',
+          sbomId: '',
+          sbomName: '',
+          sbomUploaded: '',
+        } as OverallReviewRequest;
 
-          req.state = selectedState.value;
-          if (selectedSBOM.value?._key) {
-            req.sbomId = selectedSBOM.value._key; // Use the key of the currently selected SBOM
-          } else {
-            req.sbomId = selectedSBOM.value as unknown as string; // Handle null or fallback assignment
-          }
-          selectedSBOM.value = sbomHistory.value.find((sbom) => sbom._key === req.sbomId) || null;
+        req.state = selectedState.value;
+        if (selectedSBOM.value?._key) {
+          req.sbomId = selectedSBOM.value._key; // Use the key of the currently selected SBOM
+        } else {
+          req.sbomId = selectedSBOM.value as unknown as string; // Handle null or fallback assignment
+        }
+        selectedSBOM.value = sbomHistory.value.find((sbom) => sbom._key === req.sbomId) || null;
 
-          if (selectedSBOM.value) {
-            req.sbomId = selectedSBOM.value._key;
-            req.comment = comment.value;
-            req.sbomName = selectedSBOM.value.MetaInfo?.Name || '';
-            req.sbomUploaded = selectedSBOM.value.Uploaded;
-          }
-          await versionService.createOverallReview(prId.value, vId.value, req); // Replace with actual IDs
-          await projectStore.fetchProjectByKey(projectStore.currentProject!._key);
-          sbomStore.resetCurrentVersion();
-          emit('reload');
-          close();
-          snack(t('DIALOG_overallreview_create_success'));
-        });
+        if (selectedSBOM.value) {
+          req.sbomId = selectedSBOM.value._key;
+          req.comment = comment.value;
+          req.sbomName = selectedSBOM.value.MetaInfo?.Name || '';
+          req.sbomUploaded = selectedSBOM.value.Uploaded;
+        }
+        await versionService.createOverallReview(prId.value, vId.value, req); // Replace with actual IDs
+        await projectStore.fetchProjectByKey(projectStore.currentProject!._key);
+        sbomStore.resetCurrentVersion();
+        emit('reload');
+        close();
+        snack(t('DIALOG_overallreview_create_success'));
+      });
     };
 
     return {

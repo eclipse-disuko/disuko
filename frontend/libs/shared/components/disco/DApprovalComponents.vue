@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {ComponentStats} from '@disclosure-portal/model/VersionDetails';
@@ -20,9 +20,13 @@ const props = withDefaults(
 
 <template>
   <div :class="showRedWarnDeniedDecisionsMessage ? 'border-l-6 border-l-red-50' : ''">
-    <div v-if="showRedWarnDeniedDecisionsMessage" class="pa-3">{{ t('PROJECT_HAS_DENIED_DECISIONS') }}</div>
+    <div v-if="showRedWarnDeniedDecisionsMessage" class="pa-3">
+      {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
+    </div>
     <div class="mt-2 pa-2 border-data-table">
-      <div class="mt-n5 pl-2 text-caption bg-used-components">{{ t('TAD_COMPONENTS_IN_USE') }}</div>
+      <div class="mt-n5 pl-2 text-caption bg-used-components">
+        {{ t('TAD_COMPONENTS_IN_USE') }}
+      </div>
       <v-table>
         <template v-slot:default>
           <thead>
@@ -80,8 +84,8 @@ const props = withDefaults(
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
                       <v-icon size="small" class="pr-1" :color="stats.Warned > 0 ? 'policyStatusWarnedColor' : ''"
-                        >mdi-alert</v-icon
-                      >
+                        >mdi-alert
+                      </v-icon>
                       <span class="text-caption"> {{ t('TAD_WARNED') }}</span>
                     </div>
                   </th>
@@ -94,7 +98,7 @@ const props = withDefaults(
                     :class="stats.Questioned > 0 ? 'text-center' : 'text-center text-grey-lighten-1'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
-                      <v-icon size="small" class="pr-1" :color="stats.Questioned > 0 ? 'green' : ''">mdi-help</v-icon>
+                      <v-icon size="small" class="pr-1" :color="stats.Questioned > 0 ? 'green' : ''">mdi-help </v-icon>
                       <span class="text-caption"> {{ t('TAD_QUESTIONED') }}</span>
                     </div>
                   </th>
@@ -108,8 +112,8 @@ const props = withDefaults(
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
                       <v-icon size="small" class="pr-1" :color="stats.Allowed > 0 ? 'green' : ''"
-                        >mdi-check-circle</v-icon
-                      >
+                        >mdi-check-circle
+                      </v-icon>
                       <span class="text-caption"> {{ t('TAD_ALLOWED') }}</span>
                     </div>
                   </th>

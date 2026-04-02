@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts">
 import {useUpload} from '@disclosure-portal/composables/useUpload';
@@ -116,7 +116,6 @@ export default defineComponent({
       :multiple="multiple"
       :accept="acceptTypes"
       @change="onInputChange"
-      style="opacity: 0; position: absolute; z-index: -12121212"
-    />
+      style="opacity: 0; position: absolute; z-index: -12121212" />
   </div>
 </template>

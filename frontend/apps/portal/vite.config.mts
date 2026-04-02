@@ -95,7 +95,6 @@ export default defineConfig(({mode}) => {
       }),
       tailwindcss(),
       generateTailwindColors(),
-
     ].filter(Boolean),
     base: '/',
     resolve: {

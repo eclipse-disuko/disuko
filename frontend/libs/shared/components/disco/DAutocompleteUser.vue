@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {UserDto} from '@disclosure-portal/model/Users';
@@ -221,8 +221,7 @@ function itemTitleFunction(item: UserDto) {
       :required="required"
       :items="items"
       :class="requiredClass"
-      :disabled="readonly"
-    >
+      :disabled="readonly">
       <template v-if="searchedAndNotFound" v-slot:no-data>
         <v-list-item>
           <v-list-item-title>
@@ -235,8 +234,7 @@ function itemTitleFunction(item: UserDto) {
               icon="mdi-mail"
               :hint="t('TT_SEND_INVITE')"
               :text="t('BTN_SEND_MAIL')"
-              @click.stop="openMailto"
-            />
+              @click.stop="openMailto" />
             <v-spacer />
           </v-list-item-action>
         </v-list-item>

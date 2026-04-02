@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
@@ -112,11 +112,15 @@ const reload = async () => {
   if (!versionDetails.value || versionDetails.value._key !== versionKey.value) {
     const vd = currentProject.value?.versions[versionKey.value] ?? '';
     sbomStore.setCurrentVersion(vd);
+<<<<<<< Updated upstream
     const spdxFileHistory = (await versionService.getSbomHistory(projectId.value, versionKey.value)).data;
     if (spdxFileHistory[0]) {
       spdxFileHistory[0].isRecent = true;
     }
     sbomStore.setChannelSpdxs(spdxFileHistory);
+=======
+    await sbomStore.fetchSBOMHistory();
+>>>>>>> Stashed changes
   }
   let selectedByRoute = false;
   if (spdxKey.value) {

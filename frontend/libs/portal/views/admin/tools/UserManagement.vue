@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {UserDto} from '@disclosure-portal/model/Users';
@@ -455,8 +455,11 @@ const executeEntityDeletion = async () => {
               <span>{{ selectedUserDetails.metaData.companyIdentifier }}</span>
             </v-col>
             <v-col cols="12" sm="6" md="4" class="mt-2">
-              <span class="d-text d-secondary-text">{{ t('DEPROVISIONED_DATE') }}</span><br />
-              <span>{{ selectedUserDetails.deprovisioned ? formatDate(selectedUserDetails.deprovisioned) : t('NOT_SET') }}</span>
+              <span class="d-text d-secondary-text">{{ t('DEPROVISIONED_DATE') }}</span
+              ><br />
+              <span>{{
+                selectedUserDetails.deprovisioned ? formatDate(selectedUserDetails.deprovisioned) : t('NOT_SET')
+              }}</span>
             </v-col>
           </v-row>
         </v-card>
@@ -753,11 +756,24 @@ const executeEntityDeletion = async () => {
         <v-divider class="my-3"></v-divider>
         <DCActionButton
           @click="openConfirmDialog('all', '', undefined, true)"
-          :disabled="loading || affectedEntities.user_tasks_count > 0 || affectedEntities.user_roles_count > 0 || affectedEntities.data_traces_count > 0"
+          :disabled="
+            loading ||
+            affectedEntities.user_tasks_count > 0 ||
+            affectedEntities.user_roles_count > 0 ||
+            affectedEntities.data_traces_count > 0
+          "
           large
           icon="mdi-delete"
           class="pa-3"
-          :hint="t(affectedEntities.user_tasks_count <= 0 && affectedEntities.user_roles_count <= 0 && affectedEntities.data_traces_count <= 0 ? 'USER_MANAGEMENT_CONFIRM_DELETE_ALL_MESSAGE' : 'USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED')"
+          :hint="
+            t(
+              affectedEntities.user_tasks_count <= 0 &&
+                affectedEntities.user_roles_count <= 0 &&
+                affectedEntities.data_traces_count <= 0
+                ? 'USER_MANAGEMENT_CONFIRM_DELETE_ALL_MESSAGE'
+                : 'USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED',
+            )
+          "
           :text="t('USER_MANAGEMENT_DELETE_ALL')" />
       </v-col>
     </v-row>
@@ -804,4 +820,3 @@ const executeEntityDeletion = async () => {
     </v-dialog>
   </v-card>
 </template>
-

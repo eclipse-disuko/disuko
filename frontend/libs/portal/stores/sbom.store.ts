@@ -103,4 +103,3 @@ export const useSbomStore = defineStore('sbom', () => {
     getAllSBOMs,
   };
 });
-

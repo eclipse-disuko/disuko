@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
   <v-dialog
@@ -10,8 +10,7 @@
     width="auto"
     max-width="1000px"
     content-class="d-simple-dialog"
-    scrollable
-  >
+    scrollable>
     <DialogLayout :config="dialogConfig" @close="$emit('update:modelValue', false)">
       <slot />
     </DialogLayout>

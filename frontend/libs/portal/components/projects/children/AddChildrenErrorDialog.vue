@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
@@ -46,8 +46,7 @@ const openSettingsDialog = () => {
           <span>
             <button
               style="color: rgb(var(--v-theme-primary)); text-decoration: underline"
-              @click="openSettingsDialog()"
-            >
+              @click="openSettingsDialog()">
               {{ t('SETTINGS_DIALOG_FROM_ERROR') }}
             </button>
           </span>

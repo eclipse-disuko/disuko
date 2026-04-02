@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
   <div class="h-[calc(100%-56px)]">
@@ -433,6 +433,7 @@ const showDetails = async (event: Event, row: DataTableItem<ScanRemark>) => {
     row.item.spdxId,
   ).then((response) => {
     if (newComponentDetailsDlg.value) {
+<<<<<<< Updated upstream
       newComponentDetailsDlg.value?.open(
         projectModel.value,
         version.value._key,
@@ -441,6 +442,9 @@ const showDetails = async (event: Event, row: DataTableItem<ScanRemark>) => {
         row.item.policyRuleStatus,
         row.item.unmatchedLicenses,
       );
+=======
+      newComponentDetailsDlg.value?.open(response.data, row.item.policyRuleStatus, row.item.unmatchedLicenses);
+>>>>>>> Stashed changes
     }
   });
 };

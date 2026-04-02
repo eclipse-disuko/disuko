@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {LicenseFamily} from '@disclosure-portal/model/License';
@@ -505,12 +505,16 @@ function openFilteredScanRemarks(event: ChartEvent, elements: ArcElement[]) {
 }
 
 async function loadChartData() {
+<<<<<<< Updated upstream
   const [sbomStatsData, generalStatsData] = await Promise.all([
     versionService.getSBOMStats(projectModel.value._key, versionDetails.value._key, currentSpdx.value._key),
     versionService.getGeneralVersionStats(projectModel.value._key, versionDetails.value._key),
   ]);
   sbomStats.value = sbomStatsData.data;
   generalStats.value = generalStatsData.data;
+=======
+  await Promise.all([sbomStore.fetchSBOMStats(currentSpdx.value._key), sbomStore.fetchGeneralVersionStats()]);
+>>>>>>> Stashed changes
 
   policyStateStats.value = sbomStats.value.PolicyState;
   licenseFamilyStats.value = sbomStats.value.LicenseFamily;

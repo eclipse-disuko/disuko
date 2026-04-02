@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
   <v-text-field
@@ -11,8 +11,7 @@
     v-bind="$attrs"
     :readonly="readonly"
     hide-details
-    return-object
-  ></v-text-field>
+    return-object></v-text-field>
 </template>
 
 <script setup lang="ts">
