@@ -9,9 +9,9 @@ import {useChecklistsStore} from '@disclosure-portal/stores/checklists.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
+import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
-import {storeToRefs} from 'pinia';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -21,7 +21,7 @@ const checklistsStore = useChecklistsStore();
 const {info: snack} = useSnackbar();
 const labelStore = useLabelStore();
 
-const {checklist} = storeToRefs(checklistsStore);
+const checklist = computed(() => checklistsStore.checklist!);
 
 const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -29,11 +29,10 @@ const sortBy: SortItem[] = [{key: 'updated', order: 'desc'}];
 const dialogItem = ref();
 
 const policyLabels = computed(() =>
-  checklist.value ? checklist.value?.policyLabels.map((labelKey) => labelStore.getLabelByKey(labelKey)) : [],
+  checklist.value.policyLabels.map((labelKey) => labelStore.getLabelByKey(labelKey)),
 );
 
 const initBreadcrumbs = () => {
-  console.log(checklist.value);
   breadcrumbs.setCurrentBreadcrumbs([
     ...dashboardCrumbs,
     {
@@ -41,14 +40,20 @@ const initBreadcrumbs = () => {
       href: '/dashboard/admin/checklist',
     },
     {
-      title: checklist.value!.name,
+      title: checklist.value.name,
       disabled: false,
-      href: `/dashboard/admin/checklist/${encodeURIComponent(checklist.value!._key)}`,
+      href: `/dashboard/admin/checklist/${encodeURIComponent(checklist.value._key)}`,
     },
   ]);
 };
 
 const headers = computed<DataTableHeader[]>(() => [
+  {
+    title: t('COL_ACTIONS'),
+    align: 'center',
+    width: 120,
+    value: 'actions',
+  },
   {
     title: t('CD_NAME'),
     align: 'start',
@@ -77,12 +82,6 @@ const headers = computed<DataTableHeader[]>(() => [
     align: 'start',
     width: 120,
   },
-  {
-    title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 120,
-    value: 'actions',
-  },
 ]);
 
 const doDelete = async (config: IConfirmationDialogConfig) => {
@@ -101,8 +100,21 @@ const showConfirm = async (item: ChecklistItem) => {
   confirmVisible.value = true;
 };
 
+const getActionButtons = (): TableActionButtonsProps['buttons'] => {
+  return [
+    {
+      icon: 'mdi-pencil',
+      event: 'edit',
+    },
+    {
+      icon: 'mdi-delete',
+      event: 'delete',
+    },
+  ];
+};
+
 watch(
-  checklist,
+  () => checklistsStore.checklist,
   (value) => {
     if (value) {
       initBreadcrumbs();
@@ -122,7 +134,7 @@ watch(
       <Stack>
         <div>
           <span class="text-h5 pr-2">{{ t('CHECKLIST') }}</span>
-          <q class="text-h5">{{ checklist?.name }}</q>
+          <q class="text-h5">{{ checklist.name }}</q>
         </div>
         <div>
           <ProjectLabel v-for="(label, i) in policyLabels" :label="label" :key="i"></ProjectLabel>
@@ -143,7 +155,7 @@ watch(
         density="compact"
         class="striped-table fill-height"
         item-key="_key"
-        :items="checklist?.items"
+        :items="checklist.items"
         :headers="headers"
         :items-per-page="50"
         fixed-header
@@ -156,8 +168,11 @@ watch(
           <DDateCellWithTooltip :value="item.updated" />
         </template>
         <template v-slot:[`item.actions`]="{item}">
-          <DIconButton icon="mdi-pencil" @clicked="dialogItem?.open(item)" />
-          <DIconButton icon="mdi-delete" @clicked="showConfirm(item)" />
+          <TableActionButtons
+            :buttons="getActionButtons()"
+            variant="normal"
+            @edit="dialogItem?.open(item)"
+            @delete="showConfirm(item)" />
         </template>
       </v-data-table>
     </template>
