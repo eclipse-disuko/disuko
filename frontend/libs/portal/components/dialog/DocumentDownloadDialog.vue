@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import ProjectService, {DocumentDownloadVersion} from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
