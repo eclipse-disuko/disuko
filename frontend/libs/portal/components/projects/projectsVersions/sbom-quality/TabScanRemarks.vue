@@ -433,7 +433,6 @@ const showDetails = async (event: Event, row: DataTableItem<ScanRemark>) => {
     row.item.spdxId,
   ).then((response) => {
     if (newComponentDetailsDlg.value) {
-<<<<<<< Updated upstream
       newComponentDetailsDlg.value?.open(
         projectModel.value,
         version.value._key,
@@ -442,9 +441,6 @@ const showDetails = async (event: Event, row: DataTableItem<ScanRemark>) => {
         row.item.policyRuleStatus,
         row.item.unmatchedLicenses,
       );
-=======
-      newComponentDetailsDlg.value?.open(response.data, row.item.policyRuleStatus, row.item.unmatchedLicenses);
->>>>>>> Stashed changes
     }
   });
 };

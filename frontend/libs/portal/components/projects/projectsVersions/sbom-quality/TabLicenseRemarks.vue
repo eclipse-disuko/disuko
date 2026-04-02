@@ -571,9 +571,6 @@ const downloadLicenseRemarksCsv = async () => {
         </td>
       </template>
     </v-data-table>
-    <<<<<<< Updated upstream
-
     <ComponentDetailsDialog ref="newComponentDetailsDlg"></ComponentDetailsDialog>
-    ======= >>>>>>> Stashed changes
   </div>
 </template>

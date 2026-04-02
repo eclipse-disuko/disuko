@@ -112,15 +112,11 @@ const reload = async () => {
   if (!versionDetails.value || versionDetails.value._key !== versionKey.value) {
     const vd = currentProject.value?.versions[versionKey.value] ?? '';
     sbomStore.setCurrentVersion(vd);
-<<<<<<< Updated upstream
     const spdxFileHistory = (await versionService.getSbomHistory(projectId.value, versionKey.value)).data;
     if (spdxFileHistory[0]) {
       spdxFileHistory[0].isRecent = true;
     }
     sbomStore.setChannelSpdxs(spdxFileHistory);
-=======
-    await sbomStore.fetchSBOMHistory();
->>>>>>> Stashed changes
   }
   let selectedByRoute = false;
   if (spdxKey.value) {
