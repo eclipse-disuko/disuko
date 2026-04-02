@@ -83,7 +83,7 @@
     "jiti": "~2.5.0",
     "jsdom": "^27.2.0",
     "oxfmt": "^0.43.0",
-    "oxlint": "~1.8.0",
+    "oxlint": "^1.58.0",
     "rollup-plugin-visualizer": "~5.14.0",
     "sass": "~1.89.0",
     "tailwindcss": "~4.1.10",
