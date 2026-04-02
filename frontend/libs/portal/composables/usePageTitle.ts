@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { useI18n } from 'vue-i18n';
+import {useI18n} from 'vue-i18n';
 
 /**
  * Composable for managing page titles throughout the application
  * Provides consistent title formatting: "Page Title - Section - Disclosure Portal"
  */
 export function usePageTitle() {
-  const { t } = useI18n();
+  const {t} = useI18n();
   const baseTitle = import.meta.env.DEV ? 'Dev Disuko' : t('APP_NAME');
 
   /**
@@ -22,6 +22,6 @@ export function usePageTitle() {
 
   return {
     useReactiveTitle,
-    baseTitle
+    baseTitle,
   };
 }

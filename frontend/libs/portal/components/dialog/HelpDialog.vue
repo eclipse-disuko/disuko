@@ -1,7 +1,14 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <DSimpleDialog v-model="modelValue" :title="title">
     <Stack direction="row" align="start" class="gap-4">
-      <div ref="contentRef" :class="tableOfContents.length > 0 ? 'flex-[3]' : 'flex-1'" class="pr-4 border-r border-grey-70/50">
+      <div
+        ref="contentRef"
+        :class="tableOfContents.length > 0 ? 'flex-[3]' : 'flex-1'"
+        class="pr-4 border-r border-grey-70/50">
         <Markdown :text="enhancedText"></Markdown>
       </div>
       <div v-if="tableOfContents.length > 0" class="flex-1 self-start sticky top-0 pl-4">

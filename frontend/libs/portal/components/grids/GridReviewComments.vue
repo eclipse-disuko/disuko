@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <Stack class="gap-4 mt-4">
     <v-form ref="form" v-if="!readonly">

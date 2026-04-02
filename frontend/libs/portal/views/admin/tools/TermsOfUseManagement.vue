@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
 import {JOB_STATUS_SUCCESS, JOB_TYPE_TERMS_OF_USE, JobDto, SetConfigDto} from '@disclosure-portal/model/Job';

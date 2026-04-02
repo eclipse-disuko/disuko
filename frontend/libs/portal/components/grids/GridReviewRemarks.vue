@@ -1,14 +1,13 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {Checklist} from '@disclosure-portal/model/Checklist';
 import {useReviewRemarkActions} from '@disclosure-portal/composables/useReviewRemarkActions';
 import type {Project} from '@disclosure-portal/model/Project';
-import {
-  ReviewRemark,
-  ReviewRemarkLevel,
-  ReviewRemarkStatus,
-  compareRRLevel,
-} from '@disclosure-portal/model/Quality';
+import {ReviewRemark, ReviewRemarkLevel, ReviewRemarkStatus, compareRRLevel} from '@disclosure-portal/model/Quality';
 import type {BulkSetReviewRemarkStatusRequest} from '@disclosure-portal/model/ReviewRemarkBulkOperations';
 import {default as ProjectService} from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
@@ -273,9 +272,9 @@ const filterOnReviewRemarkLevel = () => {
 
 const reload = async (): Promise<void> => {
   loading.value = true;
-  const selectedKeys = selected.value.map(item => item.key);
+  const selectedKeys = selected.value.map((item) => item.key);
   items.value = (await versionService.getReviewRemarks(projectModel.value._key, version.value._key)).data;
-  selected.value = items.value.filter(item => selectedKeys.includes(item.key));
+  selected.value = items.value.filter((item) => selectedKeys.includes(item.key));
   loading.value = false;
 };
 

@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {DialogReviewRemarkConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {type Project, SbomLicenses} from '@disclosure-portal/model/Project';
@@ -410,7 +414,7 @@ defineExpose({open});
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
                     <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
                     <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
-                    >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
+                      >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                     >
                     <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
                   </template>
@@ -421,7 +425,7 @@ defineExpose({open});
                 <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
                 <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
                 <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
-                >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
+                  >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                 >
                 <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
               </template>

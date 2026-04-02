@@ -1523,6 +1523,7 @@
   "TT_REQUEST_PLAUSI": "Prüfung anfordern",
   "TAD_BTN_ABORT": "VERWERFEN",
   "TAD_BTN_FILL": "Unbestimmte Eigentümer einstellen",
+  "TT_TAD_BTN_FILL": "Unbestimmte Eigentümer einstellen",
   "TT_TAD_BTN_ABORT": "Die Freigabe jetzt abbrechen",
   "DLG_CONFIRMATION_DESCRIPTION_ABORT_TASK_APPROVAL": "Sind Sie sicher, dass Sie die Freigabe abbrechen möchten?",
   "DLG_CONFIRMATION_DESCRIPTION_ABORT_TASK_REVIEW": "Sind Sie sicher, dass Sie die Prüfung abbrechen möchten?",

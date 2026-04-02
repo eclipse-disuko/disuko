@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <v-dialog v-model="show" content-class="small" persistent>
     <v-card class="pa-8 dDialog">
@@ -22,8 +26,7 @@
           :text="t('BTN_LOGOUT')"
           icon="logout"
           :hint="t('TT_DISABLED_USER_LOGOUT')"
-          @click="logoutUser"
-        ></DCActionButton>
+          @click="logoutUser"></DCActionButton>
       </v-card-actions>
     </v-card>
   </v-dialog>

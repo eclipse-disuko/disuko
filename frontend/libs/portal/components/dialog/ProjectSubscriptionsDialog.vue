@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <v-form ref="form">
     <v-card class="pa-8">
@@ -21,8 +25,7 @@
               hide-details
               color="primary"
               :label="t('COL_DELIVERY')"
-              class="shrink mr-2 mt-0"
-            />
+              class="shrink mr-2 mt-0" />
             <div class="d-text ml-12">{{ t('SBOM_SUBSCRIPTION_TEXT') }}</div>
           </v-col>
         </v-row>
@@ -33,14 +36,19 @@
               hide-details
               color="primary"
               :label="t('HEADLINE_OVERALL_REVIEW')"
-              class="shrink mr-2 mt-0"
-            />
+              class="shrink mr-2 mt-0" />
             <div class="d-text ml-12">{{ t('OVERALL_REVIEW_SUBSCRIPTION_TEXT') }}</div>
           </v-col>
         </v-row>
       </v-card-text>
       <v-card-actions class="justify-end">
-        <DCActionButton isDialogButton size="small" variant="text" @click="emit('close')" class="mr-5" :text="t('BTN_CANCEL')" />
+        <DCActionButton
+          isDialogButton
+          size="small"
+          variant="text"
+          @click="emit('close')"
+          class="mr-5"
+          :text="t('BTN_CANCEL')" />
 
         <DCActionButton isDialogButton size="small" variant="flat" @click="confirm" :text="confirmText" />
       </v-card-actions>

@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import EditApprovalReviewExternalDialog from '@disclosure-portal/components/dialog/project/EditApprovalReviewExternalDialog.vue';
 import {Approval, ApprovalStates} from '@disclosure-portal/model/Approval';
@@ -106,15 +110,13 @@ const urlify = (text: string) => {
             icon="mdi-pencil"
             :hint="t('TT_UPDATE_APPROVAL_REVIEW_EXTERNAL')"
             @clicked="showEditExternalApprovalDialog"
-            :disabled="externalApproval.external.state == 'GENERATING'"
-          />
+            :disabled="externalApproval.external.state == 'GENERATING'" />
         </td>
       </tr>
     </tbody>
     <EditApprovalReviewExternalDialog
       v-model:showDialog="editApprovalReviewExternalVisible"
       :approval="editingExternalApproval"
-      @reload="reload"
-    ></EditApprovalReviewExternalDialog>
+      @reload="reload"></EditApprovalReviewExternalDialog>
   </table>
 </template>

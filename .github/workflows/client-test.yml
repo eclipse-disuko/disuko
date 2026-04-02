@@ -1,0 +1,32 @@
+name: Test Frontend
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        required: false
+        description: 'Test Frontend'
+
+defaults:
+   run:
+    working-directory: ./frontend
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        continue-on-error: true
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org/
+      - run: npm install
+      - run: MODE=production npm run build-ignore-errors
+      - run: npm run check:unknown-tags:ci

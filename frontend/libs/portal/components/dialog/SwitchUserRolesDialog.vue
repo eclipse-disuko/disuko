@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script lang="ts">
 import Icons from '@disclosure-portal/constants/icons';
 import {UserDto} from '@disclosure-portal/model/Users';
@@ -98,8 +102,7 @@ export default defineComponent({
               item-title="text"
               variant="outlined"
               density="compact"
-              hide-details="auto"
-            >
+              hide-details="auto">
               <template v-slot:chip="{item, props}">
                 <DLabel closable :parentProps="props" :labelName="item.title" iconName="mdi-security" />
               </template>
@@ -111,14 +114,24 @@ export default defineComponent({
               hide-details
               color="primary"
               :label="t('FORCE_NON_INTERNAL')"
-              class="shrink mr-2 mt-0"
-            />
+              class="shrink mr-2 mt-0" />
           </v-col>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <DCActionButton isDialogButton size="small" variant="text" @click="closeDialog" class="mr-5" :text="t('BTN_CANCEL')" />
-          <DCActionButton isDialogButton size="small" variant="flat" @click="doDialogAction" :text="t('BTN_APPLY_ROLES')" />
+          <DCActionButton
+            isDialogButton
+            size="small"
+            variant="text"
+            @click="closeDialog"
+            class="mr-5"
+            :text="t('BTN_CANCEL')" />
+          <DCActionButton
+            isDialogButton
+            size="small"
+            variant="flat"
+            @click="doDialogAction"
+            :text="t('BTN_APPLY_ROLES')" />
         </v-card-actions>
       </v-card>
     </v-dialog>

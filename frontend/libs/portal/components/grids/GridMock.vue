@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <div ref="dataTableAsElement">
     <v-data-table
@@ -6,8 +10,7 @@
       :items="items"
       class="striped-table"
       :height="tableHeight"
-      @click:row="onRowClick"
-    >
+      @click:row="onRowClick">
       <template v-slot:item.actions="{item}">
         <v-icon :id="item.id">mdi-home</v-icon>
       </template>

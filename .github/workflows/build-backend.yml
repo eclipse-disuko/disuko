@@ -1,0 +1,24 @@
+name: Build Backend Image
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile'
+      - 'certs/**'
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: build image
+        run: |
+          cd backend
+          docker build -t disuko-backend .
+      - name: remove local image
+        run: |
+          docker image rm disuko-backend

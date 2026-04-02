@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {TaskDto} from '@disclosure-portal/model/Users';
 import Profile from '@disclosure-portal/services/profile';
@@ -204,7 +208,7 @@ const customFilter = (value: any, query: string, item?: any) => {
     taskItem.resultStatus,
   ];
 
-  return searchableFields.some(field => field?.toLowerCase().includes(searchLower));
+  return searchableFields.some((field) => field?.toLowerCase().includes(searchLower));
 };
 
 onMounted(async () => {
@@ -284,7 +288,9 @@ onMounted(async () => {
             <span>{{ item.creatorFullName }} ({{ item.creator }})</span>
           </template>
           <template v-slot:[`item.creatorDepartment`]="{item}">
-            <span v-if="item.creatorDepartmentDescription && item.creatorDepartment">{{ item.creatorDepartmentDescription}} ({{item.creatorDepartment }})</span>
+            <span v-if="item.creatorDepartmentDescription && item.creatorDepartment"
+              >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
+            >
             <span v-else>-</span>
           </template>
           <template v-slot:[`item.delegatedTo`]="{item}">

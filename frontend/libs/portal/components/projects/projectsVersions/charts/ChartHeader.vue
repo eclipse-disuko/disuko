@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script lang="ts">
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {defineComponent, ref} from 'vue';
@@ -53,8 +57,7 @@ export default defineComponent({
               color="primary"
               @click="navigateTo()"
               size="small"
-              v-bind="props"
-            >
+              v-bind="props">
               mdi mdi-chevron-right
             </v-icon>
           </template>

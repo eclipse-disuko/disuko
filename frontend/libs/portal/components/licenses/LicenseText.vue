@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {useI18n} from 'vue-i18n';
 
@@ -25,14 +29,12 @@ const translateContentInNewTab = () => {
             class="ma-2"
             :tableButton="true"
             :hint="t('TT_COPY_LICENSE_TEXT')"
-            :content="license.text"
-          />
+            :content="license.text" />
           <DIconButton
             class="ma-2"
             icon="mdi-translate"
             :hint="t('TT_TRANSLATE_IN_SEPARATE_TAB')"
-            @clicked="translateContentInNewTab"
-          />
+            @clicked="translateContentInNewTab" />
         </div>
       </div>
     </template>

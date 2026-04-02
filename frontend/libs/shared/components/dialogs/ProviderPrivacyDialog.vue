@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script lang="ts" setup>
 import {useAppStore} from '@disclosure-portal/stores/app';
 import LegalNoticeDe from '@shared/assets/documents/legal_notice/LegalNotice_de.md?raw';
@@ -98,8 +102,7 @@ const clipboardContent = (key: string) => {
             slider-color="mbti"
             active-class="active"
             show-arrows
-            bg-color="tabsHeader"
-          >
+            bg-color="tabsHeader">
             <v-tab v-for="tab in tabs" :key="tab.key">
               {{ t(tab.name) }}
             </v-tab>

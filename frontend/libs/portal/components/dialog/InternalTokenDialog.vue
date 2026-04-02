@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {capabilityMap, type InternalToken, type InternalTokenRequest} from '@disclosure-portal/model/InternalToken';
 import adminService from '@disclosure-portal/services/admin';

@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script lang="ts">
 import {PropType, defineComponent} from 'vue';
 
@@ -37,8 +41,7 @@ export default defineComponent({
     label
     :prepend-icon="iconName"
     v-bind="parentProps"
-    :closable="closable"
-  >
+    :closable="closable">
     {{ labelName }}
   </v-chip>
 </template>

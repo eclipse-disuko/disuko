@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["vite-env.d.ts","env.d.ts", "components.d.ts", "src/**/*"],
+  "include": ["vite-env.d.ts", "env.d.ts", "components.d.ts", "src/**/*"],
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "outDir": "./dist/",

@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {WizardCardProps} from '@disclosure-portal/components/new-wizard/WizardCard.vue';
 import {Development, developments} from '@disclosure-portal/model/NewWizard';
@@ -20,10 +24,7 @@ const cardList = ref<WizardCardProps[]>([
   },
   {
     key: developments.internal,
-    image: new URL(
-      '@disclosure-portal/assets/wizard/projectDevelopment/internal-supplier.svg',
-      import.meta.url,
-    ).href,
+    image: new URL('@disclosure-portal/assets/wizard/projectDevelopment/internal-supplier.svg', import.meta.url).href,
     title: t('WIZARD_page_developer_target_internal'),
     subtitle: t('WIZARD_developer_target_internal_description'),
     helptext: t('TT_WIZARD_TD_INTERNAL_DEVELOPMENT'),

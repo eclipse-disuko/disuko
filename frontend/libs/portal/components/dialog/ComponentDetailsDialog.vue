@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {DialogReviewRemarkConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
@@ -857,6 +861,9 @@ defineExpose({
   </ConfirmationDialog>
   <ConfirmationDialog v-model:showDialog="cancelVisible" :config="confirmCancelConfig" @confirm="doCancelRemark">
   </ConfirmationDialog>
-  <ConfirmationDialog v-model:showDialog="inProgressVisible" :config="confirmInProgressConfig" @confirm="doMarkInProgress">
+  <ConfirmationDialog
+    v-model:showDialog="inProgressVisible"
+    :config="confirmInProgressConfig"
+    @confirm="doMarkInProgress">
   </ConfirmationDialog>
 </template>

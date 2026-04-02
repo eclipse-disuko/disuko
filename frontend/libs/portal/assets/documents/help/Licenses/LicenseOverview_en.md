@@ -31,7 +31,8 @@
 - **Evaluated**
 - **Forbidden**
 - **Deprecated**
-- 
+-
+
 ## License Family:
 
 - **Not declared**

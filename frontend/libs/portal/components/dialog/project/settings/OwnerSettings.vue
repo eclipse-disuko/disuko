@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script lang="ts" setup>
 import {CustomerMetaDTO, NoticeContactMetaDTO} from '@disclosure-portal/model/Project';
 import {Group, Rights} from '@disclosure-portal/model/Rights';

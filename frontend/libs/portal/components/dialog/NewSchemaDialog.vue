@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 import Label from '@disclosure-portal/model/Label';
@@ -104,8 +108,7 @@ watch(
                 density="compact"
                 v-model="item.name"
                 :rules="activeRules.required"
-                :label="t('NP_DIALOG_TF_SCHEMA_NAME')"
-              />
+                :label="t('NP_DIALOG_TF_SCHEMA_NAME')" />
             </v-col>
           </v-row>
           <v-row>
@@ -118,8 +121,7 @@ watch(
                 density="compact"
                 v-model="item.version"
                 :label="t('NP_DIALOG_TF_VERSION')"
-                hide-details="auto"
-              />
+                hide-details="auto" />
             </v-col>
           </v-row>
           <v-row>
@@ -136,8 +138,7 @@ watch(
                 hide-details="auto"
                 item-title="name"
                 item-value="_key"
-                clearable
-              >
+                clearable>
                 <template v-slot:selection="{item}">
                   <DLabel v-if="item.raw.name" :labelName="item.raw.name" closable />
                 </template>
@@ -155,8 +156,7 @@ watch(
                   :uploadTargetUrl="uploadURL"
                   acceptTypes=".json"
                   :directUpload="false"
-                  @filesChanged="(f) => (files = f)"
-                />
+                  @filesChanged="(f) => (files = f)" />
                 <template v-if="files.length > 0">
                   <v-row>
                     <v-col class="d-flex align-center">
@@ -175,8 +175,7 @@ watch(
                           size="small"
                           plain
                           color="primary"
-                          icon="mdi-file-document-outline"
-                        ></v-icon>
+                          icon="mdi-file-document-outline"></v-icon>
                       </span>
                       <span class="pl-1 pr-2 opacity-50">or</span>
                       <DCActionButton
@@ -184,8 +183,7 @@ watch(
                         :text="t('BTN_UPLOAD')"
                         :hint="t('Btn_uploadSchema')"
                         @click="() => upload!.uploadClick()"
-                        :disabled="!schemaFormValid"
-                      />
+                        :disabled="!schemaFormValid" />
                     </v-col>
                   </v-row>
                   <v-row v-if="sbomFileError">
@@ -208,14 +206,24 @@ watch(
                 :label="t('NP_DIALOG_TF_DESCRIPTION')"
                 no-resize
                 hide-details="auto"
-                :rules="activeRules.description"
-              />
+                :rules="activeRules.description" />
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="justify-end">
-          <DCActionButton isDialogButton size="small" variant="text" @click="closeDialog" class="mr-5" :text="t('BTN_CANCEL')" />
-          <DCActionButton isDialogButton size="small" variant="flat" @click="doDialogAction" :text="t('NP_DIALOG_BTN_CREATE')" />
+          <DCActionButton
+            isDialogButton
+            size="small"
+            variant="text"
+            @click="closeDialog"
+            class="mr-5"
+            :text="t('BTN_CANCEL')" />
+          <DCActionButton
+            isDialogButton
+            size="small"
+            variant="flat"
+            @click="doDialogAction"
+            :text="t('NP_DIALOG_BTN_CREATE')" />
         </v-card-actions>
       </v-card>
     </v-form>

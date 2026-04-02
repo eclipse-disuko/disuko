@@ -14,11 +14,11 @@ const basePath = 'newsbox/items';
 class NewsboxService {
   public async getNewsboxItems(): Promise<AxiosResponse<Newsbox>> {
     return api.get<Newsbox>(`/api/v1/newsbox/items`);
-  };
+  }
 
   public async getAllNewsboxItems(): Promise<AxiosResponse<NewsboxItem[]>> {
     return api.get<NewsboxItem[]>(`/api/v1/admin/newsbox/items`);
-  };
+  }
 
   public async updateLastSeen(userId: string, data: UserLastSeenDto) {
     userId = encodeURIComponent('' + userId).replace(/\./g, '%2E');
@@ -32,7 +32,7 @@ class NewsboxService {
   public updateNewsboxItem = (id: string, item: NewsboxItem): Promise<AxiosResponse<string>> => {
     const processedItem = {
       ...item,
-      expiry: item.expiry && item.expiry !== '' ? item.expiry : null
+      expiry: item.expiry && item.expiry !== '' ? item.expiry : null,
     };
     return api.put<string>(`/api/v1/admin/${basePath}/${encodeURIComponent(id)}`, processedItem);
   };

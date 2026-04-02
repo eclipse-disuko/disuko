@@ -1,11 +1,14 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <template>
   <v-tooltip
     v-if="hint"
     :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
     :text="hint"
     location="bottom"
-    content-class="dpTooltip"
-  >
+    content-class="dpTooltip">
     <template v-slot:activator="{props}">
       <v-list-item v-bind="props" @click="$emit('click')" class="px-4">
         <v-icon style="width: 30px" :color="color ? color : 'primary'" v-if="icon">{{ icon }}</v-icon>

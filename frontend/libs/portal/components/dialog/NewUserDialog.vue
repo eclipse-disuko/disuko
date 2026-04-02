@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {getProjectUserTypes, ProjectKeyName, ProjectUser, UserType} from '@disclosure-portal/model/Project';
 import {UserDto} from '@disclosure-portal/model/Users';
@@ -182,8 +186,7 @@ defineExpose({close});
               cols="12"
               xs="12"
               class="errorBorder"
-              v-if="projectsKeyNameIntern && projectsKeyNameIntern.length > 0"
-            >
+              v-if="projectsKeyNameIntern && projectsKeyNameIntern.length > 0">
               <v-select
                 variant="outlined"
                 :items="projectsKeyNameIntern"
@@ -197,15 +200,13 @@ defineExpose({close});
                 :label="t('PROJECTS')"
                 class="pb-2 required"
                 hide-details="auto"
-                :rules="rulesMultiSelectbox"
-              >
+                :rules="rulesMultiSelectbox">
                 <template v-slot:prepend-item>
                   <v-list-item :title="t('SELECT_ALL')" @click="toggleSelectAll">
                     <template v-slot:prepend>
                       <v-checkbox-btn
                         :indeterminate="someProjectsSelected && !allProjectsSelected"
-                        :model-value="allProjectsSelected"
-                      ></v-checkbox-btn>
+                        :model-value="allProjectsSelected"></v-checkbox-btn>
                     </template>
                   </v-list-item>
                   <v-divider class="mt-2"></v-divider>
@@ -221,8 +222,7 @@ defineExpose({close});
                 @userChanged="userChanged"
                 :onlyInternalUsers="isTypeOwnerSelected"
                 :readonly="!ownerRemaining"
-                required
-              />
+                required />
             </v-col>
             <v-col cols="12" xs="12" class="errorBorder px-2">
               <v-select
@@ -235,13 +235,11 @@ defineExpose({close});
                 variant="outlined"
                 hide-details="auto"
                 :disabled="!ownerRemaining || isResponsible"
-                required
-              >
+                required>
                 <template v-slot:item="{item, props}">
                   <v-list-item
                     v-bind="{...props, title: undefined}"
-                    :disabled="!isInternalUser && item.raw === UserType.OWNER"
-                  >
+                    :disabled="!isInternalUser && item.raw === UserType.OWNER">
                     <template v-if="!isInternalUser && item.raw === UserType.OWNER">
                       <span>{{ item.raw }} {{ t('USER_DIALOG_OWNER_ONLY_FOR_INTERNAL') }}</span>
                     </template>
@@ -265,8 +263,7 @@ defineExpose({close});
                 v-model="item.comment"
                 class="pl-2 pr-2"
                 :label="t('COL_USER_COMMENT')"
-                :rules="activeRules.comment"
-              />
+                :rules="activeRules.comment" />
             </v-col>
             <v-col cols="12" xs="12">
               <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" content-class="dpTooltip">
@@ -277,8 +274,7 @@ defineExpose({close});
                       :disabled="isResponsible || item.userType != UserType.OWNER"
                       :label="t('COL_USER_ROLE_RESPONSIBLE')"
                       hide-details
-                      class="pt-1 mt-0"
-                    />
+                      class="pt-1 mt-0" />
                   </div>
                 </template>
                 <span>{{ t('TT_RESPONSIBLE') }}</span>
@@ -295,7 +291,13 @@ defineExpose({close});
           </v-row>
         </v-card-text>
         <v-card-actions class="justify-end pr-7">
-          <DCActionButton isDialogButton size="small" variant="text" @click="close" class="mr-5" :text="t('BTN_CANCEL')" />
+          <DCActionButton
+            isDialogButton
+            size="small"
+            variant="text"
+            @click="close"
+            class="mr-5"
+            :text="t('BTN_CANCEL')" />
           <v-btn @click="doDialogAction" color="primary" variant="flat">
             <span v-if="mode === 'create'" class="font-weight-bold">{{ t('NP_DIALOG_BTN_CREATE') }}</span>
             <span v-else class="font-weight-bold">{{ t('NP_DIALOG_BTN_SAVE') }}</span>

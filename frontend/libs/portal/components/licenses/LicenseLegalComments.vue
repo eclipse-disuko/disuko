@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {useI18n} from 'vue-i18n';
 
@@ -24,8 +28,7 @@ const translateContentInNewTab = () => {
         <div class="p-4 pt-12 text-justify [&_*]:text-[14px]">
           <Markdown
             v-if="license && license.meta && license.meta.legalComments"
-            :text="license.meta?.legalComments"
-          ></Markdown>
+            :text="license.meta?.legalComments"></Markdown>
           <div v-else>{{ t('NO_COMMENT') }}</div>
         </div>
         <div class="position-absolute top-0 right-0 d-flex justify-start">
@@ -34,15 +37,13 @@ const translateContentInNewTab = () => {
             class="ma-2"
             :tableButton="true"
             :hint="t('TT_COPY_LEGAL_COMMENTS')"
-            :content="license.meta.legalComments"
-          />
+            :content="license.meta.legalComments" />
           <DIconButton
             v-if="license && license.meta && license.meta.legalComments"
             class="ma-2"
             icon="mdi-translate"
             :hint="t('TT_TRANSLATE_IN_SEPARATE_TAB')"
-            @clicked="translateContentInNewTab"
-          />
+            @clicked="translateContentInNewTab" />
         </div>
       </div>
     </template>

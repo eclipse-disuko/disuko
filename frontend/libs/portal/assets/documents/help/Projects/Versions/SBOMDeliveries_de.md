@@ -10,7 +10,7 @@
   - Das Attribut des Elements, das ein Problem verursacht hat - z. B. das Attribut "name"
   - Das Problem selbst, z. B. dass etwas benötigt, aber nicht gefunden wird, oder dass etwas unerwartet ist
 - **Wichtig:**
-  - Zur Löschung und Aufbewahrung von SBOM-Lieferungen: Die genehmigten bzw. geprüften SBOMs bleiben erhalten. Darüber hinaus werden die fünf zuletzt gelieferten SBOMs beibehalten. Sie können eine SBOM manuell sperren, um sie vom automatisierten Löschen auszuschließen. Das Löschen von SBOM-Lieferungen über dem Limit, die zudem nicht gesperrt wurden, wird durch einen erfolgreichen SBOM-Upload in der Projektversion angestoßen. 
+  - Zur Löschung und Aufbewahrung von SBOM-Lieferungen: Die genehmigten bzw. geprüften SBOMs bleiben erhalten. Darüber hinaus werden die fünf zuletzt gelieferten SBOMs beibehalten. Sie können eine SBOM manuell sperren, um sie vom automatisierten Löschen auszuschließen. Das Löschen von SBOM-Lieferungen über dem Limit, die zudem nicht gesperrt wurden, wird durch einen erfolgreichen SBOM-Upload in der Projektversion angestoßen.
 
 ## Validierungsprobleme:
 

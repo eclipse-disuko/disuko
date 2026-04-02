@@ -1,3 +1,7 @@
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 <script setup lang="ts">
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {DocumentMeta, InternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
@@ -20,8 +24,10 @@ import dayjs from 'dayjs';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {useAppStore} from '@disclosure-portal/stores/app';
 
 const projectStore = useProjectStore();
+const appStore = useAppStore();
 const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
@@ -319,7 +325,7 @@ const doDialogAction = async () => {
           await jobStore.pollJobStatus(projectModel.value._key, response.jobKey);
           isVisible.value = false;
           snackbar.info(t('DIALOG_request_internal_approval_success'));
-          useAppStore().setShouldReloadApprovals(true);
+          appStore.setShouldReloadApprovals(true);
           if (!projectModel.value.isGroup) {
             await projectStore.fetchProjectByKey(projectModel.value._key);
           }
@@ -348,15 +354,6 @@ defineExpose({open});
     <v-dialog v-model="isVisible" content-class="large" scrollable width="850">
       <DialogLayout :config="dialogConfig" @close="close" @secondary-action="close" @primary-action="doDialogAction">
         <Stack class="gap-4">
-          <Stack v-if="approvableInfo.hasDeniedDecisions">
-            <v-alert color="error" type="warning" density="compact">
-              <template #prepend>
-                <v-icon size="small" class="pt-1">mdi-alert-circle</v-icon>
-              </template>
-              {{ t('PROJECT_HAS_DENIED_DECISIONS') }}
-            </v-alert>
-          </Stack>
-
           <v-tabs v-model="approverTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
             <v-tab value="owner">{{ t('TAB_TITLE_OWNER_APPROVER') }}</v-tab>
             <v-tab value="developer">{{ t('TAB_TITLE_DEVELOPER_APPROVER') }}</v-tab>
@@ -508,7 +505,9 @@ defineExpose({open});
           </v-tabs>
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="general">
-              <DApprovalComponents :stats="stats!" />
+              <DApprovalComponents
+                :stats="stats!"
+                :showRedWarnDeniedDecisionsMessage="approvableInfo.hasDeniedDecisions" />
             </v-tabs-window-item>
             <v-tabs-window-item eager value="approvable" v-if="projectModel.isGroup">
               <GridSPDXList :projects="approvableInfo.projects" :channels="projectModel.versions" showSbomExtras />

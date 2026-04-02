@@ -148,4 +148,3 @@ export const useSbomStore = defineStore('sbom', () => {
     getGeneralStats,
   };
 });
-
