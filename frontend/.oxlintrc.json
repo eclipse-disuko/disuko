@@ -2,7 +2,9 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn"],
   "categories": {
-    "correctness": "off"
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
   },
   "env": {
     "builtin": true
@@ -16,32 +18,20 @@
     "**/test-results/**"
   ],
   "rules": {
+    "no-console": "warn",
+    "no-await-in-loop": "off",
+    "unicorn/no-array-sort": "off",
+    "no-restricted-globals": "error",
     "@typescript-eslint/ban-ts-comment": "error",
     "no-array-constructor": "error",
-    "@typescript-eslint/no-duplicate-enum-values": "error",
     "@typescript-eslint/no-empty-object-type": "error",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-extra-non-null-assertion": "error",
-    "@typescript-eslint/no-misused-new": "error",
     "@typescript-eslint/no-namespace": "error",
-    "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
     "@typescript-eslint/no-require-imports": "error",
-    "@typescript-eslint/no-this-alias": "error",
     "@typescript-eslint/no-unnecessary-type-constraint": "error",
-    "@typescript-eslint/no-unsafe-declaration-merging": "error",
     "@typescript-eslint/no-unsafe-function-type": "error",
     "no-unused-expressions": "error",
-    "no-unused-vars": "error",
-    "@typescript-eslint/no-wrapper-object-types": "error",
-    "@typescript-eslint/prefer-as-const": "error",
-    "@typescript-eslint/prefer-namespace-keyword": "error",
-    "@typescript-eslint/triple-slash-reference": "error",
-    "curly": "off",
-    "no-unexpected-multiline": "off",
-    "unicorn/empty-brace-spaces": "off",
-    "unicorn/no-nested-ternary": "off",
-    "unicorn/number-literal-case": "off",
-    "typescript/no-explicit-any": "warn"
+    "@typescript-eslint/prefer-namespace-keyword": "error"
   },
   "overrides": [
     {
@@ -55,7 +45,6 @@
         "no-import-assign": "off",
         "no-new-native-nonconstructor": "off",
         "no-obj-calls": "off",
-        "no-redeclare": "off",
         "no-setter-return": "off",
         "no-this-before-super": "off",
         "no-unsafe-negation": "off",
