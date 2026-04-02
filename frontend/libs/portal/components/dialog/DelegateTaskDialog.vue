@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
@@ -17,8 +17,6 @@ const showDialog = defineModel<boolean>('showDialog');
 const emit = defineEmits<{
   (e: 'confirm', delegateUserId: string): void;
 }>();
-
-
 
 const formRef = ref<VForm | null>(null);
 const delegateUser = ref('');

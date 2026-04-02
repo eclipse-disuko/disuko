@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
   <v-form ref="appform">
@@ -17,8 +17,7 @@
           :label="t('TITLE_APPLICATION_SEARCH')"
           clearable
           :required="isRequired"
-          @click:clear="clear"
-        >
+          @click:clear="clear">
         </v-text-field>
       </v-col>
       <v-col cols="12" xs="12" v-if="showSelect">
@@ -42,8 +41,7 @@
           return-object
           variant="outlined"
           hide-details="auto"
-          :class="{required: isRequired}"
-        >
+          :class="{required: isRequired}">
           <template v-slot:item="{item, props}">
             <v-list-item v-bind="props" title="">
               <div class="d-flex align-center w-100">

@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["vite.config.*", "eslint.config.*"],
+  "include": ["vite.config.*"],
   "compilerOptions": {
     "noEmit": true,
     "allowSyntheticDefaultImports": true,

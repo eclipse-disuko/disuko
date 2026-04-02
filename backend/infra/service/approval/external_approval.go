@@ -23,7 +23,7 @@ func (s *ApprovalService) CreateExternalApproval(pr *project.Project, req approv
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	info := s.getApprovalInfo(pr, &req.SelectedProjects)
+	info := s.getApprovalInfo(pr, &req.SelectedProjects, false)
 	if len(info.Projects) == 0 {
 		exception.ThrowExceptionBadRequestResponse()
 	}

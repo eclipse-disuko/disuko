@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts">
 import {OverallReviewRequest, OverallReviewState, SpdxFile} from '@disclosure-portal/model/VersionDetails';
@@ -48,7 +48,13 @@ export default defineComponent({
       comment: minMax(t('ATTR_COMMENT'), 0, 500, false),
     };
 
-    const open = (projectId: string, versionKey: string, spdxFileHistory: SpdxFile[], selectedSpdxKey: SpdxFile, approvableSpdxKey: string) => {
+    const open = (
+      projectId: string,
+      versionKey: string,
+      spdxFileHistory: SpdxFile[],
+      selectedSpdxKey: SpdxFile,
+      approvableSpdxKey: string,
+    ) => {
       prId.value = projectId;
       vId.value = versionKey;
       sbomHistory.value = spdxFileHistory;

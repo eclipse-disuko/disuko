@@ -76,7 +76,7 @@
       padding-top: 0.2rem;
       margin-left: 1.3rem;
       &:before {
-        content: "•";
+        content: '•';
         margin-left: -1rem;
         margin-right: 0.5rem;
       }
@@ -89,7 +89,8 @@
     margin-bottom: 1rem;
   }
 
-  th, td {
+  th,
+  td {
     border: 1px solid rgba(127, 127, 127, 0.5);
     padding: 0.5rem;
   }

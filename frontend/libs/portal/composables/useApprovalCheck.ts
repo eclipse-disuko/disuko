@@ -8,8 +8,6 @@ import {OverallReviewState, VersionSlim} from '@disclosure-portal/model/VersionD
  * Composable for checking SBOM/SPDX approval and R&D confirmation status
  */
 export function useApprovalCheck() {
-
-
   /**
    * Checks if a specific SBOM has been R&D confirmed (AUDITED status)
    * @param channel - The version/channel containing overall reviews
@@ -21,9 +19,11 @@ export function useApprovalCheck() {
       return false;
     }
 
-    return channel.overallReviews?.some(
-      review => review.sbomId === sbomKey && review.state === OverallReviewState.AUDITED
-    ) ?? false;
+    return (
+      channel.overallReviews?.some(
+        (review) => review.sbomId === sbomKey && review.state === OverallReviewState.AUDITED,
+      ) ?? false
+    );
   };
 
   return {

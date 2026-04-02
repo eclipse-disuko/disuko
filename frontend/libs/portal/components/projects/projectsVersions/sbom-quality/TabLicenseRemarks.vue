@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {useView} from '@disclosure-portal/composables/useView';
@@ -571,7 +571,6 @@ const downloadLicenseRemarksCsv = async () => {
         </td>
       </template>
     </v-data-table>
-
     <ComponentDetailsDialog ref="newComponentDetailsDlg"></ComponentDetailsDialog>
   </div>
 </template>

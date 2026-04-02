@@ -89,10 +89,10 @@ func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId
 }
 
 func (s *ApprovalService) GetApprovalInfo(targetProject *project.Project) approval.Info {
-	return s.getApprovalInfo(targetProject, nil)
+	return s.getApprovalInfo(targetProject, nil, false)
 }
 
-func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projectFilter *[]string) approval.Info {
+func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projectFilter *[]string, includeNoFOSS bool) approval.Info {
 	res := approval.Info{
 		CompStats: &components.ComponentStats{},
 	}
@@ -126,7 +126,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			logy.Warnf(s.RequestSession, "Child project is marked as deprecated, uuid: %s parent: %s", prKey, pr.Key)
 			continue
 		}
-		if pr.ApprovableSPDX.SpdxKey == "" || pr.ApprovableSPDX.VersionKey == "" || pr.IsNoFoss {
+		if pr.ApprovableSPDX.SpdxKey == "" || pr.ApprovableSPDX.VersionKey == "" || (!includeNoFOSS && pr.IsNoFoss) {
 			res.Projects = append(res.Projects, approval.ProjectApprovable{
 				ProjectKey:      pr.Key,
 				ProjectName:     pr.Name,

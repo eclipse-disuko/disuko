@@ -6,4 +6,4 @@ import sanitize from 'sanitize-html';
 
 export const sanitizeHtml = (html: string): string => {
   return sanitize(html);
-}
+};

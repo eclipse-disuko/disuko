@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
   <v-dialog v-model="show" width="700" scrollable max-height="500" persistent>
@@ -48,4 +48,3 @@ const closeDialog = () => {
 };
 defineExpose({open});
 </script>
-

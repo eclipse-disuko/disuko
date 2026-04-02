@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
-//
-// SPDX-License-Identifier: Apache-2.0
+<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
+<!---->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
 import {ApproverRoles} from '@disclosure-portal/model/Approval';
@@ -93,7 +93,7 @@ const confirm = async () => {
 const ro = (role: ApproverRoles) => {
   return Boolean(
     (role === ApproverRoles.Customer1 && props.customer1User?.user) ||
-      (role === ApproverRoles.Customer2 && props.customer2User?.user),
+    (role === ApproverRoles.Customer2 && props.customer2User?.user),
   );
 };
 
