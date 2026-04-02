@@ -69,10 +69,11 @@ export const useSbomStore = defineStore('sbom', () => {
     state.allSBOMS = await ProjectService.getAllSboms(projectKey);
   };
 
-  const fetchSBOMHistory = async () => {
+  const fetchSBOMHistory = async (versionKey?: string) => {
     const projectKey = projectStore.currentProject?._key;
-    if (!projectKey || !state.currentVersion._key) return;
-    const spdxFileHistory = (await versionService.getSbomHistory(projectKey, state.currentVersion._key)).data;
+    const resolvedVersionKey = versionKey || state.currentVersion._key;
+    if (!projectKey || !resolvedVersionKey) return;
+    const spdxFileHistory = (await versionService.getSbomHistory(projectKey, resolvedVersionKey)).data;
     if (spdxFileHistory[0]) {
       spdxFileHistory[0].isRecent = true;
     }
