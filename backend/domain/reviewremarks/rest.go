@@ -22,6 +22,27 @@ type EventDto struct {
 	Content        json.RawMessage `json:"content,omitempty"`
 }
 
+type CommentContentDtoExternV2 struct {
+	Text string `json:"text"`
+}
+
+type EventDtoExternV2 struct {
+	Key     string    `json:"key"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
+
+	Type           string                    `json:"type"`
+	Author         string                    `json:"author"`
+	AuthorFullName string                    `json:"authorFullName"`
+	Content        *EventContentDtoExternV2 `json:"content,omitempty"`
+}
+
+type EventContentDtoExternV2 struct {
+	Text   *string `json:"text,omitempty"`
+	Before *string `json:"before,omitempty"`
+	After  *string `json:"after,omitempty"`
+}
+
 type ComponentMetaDto struct {
 	ComponentId      string `json:"componentId"`
 	ComponentName    string `json:"componentName"`
@@ -154,7 +175,7 @@ type RemarkDtoExternV2 struct {
 	Status string     `json:"status"`
 	Closed *time.Time `json:"closed"`
 
-	Events []EventDto `json:"events"`
+	Events []EventDtoExternV2 `json:"events"`
 
 	SBOMId       string     `json:"sbomId"`
 	SBOMName     string     `json:"sbomName"`
@@ -180,6 +201,51 @@ func (e *Event) ToDto() EventDto {
 	}
 }
 
+func (e *Event) ToExternV2Dto() EventDtoExternV2 {
+	return EventDtoExternV2{
+		Key:            e.Key,
+		Created:        e.Created,
+		Updated:        e.Updated,
+		Type:           string(e.Type),
+		Author:         e.Author,
+		AuthorFullName: e.AuthorFullName,
+		Content:        parseEventContentExternV2(e.Type, e.Content),
+	}
+}
+
+func parseEventContentExternV2(eventType EventType, content json.RawMessage) *EventContentDtoExternV2 {
+	if len(content) == 0 || string(content) == "null" {
+		return nil
+	}
+
+	switch eventType {
+	case CommentEvent:
+		var comment string
+		if err := json.Unmarshal(content, &comment); err == nil {
+			return &EventContentDtoExternV2{Text: &comment}
+		}
+	case ChangedLevelEvent:
+		var changed LevelChange
+		if err := json.Unmarshal(content, &changed); err == nil {
+			before := string(changed.Before)
+			after := string(changed.After)
+			return &EventContentDtoExternV2{Before: &before, After: &after}
+		}
+	case ChangedTitleEvent:
+		var changed TitleChange
+		if err := json.Unmarshal(content, &changed); err == nil {
+			return &EventContentDtoExternV2{Before: &changed.Before, After: &changed.After}
+		}
+	case ChangedDescEvent:
+		var changed DescriptionChange
+		if err := json.Unmarshal(content, &changed); err == nil {
+			return &EventContentDtoExternV2{Before: &changed.Before, After: &changed.After}
+		}
+	}
+
+	return nil
+}
+
 type ReviewTemplateRequestDto struct {
 	Title       string `json:"title"`
 	Level       string `json:"level"`
@@ -199,6 +265,13 @@ type ReviewTemplateResponseDto struct {
 func (r *Remark) EventsDto() (res []EventDto) {
 	for _, c := range r.Events {
 		res = append(res, c.ToDto())
+	}
+	return
+}
+
+func (r *Remark) EventsExternV2Dto() (res []EventDtoExternV2) {
+	for _, c := range r.Events {
+		res = append(res, c.ToExternV2Dto())
 	}
 	return
 }
@@ -236,7 +309,7 @@ func (r *Remark) ToExternV2Dto() RemarkDtoExternV2 {
 		Description:  r.Description,
 		Status:       string(r.Status),
 		Closed:       r.Closed,
-		Events:       r.EventsDto(),
+		Events:       r.EventsExternV2Dto(),
 		SBOMId:       r.SBOMId,
 		SBOMName:     r.SBOMName,
 		SBOMUploaded: r.SBOMUploaded,
