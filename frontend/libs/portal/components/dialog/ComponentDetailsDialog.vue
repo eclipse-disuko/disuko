@@ -413,7 +413,7 @@ const findPolicyDecisionApplied = (item: PolicyRuleStatus): PolicyDecisionSlim |
   );
 };
 
-const isPolicyDecisionPresent = computed(() => details.value.PolicyDecisionsApplied.length > 0);
+const isPolicyDecisionPresent = computed(() => (details.value?.PolicyDecisionsApplied?.length ?? 0) > 0);
 
 const sortedReviewRemarks = computed(() => {
   const statusOrder = new Map<ReviewRemarkStatus, number>([
