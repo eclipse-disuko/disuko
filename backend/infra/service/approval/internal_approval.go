@@ -181,6 +181,22 @@ func (s *ApprovalService) processInternalApprovalUpdate(pr *project.Project, tar
 	s.stampDisclosureDocument(pr, targetApproval, approverRole, req.PowerOfAttorney, stateInfo == approval.Approved)
 }
 
+func (s *ApprovalService) adminAbortInternal(pr *project.Project, targetApproval *approval.Approval) {
+	if !targetApproval.Internal.IsActive() {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	before := targetApproval.ToAudit()
+	s.deletePending(targetApproval)
+	s.setTaskDone(targetApproval.Creator, targetApproval, user.ApprovalInfo, user.TaskPending)
+	targetApproval.Internal.Aborted = true
+	s.setApprovalSpdxStatus(targetApproval, approval.Aborted)
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, "SYSTEM", message.InternalApprovalAborted, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+	observermngmt.FireEvent(observermngmt.ApprovalFinalized, observermngmt.ApprovalData{
+		RequestSession: s.RequestSession,
+		Approval:       targetApproval,
+	})
+}
+
 func (s *ApprovalService) stampDisclosureDocument(pr *project.Project, app *approval.Approval, role approval.Approver, powerOfAttorney approval.PowerOfAttorneyType, accepted bool) {
 	u := s.UserRepo.FindByUserId(s.RequestSession, app.Internal.GetApproverName(role))
 	forename := u.Forename

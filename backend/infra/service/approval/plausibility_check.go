@@ -77,6 +77,23 @@ func (s *ApprovalService) CreatePlausibilityCheck(pr *project.Project, req appro
 	return appr.Key
 }
 
+func (s *ApprovalService) adminAbortPlausibility(pr *project.Project, targetApproval *approval.Approval) {
+	if !targetApproval.Plausibility.IsActive() {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	before := targetApproval.ToAudit()
+	delegationUser := s.delegationUser(targetApproval.Key, targetApproval.Plausibility)
+	s.deletePending(targetApproval)
+	s.setTaskDone(targetApproval.Creator, targetApproval, user.ApprovalInfo, user.TaskPending)
+	targetApproval.Plausibility.Aborted = true
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, "SYSTEM", message.ReviewAborted, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+	observermngmt.FireEvent(observermngmt.ApprovalFinalized, observermngmt.ApprovalData{
+		RequestSession: s.RequestSession,
+		Approval:       targetApproval,
+		DelegatedTo:    delegationUser,
+	})
+}
+
 func (s *ApprovalService) addReviewSubscriber(pr *project.Project, creator string) {
 	m := pr.GetMember(creator)
 	if m == nil {

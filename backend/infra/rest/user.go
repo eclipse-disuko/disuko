@@ -29,9 +29,11 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/sort"
 
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	deletionAuditRepo "github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
 	labels "github.com/eclipse-disuko/disuko/infra/repository/labels"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
 
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/audit"
@@ -50,6 +52,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/jobs"
 	newsboxRepo "github.com/eclipse-disuko/disuko/infra/repository/newsbox"
 	user2 "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/approval"
 	userService "github.com/eclipse-disuko/disuko/infra/service/user"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
@@ -67,6 +70,8 @@ type UserHandler struct {
 	DeletionService        *userService.DeletionService
 	UserService            *userService.Service
 	DeletionAuditRepo      deletionAuditRepo.IDeletionAuditRepository
+	SBOMListRepo           sbomlist.ISbomListRepository
+	AuditLogListRepo       auditloglist.IAuditLogListRepository
 }
 
 type DeletePersonalDataEffectedEntities struct {
@@ -739,6 +744,135 @@ func (handler *UserHandler) prepareTaskDtoList(r *http.Request) []user.TaskDto {
 	tw1.Stop()
 	logy.Infof(requestSession, "End GetTaskList: Iterate tasks time: %s cnt:%d", tw1.FormatSeconds(), len(currentUserProfile.Tasks))
 	return result
+}
+
+func (handler *UserHandler) GetApprovalsForUser(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	requestedUser := handler.loadRequestedUser(requestSession, r)
+	approvalsMap := make(map[string]string)
+	for _, t := range requestedUser.Tasks {
+		approvalsMap[t.TargetGuid] = t.ProjectGuid
+	}
+	var (
+		approvalListCache = make(map[string]*approval2.ApprovalList)
+		res               []user.InvolvedApproval
+	)
+	for appKey, prKey := range approvalsMap {
+		list, ok := approvalListCache[prKey]
+		if !ok {
+			list = handler.ApprovalListRepository.FindByKey(requestSession, prKey, false)
+			if list == nil {
+				continue
+			}
+			approvalListCache[prKey] = list
+		}
+		a := list.GetApproval(appKey)
+		if a == nil {
+			continue
+		}
+		var (
+			isApprover bool
+			isActive   bool
+		)
+		switch a.Type {
+		case approval2.TypeInternal:
+			isApprover = a.Internal.IsApprover(requestedUser.User) != approval2.None
+			isActive = a.Internal.IsActive()
+		case approval2.TypePlausibility:
+			isApprover = a.Plausibility.Approver == requestedUser.User
+			isActive = a.Plausibility.IsActive()
+		}
+		res = append(res, user.InvolvedApproval{
+			ProjectUUID:  prKey,
+			ApprovalUUID: appKey,
+			ApprovalType: a.Type,
+			IsCreator:    a.Creator == requestedUser.User,
+			IsApprover:   isApprover,
+			IsActive:     isActive,
+		})
+	}
+	render.JSON(w, r, res)
+}
+
+func (handler *UserHandler) AbortApproval(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	appUUIDEscaped := chi.URLParam(r, "appUuid")
+	appUuid, err := url.QueryUnescape(appUUIDEscaped)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorKeyRequestParamNotValid, "uuid"), zapcore.InfoLevel)
+	err = validation.CheckUuid(appUuid)
+
+	var (
+		requestedUser = handler.loadRequestedUser(requestSession, r)
+		prKey         string
+	)
+	for _, t := range requestedUser.Tasks {
+		if t.TargetGuid == appUuid {
+			prKey = t.ProjectGuid
+			break
+		}
+	}
+	if prKey == "" {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	handler.abortApproval(requestSession, appUuid, prKey)
+	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *UserHandler) AbortAllApproval(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	var (
+		requestedUser = handler.loadRequestedUser(requestSession, r)
+		approvals     = make(map[string]string)
+	)
+	for _, t := range requestedUser.Tasks {
+		approvals[t.TargetGuid] = t.ProjectGuid
+	}
+	for appUuid, prKey := range approvals {
+		requestSession.Infof("aborting approval %s in project %s", appUuid, prKey)
+		handler.abortApproval(requestSession, appUuid, prKey)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *UserHandler) abortApproval(requestSession *logy.RequestSession, appUuid, prKey string) {
+	pr := handler.ProjectRepository.FindByKey(requestSession, prKey, false)
+	if pr == nil {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	list := handler.ApprovalListRepository.FindByKey(requestSession, prKey, false)
+	if list == nil {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	a := list.GetApproval(appUuid)
+	if a == nil {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+	s := approval.ApprovalService{
+		RequestSession:   requestSession,
+		UserRepo:         handler.UserRepository,
+		SBOMListRepo:     handler.SBOMListRepo,
+		AuditLogListRepo: handler.AuditLogListRepo,
+	}
+	s.AdminAbortRandomApproval(pr, a)
+	handler.ApprovalListRepository.Update(requestSession, list)
 }
 
 func (handler *UserHandler) GetTask(w http.ResponseWriter, r *http.Request) {
