@@ -19,7 +19,7 @@ type EventDto struct {
 	Type           string          `json:"type"`
 	Author         string          `json:"author"`
 	AuthorFullName string          `json:"authorFullName"`
-	Content        interface{}     `json:"content,omitempty" swaggertype:"object"`
+	Content        any   `json:"content,omitempty" swaggertype:"object"`
 }
 
 type CommentContentDtoExternV2 struct {
