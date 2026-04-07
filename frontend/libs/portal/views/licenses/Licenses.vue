@@ -577,7 +577,11 @@ const headerExpands = () => {
   headerSettingsStore.setupStore(gridName, headers.value);
 };
 
-const loadData = async () => {
+const reload = async () => {
+  if (abort.value) {
+    abort.value.abort();
+  }
+
   licensesLoading.value = true;
 
   abort.value = new AbortController();
@@ -591,14 +595,6 @@ const loadData = async () => {
   metaData.value = meta;
 
   licensesLoading.value = false;
-};
-
-const reload = async () => {
-  if (abort.value) {
-    abort.value.abort();
-  }
-
-  await loadData();
 };
 
 const searchChanged = async () => {
