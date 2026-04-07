@@ -15,7 +15,6 @@ import {
   policyStateToTranslationKey,
 } from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import config from '@shared/utils/config';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -239,7 +238,7 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
       hint: deniedPolicyDecisionTooltip.value,
       event: 'deniedPolicyDecision',
       disabled: isDeniedPolicyDecisionDisabled.value,
-      show: !config.isProd && canMakeDeniedPolicyDecision(),
+      show: canMakeDeniedPolicyDecision(),
       color: 'orange',
     },
   ];
