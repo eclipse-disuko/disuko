@@ -19,7 +19,7 @@ type EventDto struct {
 	Type           string          `json:"type"`
 	Author         string          `json:"author"`
 	AuthorFullName string          `json:"authorFullName"`
-	Content        json.RawMessage `json:"content,omitempty"`
+	Content        interface{}     `json:"content,omitempty" swaggertype:"object"`
 }
 
 type CommentContentDtoExternV2 struct {
@@ -31,9 +31,9 @@ type EventDtoExternV2 struct {
 	Created time.Time `json:"created"`
 	Updated time.Time `json:"updated"`
 
-	Type           string                    `json:"type"`
-	Author         string                    `json:"author"`
-	AuthorFullName string                    `json:"authorFullName"`
+	Type           string                   `json:"type"`
+	Author         string                   `json:"author"`
+	AuthorFullName string                   `json:"authorFullName"`
 	Content        *EventContentDtoExternV2 `json:"content,omitempty"`
 }
 
