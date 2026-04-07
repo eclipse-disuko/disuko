@@ -26,8 +26,7 @@ const props = withDefaults(defineProps<TableActionButtonsProps>(), {
 });
 
 const emit = defineEmits<{
-  slideOut: [value: number];
-  slideIn: [value: number];
+  slideToggle: [value: number];
   [key: string]: [value?: number];
 }>();
 
@@ -37,12 +36,11 @@ const shownButtons = computed(() => props.buttons.filter((button) => button.show
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
 
-const {sliderWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
+const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
 
 if (props.variant === 'slider') {
   setupTableActionSlider(
-    () => emit('slideOut', sliderWidth.value),
-    () => emit('slideIn', sliderWidth.value),
+    () => emit('slideToggle', sliderWidth.value),
     props.buttons.length,
   );
 }
@@ -82,7 +80,7 @@ if (props.variant === 'slider') {
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
       <div
-        class="flex justify-start pl-8 pr-5"
+        class="h-[100%] flex justify-start align-center pl-8 pr-5"
         @click.stop
         @mouseenter="stopSlideInTimerAndSlideOut"
         @mouseleave="startSlideInTimer">
@@ -98,21 +96,38 @@ if (props.variant === 'slider') {
           <v-icon>mdi-dots-horizontal</v-icon>
           <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
         </v-btn>
-        <template v-for="button in buttons" :key="button.icon">
-          <div
-            v-if="button?.show ?? true"
-            class="d-inline size-10"
-            @click.stop="!button?.disabled ? emit(button.event) : null">
-            <v-btn
-              plain
-              size="small"
-              variant="text"
-              density="default"
-              :icon="button.icon"
-              :color="button.color || 'primary'"
-              :disabled="Boolean(button?.disabled) || false" />
-            <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
-          </div>
+        <div
+          v-else-if="(buttons[0]?.show ?? true) && !(buttons[0]?.disabled ?? false)"
+          class="d-inline size-10"
+          @click.stop="emit(buttons[0].event)">
+          <v-btn
+            plain
+            size="small"
+            variant="text"
+            density="default"
+            :icon="buttons[0].icon"
+            :color="buttons[0].color || 'primary'" />
+          <Tooltip v-if="buttons[0].hint" location="bottom" :text="buttons[0].hint" />
+        </div>
+        <template v-if="shownButtons.length >= 2">
+          <template v-for="button in buttons" :key="button.icon">
+            <div :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}" class="transition-[opacity] ease-in-out duration-200">
+              <div
+                v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
+                class="d-inline size-10"
+                @click.stop="!button?.disabled ? emit(button.event) : null">
+                <v-btn
+                  plain
+                  size="small"
+                  variant="text"
+                  density="default"
+                  :icon="button.icon"
+                  :color="button.color || 'primary'"
+                  :disabled="Boolean(button?.disabled) || false" />
+                <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
+              </div>
+            </div>
+          </template>
         </template>
       </div>
     </template>
