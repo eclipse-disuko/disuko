@@ -629,6 +629,8 @@ func (projectHandler *ProjectHandler) DownloadDocumentByTaskHandler(w http.Respo
 	}
 
 	taskGuid := rest.GetURLParam(r, "taskId")
+	err := validation.CheckUuid(taskGuid)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorKeyRequestParamNotValid, "taskId"), zapcore.InfoLevel)
 	fileTypeStr := rest.GetURLParam(r, "fileType")
 
 	documentVersionIndexStr := rest.GetURLParam(r, "docVersion")
