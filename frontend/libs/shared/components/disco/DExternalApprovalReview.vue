@@ -6,14 +6,14 @@
 import EditApprovalReviewExternalDialog from '@disclosure-portal/components/dialog/project/EditApprovalReviewExternalDialog.vue';
 import {Approval, ApprovalStates} from '@disclosure-portal/model/Approval';
 import {Group} from '@disclosure-portal/model/Rights';
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
-const store = useAppStore();
+const projectStore = useProjectStore();
 
 const props = defineProps<{
   externalApproval: Approval;
@@ -27,7 +27,7 @@ const editApprovalReviewExternalVisible = ref(false);
 const editingExternalApproval = ref<Approval | null>(null);
 
 const isOwner = computed(() => {
-  return store.getCurrentProject.accessRights.groups.includes(Group.ProjectOwner);
+  return projectStore.currentProject!.accessRights.groups.includes(Group.ProjectOwner);
 });
 
 const reload = async () => {
