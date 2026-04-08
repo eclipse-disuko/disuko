@@ -27,7 +27,7 @@ const editApprovalReviewExternalVisible = ref(false);
 const editingExternalApproval = ref<Approval | null>(null);
 
 const isOwner = computed(() => {
-  return projectStore.currentProject!.accessRights.groups.includes(Group.ProjectOwner);
+  return projectStore.currentProject!.isProjectOwner;
 });
 
 const reload = async () => {
