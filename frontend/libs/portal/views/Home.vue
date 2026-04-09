@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import NewsboxDialog from '@disclosure-portal/components/dialog/NewsboxDialog.vue';
 import ProfileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useNewsboxStore} from '@disclosure-portal/stores/newsbox.store';

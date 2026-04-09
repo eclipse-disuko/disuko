@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import Markdown from '@shared/components/Markdown.vue';
 import {useI18n} from 'vue-i18n';
 
 defineProps<{

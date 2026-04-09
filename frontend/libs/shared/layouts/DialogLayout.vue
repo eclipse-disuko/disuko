@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import {useI18n} from 'vue-i18n';
 
 const emit = defineEmits(['close', 'secondaryAction', 'primaryAction']);
