@@ -219,14 +219,15 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
               <template #filter>
                 <v-menu offset-y :close-on-content-click="false" v-model="menuIsGroup">
                   <template v-slot:activator="{props}">
-                    <DIconButton
-                      :parentProps="props"
-                      icon="mdi-filter-variant"
-                      :hint="t('TT_SHOW_FILTER')"
-                      :color="filterGroups ? 'primary' : 'secondary'"></DIconButton>
+                  <span>
+                    <v-icon class="mr-1" v-bind="props" :color="filterGroups ? 'primary' : 'default'">
+                      mdi-filter-variant
+                    </v-icon>
+                    <Tooltip>{{ t('TT_SHOW_FILTER') }}</Tooltip>
+                  </span>
                   </template>
                   <div class="w-[320px] bg-background">
-                    <v-card class="d-flex justify-space-between">
+                    <v-card class="d-flex justify-space-between align-center">
                       <v-checkbox hide-details v-model="filterGroups" :label="t('lbl_filter_on_group')" />
                       <DCloseButton @click="menuIsGroup = false" />
                     </v-card>
