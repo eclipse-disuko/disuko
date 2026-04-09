@@ -1568,7 +1568,7 @@ func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.Re
 		Created:  spdxFile.Updated,
 		Uploaded: spdxFile.Updated,
 		Status:   true,
-		IsRetain: IsSpdxRetained(spdxFile, currentProject, version),
+		IsRetain: sbomlockRetained.IsSpdxToRetain(spdxFile, version),
 	}
 	render.JSON(w, r, responseData)
 }
