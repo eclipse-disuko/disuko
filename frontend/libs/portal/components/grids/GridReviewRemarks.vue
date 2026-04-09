@@ -520,7 +520,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-[calc(100%-56px)]">
+  <div class="h-[calc(100%-106px)]">
     <div class="pb-1 gap-5 flex flex-col justify-between md:flex-row">
       <Stack direction="row">
         <DCActionButton

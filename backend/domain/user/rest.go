@@ -178,11 +178,16 @@ type RoleDeletionResult struct {
 	SkipReason    string `json:"skipReason,omitempty"`
 }
 
-type InvolvedApproval struct {
-	ProjectUUID  string
-	ApprovalUUID string
-	ApprovalType approval.ApprovalType
-	IsCreator    bool
-	IsApprover   bool
-	IsActive     bool
+type InvolvedApprovalDto struct {
+	ProjectUUID  string                `json:"projectUUID"`
+	ProjectName  string                `json:"projectName"`
+	ApprovalUUID string                `json:"approvalUUID"`
+	ApprovalType approval.ApprovalType `json:"approvalType"`
+	IsCreator    bool                  `json:"isCreator"`
+	IsApprover   bool                  `json:"isApprover"`
+	IsActive     bool                  `json:"isActive"`
+}
+
+type AbortApprovalsRequest struct {
+	Keys []string `json:"keys" validate:"required,min=1,dive,uuid4"`
 }

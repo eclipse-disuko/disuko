@@ -265,8 +265,8 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 						r.Route("/approvals", func(r chi.Router) {
 							r.Get("/", s.handlers.user.GetApprovalsForUser) // test missing
 							if conf.Config.Server.EnableUserDeletion {
-								r.Post("/abortall", s.handlers.user.GetApprovalsForUser)
-								r.Post("/{appUuid}/abort", s.handlers.user.AbortApproval)
+								r.Post("/abortall", s.handlers.user.AbortAllApprovals)
+								r.Post("/abort", s.handlers.user.AbortApprovals)
 							}
 						})
 					})

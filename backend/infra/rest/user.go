@@ -755,13 +755,16 @@ func (handler *UserHandler) GetApprovalsForUser(w http.ResponseWriter, r *http.R
 	}
 
 	requestedUser := handler.loadRequestedUser(requestSession, r)
-	approvalsMap := make(map[string]string)
+	var (
+		approvalsMap = make(map[string]string)
+		projectsMap  = make(map[string]*project.Project)
+	)
 	for _, t := range requestedUser.Tasks {
 		approvalsMap[t.TargetGuid] = t.ProjectGuid
 	}
 	var (
 		approvalListCache = make(map[string]*approval2.ApprovalList)
-		res               []user.InvolvedApproval
+		res               []user.InvolvedApprovalDto
 	)
 	for appKey, prKey := range approvalsMap {
 		list, ok := approvalListCache[prKey]
@@ -788,8 +791,17 @@ func (handler *UserHandler) GetApprovalsForUser(w http.ResponseWriter, r *http.R
 			isApprover = a.Plausibility.Approver == requestedUser.User
 			isActive = a.Plausibility.IsActive()
 		}
-		res = append(res, user.InvolvedApproval{
+		pr, ok := projectsMap[prKey]
+		if !ok {
+			pr = handler.ProjectRepository.FindByKey(requestSession, prKey, false)
+			if pr == nil {
+				continue
+			}
+			projectsMap[prKey] = pr
+		}
+		res = append(res, user.InvolvedApprovalDto{
 			ProjectUUID:  prKey,
+			ProjectName:  pr.Name,
 			ApprovalUUID: appKey,
 			ApprovalType: a.Type,
 			IsCreator:    a.Creator == requestedUser.User,
@@ -800,7 +812,7 @@ func (handler *UserHandler) GetApprovalsForUser(w http.ResponseWriter, r *http.R
 	render.JSON(w, r, res)
 }
 
-func (handler *UserHandler) AbortApproval(w http.ResponseWriter, r *http.Request) {
+func (handler *UserHandler) AbortApprovals(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
@@ -808,29 +820,27 @@ func (handler *UserHandler) AbortApproval(w http.ResponseWriter, r *http.Request
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
-	appUUIDEscaped := chi.URLParam(r, "appUuid")
-	appUuid, err := url.QueryUnescape(appUUIDEscaped)
-	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorKeyRequestParamNotValid, "uuid"), zapcore.InfoLevel)
-	err = validation.CheckUuid(appUuid)
+	var req user.AbortApprovalsRequest
+	validation.DecodeAndValidate(r, &req, false)
 
-	var (
-		requestedUser = handler.loadRequestedUser(requestSession, r)
-		prKey         string
-	)
+	requestedUser := handler.loadRequestedUser(requestSession, r)
+	approvals := make(map[string]string)
 	for _, t := range requestedUser.Tasks {
-		if t.TargetGuid == appUuid {
-			prKey = t.ProjectGuid
-			break
+		approvals[t.TargetGuid] = t.ProjectGuid
+	}
+
+	for _, key := range req.Keys {
+		prKey, ok := approvals[key]
+		if !ok {
+			exception.ThrowExceptionBadRequestResponse()
 		}
+		requestSession.Infof("aborting approval %s in project %s", key, prKey)
+		handler.abortApproval(requestSession, key, prKey)
 	}
-	if prKey == "" {
-		exception.ThrowExceptionBadRequestResponse()
-	}
-	handler.abortApproval(requestSession, appUuid, prKey)
 	w.WriteHeader(http.StatusOK)
 }
 
-func (handler *UserHandler) AbortAllApproval(w http.ResponseWriter, r *http.Request) {
+func (handler *UserHandler) AbortAllApprovals(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)

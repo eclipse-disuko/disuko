@@ -97,7 +97,7 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
   <v-container fluid>
     <v-row class="header">
       <v-col md="auto">
-        <h1 class="d-headline">{{ t('BC_Profile') }}</h1>
+        <span class="text-h5 inline-block">{{ t('BC_Profile') }} <q>{{ userProfile.user }}</q></span>
       </v-col>
     </v-row>
     <v-row class="expand" v-if="userProfile">
@@ -116,8 +116,8 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
             <v-tab value="auditLog" v-if="hasUsersAccess">
               {{ t('TITLE_AUDIT_LOG') }}
             </v-tab>
-            <v-tab value="dataDeletion" v-if="hasUsersAccess">
-              {{ t('TITLE_DATA_DELETION') }}
+            <v-tab value="approvals" v-if="hasUsersAccess">
+              {{ t('APPROVALS') }}
             </v-tab>
           </v-tabs>
           <v-tabs-window v-model="selectedTab">
@@ -268,7 +268,8 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
             <v-tabs-window-item value="auditLog" v-if="hasUsersAccess">
               <GridAuditLog :fetch-method="() => AdminService.getUserAuditTrail(userProfile._key)" />
             </v-tabs-window-item>
-            <v-tabs-window-item value="dataDeletion" v-if="hasUsersAccess">
+            <v-tabs-window-item value="approvals" v-if="hasUsersAccess">
+              <UserApprovalsMain />
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>
