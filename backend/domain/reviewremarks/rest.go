@@ -19,7 +19,18 @@ type EventDto struct {
 	Type           string          `json:"type"`
 	Author         string          `json:"author"`
 	AuthorFullName string          `json:"authorFullName"`
-	Content        any   `json:"content,omitempty" swaggertype:"object"`
+	Content        json.RawMessage `json:"content,omitempty"`
+}
+
+type EventDtoExternV1 struct {
+	Key     string    `json:"key"`
+	Created time.Time `json:"created"`
+	Updated time.Time `json:"updated"`
+
+	Type           string `json:"type"`
+	Author         string `json:"author"`
+	AuthorFullName string `json:"authorFullName"`
+	Content        string `json:"content,omitempty"`
 }
 
 type CommentContentDtoExternV2 struct {
@@ -146,7 +157,7 @@ type RemarkDtoExternV1 struct {
 	Status string     `json:"status"`
 	Closed *time.Time `json:"closed"`
 
-	Events []EventDto `json:"events"`
+	Events []EventDtoExternV1 `json:"events"`
 
 	SBOMId       string     `json:"sbomId"`
 	SBOMName     string     `json:"sbomName"`
@@ -199,6 +210,31 @@ func (e *Event) ToDto() EventDto {
 		AuthorFullName: e.AuthorFullName,
 		Content:        e.Content,
 	}
+}
+
+func (e *Event) ToExternV1Dto() EventDtoExternV1 {
+	return EventDtoExternV1{
+		Key:            e.Key,
+		Created:        e.Created,
+		Updated:        e.Updated,
+		Type:           string(e.Type),
+		Author:         e.Author,
+		AuthorFullName: e.AuthorFullName,
+		Content:        parseEventContentExternV1(e.Content),
+	}
+}
+
+func parseEventContentExternV1(content json.RawMessage) string {
+	if len(content) == 0 || string(content) == "null" {
+		return ""
+	}
+
+	var comment string
+	if err := json.Unmarshal(content, &comment); err != nil {
+		return ""
+	}
+
+	return comment
 }
 
 func (e *Event) ToExternV2Dto() EventDtoExternV2 {
@@ -269,6 +305,16 @@ func (r *Remark) EventsDto() (res []EventDto) {
 	return
 }
 
+func (r *Remark) EventsExternV1Dto() (res []EventDtoExternV1) {
+	for _, c := range r.Events {
+		if c.Type != CommentEvent {
+			continue
+		}
+		res = append(res, c.ToExternV1Dto())
+	}
+	return
+}
+
 func (r *Remark) EventsExternV2Dto() (res []EventDtoExternV2) {
 	for _, c := range r.Events {
 		res = append(res, c.ToExternV2Dto())
@@ -330,7 +376,7 @@ func (r *Remark) ToExternV1Dto() RemarkDtoExternV1 {
 		Description:  r.Description,
 		Status:       string(r.Status),
 		Closed:       r.Closed,
-		Events:       r.EventsDto(),
+		Events:       r.EventsExternV1Dto(),
 		SBOMId:       r.SBOMId,
 		SBOMName:     r.SBOMName,
 		SBOMUploaded: r.SBOMUploaded,
