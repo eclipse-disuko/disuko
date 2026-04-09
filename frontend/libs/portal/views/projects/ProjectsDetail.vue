@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
 import {ProjectSubscriptions} from '@disclosure-portal/model/Project';
-import {ProjectSlim, ProjectSlimDto} from '@disclosure-portal/model/ProjectsResponse';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -15,6 +14,7 @@ import {storeToRefs} from 'pinia';
 import {computed, nextTick, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useProjectUtils} from "@disclosure-portal/utils/projects";
 
 const route = useRoute();
 const router = useRouter();
@@ -24,6 +24,8 @@ const {useReactiveTitle} = usePageTitle();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
 const idleStore = useIdleStore();
+const projectsUtils = useProjectUtils();
+
 
 const {currentProject} = storeToRefs(projectStore);
 
@@ -39,11 +41,6 @@ const itemVersion = computed(() =>
 const encodedCurrentProjectParent = computed(() => encodeURIComponent(currentProject.value?.parent ?? ''));
 const encodedProjectId = computed(() => encodeURIComponent(projectId.value));
 
-const slimFromProject = (): ProjectSlim => {
-  const projectSlim = new ProjectSlim(new ProjectSlimDto());
-  projectSlim.fromProjectModel(currentProject.value!);
-  return projectSlim;
-};
 const tabUrl = computed(() => {
   const type = currentProject.value?.isGroup ? 'groups' : 'projects';
   return `/dashboard/${type}/${encodedProjectId.value}`;
@@ -153,8 +150,8 @@ onUnmounted(() => {
       <span class="text-h5 inline-block" :class="{statusDeprecated: currentProject.status === 'deprecated'}">
         {{ currentProject.isGroup ? t('GROUP') : t('PROJECT') }} <q>{{ currentProject.name }}</q>
       </span>
-      <span :class="'pStatus' + (!currentProject.status ? 'new' : currentProject.status)">
-        {{ !currentProject.status ? 'new' : t('STATUS_' + currentProject.status) }}
+      <span :style="{ color: projectsUtils.getTextStatusColor(currentProject.status) }">
+        {{ t('STATUS_' + (!currentProject.status ? 'new' : currentProject.status)) }}
       </span>
       <DIconButton
         v-if="currentProject.parent"

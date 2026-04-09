@@ -51,6 +51,7 @@ export type DataTableHeader = {
 
 export type DataTableHeaderFilterItems = {
   text?: string;
+  textColor?: string;
   value: string;
   icon?: string;
   iconColor?: string;

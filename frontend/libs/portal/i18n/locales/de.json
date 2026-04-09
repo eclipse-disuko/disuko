@@ -1903,6 +1903,7 @@
   "ERROR_HAS_CHILDREN": "Die Gruppe hat Teilprojekte",
   "ERROR_PROJECT_HAS_ACTIVE_APPROVALS_OR_REVIEWS": "Projekt kann nicht auf DEPRECATED gesetzt werden, solange es aktive Freigabe- oder Prüfungsanträge hat",
   "LicenseTextSearchDialogHelperText": "Diese Funktion ermöglicht es Ihnen, einen Lizenztext einzugeben und textuell ähnliche Lizenzdatensätze in unserer Datenbank zu finden. Mithilfe einer Testdistanz-Funktion wird die Ähnlichkeit zwischen Ihrer Eingabe und vorhandenen Einträgen gemessen. Die Suchergebnisse werden nach ihrer Ähnlichkeit sortiert, um Ihnen zu helfen, die relevantesten Übereinstimmungen schnell zu identifizieren.",
+  "STATUS_new": "NEU",
   "STATUS_deprecated": "DEPRECATED",
   "STATUS_ready": "READY",
   "STATUS_active": "ACTIVE",

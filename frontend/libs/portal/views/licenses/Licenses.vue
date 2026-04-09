@@ -65,7 +65,7 @@ const rights = ref<Rights>({} as Rights);
 const selectedFilterIsLicenseChart = ref<string[]>([]);
 const selectedFilterSource = ref<string[]>([]);
 const selectedFilterFamily = ref<string[]>([]);
-const selectedFilterApproval = ref<string[]>(['approved', 'deprecated', 'forbidden']);
+const selectedFilterApproval = ref<string[]>([]);
 const selectedFilterType = ref<string[]>([]);
 const selectedFilterClassification = ref<string[]>([]);
 const total = ref(0);
@@ -82,10 +82,11 @@ const licenseDialogRef = ref();
 const currentLicenseForAction = ref<License | null>(null);
 const licenseDialogMode = ref<'edit' | 'duplicate'>('edit');
 const abort = ref<AbortController | null>(null);
+const itemsPerPage = ref(100);
 
 const options = computed((): SearchOptions => ({
   page: 1,
-  itemsPerPage: 50,
+  itemsPerPage: itemsPerPage.value,
   sortBy: sortItems.value,
   groupBy: [],
   search: search.value,
@@ -723,12 +724,12 @@ onMounted(async () => {
           :items-length="reactiveTotal"
           :loading="licensesLoading"
           :items="items"
-          :items-per-page="100"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           density="compact"
           show-footer
           class="striped-table custom-data-table fill-height"
           :options="options"
+          v-model:items-per-page="itemsPerPage"
           v-model:sort-by="sortItems"
           @click:row="onClickRow">
           <!-- Settings column header slot -->
@@ -785,6 +786,7 @@ onMounted(async () => {
                   v-model="selectedFilterApproval"
                   :column="column"
                   :label="t('APPROVAL_STATUS')"
+                  :initial-selected="['approved', 'deprecated', 'forbidden']"
                   :allItems="possibleApproval">
                 </GridHeaderFilterIcon>
               </template>

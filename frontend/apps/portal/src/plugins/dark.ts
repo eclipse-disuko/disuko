@@ -21,8 +21,9 @@ const dark: ThemeDefinition = {
     sidebar: neutral[30],
 
     // project status
-    projectNew: orange[42],
-    projectActive: blue[88],
+    projectReady: green[50],
+    projectNew: green[50],
+    projectActive: blue[50],
     projectArchived: grey[30],
     projectGroup: orange[50],
     projectDeprecated: grey[30],

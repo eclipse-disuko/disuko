@@ -79,7 +79,8 @@ class ProjectService {
 
    */
 
-  public getAll = () => api.get<ProjectsResponse>(`/api/v1/${modelName}`);
+  public getAll = (signal?: AbortSignal) =>
+    api.get<ProjectsResponse>(`/api/v1/${modelName}`, signal ? {signal} : undefined);
 
   public getDisclosures = () => api.get<ProjectsResponse>(`/api/v1/disclosures`);
 
@@ -90,8 +91,8 @@ class ProjectService {
     return (await api.get<ProjectsResponse>(`/api/v1/${modelName}/${projectUid}/possibleChildren`)).data;
   }
 
-  public async getAllWithOptions(options: SearchOptions) {
-    return api.post<ProjectsResponse>(`/api/v1/${modelName}/search`, options);
+  public async getAllWithOptions(options: SearchOptions, signal?: AbortSignal) {
+    return api.post<ProjectsResponse>(`/api/v1/${modelName}/search`, options, signal ? {signal} : undefined);
   }
 
   public async get(projectUid: string) {
@@ -256,7 +257,7 @@ class ProjectService {
   ) {
     return api.get(
       `/api/v1/${modelName}/${encodeURIComponent(projectUid)}/versions/${encodeURIComponent(versionKey)}/notice/${encodeURIComponent(sbomUuid)}/` +
-        format,
+      format,
     );
   }
 
