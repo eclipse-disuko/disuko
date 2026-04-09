@@ -1547,7 +1547,7 @@ func ValidateIDOrLatest(escaped string) string {
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, version, _ := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
+	_, version, _ := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 
 	sbomUuidEscaped := chi.URLParam(r, "sbomUuid")
 	sbomUuid := ValidateIDOrLatest(sbomUuidEscaped)
@@ -1570,7 +1570,7 @@ func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.Re
 		Created:  spdxFile.Updated,
 		Uploaded: spdxFile.Updated,
 		Status:   true,
-		IsRetain: IsSpdxRetained(spdxFile, currentProject, version),
+		IsRetain: sbomlockRetained.IsSpdxToRetain(spdxFile, version),
 	}
 	render.JSON(w, r, responseData)
 }
