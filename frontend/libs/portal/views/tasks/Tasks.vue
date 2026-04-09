@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import GridTask from '@disclosure-portal/components/grids/GridTask.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {onMounted} from 'vue';
 import {useI18n} from 'vue-i18n';

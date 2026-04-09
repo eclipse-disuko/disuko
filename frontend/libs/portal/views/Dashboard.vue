@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import * as help from '@disclosure-portal/assets/documents/help';
 import releaseNotes from '@disclosure-portal/assets/documents/release_notes/ReleaseNotes.md?raw';
-import HelpDialog from '@disclosure-portal/components/dialog/HelpDialog.vue';
 import {INotificationMeta} from '@disclosure-portal/model/IdleInfo';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';

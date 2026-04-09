@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ProjectsTableAction from '@disclosure-portal/components/projects/ProjectsTableAction.vue';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {Rights} from '@disclosure-portal/model/Rights';
 import {useAppStore} from '@disclosure-portal/stores/app';
@@ -12,11 +11,6 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {chain} from 'lodash';
 import {storeToRefs} from 'pinia';
