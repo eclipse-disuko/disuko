@@ -2089,5 +2089,6 @@
   "PROJECT_TASK_APPROVAL_PENDING": "Approval pending for projects",
   "PROJECT_HAS_DENIED_DECISIONS": "This project contains one or more denied components.",
   "PROJECT_HAS_DENIED_DECISIONS_TO_BE_CANCELLED": "This project contains one or more denied components.",
-  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Please delete pending tasks/roles/traces before deleting user"
+  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Please delete pending tasks/roles/traces before deleting user",
+  "TITLE_DATA_DELETION": "Data deletion"
 }
