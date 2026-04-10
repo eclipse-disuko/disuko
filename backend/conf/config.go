@@ -75,6 +75,7 @@ type Server struct {
 	InstanceName                   string `default:"standalone"`
 	EnforceFOSSOfficeConfirmation  bool
 	FOSSOfficeUserId               string
+	EnableUserDeletion             bool
 }
 
 type SBomLimits struct {
@@ -349,6 +350,8 @@ func checkEnvironmentVariables() {
 	Config.Smtp.Sender = getEnvVariable("SMTP_SENDER", Config.Smtp.Sender)
 	Config.Smtp.User = getEnvVariable("SMTP_USER", Config.Smtp.User)
 	Config.Smtp.Pass = getEnvVariable("SMTP_PASS", Config.Smtp.Pass)
+
+	Config.Server.EnableUserDeletion = getEnvVariableBoolean("SERVER_ENABLE_USER_DELETION", Config.Server.EnableUserDeletion)
 }
 
 func rightPad2Len(s string, padStr string, overallLen int) string {

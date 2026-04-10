@@ -226,6 +226,8 @@ func (s *Server) setupHandlers() {
 		DeletionService:        s.services.deletionService,
 		DeletionAuditRepo:      s.repos.deletionAudit,
 		UserService:            s.services.userService,
+		AuditLogListRepo:       s.repos.auditLogList,
+		SBOMListRepo:           s.repos.sbomList,
 	}
 	s.handlers.auth.UserRepository = s.repos.user
 	s.handlers.accessRights = rights.AccessRightsHandler{}

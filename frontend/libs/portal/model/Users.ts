@@ -2,6 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {ApprovalType} from '@disclosure-portal/model/Approval';
+
+export interface UserApproval {
+  projectUUID: string;
+  projectName: string;
+  approvalUUID: string;
+  approvalType: ApprovalType;
+  isCreator: boolean;
+  isApprover: boolean;
+  isActive: boolean;
+}
+
 export class UserRequestDto {
   public _key = '';
   public user = '';

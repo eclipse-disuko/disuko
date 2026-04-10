@@ -26,6 +26,7 @@ import {
   ProjectRoleDto,
   TaskDto,
   TermsOfUseVersionResponse,
+  UserApproval,
   UserDto,
   UserList,
   UserMailDto,
@@ -317,6 +318,19 @@ class AdminService {
   public async getUserTasks(uuid: string): Promise<TaskDto[]> {
     const result = await api.get(`/api/v1/${modelName}/users/${uuid}/tasks`);
     return result.data;
+  }
+
+  public async getUserApprovals(uuid: string): Promise<UserApproval[]> {
+    const result = await api.get<UserApproval[]>(`/api/v1/${modelName}/users/${uuid}/approvals`);
+    return result.data;
+  }
+
+  public abortUserApprovals(uuid: string, keys: string[]) {
+    return api.post(`/api/v1/${modelName}/users/${uuid}/approvals/abort`, {keys});
+  }
+
+  public abortAllUserApprovals(uuid: string) {
+    return api.post(`/api/v1/${modelName}/users/${uuid}/approvals/abortall`);
   }
 
   public async getUserMailById(userId: string): Promise<UserMailDto> {

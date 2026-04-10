@@ -2082,5 +2082,17 @@
   "PROJECT_TASK_APPROVAL_PENDING": "Projektgenehmigung steht noch aus",
   "PROJECT_HAS_DENIED_DECISIONS": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
   "PROJECT_HAS_DENIED_DECISIONS_TO_BE_CANCELLED": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
-  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Bitte löschen Sie alle ausstehenden Aufgaben/Rollen/Spuren, bevor Sie den Benutzer löschen."
+  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Bitte löschen Sie alle ausstehenden Aufgaben/Rollen/Spuren, bevor Sie den Benutzer löschen.",
+  "APPROVALS": "Freigaben",
+  "TAB_ONGOING_APPROVALS": "Laufende Freigaben",
+  "TAB_FINALIZED_APPROVALS": "Abgeschlossene Freigaben",
+  "COL_APPROVAL_TYPE": "Freigabetyp",
+  "COL_IS_CREATOR": "Ersteller",
+  "COL_IS_APPROVER": "Genehmiger",
+  "BTN_ABORT_ALL": "Alle abbrechen",
+  "BTN_ABORT": "Abbrechen",
+  "TT_ABORT_ALL_APPROVALS": "Alle laufenden Freigaben abbrechen",
+  "TT_ABORT_SELECTED_APPROVALS": "Ausgewählte Freigaben abbrechen",
+  "DLG_CONFIRMATION_DESCRIPTION_ABORT_ALL_APPROVALS": "Sind Sie sicher, dass Sie alle laufenden Freigaben abbrechen möchten?",
+  "DLG_CONFIRMATION_DESCRIPTION_ABORT_SELECTED_APPROVALS": "Sind Sie sicher, dass Sie die ausgewählten Freigaben abbrechen möchten?"
 }

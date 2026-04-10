@@ -88,6 +88,17 @@ func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId
 	return targetApproval
 }
 
+func (s *ApprovalService) AdminAbortRandomApproval(pr *project.Project, app *approval.Approval) {
+	switch app.Type {
+	case approval.TypeInternal:
+		s.adminAbortInternal(pr, app)
+	case approval.TypePlausibility:
+		s.adminAbortPlausibility(pr, app)
+	default:
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorUnexpectedType), "")
+	}
+}
+
 func (s *ApprovalService) GetApprovalInfo(targetProject *project.Project) approval.Info {
 	return s.getApprovalInfo(targetProject, nil, false)
 }

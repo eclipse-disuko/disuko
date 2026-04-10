@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/approval"
 )
 
 type MetaDataDto struct {
@@ -175,4 +176,18 @@ type RoleDeletionResult struct {
 	Deleted       bool   `json:"deleted"`
 	Skipped       bool   `json:"skipped"`
 	SkipReason    string `json:"skipReason,omitempty"`
+}
+
+type InvolvedApprovalDto struct {
+	ProjectUUID  string                `json:"projectUUID"`
+	ProjectName  string                `json:"projectName"`
+	ApprovalUUID string                `json:"approvalUUID"`
+	ApprovalType approval.ApprovalType `json:"approvalType"`
+	IsCreator    bool                  `json:"isCreator"`
+	IsApprover   bool                  `json:"isApprover"`
+	IsActive     bool                  `json:"isActive"`
+}
+
+type AbortApprovalsRequest struct {
+	Keys []string `json:"keys" validate:"required,min=1,dive,uuid4"`
 }
