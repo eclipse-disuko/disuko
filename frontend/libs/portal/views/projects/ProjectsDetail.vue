@@ -262,16 +262,17 @@ onUnmounted(() => {
         </v-card>
       </v-col>
     </v-row>
-    <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
-      <ProjectSubscriptionsDialog
-        :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
-        :confirm-text="t('NP_DIALOG_BTN_EDIT')"
-        :item="currentProject.subscriptions"
-        @confirm="saveProjectSubscriptions"
-        @close="projectSubscriptionsDialogOpen = false">
-      </ProjectSubscriptionsDialog>
-    </DFormDialog>
   </v-container>
+
+  <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
+    <ProjectSubscriptionsDialog
+      :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
+      :confirm-text="t('NP_DIALOG_BTN_EDIT')"
+      :item="currentProject!.subscriptions"
+      @confirm="saveProjectSubscriptions"
+      @close="projectSubscriptionsDialogOpen = false">
+    </ProjectSubscriptionsDialog>
+  </DFormDialog>
 </template>
 
 <style scoped lang="scss">

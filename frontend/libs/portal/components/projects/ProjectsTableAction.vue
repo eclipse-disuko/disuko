@@ -17,7 +17,6 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {canDeleteProject, getDeleteTooltip} from '@disclosure-portal/utils/project-deletion-error';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import useSnackbar from '@shared/composables/useSnackbar';
 import {useClipboard} from '@shared/utils/clipboard';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -35,7 +34,6 @@ const emit = defineEmits<{
 const {copyToClipboard} = useClipboard();
 
 const {t} = useI18n();
-const {info: infoSnackbar} = useSnackbar();
 const appStore = useAppStore();
 const rights = useUserStore().getRights as Rights;
 const projectStore = useProjectStore();
@@ -209,7 +207,7 @@ const showCopyConfirmationDialog = (item: ProjectSlim) => {
 
 <template>
   <TableActionButtons
-    variant="compact"
+    variant="slider"
     :buttons="actionButtons"
     @edit="openEdit(props.item)"
     @copy="copyReferenceInfoToClipboard(props.item)"

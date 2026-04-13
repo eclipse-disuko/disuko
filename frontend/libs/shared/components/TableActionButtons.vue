@@ -84,30 +84,20 @@ if (props.variant === 'slider') {
         @click.stop
         @mouseenter="stopSlideInTimerAndSlideOut"
         @mouseleave="startSlideInTimer">
-        <v-btn
+        <DIconButton
           v-if="shownButtons.length >= 2"
-          plain
-          size="small"
-          variant="text"
-          icon
+          icon="mdi-dots-horizontal"
           color="primary"
           class="size-10"
-          @click.stop>
-          <v-icon>mdi-dots-horizontal</v-icon>
-          <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
-        </v-btn>
+          :hint="t('OPEN_ACTIONS')" />
         <div
           v-else-if="(buttons[0]?.show ?? true) && !(buttons[0]?.disabled ?? false)"
           class="d-inline size-10"
           @click.stop="emit(buttons[0].event)">
-          <v-btn
-            plain
-            size="small"
-            variant="text"
-            density="default"
+          <DIconButton
             :icon="buttons[0].icon"
-            :color="buttons[0].color || 'primary'" />
-          <Tooltip v-if="buttons[0].hint" location="bottom" :text="buttons[0].hint" />
+            :color="buttons[0].color || 'primary'"
+            :hint="buttons[0].hint" />
         </div>
         <template v-if="shownButtons.length >= 2">
           <template v-for="button in buttons" :key="button.icon">
@@ -116,15 +106,11 @@ if (props.variant === 'slider') {
                 v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
                 class="d-inline size-10"
                 @click.stop="!button?.disabled ? emit(button.event) : null">
-                <v-btn
-                  plain
-                  size="small"
-                  variant="text"
-                  density="default"
+                <DIconButton
                   :icon="button.icon"
                   :color="button.color || 'primary'"
-                  :disabled="Boolean(button?.disabled) || false" />
-                <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
+                  :disabled="Boolean(button?.disabled) || false"
+                  :hint="button.hint && !button?.disabled ? button.hint : undefined" />
               </div>
             </div>
           </template>
