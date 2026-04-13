@@ -189,8 +189,9 @@ const open = async (isVehicleProject: boolean) => {
 
 const loadSBOMHist = async () => {
   selectedSbom.value = null;
-  const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, selectedChannel.value!._key, 5))
-    .data;
+  if (!selectedChannel.value?._key) return;
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }
@@ -447,7 +448,7 @@ defineExpose({open});
                         color="green"
                         v-if="isVehicle && isAudited(selectedChannel, item?.raw?._key)"
                         size="small"
-                        class="pb-1 ml-1"
+                        class="ml-1 pb-1"
                         >mdi-clipboard-check-outline</v-icon
                       >
                     </div>
@@ -476,7 +477,7 @@ defineExpose({open});
                     color="green"
                     v-if="isVehicle && isAudited(selectedChannel, item?.raw?._key)"
                     size="small"
-                    class="pb-1 ml-1"
+                    class="ml-1 pb-1"
                     >mdi-clipboard-check-outline</v-icon
                   >
                 </div>
@@ -491,7 +492,7 @@ defineExpose({open});
             </v-autocomplete>
           </Stack>
 
-          <Stack v-if="config.useFutureFoss" direction="row" align="center" class="bg-gray-500/20 rounded py-1">
+          <Stack v-if="config.useFutureFoss" direction="row" align="center" class="rounded bg-gray-500/20 py-1">
             <v-radio-group inline hide-details v-model="fossVersion">
               <v-radio :label="t('FOSSDD_STANDARD')" value="default"></v-radio>
               <v-radio :label="t('FOSSDD_LEGACY')" value="legacy"></v-radio>

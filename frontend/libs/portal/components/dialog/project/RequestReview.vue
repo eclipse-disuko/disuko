@@ -97,8 +97,8 @@ const loadSBOMHist = async () => {
   if (!selectedChannel.value?._key) {
     return;
   }
-  const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, selectedChannel.value._key, 5))
-    .data;
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }

@@ -14,7 +14,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {debounce} from 'lodash';
-import {useProjectUtils} from "@disclosure-portal/utils/projects";
+import {useProjectUtils} from '@disclosure-portal/utils/projects';
 
 const {t} = useI18n();
 const router = useRouter();
@@ -28,17 +28,19 @@ const selectedFilterStatus = ref<string[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'updated', order: 'desc'}]);
 const itemsPerPage = ref(100);
 
-const options = computed((): SearchOptions => ({
-  page: 1,
-  itemsPerPage: itemsPerPage.value,
-  sortBy: sortBy.value,
-  groupBy: [],
-  search: search.value,
-  filterString: search.value,
-  filterBy: {
-    status: selectedFilterStatus.value,
-  },
-}));
+const options = computed(
+  (): SearchOptions => ({
+    page: 1,
+    itemsPerPage: itemsPerPage.value,
+    sortBy: sortBy.value,
+    groupBy: [],
+    search: search.value,
+    filterString: search.value,
+    filterBy: {
+      status: selectedFilterStatus.value,
+    },
+  }),
+);
 
 const headers = computed<DataTableHeader[]>(() => [
   {title: '', value: 'data-table-expand', width: '38'},
@@ -46,9 +48,21 @@ const headers = computed<DataTableHeader[]>(() => [
   {title: t('COL_STATUS'), sortable: true, value: 'status', width: '155'},
   {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: '120'},
   {title: t('COL_NAME'), align: 'start', value: 'name', width: 270, sortable: true},
-  {title: t('COL_DEVELOPER_COMPANY'), align: 'start', width: 270, value: 'supplier', sortable: true},
+  {
+    title: t('COL_DEVELOPER_COMPANY'),
+    align: 'start',
+    width: 270,
+    value: 'supplier',
+    sortable: true,
+  },
   {title: t('COL_OWNER_COMPANY'), align: 'start', width: 270, value: 'company', sortable: true},
-  {title: t('COL_OWNER_DEPARTMENT'), align: 'start', width: 270, value: 'department', sortable: true},
+  {
+    title: t('COL_OWNER_DEPARTMENT'),
+    align: 'start',
+    width: 270,
+    value: 'department',
+    sortable: true,
+  },
   {title: t('COL_APPID'), align: 'start', width: 155, value: 'applicationId', sortable: true},
   {title: t('COL_UPDATED'), align: 'start', width: 103, value: 'updated', sortable: true},
   {title: t('COL_CREATED'), align: 'start', width: 103, value: 'created', sortable: true},
@@ -97,10 +111,7 @@ const isExpanded = (item: ProjectSlim) => {
   return expanded.value.includes(item._key);
 };
 
-watch(options,
-  debounceReload,
-  {deep: true},
-);
+watch(options, debounceReload, {deep: true});
 
 onMounted(() => {
   reload();
@@ -122,7 +133,7 @@ onMounted(() => {
         :label="t('labelSearch')"
         single-line
         hide-details
-        clearable  />
+        clearable />
     </template>
     <template #table>
       <div class="table-wrapper fill-height">
@@ -166,7 +177,7 @@ onMounted(() => {
             <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
           </template>
           <template #[`item.status`]="{item}">
-            <span :style="{ color: projectsUtils.getTextStatusColor(item.status) }">
+            <span :style="{color: projectsUtils.getTextStatusColor(item.status)}">
               {{ t('STATUS_' + (!item.status ? 'new' : item.status)) }}
             </span>
           </template>

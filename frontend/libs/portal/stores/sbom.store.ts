@@ -14,11 +14,9 @@ export const useSbomStore = defineStore('sbom', () => {
   const projectStore = useProjectStore();
 
   const state = reactive({
-    currentVersion: {} as VersionSlim,
-    channelSpdxs: [] as SpdxFile[],
+    currentVersionKey: '' as string,
     selectedSpdx: {} as SpdxFile,
     allSBOMSFlat: [] as VersionSbomsFlat[],
-    allSBOMS: [] as VersionSboms[],
     allVersions: [] as NameKeyIdentifier[],
     sbomStats: {} as SbomStats,
     generalStats: {} as GeneralStats,
@@ -33,17 +31,10 @@ export const useSbomStore = defineStore('sbom', () => {
   };
 
   // Actions
-  const setCurrentVersion = (version: VersionSlim) => {
-    state.currentVersion = version;
+  const setCurrentVersion = (versionKey: string) => {
+    state.currentVersionKey = versionKey;
     clearSbomStats();
     clearGeneralStats();
-  };
-
-  const resetCurrentVersion = () => {
-    if (!state.currentVersion?._key) return;
-    const project = projectStore.currentProject;
-    if (!project) return;
-    state.currentVersion = project.versions[state.currentVersion._key];
   };
 
   const setSelectedSpdx = (spdx: SpdxFile) => {
@@ -51,42 +42,22 @@ export const useSbomStore = defineStore('sbom', () => {
     clearSbomStats();
   };
 
-  const setChannelSpdxs = (spdxs: SpdxFile[]) => {
-    state.channelSpdxs = spdxs;
-  };
-
-  const fetchAllSBOMsFlat = async () => {
+  const fetchAllSBOMsFlat = async (force?: boolean) => {
     const projectKey = projectStore.currentProject?._key;
     if (!projectKey) return;
+    if (state.allSBOMSFlat.length > 0 && !force) return;
     const data = await ProjectService.getAllSbomsFlat(projectKey);
     state.allSBOMSFlat = data.items;
     state.allVersions = data.versions;
   };
 
-  const fetchAllSBOMs = async () => {
-    const projectKey = projectStore.currentProject?._key;
-    if (!projectKey) return;
-    state.allSBOMS = await ProjectService.getAllSboms(projectKey);
-  };
-
-  const fetchSBOMHistory = async (versionKey?: string) => {
-    const projectKey = projectStore.currentProject?._key;
-    const resolvedVersionKey = versionKey || state.currentVersion._key;
-    if (!projectKey || !resolvedVersionKey) return;
-    const spdxFileHistory = (await versionService.getSbomHistory(projectKey, resolvedVersionKey)).data;
-    if (spdxFileHistory[0]) {
-      spdxFileHistory[0].isRecent = true;
-    }
-    setChannelSpdxs(spdxFileHistory);
-  };
-
   const fetchSBOMStats = async (spdxKey: string) => {
     const projectKey = projectStore.currentProject?._key;
-    const versionKey = state.currentVersion._key;
+    const versionKey = state.currentVersionKey;
     if (!projectKey || !versionKey || !spdxKey) return;
     if (Object.keys(state.sbomStats).length > 0 && state.selectedSpdx?._key === spdxKey) return;
     return versionService.getSBOMStats(projectKey, versionKey, spdxKey).then((data) => {
-      if (state.currentVersion._key === versionKey && state.selectedSpdx?._key === spdxKey) {
+      if (state.currentVersionKey === versionKey && state.selectedSpdx?._key === spdxKey) {
         state.sbomStats = data.data;
       }
     });
@@ -94,33 +65,51 @@ export const useSbomStore = defineStore('sbom', () => {
 
   const fetchGeneralVersionStats = async () => {
     const projectKey = projectStore.currentProject?._key;
-    const versionKey = state.currentVersion._key;
+    const versionKey = state.currentVersionKey;
     if (!projectKey || !versionKey) return;
     if (Object.keys(state.generalStats).length > 0) return;
     return versionService.getGeneralVersionStats(projectKey, versionKey).then((data) => {
-      if (state.currentVersion._key === versionKey) {
+      if (state.currentVersionKey === versionKey) {
         state.generalStats = data.data;
       }
     });
   };
 
   const reset = () => {
-    state.currentVersion = {} as VersionSlim;
-    state.channelSpdxs = [];
+    state.currentVersionKey = '';
     state.selectedSpdx = {} as SpdxFile;
     state.allSBOMSFlat = [];
-    state.allSBOMS = [];
     state.allVersions = [];
     clearSbomStats();
     clearGeneralStats();
   };
 
   // Getters
-  const getCurrentVersion = computed(() => state.currentVersion);
-  const getChannelSpdxs = computed(() => state.channelSpdxs);
+  const currentVersion = computed((): VersionSlim =>
+    projectStore.currentProject?.versions[state.currentVersionKey] ?? ({} as VersionSlim),
+  );
+  const getCurrentVersion = computed(() => currentVersion.value);
+  const channelSpdxs = computed((): SpdxFile[] =>
+    state.allSBOMSFlat
+      .filter((item) => item.versionKey === state.currentVersionKey)
+      .map((item, index) => ({...item, isRecent: index === 0})),
+  );
+  const getChannelSpdxs = computed(() => channelSpdxs.value);
   const getSelectedSpdx = computed(() => state.selectedSpdx);
   const getAllSBOMsFlat = computed(() => state.allSBOMSFlat);
-  const getAllSBOMs = computed(() => state.allSBOMS);
+  const getAllSBOMs = computed((): VersionSboms[] => {
+    const map = new Map<string, VersionSboms>();
+    for (const item of state.allSBOMSFlat) {
+      if (!map.has(item.versionKey)) {
+        const entry = new VersionSboms();
+        entry.VersionKey = item.versionKey;
+        entry.VersionName = item.versionName;
+        map.set(item.versionKey, entry);
+      }
+      map.get(item.versionKey)!.SpdxFileHistory.push(item);
+    }
+    return [...map.values()];
+  });
   const getSbomStats = computed(() => state.sbomStats);
   const getGeneralStats = computed(() => state.generalStats);
 
@@ -129,18 +118,16 @@ export const useSbomStore = defineStore('sbom', () => {
 
     // Actions
     setCurrentVersion,
-    resetCurrentVersion,
     setSelectedSpdx,
-    setChannelSpdxs,
     fetchAllSBOMsFlat,
-    fetchAllSBOMs,
-    fetchSBOMHistory,
     fetchSBOMStats,
     fetchGeneralVersionStats,
     reset,
 
     // Getters
+    currentVersion,
     getCurrentVersion,
+    channelSpdxs,
     getChannelSpdxs,
     getSelectedSpdx,
     getAllSBOMsFlat,

@@ -62,7 +62,7 @@ const headers = computed<DataTableHeader[]>(() => [
   {title: t('COL_OWNER_DEPARTMENT'), align: 'start', width: 270, value: 'department', sortable: true},
   {title: t('COL_APPID'), align: 'start', width: 155, value: 'applicationId', sortable: true},
   {title: t('COL_UPDATED'), align: 'start', width: 103, value: 'updated', sortable: true},
-  {title: t('COL_CREATED'), align: 'start', width: 103,  value: 'created', sortable: true},
+  {title: t('COL_CREATED'), align: 'start', width: 103, value: 'created', sortable: true},
 ]);
 
 const filterOnApproval = (item: ProjectSlim): boolean => {
@@ -213,12 +213,12 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
               <template #filter>
                 <v-menu offset-y :close-on-content-click="false" v-model="menuIsGroup">
                   <template v-slot:activator="{props}">
-                  <span>
-                    <v-icon class="mr-1" v-bind="props" :color="filterGroups ? 'primary' : 'default'">
-                      mdi-filter-variant
-                    </v-icon>
-                    <Tooltip>{{ t('TT_SHOW_FILTER') }}</Tooltip>
-                  </span>
+                    <span>
+                      <v-icon class="mr-1" v-bind="props" :color="filterGroups ? 'primary' : 'default'">
+                        mdi-filter-variant
+                      </v-icon>
+                      <Tooltip>{{ t('TT_SHOW_FILTER') }}</Tooltip>
+                    </span>
                   </template>
                   <div class="w-[320px] bg-background">
                     <v-card class="d-flex justify-space-between align-center">
@@ -237,7 +237,7 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
             <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
           </template>
           <template v-slot:[`item.status`]="{item}">
-            <span :style="{ color: projectsUtils.getTextStatusColor(item.status) }">
+            <span :style="{color: projectsUtils.getTextStatusColor(item.status)}">
               {{ t('STATUS_' + (!item.status ? 'new' : item.status)) }}
             </span>
           </template>

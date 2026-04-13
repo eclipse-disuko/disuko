@@ -151,17 +151,17 @@ const setupAfterSbomsLoaded = () => {
   });
 };
 
+const getSbomsForVersion = (targetVersionId: string): SpdxFile[] =>
+  sbomStore.allSBOMSFlat
+    .filter((item) => item.versionKey === targetVersionId)
+    .map((item, index) => ({...item, isRecent: index === 0}));
+
 const loadSboms = async () => {
   sbomsLoading.value = true;
 
-  if (versionID.value === sbomStore.currentVersion._key) {
-    sboms.value = sbomStore.channelSpdxs;
-    setupAfterSbomsLoaded();
-  } else {
-    await sbomStore.fetchSBOMHistory(versionID.value);
-    sboms.value = sbomStore.channelSpdxs;
-    setupAfterSbomsLoaded();
-  }
+  await sbomStore.fetchAllSBOMsFlat();
+  sboms.value = getSbomsForVersion(versionID.value);
+  setupAfterSbomsLoaded();
 };
 
 const loadTemplates = async () => {
@@ -330,8 +330,8 @@ defineExpose({open});
   <v-dialog v-model="isVisible" content-class="large" width="1400" height="800">
     <DialogLayout :config="dialogConfig" @secondary-action="close" @primary-action="doDialogAction" @close="close">
       <v-form ref="form">
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4">
-          <Stack class="w-full h-min">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
+          <Stack class="h-min w-full">
             <h3>{{ t('TAB_TITLE_GENERAL') }}</h3>
             <v-select
               item-text="title"
@@ -387,7 +387,7 @@ defineExpose({open});
             </v-select>
           </Stack>
           <v-divider vertical></v-divider>
-          <Stack class="w-full h-min md:max-h-[580px] overflow-hidden md:overflow-auto">
+          <Stack class="h-min w-full overflow-hidden md:max-h-[580px] md:overflow-auto">
             <h3>{{ t('COL_REFERENCES') }}</h3>
             <v-select
               v-model="selectedSbom"
@@ -452,7 +452,7 @@ defineExpose({open});
             </v-autocomplete>
             <div
               v-if="canAddComponent"
-              class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+              class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
               @click="addComponent">
               <v-icon color="primary">mdi-plus</v-icon>
               <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_COMPONENT') }}</span>
@@ -486,7 +486,7 @@ defineExpose({open});
             </v-autocomplete>
             <div
               v-if="canAddLicense"
-              class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+              class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
               @click="addLicense">
               <v-icon color="primary">mdi-plus</v-icon>
               <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_LICENSE') }}</span>

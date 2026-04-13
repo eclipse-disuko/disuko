@@ -395,7 +395,7 @@ const reloadInternal = async (forceReload: boolean) => {
   if (!currentProject.value._key) {
     return;
   }
-  await sbomStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMsFlat();
   selectedFilterLicenses.value = [];
   resetErrors();
 

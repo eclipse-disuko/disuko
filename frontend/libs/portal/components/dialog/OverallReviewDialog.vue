@@ -79,10 +79,8 @@ const save = async () => {
       req.sbomName = selectedSBOM.value.MetaInfo?.Name || '';
       req.sbomUploaded = selectedSBOM.value.Uploaded;
     }
-    await versionService.createOverallReview(currentProject.value._key, sbomStore.currentVersion._key, req);
+    await versionService.createOverallReview(currentProject.value._key, sbomStore.currentVersionKey, req);
     await projectStore.fetchProjectByKey(currentProject.value._key);
-    await sbomStore.fetchSBOMHistory();
-    sbomStore.resetCurrentVersion();
     emit('reload');
     close();
     snack(t('DIALOG_overallreview_create_success'));
@@ -143,8 +141,7 @@ defineExpose({open});
                   v-if="currentProject.approvablespdx.spdxkey === item.raw._key"
                   size="small"
                   class="pr-2"
-                  >mdi-star</v-icon
-                >
+                  icon="mdi-star"></v-icon>
                 <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
                 <span class="d-text d-secondary-text"> - {{ item.raw.MetaInfo.Name }}</span>
                 <span class="d-text d-secondary-text ml-1" v-if="item.raw.Tag">({{ item.raw.Tag }})</span>
@@ -159,8 +156,7 @@ defineExpose({open});
                   v-if="currentProject.approvablespdx.spdxkey === item.raw._key"
                   size="small"
                   class="pr-2"
-                  >mdi-star</v-icon
-                >
+                  icon="mdi-star"></v-icon>
                 <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
                 <span class="d-text d-secondary-text"> - {{ item.raw.MetaInfo.Name }}</span>
                 <span class="d-text d-secondary-text ml-1" v-if="item.raw.Tag">({{ item.raw.Tag }})</span>

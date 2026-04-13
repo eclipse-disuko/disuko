@@ -25,6 +25,7 @@ import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
 import DSpdxTagDialog from '@shared/components/disco/DSpdxTagDialog.vue';
+import Tooltip from '@shared/components/disco/Tooltip.vue';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import DiscoFileUpload from '@shared/components/widgets/DiscoFileUpload.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -32,7 +33,6 @@ import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTabelIndex, DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
 import config from '@shared/utils/config';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
@@ -254,12 +254,7 @@ Deliveries Link: ${deleviryLink}`;
 };
 
 const reloadSboms = async () => {
-  if (props.channelView) {
-    await sbomStore.fetchSBOMHistory();
-    await sbomStore.fetchAllSBOMs();
-  } else {
-    await sbomStore.fetchAllSBOMsFlat();
-  }
+  await sbomStore.fetchAllSBOMsFlat();
 };
 const toggleLock = async (item: VersionSbomsFlat) => {
   await projectService.toggleSpdxLock(projectModel.value._key, item.versionKey, item._key);
@@ -278,7 +273,7 @@ const setApprovable = async (item: VersionSbomsFlat) => {
   await projectService
     .updateApprovableSpdx(approvableSpdx, projectModel.value._key)
     .then(() => (projectModel.value.approvablespdx = approvableSpdx));
-  await sbomStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMsFlat(true);
 };
 const downloadFile = (item: VersionSbomsFlat) => {
   const link = document.createElement('a');
@@ -552,13 +547,13 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="statusFilterOpened = false" color="default" />
                   </v-row>
                   <v-select
                     v-model="selectedFilterChannel"
                     :items="possibleChannels"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_branches')"
                     clearable
                     multiple
@@ -571,7 +566,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
                     persistent-clear
                     :list-props="{class: 'striped-filter-dd py-0'}">
                     <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
+                      <v-list-item v-bind="props" class="px-2 py-0">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
@@ -637,7 +632,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
                 !projectModel.accessRights.allowSBOMAction.delete
               "
               color="labelBackgroundColor"
-              class="px-2 py-2 mr-1 mb-1"
+              class="mr-1 mb-1 px-2 py-2"
               label>
               <v-icon class="pr-2" small color="labelIconColor" left>mdi-label</v-icon>
               <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
@@ -651,7 +646,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
               :channel-view="channelView"
               v-slot="{showDialog}"
               v-else>
-              <v-chip color="labelBackgroundColor" class="px-2 py-2 mr-1 mb-1" label link @click.stop="showDialog">
+              <v-chip color="labelBackgroundColor" class="mr-1 mb-1 px-2 py-2" label link @click.stop="showDialog">
                 <v-icon class="pr-2" small color="primary" left>mdi-label</v-icon>
                 <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
                 <span v-else class="letterSpacing">{{ item.Tag }}</span>
@@ -659,18 +654,9 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
             </DSpdxTagDialog>
           </template>
           <template v-slot:[`item.Origin`]="{item}">
-            <v-tooltip
-              :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-              location="bottom"
-              v-if="originTooltip(item.Origin)"
-              content-class="dpTooltip">
-              <template v-slot:activator="{props}">
-                <span v-bind="props">
-                  {{ originShort(item.Origin) }}
-                </span>
-              </template>
-              <span>{{ originTooltip(item.Origin) }}</span>
-            </v-tooltip>
+            <Tooltip v-if="originTooltip(item.Origin)" location="bottom" :text="originTooltip(item.Origin)" as-parent>
+              {{ originShort(item.Origin) }}
+            </Tooltip>
             <span v-else>{{ item.Origin }}</span>
           </template>
           <template v-slot:[`item.Actions`]="{item}">

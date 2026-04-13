@@ -257,7 +257,7 @@ class ProjectService {
   ) {
     return api.get(
       `/api/v1/${modelName}/${encodeURIComponent(projectUid)}/versions/${encodeURIComponent(versionKey)}/notice/${encodeURIComponent(sbomUuid)}/` +
-      format,
+        format,
     );
   }
 

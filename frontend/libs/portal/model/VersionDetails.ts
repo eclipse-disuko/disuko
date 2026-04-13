@@ -212,9 +212,12 @@ export type Nullable<T> = T | null;
 
 export class SpdxFile implements IUploaded {
   public _key = '';
+  public Created = '';
   public Hash = '';
   public Content = '';
   public ContentValid = false;
+  public SchemaValid = false;
+  public Type = 0;
   public ValidationErrors = '';
   public SchemaId = '';
   public SchemaName = '';

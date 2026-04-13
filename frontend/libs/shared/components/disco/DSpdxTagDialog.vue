@@ -74,12 +74,7 @@ export default defineComponent({
           }
           await projectService.updateSpdxTag(projectModel.value._key, props.versionID, props.spdxID, tag.value);
           snack(t('DIALOG_SPDX_TAG_UPDATE_SUCCESS'));
-          if (props.channelView) {
-            await sbomStore.fetchSBOMHistory();
-            await sbomStore.fetchAllSBOMs();
-          } else {
-            await sbomStore.fetchAllSBOMsFlat();
-          }
+          await sbomStore.fetchAllSBOMsFlat();
           dialog.value?.reset();
           isVisible.value = false;
         });

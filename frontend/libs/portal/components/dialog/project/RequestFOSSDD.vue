@@ -241,17 +241,10 @@ const open = async (isVehicle: boolean) => {
 
   if (!projectModel.value.isGroup) {
     allChannelSboms.value.clear();
-
-    const sbomFetchPromises = channels.value.map(async (channel) => {
-      try {
-        const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, channel._key, 100)).data;
-        allChannelSboms.value.set(channel._key, spdxFileHistory);
-      } catch (error) {
-        console.error(`Failed to fetch SBOM history for channel ${channel.name}:`, error);
-      }
-    });
-
-    await Promise.all(sbomFetchPromises);
+    for (const channel of channels.value) {
+      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === channel._key);
+      allChannelSboms.value.set(channel._key, versionEntry?.SpdxFileHistory ?? []);
+    }
   }
 
   if (projectModel.value.isGroup && approvableInfo.value.projects) {
@@ -277,8 +270,10 @@ const open = async (isVehicle: boolean) => {
 
 const loadSBOMHist = async () => {
   selectedSbom.value = null;
-  const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, selectedChannel.value!._key, 5))
-    .data;
+  if (!selectedChannel.value?._key) return;
+  await sbomStore.fetchAllSBOMsFlat();
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }
@@ -462,7 +457,7 @@ defineExpose({open});
                           color="green"
                           v-if="vehicle && isAudited(selectedChannel, item?.raw?._key)"
                           size="small"
-                          class="pb-1 ml-1"
+                          class="ml-1 pb-1"
                           >mdi-clipboard-check-outline</v-icon
                         >
                       </div>
@@ -491,7 +486,7 @@ defineExpose({open});
                       color="green"
                       v-if="vehicle && isAudited(selectedChannel, item?.raw?._key)"
                       size="small"
-                      class="pb-1 ml-1"
+                      class="ml-1 pb-1"
                       >mdi-clipboard-check-outline</v-icon
                     >
                   </div>
@@ -529,7 +524,7 @@ defineExpose({open});
               </v-alert>
             </section>
 
-            <Stack v-if="config.useFutureFoss" direction="row" align="center" class="bg-gray-500/20 rounded py-1">
+            <Stack v-if="config.useFutureFoss" direction="row" align="center" class="rounded bg-gray-500/20 py-1">
               <v-radio-group inline hide-details v-model="fossVersion">
                 <v-radio :label="t('FOSSDD_STANDARD')" value="default"></v-radio>
                 <v-radio :label="t('FOSSDD_LEGACY')" value="legacy"></v-radio>

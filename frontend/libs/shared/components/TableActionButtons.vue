@@ -36,13 +36,11 @@ const shownButtons = computed(() => props.buttons.filter((button) => button.show
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
 
-const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
+const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} =
+  useTableActionSlider();
 
 if (props.variant === 'slider') {
-  setupTableActionSlider(
-    () => emit('slideToggle', sliderWidth.value),
-    props.buttons.length,
-  );
+  setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), props.buttons.length);
 }
 </script>
 
@@ -111,7 +109,9 @@ if (props.variant === 'slider') {
         </div>
         <template v-if="shownButtons.length >= 2">
           <template v-for="button in buttons" :key="button.icon">
-            <div :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}" class="transition-[opacity] ease-in-out duration-200">
+            <div
+              :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}"
+              class="transition-[opacity] ease-in-out duration-200">
               <div
                 v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
                 class="d-inline size-10"
