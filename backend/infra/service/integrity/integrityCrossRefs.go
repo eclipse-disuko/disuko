@@ -21,8 +21,8 @@ func checkIfEachApprovalHasDocumentsOnProject(requestSession *logy.RequestSessio
 	projectRepository project2.IProjectRepository,
 	approvalListRepo approvallist.IApprovalListRepository,
 	fixIt bool,
-	state *integrity.DbIntegrityResult) {
-
+	state *integrity.DbIntegrityResult,
+) {
 	approvalsCount := approvalListRepo.CountAllWithDeleted(requestSession)
 	logy.Infof(requestSession, "Start analyse approvals, approval count: "+strconv.Itoa(approvalsCount))
 
@@ -51,6 +51,9 @@ func checkIfEachApprovalHasDocumentsOnProject(requestSession *logy.RequestSessio
 				}
 
 				if approval.Type == approval2.TypeExternal {
+					if approval.External.State == approval2.GenerationFailed {
+						continue
+					}
 					expectedDocuments := createExpectedDocsForExternalApproval(approval)
 
 					missingDocsMeta := make([]*integrity.DocumentMeta, 0)
@@ -82,6 +85,9 @@ func checkIfEachApprovalHasDocumentsOnProject(requestSession *logy.RequestSessio
 					}
 				}
 				if approval.Type == approval2.TypeInternal {
+					if approval.Internal.GenerationFailed {
+						continue
+					}
 					expectedDocuments := createExpectedDocsForInternalApproval(approval)
 
 					missingDocsMeta := make([]*integrity.DocumentMeta, 0)

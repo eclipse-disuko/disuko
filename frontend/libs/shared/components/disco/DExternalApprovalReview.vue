@@ -48,6 +48,8 @@ const getColorForApproval = (status: ApprovalStates) => {
       return 'var(--v-approvalApproved-base)';
     case ApprovalStates.Aborted:
       return 'var(--v-approvalDeclined-base)';
+    case ApprovalStates.GenerationFailed:
+      return 'var(--v-approvalDeclined-base)';
   }
 };
 

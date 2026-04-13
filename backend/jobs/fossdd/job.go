@@ -87,6 +87,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 		}
 
 	}
+
 	exc := false
 	exception.TryCatch(func() {
 		var subs []fossdd.SubProjectRefs
@@ -120,18 +121,23 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 		log.AddEntry(job.Error, "failed to create documents. exception message: %s", e.ErrorMessage)
 		exc = true
 	})
-	if exc {
-		return scheduler.ExecutionResult{
-			Success: false,
-			Log:     log,
-		}
-	}
 
 	as := approvalService.ApprovalService{
 		RequestSession:      rs,
 		ApprovalListRepo:    j.repo,
 		UserRepo:            j.userRepo,
 		ProjectLabelService: j.projectLabelService,
+	}
+	if exc {
+		if appr.Type == approval.TypeInternal {
+			as.SetGenerationFailed(pr.Key, appr.Key)
+		} else {
+			as.SetExternalState(pr.Key, appr.Key, approval.GenerationFailed)
+		}
+		return scheduler.ExecutionResult{
+			Success: false,
+			Log:     log,
+		}
 	}
 
 	if appr.Type == approval.TypeInternal {
@@ -143,7 +149,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	} else {
 
 		log.AddEntry(job.Info, "setting generated state")
-		as.SetExternalGenerated(pr.Key, appr.Key)
+		as.SetExternalState(pr.Key, appr.Key, approval.Pending)
 	}
 	log.AddEntry(job.Info, "finished with project %s", config.ProjectID)
 	return scheduler.ExecutionResult{

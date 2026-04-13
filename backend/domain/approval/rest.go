@@ -228,6 +228,9 @@ func (a *Approval) ToApprovalDtoStatus() StateInfo {
 		if a.Internal.Aborted {
 			return Aborted
 		}
+		if a.Internal.GenerationFailed {
+			return GenerationFailed
+		}
 		if a.Internal.Generating {
 			return GeneratingDocs
 		}
@@ -242,6 +245,8 @@ func (a *Approval) ToApprovalDtoStatus() StateInfo {
 		}
 		return Pending
 
+	} else if a.Type == TypeExternal {
+		return a.External.State
 	}
 	return Pending
 }

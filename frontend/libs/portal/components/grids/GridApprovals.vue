@@ -157,6 +157,8 @@ const getColorForApproval = (status: ApprovalStates) => {
       return 'rgb(var(--v-theme-approvalApproved))';
     case ApprovalStates.Aborted:
       return 'rgb(var(--v-theme-approvalDeclined))';
+    case ApprovalStates.GenerationFailed:
+      return 'rgb(var(--v-theme-approvalDeclined))';
   }
 };
 

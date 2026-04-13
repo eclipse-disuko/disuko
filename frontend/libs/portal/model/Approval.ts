@@ -33,6 +33,7 @@ export enum ApprovalStates {
   CustomerApproved = 'CUSTOMER_APPROVED',
   Aborted = 'ABORTED',
   Generating = 'GENERATING',
+  GenerationFailed = 'GENERATION_FAILED',
 }
 
 export enum ApproverRoles {

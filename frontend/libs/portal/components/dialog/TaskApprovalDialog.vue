@@ -358,7 +358,7 @@ watch(
               :text="t('TAD_BTN_FILL')"
               :hint="t('TT_TAD_BTN_FILL')"
               @click="openFillDialog"
-              :disabled="approval.status == 'GENERATING'" />
+              :disabled="approval.status == 'GENERATING' || approval.status == 'GENERATION_FAILED'" />
             &nbsp;
             <DCActionButton
               isDialogButton
@@ -368,7 +368,7 @@ watch(
               :hint="t('TT_TAD_BTN_ABORT')"
               @click="abort"
               color="error"
-              :disabled="approval.status == 'GENERATING'" />
+              :disabled="approval.status == 'GENERATING' || approval.status == 'GENERATION_FAILED'" />
           </v-col>
           <v-col v-if="item.type == 'APPROVAL'" class="text-right">
             <DCActionButton

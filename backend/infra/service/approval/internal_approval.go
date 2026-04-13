@@ -451,3 +451,20 @@ func (s *ApprovalService) SetGenerated(prKey, key string) {
 
 	s.ApprovalListRepo.Update(s.RequestSession, approvalList)
 }
+
+func (s *ApprovalService) SetGenerationFailed(prKey, key string) {
+	approvalList := s.ApprovalListRepo.FindByKey(s.RequestSession, prKey, false)
+	if approvalList == nil {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+
+	appr := approvalList.GetApproval(key)
+	if appr == nil {
+		exception.ThrowExceptionBadRequestResponse()
+	}
+
+	appr.Internal.Generating = false
+	appr.Internal.GenerationFailed = true
+
+	s.ApprovalListRepo.Update(s.RequestSession, approvalList)
+}
