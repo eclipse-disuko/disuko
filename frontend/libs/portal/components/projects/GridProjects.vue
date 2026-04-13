@@ -252,16 +252,6 @@ const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalIt
                 color="primary"
                 class="size-10"
                 @clicked="toggleExpand(item)" />
-              <v-btn
-                plain
-                size="small"
-                variant="text"
-                icon
-                color="primary"
-                class="size-10"
-                @click.stop="toggleExpand(item)">
-                <v-icon>{{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-              </v-btn>
               <ProjectsTableAction :item="item" @reload="reload"></ProjectsTableAction>
             </div>
           </template>

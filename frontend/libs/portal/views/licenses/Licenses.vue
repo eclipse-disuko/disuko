@@ -107,73 +107,73 @@ const options = computed(
 const possibleIsLicenseChart = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleCharts)
-        .map(([k, count]) => ({
-          text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
-          value: k,
-          chip: String(count),
-        }))
-        .sort()
+      .map(([k, count]) => ({
+        text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
+        value: k,
+        chip: String(count),
+      }))
+      .sort()
     : [],
 );
 
 const possibleSources = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleSources).map(([k, count]) => ({
-        text: k,
-        value: k,
-        chip: String(count),
-      }))
+      text: k,
+      value: k,
+      chip: String(count),
+    }))
     : [],
 );
 
 const possibleFamilies = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleFamilies)
-        .sort((a, b) => compareFamily(a[0], b[0]))
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
-          value: k.length === 0 ? 'not declared' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleApproval)
-        .sort(
-          ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
-        )
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LT_APP_', k),
-          value: k.length === 0 ? 'not set' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleType = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
-        text: getI18NTextOfPrefixKey('LT_', k),
+      .sort((a, b) => compareFamily(a[0], b[0]))
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
         value: k.length === 0 ? 'not declared' : k,
         chip: String(count),
       }))
     : [],
 );
 
+const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleApproval)
+      .sort(
+        ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
+      )
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LT_APP_', k),
+        value: k.length === 0 ? 'not set' : k,
+        chip: String(count),
+      }))
+    : [],
+);
+
+const possibleType = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
+      text: getI18NTextOfPrefixKey('LT_', k),
+      value: k.length === 0 ? 'not declared' : k,
+      chip: String(count),
+    }))
+    : [],
+);
+
 const possibleClassifications = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? metaData.value.possibleClassifications.map(({classification, count}: ClassificationWithCount) => {
-        const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
-        return {
-          text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
-          value: value,
-          icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
-          iconColor: getIconColorOfLevel(getWarnLevel(value)),
-          chip: String(count),
-        };
-      })
+      const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
+      return {
+        text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
+        value: value,
+        icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
+        iconColor: getIconColorOfLevel(getWarnLevel(value)),
+        chip: String(count),
+      };
+    })
     : [],
 );
 
@@ -347,13 +347,13 @@ const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtil
 const headers = computed((): DataTableHeader[] => [
   ...(allowActions.value
     ? [
-        {
-          title: 'COL_ACTIONS',
-          align: 'start',
-          width: sliderWidth.value,
-          value: 'actions',
-        } as DataTableHeader,
-      ]
+      {
+        title: 'COL_ACTIONS',
+        align: 'start',
+        width: sliderWidth.value,
+        value: 'actions',
+      } as DataTableHeader,
+    ]
     : []),
   {
     title: 'COL_LICENSE_CHART_STATUS',
@@ -626,8 +626,6 @@ onMounted(async () => {
 
   await retrieveClassifications();
 
-  filterSets.value = await getSortedFilterSets();
-
   initBreadcrumbs();
 
   if (router.currentRoute.value.path.includes('compare')) {
@@ -648,7 +646,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TableLayout data-testid="licenses" @mouseleave="headerExpands">
+  <TableLayout data-testid="licenses">
     <template #description>
       <div class="d-flex flex-row align-center ga-3">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
@@ -824,7 +822,7 @@ onMounted(async () => {
               <v-icon
                 :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'"
                 :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"
-                >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
+              >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
               </v-icon>
               <Tooltip location="bottom">
                 {{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}

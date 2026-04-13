@@ -36,13 +36,11 @@ const shownButtons = computed(() => props.buttons.filter((button) => button.show
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
 
-const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} = useTableActionSlider();
+const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} =
+  useTableActionSlider();
 
 if (props.variant === 'slider') {
-  setupTableActionSlider(
-    () => emit('slideToggle', sliderWidth.value),
-    props.buttons.length,
-  );
+  setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), props.buttons.length);
 }
 </script>
 
@@ -90,27 +88,25 @@ if (props.variant === 'slider') {
           color="primary"
           class="size-10"
           :hint="t('OPEN_ACTIONS')" />
-        <div
-          v-else-if="(buttons[0]?.show ?? true) && !(buttons[0]?.disabled ?? false)"
-          class="d-inline size-10"
-          @click.stop="emit(buttons[0].event)">
+        <div v-else-if="(buttons[0]?.show ?? true) && !(buttons[0]?.disabled ?? false)" class="d-inline size-10">
           <DIconButton
             :icon="buttons[0].icon"
             :color="buttons[0].color || 'primary'"
-            :hint="buttons[0].hint" />
+            :hint="buttons[0].hint"
+            @clicked="emit(buttons[0].event)" />
         </div>
         <template v-if="shownButtons.length >= 2">
           <template v-for="button in buttons" :key="button.icon">
-            <div :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}" class="transition-[opacity] ease-in-out duration-200">
-              <div
-                v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
-                class="d-inline size-10"
-                @click.stop="!button?.disabled ? emit(button.event) : null">
+            <div
+              :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}"
+              class="transition-[opacity] ease-in-out duration-200">
+              <div v-if="(button?.show ?? true) && !(button?.disabled ?? false)" class="d-inline size-10">
                 <DIconButton
                   :icon="button.icon"
                   :color="button.color || 'primary'"
                   :disabled="Boolean(button?.disabled) || false"
-                  :hint="button.hint && !button?.disabled ? button.hint : undefined" />
+                  :hint="button.hint && !button?.disabled ? button.hint : undefined"
+                  @clicked="!button?.disabled ? emit(button.event) : null" />
               </div>
             </div>
           </template>
