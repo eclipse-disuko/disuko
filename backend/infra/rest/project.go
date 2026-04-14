@@ -2701,15 +2701,6 @@ func (projectHandler *ProjectHandler) SetSubscribedHandler(w http.ResponseWriter
 	render.JSON(w, r, req)
 }
 
-func (projectHandler *ProjectHandler) HandleDeleteProjectsForTest(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	projectKeys := projectHandler.ProjectRepository.FindAllKeys(requestSession)
-	for _, key := range projectKeys {
-		projectHandler.ProjectRepository.Delete(requestSession, key)
-	}
-	w.WriteHeader(http.StatusNoContent)
-}
-
 func (projectHandler *ProjectHandler) GetReviewTemplates(w http.ResponseWriter, r *http.Request) {
 	currentProject, requestSession := projectHandler.retrieveProject2(r, false)
 

@@ -50,10 +50,6 @@ func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes
 	db.base = client.Database(conf.Config.Database.DatabaseName)
 	db.collection = db.base.Collection(collectionName)
 
-	if conf.Config.Server.E2ETests {
-		return
-	}
-
 	for _, fields := range indexes {
 		var keys bson.D
 		for _, f := range fields {

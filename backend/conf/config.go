@@ -60,7 +60,6 @@ type Server struct {
 	DevLog                        bool   `default:"false"`
 	DevLogDbQueries               bool   `default:"false"`
 	TestsWithoutDocker            bool   `default:"false"`
-	E2ETests                      bool   `default:"false" env:"E2E_TESTS"`
 	VanillaDisuko                 bool   `default:"false" env:"VANILLA_DISUKO"`
 	// base path of the disclosure document html templates
 	BasePath   string

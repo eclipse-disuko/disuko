@@ -550,21 +550,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	})
 
 	s.r.Get("/maintenance", maintenanceHandler)
-
-	if conf.Config.Server.E2ETests {
-		s.r.Group(func(r chi.Router) {
-			// test endpoints
-			r.Get("/api/v1/techlogin", s.handlers.auth.HandleRequestTechnicalLogin)   // test missing
-			r.Get("/api/v1/testlogin/{user}", s.handlers.auth.HandleRequestTestLogin) // test missing
-			r.Delete("/api/v1/test/projects", s.handlers.project.HandleDeleteProjectsForTest)
-			r.Get("/api/v1/heartbeat", func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(200)
-			})
-			r.Route("/test", func(r chi.Router) {
-				r.Get("/users/{uuid}/active", s.handlers.user.EnableDisableHandlerForTest)
-			})
-		})
-	}
 }
 
 func EnsureAppToken(next http.Handler) http.Handler {

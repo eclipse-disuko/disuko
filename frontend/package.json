@@ -19,9 +19,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "check:unknown-tags": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -r -s",
-    "check:unknown-tags:ci": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -q",
-    "e2e:ci": "playwright test --project='chromium tests portal'",
-    "playwright-install": "playwright install"
+    "check:unknown-tags:ci": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -q"
   },
   "dependencies": {
     "@date-io/dayjs": "3.2.0",

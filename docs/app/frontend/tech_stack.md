@@ -34,4 +34,3 @@ This document outlines the main technologies and tools used in the Disuko Fronen
 ## Quality & Testing
 - ESLint
 - Prettier
-- Playwright e2e testing
