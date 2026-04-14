@@ -74,7 +74,7 @@ describe('useSbomStore', () => {
   it('reuses current sbom stats after they are loaded', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     versionServiceMock.getSBOMStats.mockResolvedValueOnce({data: sbomStats(3)});
 
@@ -92,7 +92,7 @@ describe('useSbomStore', () => {
   it('does not deduplicate concurrent sbom requests before stats are loaded', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     const firstPending = deferred<{data: SbomStats}>();
     const secondPending = deferred<{data: SbomStats}>();
@@ -117,7 +117,7 @@ describe('useSbomStore', () => {
     store.sbomStats = sbomStats(1);
     store.generalStats = generalStats(2);
 
-    store.setSelectedSpdx(spdx('spdxB'));
+    store.setSelectedSBOMKey('spdxB');
 
     expect(store.getSbomStats).toEqual({});
     expect(store.getGeneralStats).toEqual({ReviewRemark: {Acceptable: 2}});
@@ -138,13 +138,13 @@ describe('useSbomStore', () => {
   it('ignores stale sbom responses after the selected SPDX changes', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     const oldRequest = deferred<{data: SbomStats}>();
     versionServiceMock.getSBOMStats.mockReturnValueOnce(oldRequest.promise);
     const oldPromise = store.fetchSBOMStats('spdxA');
 
-    store.setSelectedSpdx(spdx('spdxB'));
+    store.setSelectedSBOMKey('spdxB');
 
     const newRequest = deferred<{data: SbomStats}>();
     versionServiceMock.getSBOMStats.mockReturnValueOnce(newRequest.promise);

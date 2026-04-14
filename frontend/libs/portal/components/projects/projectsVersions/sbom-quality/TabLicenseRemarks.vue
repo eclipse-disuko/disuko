@@ -128,7 +128,7 @@ const searchFieldInput = ref<string>('');
 
 const projectModel = computed(() => projectStore.currentProject!);
 const version = computed(() => sbomStore.getCurrentVersion);
-const spdx = computed(() => sbomStore.selectedSpdx);
+const spdx = computed(() => sbomStore.getSelectedSBOM);
 
 const possibleTypes = computed(() => {
   if (!selectedLicenseRemarks.value.obligations) {
@@ -312,10 +312,10 @@ const downloadLicenseRemarksCsv = async () => {
         icon="mdi-download"
         :hint="t('TT_download_license_remarks')"
         @click="downloadLicenseRemarksCsv"
-        class="pr-4 ml-2" />
+        class="ml-2 pr-4" />
       <div class="grow"></div>
       <v-text-field
-        class="grow-2 w-full md:max-w-[400px] md:w-auto"
+        class="w-full grow-2 md:w-auto md:max-w-[400px]"
         min-width="50"
         autocomplete="off"
         variant="outlined"
@@ -334,7 +334,7 @@ const downloadLicenseRemarksCsv = async () => {
       :headers="headers"
       fixed-header
       :height="tableHeight"
-      class="striped-table py-0 my-0 custom-data-table h-full"
+      class="striped-table custom-data-table my-0 h-full py-0"
       item-value="_key"
       :sort-by="sortBy"
       sort-desc
@@ -362,13 +362,13 @@ const downloadLicenseRemarksCsv = async () => {
                 :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterStatus"
                 :items="possibleStatuses"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('Lbl_filter_status')"
                 clearable
                 multiple
@@ -381,20 +381,20 @@ const downloadLicenseRemarksCsv = async () => {
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="py-0 px-2">
+                  <v-list-item v-bind="props" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
                     <template v-slot:title>
                       <v-icon :color="getIconColorOfLevel(item.value)" dense>{{ getIconOfLevel(item.value) }}</v-icon>
-                      <span class="ml-1 pFilterEntry">{{ getTextOfLevel(item.value) }}</span>
+                      <span class="pFilterEntry ml-1">{{ getTextOfLevel(item.value) }}</span>
                     </template>
                   </v-list-item>
                 </template>
                 <template v-slot:selection="{item, index}">
                   <div v-if="index === 0" class="d-flex align-center">
                     <v-icon :color="getIconColorOfLevel(item.value)" dense>{{ getIconOfLevel(item.value) }}</v-icon>
-                    <span class="ml-1 pFilterEntry">{{ getTextOfLevel(item.value) }}</span>
+                    <span class="pFilterEntry ml-1">{{ getTextOfLevel(item.value) }}</span>
                   </div>
                   <span v-if="index === 1" class="pAdditionalFilter">
                     +{{ selectedFilterStatus.length - 1 }} others
@@ -418,13 +418,13 @@ const downloadLicenseRemarksCsv = async () => {
                 :color="selectedFilterTypes.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu2 = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterTypes"
                 :items="possibleTypes"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('Lbl_filter_on_type')"
                 clearable
                 multiple
@@ -437,7 +437,7 @@ const downloadLicenseRemarksCsv = async () => {
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" class="py-0 px-2" title="">
+                  <v-list-item v-bind="props" class="px-2 py-0" title="">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
@@ -470,13 +470,13 @@ const downloadLicenseRemarksCsv = async () => {
                 :color="selectedFilterQualityRemark.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu3 = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterQualityRemark"
                 :items="allRemarks"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('LABEL_FILTER_QUALITY_REMARK')"
                 clearable
                 multiple
@@ -489,7 +489,7 @@ const downloadLicenseRemarksCsv = async () => {
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" class="py-0 px-2" title="">
+                  <v-list-item v-bind="props" class="px-2 py-0" title="">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>

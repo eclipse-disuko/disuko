@@ -63,9 +63,9 @@ const config = ref<DialogLicenseRuleConfig>({
 
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
-const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
+const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
 
 const policyTypeMap = computed(() => {
   const statuses = config.value.policyStatus ?? [];

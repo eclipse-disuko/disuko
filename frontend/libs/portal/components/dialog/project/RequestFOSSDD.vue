@@ -304,7 +304,7 @@ const autoSelect = async () => {
     selectedChannel.value =
       channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
   }
-  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+  if (!!sbomStore.selectedSBOMKey && !projectModel.value.isGroup) {
     selectedChannel.value = sbomStore.currentVersion;
   }
   if (selectedChannel.value) {
@@ -315,7 +315,7 @@ const autoSelect = async () => {
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
     if (selectedSbom.value === null) {
-      selectedSbom.value = sbomStore.selectedSpdx ?? null;
+      selectedSbom.value = sbomStore.getSelectedSBOM ?? null;
     }
     await loadStats();
   }

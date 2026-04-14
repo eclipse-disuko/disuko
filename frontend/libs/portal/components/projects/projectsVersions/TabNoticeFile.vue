@@ -24,7 +24,7 @@ const sbomStore = useSbomStore();
 const currentProject = computed(() => projectStore.currentProject!);
 const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
 const currentProjectId = computed(() => currentProject.value._key);
-const spdx = computed(() => sbomStore.selectedSpdx);
+const spdx = computed(() => sbomStore.getSelectedSBOM);
 const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
 const labelTools = computed(() => appStore.getLabelsTools);
 const isVehicleProject = computed(() =>
@@ -336,7 +336,7 @@ onMounted(async () => {
       <v-card class="card-border fill-height pa-4 overflow-auto" v-if="showPreview">
         <v-row>
           <v-col md="auto">
-            <h3 class="d-subtitle-2 d-secondary-text mb-2 mt-2">{{ t('PREVIEW') }}</h3>
+            <h3 class="d-subtitle-2 d-secondary-text mt-2 mb-2">{{ t('PREVIEW') }}</h3>
           </v-col>
           <DCopyClipboardButton
             class="mt-3"
@@ -362,7 +362,7 @@ onMounted(async () => {
         <v-row v-else>
           <v-col cols="12" xs="12" sm="12" md="10" lg="8">
             <div
-              class="d-text pt-2 html-notice-file"
+              class="d-text html-notice-file pt-2"
               v-html="htmlOrPlainContent"
               v-if="htmlOrPlainContent && htmlOrPlainContent.length > 0" />
           </v-col>

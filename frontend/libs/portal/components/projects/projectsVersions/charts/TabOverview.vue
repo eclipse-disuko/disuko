@@ -60,7 +60,7 @@ applyChartDefaults();
 const projectModel = computed(() => useProjectStore().currentProject);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
 const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
-const currentSpdx = computed(() => sbomStore.getSelectedSpdx);
+const currentSpdx = computed(() => sbomStore.getSelectedSBOM);
 const policyStateStats = ref<ComponentStats>({} as ComponentStats);
 const licenseFamilyStats = ref<LicenseFamilyStats>({} as LicenseFamilyStats);
 const reviewRemarksStats = ref<ReviewRemarkStats>({} as ReviewRemarkStats);
@@ -547,7 +547,7 @@ function unfilteredReviewRemarksPath() {
           <span>{{ t('MISSING_SBOM_UPLOAD_INFO') }}</span>
         </v-col>
       </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex justify-start discoCol m-0">
+      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol m-0 justify-start">
         <v-col xs="12" md="6" lg="4">
           <v-card class="bar-container pa-4 card-border">
             <v-card-text>
@@ -556,7 +556,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'PS_CHART_HELP'"
                 :navigation-path="unfilteredComponentsPath()"></ChartHeader>
             </v-card-text>
-            <v-card v-if="policyStateStats.Total === 0" class="empty-container text-center justify-center">
+            <v-card v-if="policyStateStats.Total === 0" class="empty-container justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card>
             <v-sheet v-else color="transparent">
@@ -589,7 +589,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'SR_CHART_HELP'"
                 :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="scanRemarkStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="scanRemarkStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -625,7 +625,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -654,7 +654,7 @@ function unfilteredReviewRemarksPath() {
           </v-card>
         </v-col>
       </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex justify-start discoCol m-0">
+      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol m-0 justify-start">
         <v-col xs="12" md="6" lg="4">
           <v-card class="bar-container pa-4 card-border">
             <v-card-text>
@@ -663,7 +663,7 @@ function unfilteredReviewRemarksPath() {
                 :header-text="'LICENSE_FAMILY'"
                 :help-text="'LF_CHART_HELP'"></ChartHeader>
             </v-card-text>
-            <v-card v-if="licenseFamilyStats.Total === 0" class="empty-container text-center justify-center">
+            <v-card v-if="licenseFamilyStats.Total === 0" class="empty-container justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card>
             <v-sheet v-else color="transparent">
@@ -694,7 +694,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'LR_CHART_HELP'"
                 :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="licenseRemarkStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -732,7 +732,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'SR_CHART_HELP'"
                 :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="scanRemarkStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="scanRemarkStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -768,7 +768,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'LR_CHART_HELP'"
                 :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="licenseRemarkStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -797,7 +797,7 @@ function unfilteredReviewRemarksPath() {
           </v-card>
         </v-col>
       </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex justify-start discoCol d-lg-none m-0">
+      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol d-lg-none m-0 justify-start">
         <v-col xs="12" md="6" lg="3" class="d-none d-md-block">
           <div style="min-height: 230px"></div>
         </v-col>
@@ -809,12 +809,12 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="text-center justify-center">
+            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
               <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div class="w-[85px] h-[85px]">
+                <div class="h-[85px] w-[85px]">
                   <Doughnut :data="chartDataReviewRemarks" :options="chartOptionsReviewRemark"></Doughnut>
                 </div>
                 <div>
@@ -838,8 +838,8 @@ function unfilteredReviewRemarksPath() {
           </v-card>
         </v-col>
       </v-row>
-      <v-row class="justify-center m-0" v-if="spdxFileHistory.length > 0">
-        <v-col v-if="!isLoaded" cols="12" lg="6" md="6" sm="12" class="text-center pt-16 px-16">
+      <v-row class="m-0 justify-center" v-if="spdxFileHistory.length > 0">
+        <v-col v-if="!isLoaded" cols="12" lg="6" md="6" sm="12" class="px-16 pt-16 text-center">
           <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
         </v-col>
       </v-row>

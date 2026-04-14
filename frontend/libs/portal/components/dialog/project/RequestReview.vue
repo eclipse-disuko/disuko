@@ -125,7 +125,7 @@ const autoSelect = async () => {
     return;
   }
 
-  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+  if (!!sbomStore.selectedSBOMKey && !projectModel.value.isGroup) {
     selectedChannel.value = sbomStore.currentVersion;
   } else {
     selectedChannel.value =
@@ -138,8 +138,8 @@ const autoSelect = async () => {
     }
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
-    if (Object.keys(sbomStore.selectedSpdx).length > 0) {
-      selectedSbom.value = sbomStore.selectedSpdx ?? null;
+    if (!!sbomStore.selectedSBOMKey) {
+      selectedSbom.value = sbomStore.getSelectedSBOM ?? null;
     }
     await loadStats();
   }

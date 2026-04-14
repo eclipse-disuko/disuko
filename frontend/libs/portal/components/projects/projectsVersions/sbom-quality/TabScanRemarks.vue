@@ -17,7 +17,7 @@
         autocomplete="off"
         variant="outlined"
         v-model="search"
-        class="w-full md:max-w-[400px] md:w-auto"
+        class="w-full md:w-auto md:max-w-[400px]"
         min-width="50"
         density="compact"
         append-inner-icon="mdi-magnify"
@@ -29,7 +29,7 @@
     <v-data-table
       :items="filteredList"
       density="compact"
-      class="striped-table py-0 my-0 h-full"
+      class="striped-table my-0 h-full py-0"
       fixed-header
       :headers="headers"
       item-key="_key"
@@ -55,13 +55,13 @@
                 :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterStatus"
                 :items="possibleStatuses"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('Lbl_filter_status')"
                 clearable
                 multiple
@@ -111,13 +111,13 @@
                 :color="selectedFilterQualityRemark.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu2 = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterQualityRemark"
                 :items="possibleRemarks"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('LABEL_FILTER_QUALITY_REMARK')"
                 clearable
                 multiple
@@ -130,7 +130,7 @@
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="py-0 px-2">
+                  <v-list-item v-bind="props" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
@@ -165,13 +165,13 @@
                 :color="selectedFilterTypes.length > 0 ? 'primary' : 'default'" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DIconButton icon="mdi-close" @clicked="menu3 = false" color="default" />
               </v-row>
               <v-select
                 v-model="selectedFilterTypes"
                 :items="possibleTypes"
-                class="mx-2 pa-2 pb-4"
+                class="pa-2 mx-2 pb-4"
                 :label="t('Lbl_filter_on_type')"
                 clearable
                 multiple
@@ -184,7 +184,7 @@
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="py-0 px-2">
+                  <v-list-item v-bind="props" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
@@ -385,7 +385,7 @@ onMounted(async () => {
 
 const projectModel = computed(() => projectStore.currentProject!);
 const version = computed(() => sbomStore.getCurrentVersion);
-const spdx = computed(() => sbomStore.selectedSpdx);
+const spdx = computed(() => sbomStore.getSelectedSBOM);
 
 const filteredList = computed(() => {
   return tableItems.value.filter((item: ScanRemark) => {

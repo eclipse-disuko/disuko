@@ -36,7 +36,7 @@ const {dashboardCrumbs, projectsCrumb, ...breadcrumbs} = useBreadcrumbsStore();
 const {useReactiveTitle} = usePageTitle();
 const {currentProject} = storeToRefs(projectStore);
 
-const {selectedSpdx, currentVersion, channelSpdxs} = storeToRefs(sbomStore);
+const {currentVersion, channelSpdxs} = storeToRefs(sbomStore);
 
 const reviewDia = ref(null);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -45,7 +45,7 @@ const dataAreLoaded = ref(false);
 const selectedTab = ref('');
 const editDlg = ref(null);
 
-const currentSpdx = computed(() => selectedSpdx.value || spdxFileHistory.value[0]);
+const currentSpdx = computed(() => sbomStore.getSelectedSBOM || spdxFileHistory.value[0]);
 const currentProjectEmpty = computed(() => _.isEmpty(currentProject.value));
 const versionDetails = computed(() => currentVersion.value);
 const versionName = computed(() => currentVersion.value?.name || '');
@@ -117,12 +117,12 @@ const reload = async () => {
   if (spdxKey.value) {
     const sel = spdxFileHistory.value.find((spdx) => spdx._key === spdxKey.value);
     if (sel) {
-      sbomStore.setSelectedSpdx(sel);
+      sbomStore.setSelectedSBOMKey(sel._key);
       selectedByRoute = true;
     }
   }
   if (!selectedByRoute) {
-    sbomStore.setSelectedSpdx(spdxFileHistory.value[0] || null);
+    sbomStore.setSelectedSBOMKey(spdxFileHistory.value[0]?._key || '');
     await resetUrl();
   }
   if (route.name === 'VersionSubTap') {
@@ -295,7 +295,7 @@ watch(
 
 onUnmounted(() => {
   sbomStore.setCurrentVersion('');
-  sbomStore.setSelectedSpdx({} as SpdxFile);
+  sbomStore.setSelectedSBOMKey('');
   appStore.unsetDummyDesignMode();
 });
 </script>

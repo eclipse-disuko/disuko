@@ -131,7 +131,7 @@ const open = async (
 ) => {
   const projectData = projectStore.currentProject!;
   const versionKey = sbomStore.getCurrentVersion._key;
-  const sbomIdData = sbomStore.getSelectedSpdx._key;
+  const sbomIdData = sbomStore.getSelectedSBOM?._key;
 
   responsible.value = userStore.getProfile.user === projectData.responsible;
   details.value = data;
@@ -502,7 +502,7 @@ defineExpose({
                     <template v-if="details.UnmatchedLicenses?.length === 0 && details.PolicyStatus?.length === 0">
                       <tr>
                         <td>
-                          <div class="d-flex justify-center flex-row">
+                          <div class="d-flex flex-row justify-center">
                             <DIconButton :icon="Icons.QUESTIONED" :hint="t('HELP_TT_UNASSERTED')" />
                             <DIconButton
                               icon="mdi-message-plus-outline"
@@ -581,13 +581,13 @@ defineExpose({
               <div v-if="details.Problems && details.Problems.length > 0" class="d-flex flex-column align-start">
                 <div>
                   <v-icon class="pl-2" color="warning" size="small">mdi mdi-alert</v-icon>
-                  <span class="text-caption pl-2 pr-3">{{ t('COMP_PROBLEM_FOUND') }}</span>
+                  <span class="text-caption pr-3 pl-2">{{ t('COMP_PROBLEM_FOUND') }}</span>
                 </div>
                 <span class="text-caption pl-4" v-for="(p, i) in details.Problems" :key="`0-problem-${p}-${i}`">
                   - {{ t(p) }}
                 </span>
               </div>
-              <span v-if="details.ContainsOr" class="text-caption pl-2 pr-3">{{ t('POLICY_RULES_DISCLAIMER') }}</span>
+              <span v-if="details.ContainsOr" class="text-caption pr-3 pl-2">{{ t('POLICY_RULES_DISCLAIMER') }}</span>
             </Stack>
           </v-tabs-window-item>
 
@@ -656,7 +656,7 @@ defineExpose({
                 <div class="d-flex flex-column align-start pa-4" v-if="details.Problems && details.Problems.length > 0">
                   <div>
                     <v-icon class="pl-2" color="warning" size="small">mdi mdi-alert</v-icon>
-                    <span class="d-subtitle-2 pl-2 pr-3">{{ t('COMP_PROBLEM_FOUND') }}</span>
+                    <span class="d-subtitle-2 pr-3 pl-2">{{ t('COMP_PROBLEM_FOUND') }}</span>
                   </div>
                   <span class="d-subtitle-2 pl-4" v-for="(p, i) in details.Problems" :key="`1-problem-${p}-${i}`">
                     - {{ t(p) }}
@@ -761,7 +761,7 @@ defineExpose({
           </v-tabs-window-item>
 
           <v-tabs-window-item class="dialogContent" value="additional_info">
-            <div class="h-[344px] overflow-y-auto pa-4">
+            <div class="pa-4 h-[344px] overflow-y-auto">
               <v-progress-linear v-if="loadingRemarks" indeterminate color="primary"></v-progress-linear>
               <div v-else-if="reviewRemarks.length > 0">
                 <div class="text-h6 mb-2">{{ t('TAB_REVIEW_REMARKS') }}</div>
@@ -821,7 +821,7 @@ defineExpose({
           <v-tabs-window-item class="dialogContent" value="raw">
             <div class="h-[344px] overflow-x-auto">
               <Stack class="pa-4">
-                <Stack direction="row" class="sticky top-0 z-1 align-center bg-[rgba(var(--v-theme-surface))]">
+                <Stack direction="row" class="align-center sticky top-0 z-1 bg-[rgba(var(--v-theme-surface))]">
                   <h3 class="text-h6">
                     {{ t('CAPTION_SCHEMA_DETAILS') }}
                   </h3>

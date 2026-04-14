@@ -56,7 +56,7 @@ const {filteredHeaders} = storeToRefs(headerSettingsStore);
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
 const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
-const currentSpdx = computed(() => sbomStore.getSelectedSpdx);
+const currentSpdx = computed(() => sbomStore.getSelectedSBOM);
 
 const search = ref('');
 const sortBy = ref<SortItem[]>([{key: 'prStatus', order: 'desc'}]);
@@ -642,7 +642,7 @@ onUnmounted(async () => {
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
             <HeaderSettings :column="column" :grid-name="gridName" />
-            <span class="ml-6 mr-1">{{ column.title }}</span>
+            <span class="mr-1 ml-6">{{ column.title }}</span>
             <GridHeaderFilterIcon
               v-model="selectedFilterPolicyTypes"
               :column="column"

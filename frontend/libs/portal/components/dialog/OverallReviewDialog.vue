@@ -37,14 +37,12 @@ const comment = ref('');
 
 const currentProject = computed(() => projectStore.currentProject!);
 const channelSpdxs = computed(() => sbomStore.channelSpdxs);
-const selectedSpdx = computed(() => sbomStore.selectedSpdx);
-
 const rules = {
   comment: minMax(t('ATTR_COMMENT'), 0, 500, false),
 };
 
 const open = () => {
-  selectedSBOM.value = selectedSpdx.value;
+  selectedSBOM.value = sbomStore.getSelectedSBOM;
   isVisible.value = true;
 };
 

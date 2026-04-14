@@ -15,7 +15,7 @@ export const useSbomStore = defineStore('sbom', () => {
 
   const state = reactive({
     currentVersionKey: '' as string,
-    selectedSpdx: {} as SpdxFile,
+    selectedSBOMKey: '' as string,
     allSBOMSFlat: [] as VersionSbomsFlat[],
     allVersions: [] as NameKeyIdentifier[],
     sbomStats: {} as SbomStats,
@@ -37,8 +37,8 @@ export const useSbomStore = defineStore('sbom', () => {
     clearGeneralStats();
   };
 
-  const setSelectedSpdx = (spdx: SpdxFile) => {
-    state.selectedSpdx = spdx;
+  const setSelectedSBOMKey = (key: string) => {
+    state.selectedSBOMKey = key;
     clearSbomStats();
   };
 
@@ -55,9 +55,9 @@ export const useSbomStore = defineStore('sbom', () => {
     const projectKey = projectStore.currentProject?._key;
     const versionKey = state.currentVersionKey;
     if (!projectKey || !versionKey || !spdxKey) return;
-    if (Object.keys(state.sbomStats).length > 0 && state.selectedSpdx?._key === spdxKey) return;
+    if (Object.keys(state.sbomStats).length > 0 && state.selectedSBOMKey === spdxKey) return;
     return versionService.getSBOMStats(projectKey, versionKey, spdxKey).then((data) => {
-      if (state.currentVersionKey === versionKey && state.selectedSpdx?._key === spdxKey) {
+      if (state.currentVersionKey === versionKey && state.selectedSBOMKey === spdxKey) {
         state.sbomStats = data.data;
       }
     });
@@ -77,7 +77,7 @@ export const useSbomStore = defineStore('sbom', () => {
 
   const reset = () => {
     state.currentVersionKey = '';
-    state.selectedSpdx = {} as SpdxFile;
+    state.selectedSBOMKey = '';
     state.allSBOMSFlat = [];
     state.allVersions = [];
     clearSbomStats();
@@ -95,7 +95,7 @@ export const useSbomStore = defineStore('sbom', () => {
       .map((item, index) => ({...item, isRecent: index === 0})),
   );
   const getChannelSpdxs = computed(() => channelSpdxs.value);
-  const getSelectedSpdx = computed(() => state.selectedSpdx);
+  const getSelectedSBOM = computed(() => state.allSBOMSFlat.find((item) => item._key === state.selectedSBOMKey));
   const getAllSBOMsFlat = computed(() => state.allSBOMSFlat);
   const getAllSBOMs = computed((): VersionSboms[] => {
     const map = new Map<string, VersionSboms>();
@@ -118,7 +118,7 @@ export const useSbomStore = defineStore('sbom', () => {
 
     // Actions
     setCurrentVersion,
-    setSelectedSpdx,
+    setSelectedSBOMKey,
     fetchAllSBOMsFlat,
     fetchSBOMStats,
     fetchGeneralVersionStats,
@@ -129,7 +129,7 @@ export const useSbomStore = defineStore('sbom', () => {
     getCurrentVersion,
     channelSpdxs,
     getChannelSpdxs,
-    getSelectedSpdx,
+    getSelectedSBOM,
     getAllSBOMsFlat,
     getAllSBOMs,
     getSbomStats,
