@@ -19,7 +19,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "check:unknown-tags": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -r -s",
-    "check:unknown-tags:ci": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -q"
+    "check:unknown-tags:ci": "npx vue-auto-import-checker -c ./apps/portal/components.d.ts -p ./libs/ -f vuetify --imports-known -q",
+    "playwright-install": "playwright install"
   },
   "dependencies": {
     "@date-io/dayjs": "3.2.0",
