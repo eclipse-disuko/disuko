@@ -78,7 +78,7 @@ if (props.variant === 'slider') {
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
       <div
-        class="h-[100%] flex justify-start align-center pl-8 pr-5"
+        class="h-[100%] flex justify-start align-center pr-5"
         @click.stop
         @mouseenter="stopSlideInTimerAndSlideOut"
         @mouseleave="startSlideInTimer">

@@ -53,10 +53,10 @@ const filteredList = computed<ProjectSlim[]>(() => {
   }
   return result;
 });
-const headers = computed<DataTableHeader[]>(() => [
+const headers = computed((): DataTableHeader[] => [
   {title: t('COL_ACTIONS'), align: 'start', width: sliderWidth.value + 40, value: 'actions', sortable: false},
-  {title: t('COL_STATUS'), sortable: true, value: 'status', width: '120'},
-  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: '120'},
+  {title: t('COL_STATUS'), sortable: true, value: 'status', width: 120},
+  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: 120},
   {title: t('COL_NAME'), align: 'start', value: 'name', width: 270, sortable: true},
   {title: t('COL_DEVELOPER_COMPANY'), align: 'start', width: 270, value: 'supplier', sortable: true},
   {title: t('COL_OWNER_COMPANY'), align: 'start', width: 270, value: 'company', sortable: true},
@@ -142,7 +142,9 @@ const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalIt
     });
   }
 
-  return foundCell || foundProject || foundPolicy || foundFree || foundCustomIds;
+  const foundOfferIds = (project.offerIds || []).some((id) => id.indexOf(lowerSearch) !== -1);
+
+  return foundCell || foundProject || foundPolicy || foundFree || foundCustomIds || foundOfferIds;
 };
 </script>
 
@@ -196,6 +198,9 @@ const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalIt
           v-model:search="search"
           v-model:expanded="expanded"
           @click:row="onRowClick">
+          <template #[`header.actions`]="{column}">
+            <GridFilterHeader :column="column" class="pl-8" />
+          </template>
           <template #[`header.status`]="{column, getSortIcon, toggleSort}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #filter>

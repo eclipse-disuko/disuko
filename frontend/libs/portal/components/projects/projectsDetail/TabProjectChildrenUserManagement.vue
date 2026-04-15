@@ -4,11 +4,7 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
-import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import NewUserDialog from '@disclosure-portal/components/dialog/NewUserDialog.vue';
-import ProjectChildrenMembersAddedDialog from '@disclosure-portal/components/dialog/ProjectChildrenMembersAddedDialog.vue';
 import DHTTPError from '@disclosure-portal/model/DHTTPError';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
 import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
@@ -24,23 +20,22 @@ import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
-import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
+import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {DataTableHeader} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const {info} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 const dataAreLoaded = ref(false);
 const projectChildrenMembers = ref<IProjectChildrenMembers>({} as IProjectChildrenMembers);
-const menu = ref(false);
 const selectedFilterUserType = ref<string[]>([]);
 const possibleUserTypes = ref<IDefaultSelectItem[]>([]);
 const search = ref('');
@@ -62,64 +57,55 @@ const route = useRoute();
 
 const projectModel = computed(() => projectStore.currentProject!);
 
-const userHeaders = computed<DataTableHeader[]>(() => {
-  const res: DataTableHeader[] = [
-    {
-      title: t('COL_USER'),
-      align: 'start',
-      sortable: true,
-      class: 'tableHeaderCell',
-      value: 'projectMember.userId',
-      width: 420,
-    },
-    {
-      title: t('COL_USER_TYPE'),
-      align: 'start',
-      sortable: true,
-      class: 'tableHeaderCell',
-      value: 'projectMember.userType',
-      width: 160,
-    },
-    {
-      title: t('COL_USER_ROLE'),
-      align: 'start',
-      sortable: true,
-      class: 'tableHeaderCell',
-      value: 'projectMember.responsible',
-      width: 160,
-    },
-    {
-      title: t('COL_USER_COMMENT'),
-      align: 'start',
-      sortable: true,
-      width: 160,
-      class: 'tableHeaderCell',
-      value: 'projectMember.comment',
-    },
-    {
-      title: t('PROJECT'),
-      align: 'start',
-      filterable: true,
-      class: 'tableHeaderCell',
-      width: 160,
-      value: 'projectName',
-    },
-  ];
-  if (projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete) {
-    res.unshift({
-      title: t('COL_ACTIONS'),
-      align: 'center',
-      filterable: true,
-      sortable: false,
-      class: 'tableHeaderCell',
-      value: 'actions',
-      width: 120,
-    });
-  }
-  return res;
-});
+const userHeaders = computed((): DataTableHeader[] => [
+  ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
+    ? [
+      {
+        title: t('COL_ACTIONS'),
+        align: 'start',
+        sortable: false,
+        value: 'actions',
+        width: sliderWidth.value,
+      } as DataTableHeader,
+    ]
+    : []),
+  {
+    title: t('COL_USER'),
+    align: 'start',
+    sortable: true,
+    value: 'projectMember.userId',
+    width: 420,
+  },
+  {
+    title: t('COL_USER_TYPE'),
+    align: 'start',
+    sortable: true,
+    value: 'projectMember.userType',
+    width: 160,
+  },
+  {
+    title: t('COL_USER_ROLE'),
+    align: 'start',
+    sortable: true,
+    value: 'projectMember.responsible',
+    width: 160,
+  },
+  {
+    title: t('COL_USER_COMMENT'),
+    align: 'start',
+    sortable: true,
+    width: 160,
+    value: 'projectMember.comment',
+  },
+  {
+    title: t('PROJECT'),
+    align: 'start',
+    width: 160,
+    value: 'projectName',
+  },
+]);
 
-const sortItems = () => [{key: 'projectMember.created', order: 'asc' as const}] as const;
+const sortItems: SortItem[] = [{key: 'projectMember.created', order: 'asc'}];
 
 const reload = async () => {
   dataAreLoaded.value = false;
@@ -408,93 +394,54 @@ watch(
         hide-details></v-text-field>
     </template>
     <template #table>
-      <v-data-table
-        density="compact"
-        :loading="!dataAreLoaded"
-        fixed-header
-        :height="tableHeight"
-        class="striped-table custom-data-table h-full"
-        :headers="userHeaders"
-        :items="filteredList"
-        :sort-by="sortItems()"
-        :item-class="getCssClassForTableRow"
-        :search="search"
-        :custom-filter="customFilterTable">
-        <template v-slot:[`header.projectMember.userType`]="{column, getSortIcon, toggleSort}">
-          <div class="v-data-table-header__content">
-            <span>{{ column.title }}</span>
-            <v-menu :close-on-content-click="false" v-model="menu">
-              <template v-slot:activator="{props}">
-                <DIconButton
-                  :parentProps="props"
-                  icon="mdi-filter-variant"
-                  :hint="t('TT_SHOW_FILTER')"
-                  :color="selectedFilterUserType.length > 0 ? 'primary' : 'default'" />
-              </template>
-              <div class="bg-background" style="width: 280px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
-                  <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
-                </v-row>
-                <v-select
+      <div class="fill-height action-slider-table">
+        <v-data-table
+          density="compact"
+          :loading="!dataAreLoaded"
+          fixed-header
+          :height="tableHeight"
+          class="striped-table custom-data-table h-full"
+          :headers="userHeaders"
+          :items="filteredList"
+          :sort-by="sortItems"
+          :item-class="getCssClassForTableRow"
+          :search="search"
+          :custom-filter="customFilterTable">
+          <template #[`header.projectMember.userType`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
                   v-model="selectedFilterUserType"
-                  :items="possibleUserTypes"
-                  class="mx-2 pa-2 pb-4"
-                  :label="t('Lbl_filter_userType')"
-                  clearable
-                  multiple
-                  item-title="text"
-                  item-value="value"
-                  variant="outlined"
-                  density="compact"
-                  menu
-                  transition="scale-transition"
-                  persistent-clear
-                  :list-props="{class: 'striped-filter-dd py-0'}">
-                  <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
-                      <template v-slot:prepend="{isSelected}">
-                        <v-checkbox hide-details :model-value="isSelected" />
-                      </template>
-                      <template v-slot:title="{title}">
-                        <span class="pStatusFilterEntry"> {{ title }}</span>
-                      </template>
-                    </v-list-item>
-                  </template>
-                  <template v-slot:selection="{item, index}">
-                    <div v-if="index === 0" class="d-flex align-center">
-                      <span class="pStatusFilterEntry">{{ item.title }}</span>
-                    </div>
-                    <span v-if="index === 1" class="pAdditionalFilter">
-                      +{{ selectedFilterUserType.length - 1 }} others
-                    </span>
-                  </template>
-                </v-select>
-              </div>
-            </v-menu>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-          </div>
-        </template>
-        <template v-slot:[`item.projectMember.userId`]="{item}">
-          <span v-if="item.projectMember.userProfile.user">
-            {{ item.projectMember.userProfile.lastname }}, {{ item.projectMember.userProfile.forename }} ({{
-              item.projectMember.userProfile.user
-            }})
-          </span>
-          <span v-else>{{ item.projectMember.userId }}</span>
-        </template>
-        <template v-slot:[`item.projectMember.responsible`]="{item}">
-          <span v-if="item.projectMember.responsible">{{ t('COL_USER_ROLE_RESPONSIBLE') }}</span>
-        </template>
-        <template v-slot:[`item.actions`]="{item}">
-          <TableActionButtons
-            variant="compact"
-            :buttons="getActionButtons(item)"
-            @edit="showEditUserDialog(item)"
-            @remove="showDeleteUserDialog(item)" />
-        </template>
-      </v-data-table>
+                  :column="column"
+                  :label="t('COL_USER_TYPE')"
+                  :allItems="possibleUserTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
+          </template>
+          <template #[`item.projectMember.userId`]="{item}">
+            <span v-if="item.projectMember.userProfile.user">
+              {{ item.projectMember.userProfile.lastname }}, {{ item.projectMember.userProfile.forename }} ({{
+                item.projectMember.userProfile.user
+              }})
+            </span>
+            <span v-else>{{ item.projectMember.userId }}</span>
+          </template>
+          <template #[`item.projectMember.responsible`]="{item}">
+            <span v-if="item.projectMember.responsible">{{ t('COL_USER_ROLE_RESPONSIBLE') }}</span>
+          </template>
+          <template #[`item.actions`]="{item}">
+            <TableActionButtons
+              variant="slider"
+              :buttons="getActionButtons(item)"
+              @edit="showEditUserDialog(item)"
+              @remove="showDeleteUserDialog(item)" />
+          </template>
+        </v-data-table>
+      </div>
     </template>
   </TableLayout>
+
   <template>
     <NewUserDialog
       ref="userDialogRef"

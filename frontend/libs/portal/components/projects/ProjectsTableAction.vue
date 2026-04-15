@@ -3,11 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import CloneProjectDialog from '@disclosure-portal/components/dialog/CloneProjectDialog.vue';
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
-import EditProjectDialog from '@disclosure-portal/components/dialog/EditProjectDialog.vue';
-import NewGroupDialog from '@disclosure-portal/components/dialog/NewGroupDialog.vue';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {Rights} from '@disclosure-portal/model/Rights';
 import adminService from '@disclosure-portal/services/admin';

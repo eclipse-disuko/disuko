@@ -5,8 +5,6 @@
 <script setup lang="ts">
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -25,6 +23,7 @@ const headers = computed<DataTableHeader[]>(() => [
   },
   {
     title: t('COL_TITLE'),
+    width: 200,
     align: 'start',
     value: 'message',
     sortable: true,
