@@ -85,12 +85,24 @@
   "_id": "jobs/315d3c7e-0856-4a8f-a8a8-08dca55586b3",
   "_key": "315d3c7e-0856-4a8f-a8a8-08dca55586b3",
   "_rev": "18-6fcf5542d7983ecea6e080359a6c00c8",
-  "Config": "",
   "Created": "2025-09-17T11:13:56.231556676Z",
   "Execution": 0,
   "JobType": 9,
   "MultiExec": true,
   "Name": "Report creation",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_id": "jobs/96b0bc30-d330-4df0-86ee-309eaba5dbf8",
+  "_key": "96b0bc30-d330-4df0-86ee-309eaba5dbf8",
+  "_rev": "36-f5f9925c7622ddd82d0fd684140e1b59",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "Jobtype": 7,
+  "MultiExec": false,
+  "Name": "Set deprovisioning",
   "Schedule": "",
   "Status": 0,
   "Updated": "2025-09-17T11:13:56.231556676Z"

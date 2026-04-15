@@ -152,9 +152,9 @@ var Config = struct {
 		UppercaseUsername     bool   `default:"true"`
 		RegexToken            string `default:"^[a-zA-Z0-9_\\-]{10,50}$"`
 	}
-	InternalUsersAllowList []string
-
-	PublicAuth struct {
+	InternalUsersAllowList              []string
+	DeprovisioningInactiveDaysThreshold int `default:"60"`
+	PublicAuth                          struct {
 		AccessTTLSeconds  int
 		RefreshTTLMinutes int
 		SigningKey        string
@@ -293,6 +293,8 @@ func checkEnvironmentVariables() {
 	Config.OAuth2.DebugLog = getEnvVariableBoolean("OAUTH2_DEBUG_LOG", Config.OAuth2.DebugLog)
 	Config.OAuth2.UppercaseUsername = getEnvVariableBoolean("OAUTH2_UPPERCASEUSERNAME", Config.OAuth2.UppercaseUsername)
 	Config.OAuth2.RegexToken = getEnvVariable("OAUTH2_REGEXTOKEN", Config.OAuth2.RegexToken)
+
+	Config.DeprovisioningInactiveDaysThreshold = getEnvVariableInt("DEPROVISIONING_INACTIVE_THRESHOLD", Config.DeprovisioningInactiveDaysThreshold)
 
 	Config.InternalUsersAllowList = strings.Split(getEnvVariable("INTERNAL_USERS_ALLOW_LIST", ""), ",")
 
