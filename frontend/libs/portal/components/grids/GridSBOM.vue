@@ -73,8 +73,7 @@ const sortItems = ref<SortItem[]>([{key: 'Uploaded', order: 'desc'}]);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
 const {info: snack} = useSnackbar();
-const branches = ref<NameKeyIdentifier[]>([]);
-const tableSbomDeliveries = ref<HTMLElement | null>(null);
+const branches = computed(() => sbomStore.allVersions);
 const reviewRemarkDialog = ref<InstanceType<typeof ReviewRemarkDialog>>();
 const dlgSbomValidationErrors = ref<InstanceType<typeof SbomValidationErrorsDialog>>();
 const helpText = ref('');
@@ -254,7 +253,7 @@ Deliveries Link: ${deleviryLink}`;
 };
 
 const reloadSboms = async () => {
-  await sbomStore.fetchAllSBOMsFlat();
+  await sbomStore.fetchAllSBOMsFlat(true);
 };
 const toggleLock = async (item: VersionSbomsFlat) => {
   await projectService.toggleSpdxLock(projectModel.value._key, item.versionKey, item._key);
@@ -298,7 +297,6 @@ const downloadFile = (item: VersionSbomsFlat) => {
 onMounted(async () => {
   if (!props.channelView) {
     sbomStore.fetchAllSBOMsFlat().then(() => {
-      branches.value = sbomStore.allVersions;
       selectedBranch.value = branches.value[0];
       if (versionDetails.value) {
         const branchFromVersion = branches.value.find((g) => g.key == versionDetails.value._key);
@@ -642,7 +640,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
               :presetTag="item.Tag"
               :versionID="item.versionKey"
               :spdxID="item._key"
-              :spdxName="item.versionName"
+              :spdxName="item.MetaInfo.Name"
               :channel-view="channelView"
               v-slot="{showDialog}"
               v-else>

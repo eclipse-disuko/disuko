@@ -9,6 +9,7 @@ import {OverallReview, OverallReviewState, VersionSlim} from '@disclosure-portal
 import versionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {formatDateAndTime, getOverallReviewTranslationKey} from '@disclosure-portal/utils/Table';
 import {getStrWithMaxLength, openUrl} from '@disclosure-portal/utils/View';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
@@ -29,6 +30,7 @@ const {copyToClipboard} = useClipboard();
 const router = useRouter();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const currentProject = computed(() => projectStore.currentProject!);
 const labelTools = computed(() => appStore.getLabelsTools);
 
@@ -38,7 +40,6 @@ const statusFilterOpened = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const versionDialog = ref();
 const confirmVisible = ref(false);
-const tableVersions = ref<HTMLElement | null>(null);
 
 const maxVersions = 10;
 
@@ -175,7 +176,7 @@ const doDelete = async (config: IConfirmationDialogConfig) => {
   if (config.okButtonIsDisabled) return;
   await versionService.deleteVersion(currentProject.value._key, config.key);
   info(t('DIALOG_version_delete_success'));
-  await projectStore.fetchProjectByKey(currentProject.value._key);
+  await sbomStore.fetchAllSBOMsFlat(true);
 };
 const showConfirm = async (item: VersionSlim) => {
   await versionService.getApprovalOrReviewUsage(currentProject.value?._key, item._key).then((r) => {
@@ -291,13 +292,13 @@ const getActionButtons = (): TableActionButtonsProps['buttons'] => {
                     :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="statusFilterOpened = false" color="default" />
                   </v-row>
                   <v-select
                     v-model="selectedFilterStatus"
                     :items="possibleStatuses"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_status')"
                     clearable
                     multiple
@@ -310,7 +311,7 @@ const getActionButtons = (): TableActionButtonsProps['buttons'] => {
                     persistent-clear
                     :list-props="{class: 'striped-filter-dd py-0'}">
                     <template v-slot:item="{item, props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
+                      <v-list-item v-bind="props" class="px-2 py-0">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
