@@ -85,9 +85,10 @@ export const useSbomStore = defineStore('sbom', () => {
   };
 
   // Getters
-  const currentVersion = computed((): VersionSlim =>
-    projectStore.currentProject?.versions[state.currentVersionKey] ?? ({} as VersionSlim),
-  );
+  const currentVersion = computed((): VersionSlim => {
+    const found = state.allVersions.find((v) => v.key === state.currentVersionKey);
+    return (found ? {_key: found.key, name: found.name} : {}) as VersionSlim;
+  });
   const getCurrentVersion = computed(() => currentVersion.value);
   const channelSpdxs = computed((): SpdxFile[] =>
     state.allSBOMSFlat
