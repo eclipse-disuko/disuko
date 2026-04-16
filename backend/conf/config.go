@@ -171,6 +171,7 @@ var Config = struct {
 		InsecureSkipVerify bool   `default:"true"`
 		Port               int    `default:""`
 		User               string `default:""`
+		CAFile             string `default:""`
 		Password           string
 		DatabaseName       string       `default:"disuko"`
 		MigrateOnly        bool         `default:"false"`
@@ -265,6 +266,7 @@ func checkEnvironmentVariables() {
 	Config.Database.Scheme = getEnvVariable("DATABASE_SCHEME", Config.Database.Scheme)
 	Config.Database.User = getEnvVariable("DATABASE_USER", Config.Database.User)
 	Config.Database.Password = getEnvVariable("DATABASE_PASSWORD", Config.Database.Password)
+	Config.Database.CAFile = getEnvVariable("DATABASE_CA_FILE", Config.Database.CAFile)
 	Config.Database.Type = DatabaseType(getEnvVariable("DATABASE_TYPE", string(Config.Database.Type)))
 	Config.Database.ShardReplica = getEnvVariableInt("DATABASE_SHARD_REPLICA", Config.Database.ShardReplica)
 
