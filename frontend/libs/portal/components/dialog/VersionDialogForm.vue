@@ -63,6 +63,7 @@ const doDialogAction = async () => {
     snack(t('DIALOG_version_create_success'));
   }
   await sbomStore.fetchAllSBOMsFlat(true);
+  await projectStore.fetchProjectByKey(projectStore.currentProject!._key);
   versionDialog.value?.reset();
   isVisible.value = false;
 };

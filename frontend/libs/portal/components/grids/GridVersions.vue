@@ -177,6 +177,7 @@ const doDelete = async (config: IConfirmationDialogConfig) => {
   await versionService.deleteVersion(currentProject.value._key, config.key);
   info(t('DIALOG_version_delete_success'));
   await sbomStore.fetchAllSBOMsFlat(true);
+  await projectStore.fetchProjectByKey(currentProject.value._key);
 };
 const showConfirm = async (item: VersionSlim) => {
   await versionService.getApprovalOrReviewUsage(currentProject.value?._key, item._key).then((r) => {
