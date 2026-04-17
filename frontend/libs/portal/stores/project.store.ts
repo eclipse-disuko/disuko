@@ -42,6 +42,7 @@ export const useProjectStore = defineStore('project', () => {
       return {
         text: t('STATUS_' + status),
         textColor: projectsUtils.getTextStatusColor(status),
+        textBold: true,
         value: key,
       };
     }),

@@ -9,49 +9,49 @@ import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {getCssClassForReadonlyRow} from '@disclosure-portal/utils/Table';
 import {openUrlInNewTab} from '@disclosure-portal/utils/url';
-import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
+import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useClipboard} from '@shared/utils/clipboard';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {DataTableHeader} from '@shared/types/table';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const router = useRouter();
 const breadcrumbs = useBreadcrumbsStore();
-const {info: snack} = useSnackbar();
 const {copyToClipboard} = useClipboard();
+
 const search = ref('');
 const tablePolicyRules = ref<HTMLElement | null>(null);
+const rules = ref<PolicyRuleDto[]>([]);
 
-const headers = computed(() => {
+const headers = computed((): DataTableHeader[] => {
   return [
     {
       title: t('COL_ACTIONS'),
       sortable: false,
       align: 'center',
       width: 120,
-      value: 'Actions',
+      value: 'actions',
     },
     {
       title: t('COL_NAME'),
       sortable: true,
       value: 'name',
-      width: '200',
+      width: 200,
     },
     {
       title: t('COL_DESCRIPTION'),
       sortable: false,
       value: 'description',
       align: 'start',
+      width: 180,
     },
   ];
 });
-const rules = ref<PolicyRuleDto[]>([]);
 
 const projectModel = computed(() => projectStore.currentProject!);
 
@@ -109,22 +109,20 @@ const copyRuleToClipboard = (item: PolicyRuleDto) => {
   copyToClipboard(content);
 };
 
-const getActionButtons = (item: PolicyRuleDto): TableActionButtonsProps['buttons'] => {
-  return [
-    {
-      icon: 'mdi-content-copy',
-      hint: t('TT_COPY_REFERENCE_INFO'),
-      event: 'copy',
-      show: true,
-    },
-    {
-      icon: 'mdi-open-in-new',
-      hint: t('TT_open_rule'),
-      event: 'open',
-      show: true,
-    },
-  ];
-};
+const actionButtons = computed((): TableActionButtonsProps['buttons'] => [
+  {
+    icon: 'mdi-content-copy',
+    hint: t('TT_COPY_REFERENCE_INFO'),
+    event: 'copy',
+    show: true,
+  },
+  {
+    icon: 'mdi-open-in-new',
+    hint: t('TT_open_rule'),
+    event: 'open',
+    show: true,
+  },
+]);
 
 onMounted(() => {
   reloadInternal();
@@ -170,10 +168,10 @@ watch(projectModel, async (value) => {
             'items-per-page-options': [10, 50, 100, -1],
           }"
           :item-class="getCssClassForReadonlyRow">
-          <template v-slot:item.Actions="{item}">
+          <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="compact"
-              :buttons="getActionButtons(item)"
+              :buttons="actionButtons"
               @copy="copyRuleToClipboard(item)"
               @open="openRule(item)" />
           </template>

@@ -14,6 +14,11 @@ export function getColorRGB(colorVariable: string) {
   return 'rgb(' + getComputedStyle(document.documentElement).getPropertyValue(colorVariable).trim() + ')';
 }
 
+export function capitalizeFirstLetter(text: string) {
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function truncateText(text: string, maxLength: number) {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + '...';

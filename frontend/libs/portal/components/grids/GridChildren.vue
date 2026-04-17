@@ -3,8 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
-import {Project} from '@disclosure-portal/model/Project';
 import {ProjectChildrenCombiDto, ProjectSlimDto} from '@disclosure-portal/model/ProjectsResponse';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -16,19 +14,21 @@ import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {storeToRefs} from 'pinia';
 
 const emit = defineEmits(['openSettings']);
 
 const {t} = useI18n();
 const router = useRouter();
-const projectStore = useProjectStore();
-const dialogStore = useDialogStore();
 const wizardStore = useWizardStore();
 
-const currentProject = computed((): Project => projectStore.currentProject!);
+const projectStore = useProjectStore();
+const {projectPossibleStatuses, currentProject} = storeToRefs(projectStore);
+
+const dialogStore = useDialogStore();
+const {isSettingsDialogOpen} = storeToRefs(dialogStore);
 
 const search = ref('');
-const statusFilterMenu = ref(false);
 const selectedFilterStatus = ref<string[]>([]);
 const addChildrenProjectDialog = ref();
 const errorDialog = ref();
@@ -44,19 +44,6 @@ const headers = computed<DataTableHeader[]>(() => {
     {title: t('COL_CREATED'), key: 'version.created', align: 'start', width: 160},
     {title: t('COL_UPDATED'), key: 'version.updated', align: 'start', width: 160},
   ];
-});
-
-const possibleStatus = computed(() => {
-  const list = currentProject.value?.projectChildren?.list;
-  if (!list?.length) return [];
-
-  return [...new Set(list.map((item: ProjectChildrenCombiDto) => item.project.status))].map(
-    (status: string) =>
-      ({
-        value: status,
-        text: status === 'deprecated' ? t('PROJECT_DEPRECATED') : status,
-      }) as IDefaultSelectItem,
-  );
 });
 
 const filterOnStatus = (item: ProjectChildrenCombiDto): boolean => {
@@ -76,12 +63,12 @@ const showCreateProjectDialog = async () => {
   if (!projectStore.areMandatoryProjectSettingsSet) {
     errorDialog.value?.open();
   } else {
-    await wizardStore.openWizard({parentProject: currentProject.value});
+    await wizardStore.openWizard({parentProject: currentProject.value!});
   }
 };
 
 const openSettingsDialog = () => {
-  dialogStore.isSettingsDialogOpen = true;
+  isSettingsDialogOpen.value = true;
 };
 
 const openProject = (item: ProjectSlimDto) => {
@@ -112,7 +99,7 @@ const showAddChildrenProjectDialog = () => {
   }
 };
 
-const customFilter = (value: string, query: string, item?: any) => {
+const customFilter = (_: string, query: string, item?: any) => {
   if (!query || !item) return true;
   const searchQuery = query.toLowerCase();
   const rawItem = item.raw as ProjectChildrenCombiDto;
@@ -175,7 +162,7 @@ const getStatusClass = computed(() => (status?: string) => {
         :custom-filter="customFilter"
         :headers="headers"
         :items="filteredList"
-        @click:row="(event: Event, dataItem: DataTableItem<ProjectChildrenCombiDto>) => openVersion(dataItem.item)"
+        @click:row="(_: Event, dataItem: DataTableItem<ProjectChildrenCombiDto>) => openVersion(dataItem.item)"
         :items-per-page="-1">
         <template v-slot:[`item.data-table-expand`]="{}"> x </template>
         <template v-slot:group-header="{item, toggleGroup, isGroupOpen}">
@@ -222,58 +209,17 @@ const getStatusClass = computed(() => (status?: string) => {
         <template v-slot:[`item.status`]="{item}">
           <DVersionStateWithTooltip v-if="item.version" :version="item.version" :isGroup="true" />
         </template>
-        <template v-slot:[`header.project.status`]="{column}">
-          <div class="v-data-table-header__content">
-            <span>{{ column.title }}</span>
-            <v-menu :close-on-content-click="false" v-model="statusFilterMenu">
-              <template v-slot:activator="{props}">
-                <DIconButton
-                  :parentProps="props"
-                  icon="mdi-filter-variant"
-                  :hint="t('TT_SHOW_FILTER')"
-                  :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
-              </template>
-              <div class="bg-background" style="width: 280px">
-                <v-row class="d-flex ma-1 mr-2 justify-end">
-                  <DIconButton icon="mdi-close" @clicked="statusFilterMenu = false" color="default" />
-                </v-row>
-                <v-select
-                  v-model="selectedFilterStatus"
-                  :items="possibleStatus"
-                  class="pa-2 mx-2 pb-4"
-                  :label="t('FILTER_BY_STATUS')"
-                  clearable
-                  multiple
-                  item-title="text"
-                  item-value="value"
-                  variant="outlined"
-                  density="compact"
-                  menu
-                  transition="scale-transition"
-                  persistent-clear
-                  :list-props="{class: 'striped-filter-dd py-0'}">
-                  <template v-slot:item="{item, props}">
-                    <v-list-item v-bind="props" class="px-2 py-0">
-                      <template v-slot:prepend="{isSelected}">
-                        <v-checkbox hide-details :model-value="isSelected" />
-                      </template>
-                      <template v-slot:title>
-                        <span :class="getStatusClass(item.raw.value)" class="pFilterEntry">{{ item.raw.text }}</span>
-                      </template>
-                    </v-list-item>
-                  </template>
-                  <template v-slot:selection="{item, index}">
-                    <div v-if="index === 0" class="d-flex align-center">
-                      <span class="pFilterEntry">{{ item.raw.text }}</span>
-                    </div>
-                    <span v-if="index === 1" class="pAdditionalFilter">
-                      +{{ selectedFilterStatus.length - 1 }} others
-                    </span>
-                  </template>
-                </v-select>
-              </div>
-            </v-menu>
-          </div>
+        <template v-slot:[`header.project.status`]="{column, getSortIcon, toggleSort}">
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedFilterStatus"
+                :column="column"
+                :label="t('COL_PROJECT_STATUS')"
+                :allItems="projectPossibleStatuses">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
         </template>
         <template v-slot:[`item.project.status`]> </template>
         <template v-slot:[`item.version.updated`]="{item}">

@@ -51,11 +51,10 @@ const filteredList = computed<ProjectSlim[]>(() => {
   }
   return result;
 });
-const headers = computed<DataTableHeader[]>(() => [
-  {title: '', value: 'data-table-expand', width: '38'},
-  {title: t('COL_ACTIONS'), align: 'center', width: 80, value: 'actions', sortable: false},
-  {title: t('COL_STATUS'), sortable: true, value: 'status', width: '120'},
-  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: '120'},
+const headers = computed((): DataTableHeader[] => [
+  {title: t('COL_ACTIONS'), align: 'center', width: 160, value: 'actions', sortable: false},
+  {title: t('COL_STATUS'), sortable: true, value: 'status', width: 120},
+  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: 120},
   {title: t('COL_NAME'), align: 'start', value: 'name', width: 270, sortable: true},
   {title: t('COL_DEVELOPER_COMPANY'), align: 'start', width: 270, value: 'supplier', sortable: true},
   {title: t('COL_OWNER_COMPANY'), align: 'start', width: 270, value: 'company', sortable: true},
@@ -93,9 +92,9 @@ const isExpanded = (item: ProjectSlim) => {
   return expanded.value.includes(item._key);
 };
 
-const customFilterTable = (rawCellValue: unknown, search: string, internalItem: any) => {
+const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalItem: any) => {
   const project = internalItem.raw as ProjectSlim;
-  const lowerSearch = search.toLowerCase();
+  const lowerSearch = searchTerm.toLowerCase();
 
   const foundPolicy = project.policyLabels.some((l) => {
     const labelStr = labelTools.value.policyLabelsMap[l].name;
@@ -115,8 +114,8 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
       .indexOf(lowerSearch) !== -1;
 
   let foundCustomIds: boolean;
-  if (search.includes(':')) {
-    const [customIdSearch, valueSearch] = search.split(':').map((s) => s.trim().toLowerCase());
+  if (searchTerm.includes(':')) {
+    const [customIdSearch, valueSearch] = searchTerm.split(':').map((s) => s.trim().toLowerCase());
     foundCustomIds = project.customIds.some((id) => {
       return (
         id.technicalId.toLowerCase().indexOf(customIdSearch) !== -1 &&
@@ -195,7 +194,7 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
           v-model:search="search"
           v-model:expanded="expanded"
           @click:row="onRowClick">
-          <template v-slot:[`header.status`]="{column, getSortIcon, toggleSort}">
+          <template #[`header.status`]="{column, getSortIcon, toggleSort}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #filter>
                 <GridHeaderFilterIcon
@@ -208,11 +207,11 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
               </template>
             </GridFilterHeader>
           </template>
-          <template v-slot:[`header.isGroup`]="{column, getSortIcon, toggleSort}">
+          <template #[`header.isGroup`]="{column, getSortIcon, toggleSort}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #filter>
                 <v-menu offset-y :close-on-content-click="false" v-model="menuIsGroup">
-                  <template v-slot:activator="{props}">
+                  <template #activator="{props}">
                     <span>
                       <v-icon class="mr-1" v-bind="props" :color="filterGroups ? 'primary' : 'default'">
                         mdi-filter-variant
@@ -230,51 +229,53 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
               </template>
             </GridFilterHeader>
           </template>
-          <template v-slot:[`item.updated`]="{item}">
+          <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated"></DDateCellWithTooltip>
           </template>
-          <template v-slot:[`item.created`]="{item}">
+          <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
           </template>
-          <template v-slot:[`item.status`]="{item}">
-            <span :style="{color: projectsUtils.getTextStatusColor(item.status)}">
+          <template #[`item.status`]="{item}">
+            <span class="font-bold" :style="{color: projectsUtils.getTextStatusColor(item.status)}">
               {{ t('STATUS_' + (!item.status ? 'new' : item.status)) }}
             </span>
           </template>
-          <template v-slot:[`item.isGroup`]="{item}">
+          <template #[`item.isGroup`]="{item}">
             <v-icon icon="mdi-check" class="mr-2" :color="item.isGroup ? 'primary' : 'tableBorderColor'"></v-icon>
           </template>
-          <template v-slot:[`item.actions`]="{item}">
-            <ProjectsTableAction :item="item" @reload="reload"></ProjectsTableAction>
+          <template #[`item.actions`]="{item}">
+            <div class="flex items-center justify-start">
+              <DIconButton
+                :icon="isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                color="primary"
+                class="size-10"
+                @clicked="toggleExpand(item)" />
+              <ProjectsTableAction :item="item" @reload="reload"></ProjectsTableAction>
+            </div>
           </template>
-          <template v-slot:[`item.company`]="{item}">
+          <template #[`item.company`]="{item}">
             <span v-if="!item.missing">{{ item.company }}</span>
             <div v-else>
               <v-icon class="pr-2" icon="mdi-alert" color="warning" small></v-icon>
               <span>{{ t('WARNING_MISSING_DEPT') }}</span>
             </div>
           </template>
-          <template v-slot:[`item.department`]="{item}">
+          <template #[`item.department`]="{item}">
             <span v-if="!item.missing">{{ item.department }}</span>
             <div v-else>
               <v-icon class="pr-2" color="warning" icon="mdi-alert" small></v-icon>
               <span>{{ t('WARNING_MISSING_DEPT') }}</span>
             </div>
           </template>
-          <template v-slot:[`item.supplier`]="{item}">
+          <template #[`item.supplier`]="{item}">
             <span v-if="!item.supplierMissing">{{ item.supplier }}</span>
             <div v-else>
               <v-icon class="pr-2" color="warning" icon="mdi-alert" small></v-icon>
               <span>{{ t('WARNING_MISSING_DEPT') }}</span>
             </div>
           </template>
-          <template v-slot:[`item.data-table-expand`]="{item}">
-            <v-icon color="primary" @click.stop="toggleExpand(item)">
-              {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-            </v-icon>
-          </template>
 
-          <template v-slot:expanded-row="{item}">
+          <template #expanded-row="{item}">
             <td :colspan="headers.length" class="bg-table-header h-full cursor-default overflow-y-clip">
               <GridProjectsExpandContent :item="item" :is-async="false" />
             </td>
@@ -284,6 +285,7 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
     </template>
   </TableLayout>
 </template>
+
 <style scoped lang="scss">
 .bg-table-header {
   @apply bg-[rgb(var(--v-theme-tableHeaderBackgroundColor))];

@@ -149,7 +149,7 @@ onUnmounted(() => {
       <span class="text-h5 inline-block" :class="{statusDeprecated: currentProject.status === 'deprecated'}">
         {{ currentProject.isGroup ? t('GROUP') : t('PROJECT') }} <q>{{ currentProject.name }}</q>
       </span>
-      <span :style="{color: projectsUtils.getTextStatusColor(currentProject.status)}">
+      <span class="font-bold" :style="{color: projectsUtils.getTextStatusColor(currentProject.status)}">
         {{ t('STATUS_' + (!currentProject.status ? 'new' : currentProject.status)) }}
       </span>
       <DIconButton
@@ -261,16 +261,17 @@ onUnmounted(() => {
         </v-card>
       </v-col>
     </v-row>
-    <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
-      <ProjectSubscriptionsDialog
-        :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
-        :confirm-text="t('NP_DIALOG_BTN_EDIT')"
-        :item="currentProject.subscriptions"
-        @confirm="saveProjectSubscriptions"
-        @close="projectSubscriptionsDialogOpen = false">
-      </ProjectSubscriptionsDialog>
-    </DFormDialog>
   </v-container>
+
+  <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
+    <ProjectSubscriptionsDialog
+      :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
+      :confirm-text="t('NP_DIALOG_BTN_EDIT')"
+      :item="currentProject!.subscriptions"
+      @confirm="saveProjectSubscriptions"
+      @close="projectSubscriptionsDialogOpen = false">
+    </ProjectSubscriptionsDialog>
+  </DFormDialog>
 </template>
 
 <style scoped lang="scss">

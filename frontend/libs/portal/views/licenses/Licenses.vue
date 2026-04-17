@@ -24,7 +24,6 @@ import {SearchOptions} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, openUrl} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
@@ -48,7 +47,6 @@ const snackbar = useSnackbar();
 const route = useRoute();
 const userStore = useUserStore();
 const viewTools = useViewTools();
-const {sliderWidth} = useTableActionSlider();
 
 const gridName = 'License';
 const headerSettingsStore = useHeaderSettingsStore();
@@ -107,73 +105,73 @@ const options = computed(
 const possibleIsLicenseChart = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleCharts)
-        .map(([k, count]) => ({
-          text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
-          value: k,
-          chip: String(count),
-        }))
-        .sort()
+      .map(([k, count]) => ({
+        text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
+        value: k,
+        chip: String(count),
+      }))
+      .sort()
     : [],
 );
 
 const possibleSources = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleSources).map(([k, count]) => ({
-        text: k,
-        value: k,
-        chip: String(count),
-      }))
+      text: k,
+      value: k,
+      chip: String(count),
+    }))
     : [],
 );
 
 const possibleFamilies = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleFamilies)
-        .sort((a, b) => compareFamily(a[0], b[0]))
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
-          value: k.length === 0 ? 'not declared' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleApproval)
-        .sort(
-          ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
-        )
-        .map(([k, count]) => ({
-          text: getI18NTextOfPrefixKey('LT_APP_', k),
-          value: k.length === 0 ? 'not set' : k,
-          chip: String(count),
-        }))
-    : [],
-);
-
-const possibleType = computed((): DataTableHeaderFilterItems[] =>
-  metaData.value
-    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
-        text: getI18NTextOfPrefixKey('LT_', k),
+      .sort((a, b) => compareFamily(a[0], b[0]))
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
         value: k.length === 0 ? 'not declared' : k,
         chip: String(count),
       }))
     : [],
 );
 
+const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleApproval)
+      .sort(
+        ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
+      )
+      .map(([k, count]) => ({
+        text: getI18NTextOfPrefixKey('LT_APP_', k),
+        value: k.length === 0 ? 'not set' : k,
+        chip: String(count),
+      }))
+    : [],
+);
+
+const possibleType = computed((): DataTableHeaderFilterItems[] =>
+  metaData.value
+    ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
+      text: getI18NTextOfPrefixKey('LT_', k),
+      value: k.length === 0 ? 'not declared' : k,
+      chip: String(count),
+    }))
+    : [],
+);
+
 const possibleClassifications = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? metaData.value.possibleClassifications.map(({classification, count}: ClassificationWithCount) => {
-        const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
-        return {
-          text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
-          value: value,
-          icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
-          iconColor: getIconColorOfLevel(getWarnLevel(value)),
-          chip: String(count),
-        };
-      })
+      const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
+      return {
+        text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
+        value: value,
+        icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
+        iconColor: getIconColorOfLevel(getWarnLevel(value)),
+        chip: String(count),
+      };
+    })
     : [],
 );
 
@@ -347,13 +345,13 @@ const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtil
 const headers = computed((): DataTableHeader[] => [
   ...(allowActions.value
     ? [
-        {
-          title: 'COL_ACTIONS',
-          align: 'start',
-          width: sliderWidth.value,
-          value: 'actions',
-        } as DataTableHeader,
-      ]
+      {
+        title: 'COL_ACTIONS',
+        align: 'center',
+        width: 120,
+        value: 'actions',
+      } as DataTableHeader,
+    ]
     : []),
   {
     title: 'COL_LICENSE_CHART_STATUS',
@@ -648,7 +646,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TableLayout data-testid="licenses" @mouseleave="headerExpands">
+  <TableLayout data-testid="licenses">
     <template #description>
       <div class="d-flex align-center ga-3 flex-row">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
@@ -719,7 +717,7 @@ onMounted(async () => {
         return-object></v-select>
     </template>
     <template #table>
-      <div ref="dataGridLicenses" class="table-wrapper fill-height action-slider-table">
+      <div ref="dataGridLicenses" class="table-wrapper fill-height">
         <v-data-table-server
           :headers="filteredHeaders"
           fixed-header
@@ -824,7 +822,7 @@ onMounted(async () => {
               <v-icon
                 :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'"
                 :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"
-                >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
+              >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
               </v-icon>
               <Tooltip location="bottom">
                 {{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}
@@ -857,7 +855,7 @@ onMounted(async () => {
           </template>
           <template v-if="allowActions" #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="slider"
+              variant="compact"
               :buttons="getActionButtons(item)"
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"

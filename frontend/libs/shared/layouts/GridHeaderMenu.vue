@@ -68,8 +68,8 @@ const showMenu = ref(false);
                 <span
                   :style="{color: item.raw?.textColor || 'inherit'}"
                   class="text-sm"
-                  :class="{'ml-1': item.raw?.icon}"
-                  >{{ item.raw?.text || item.raw.value }}</span
+                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
+                >{{ item.raw?.text || item.raw.value }}</span
                 >
                 <v-chip
                   v-if="item.raw?.chip"
@@ -88,8 +88,8 @@ const showMenu = ref(false);
                   v-if="index === 0"
                   :style="{color: item.raw?.textColor || 'inherit'}"
                   class="text-sm"
-                  :class="{'ml-1': item.raw?.icon}"
-                  >{{ item.raw?.text || item.raw.value }}</span
+                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
+                >{{ item.raw?.text || item.raw.value }}</span
                 >
                 <v-chip
                   v-if="item.raw?.chip"

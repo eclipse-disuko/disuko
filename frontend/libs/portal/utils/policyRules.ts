@@ -1,11 +1,11 @@
 import {capitalizeFirstLetter} from '@disclosure-portal/utils/Tools';
 
 const getTextStatusColor = (itemStatus: string) => {
-  const color = !itemStatus ? 'New' : capitalizeFirstLetter(itemStatus);
-  return `rgb(var(--v-theme-project${color}))`;
+  const color = capitalizeFirstLetter(itemStatus);
+  return `rgb(var(--v-theme-pr${color}))`;
 };
 
-export const useProjectUtils = () => {
+export const usePolicyRulesUtils = () => {
   return {
     getTextStatusColor,
   };
