@@ -270,7 +270,7 @@ func checkEnvironmentVariables() {
 	Config.Database.Password = getEnvVariable("DATABASE_PASSWORD", Config.Database.Password)
 	Config.Database.CAFile = getEnvVariable("DATABASE_CA_FILE", Config.Database.CAFile)
 	Config.Database.ShardReplica = getEnvVariableInt("DATABASE_SHARD_REPLICA", Config.Database.ShardReplica)
-	Config.Database.AdditionalArgs = getEnvVariable("DATABASE_ADDTIONAL_ARGS", Config.Database.AdditionalArgs)
+	Config.Database.AdditionalArgs = getEnvVariable("DATABASE_ADDITIONAL_ARGS", Config.Database.AdditionalArgs)
 
 	Config.Server.Port = getEnvVariable("SERVER_PORT", Config.Server.Port)
 	Config.Server.ApplicationToken = getEnvVariable("APPLICATION_TOKEN", Config.Server.ApplicationToken)
