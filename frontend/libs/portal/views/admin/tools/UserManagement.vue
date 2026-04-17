@@ -340,7 +340,7 @@ const executeEntityDeletion = async () => {
   <v-card class="pa-4 mb-3 h-auto border-none" flat color="transparent">
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h5 pr-2 mb-3">{{ t('USER_MANAGEMENT_DRY_RUN_TITLE') }}</h1>
+        <h1 class="text-h5 mb-3 pr-2">{{ t('USER_MANAGEMENT_DRY_RUN_TITLE') }}</h1>
       </v-col>
     </v-row>
 
@@ -358,7 +358,7 @@ const executeEntityDeletion = async () => {
           required
           @user-changed="onUserChanged" />
 
-        <div class="d-flex align-center mt-6 mb-4 ga-2">
+        <div class="d-flex align-center ga-2 mt-6 mb-4">
           <DCActionButton
             :loading="loading"
             :disabled="loading"
@@ -376,7 +376,7 @@ const executeEntityDeletion = async () => {
 
       <!-- User Details Panel -->
       <v-col cols="12" md="6" lg="8" v-if="selectedUserDetails">
-        <v-card class="px-4 pb-4 pt-0" flat color="transparent">
+        <v-card class="px-4 pt-0 pb-4" flat color="transparent">
           <div class="d-flex align-center mb-3">
             <v-icon class="mr-2" color="primary">mdi-account-circle</v-icon>
             <span class="text-h6">{{ t('USER_MANAGEMENT_USER_DETAILS') }}</span>
@@ -508,7 +508,7 @@ const executeEntityDeletion = async () => {
               <v-expansion-panel-text>
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="tasksData.length > 0" class="pa-2">
-                  <div class="d-flex justify-end mb-3">
+                  <div class="d-flex mb-3 justify-end">
                     <v-text-field
                       v-model="tasksSearch"
                       density="compact"
@@ -579,7 +579,7 @@ const executeEntityDeletion = async () => {
                     </template>
                   </v-data-table>
                 </div>
-                <div v-else class="text-center pa-4 text-medium-emphasis">No tasks found</div>
+                <div v-else class="pa-4 text-medium-emphasis text-center">No tasks found</div>
               </v-expansion-panel-text>
             </v-expansion-panel>
 
@@ -607,7 +607,7 @@ const executeEntityDeletion = async () => {
               <v-expansion-panel-text>
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="rolesData.length > 0" class="pa-2">
-                  <div class="d-flex justify-end mb-3">
+                  <div class="d-flex mb-3 justify-end">
                     <v-text-field
                       v-model="rolesSearch"
                       density="compact"
@@ -663,7 +663,7 @@ const executeEntityDeletion = async () => {
                     </template>
                   </v-data-table>
                 </div>
-                <div v-else class="text-center pa-4 text-medium-emphasis">No roles found</div>
+                <div v-else class="pa-4 text-medium-emphasis text-center">No roles found</div>
               </v-expansion-panel-text>
             </v-expansion-panel>
 
@@ -690,7 +690,7 @@ const executeEntityDeletion = async () => {
               <v-expansion-panel-text>
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="logsData.length > 0" class="pa-2">
-                  <div class="d-flex justify-end mb-3">
+                  <div class="d-flex mb-3 justify-end">
                     <v-text-field
                       v-model="logsSearch"
                       density="compact"
@@ -742,7 +742,7 @@ const executeEntityDeletion = async () => {
                     </template>
                   </v-data-table>
                 </div>
-                <div v-else class="text-center pa-4 text-medium-emphasis">No logs found</div>
+                <div v-else class="pa-4 text-medium-emphasis text-center">No logs found</div>
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>

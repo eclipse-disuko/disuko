@@ -38,7 +38,7 @@ defineExpose({validate});
 <template>
   <v-card-text class="p-0 pt-8" v-if="item && labelTools.policyLabelsMap">
     <Stack>
-      <div class="grid grid-cols-1 gap-3 w-full" :class="{'md:grid-cols-2': !item.isGroup}">
+      <div class="grid w-full grid-cols-1 gap-3" :class="{'md:grid-cols-2': !item.isGroup}">
         <v-text-field
           autocomplete="off"
           variant="outlined"
@@ -93,7 +93,7 @@ defineExpose({validate});
 
       <div class="border-data-table p-2">
         <!-- Labels Display -->
-        <div class="editProjectSubheadline -mt-4 bg-used-components w-24 mb-3">{{ t('HEADLINE_LABEL_SET') }}</div>
+        <div class="editProjectSubheadline bg-used-components -mt-4 mb-3 w-24">{{ t('HEADLINE_LABEL_SET') }}</div>
         <!-- Schema Label -->
         <div class="labelSetGroup">
           <DLabel

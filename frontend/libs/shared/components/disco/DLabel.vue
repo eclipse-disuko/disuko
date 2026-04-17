@@ -34,7 +34,7 @@ export default defineComponent({
 
 <template>
   <v-chip
-    :class="cssClazzes && cssClazzes.length > 0 ? cssClazzes : 'px-2 py-2 mr-1'"
+    :class="cssClazzes && cssClazzes.length > 0 ? cssClazzes : 'mr-1 px-2 py-2'"
     variant="outlined"
     size="small"
     color="labels"

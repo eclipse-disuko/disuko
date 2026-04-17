@@ -86,7 +86,7 @@ defineExpose({
   <v-dialog v-model="isVisible" content-class="large" persistent scrollable width="840">
     <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
       <v-form ref="dialog" @submit.prevent="doDialogAction">
-        <Stack class="sm:flex-row justify-space-between gap-4">
+        <Stack class="justify-space-between gap-4 sm:flex-row">
           <Stack class="flex-grow-1 gap-4">
             <div>{{ t('HEADER_ENGLISH') }}</div>
             <TextField
@@ -107,7 +107,7 @@ defineExpose({
               :rows="5"
               :counter="1000" />
           </Stack>
-          <v-divider vertical class="mb-5 mt-2 hidden sm:block"></v-divider>
+          <v-divider vertical class="mt-2 mb-5 hidden sm:block"></v-divider>
           <Stack class="flex-grow-1 gap-4">
             <div>{{ t('HEADER_GERMAN') }}</div>
             <TextField
@@ -151,7 +151,7 @@ defineExpose({
           hide-details
           color="primary"
           :label="t('ACTIVE_FLAG')"
-          class="shrink mt-0 pt-0" />
+          class="mt-0 shrink pt-0" />
       </v-form>
     </DialogLayout>
   </v-dialog>

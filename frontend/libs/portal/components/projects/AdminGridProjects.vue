@@ -215,7 +215,7 @@ onMounted(() => {
           </template>
 
           <template #expanded-row="{item}">
-            <td :colspan="headers.length" class="cursor-default h-full overflow-y-clip bg-table-header">
+            <td :colspan="headers.length" class="bg-table-header h-full cursor-default overflow-y-clip">
               <GridProjectsExpandContent :item="item" :is-async="true"></GridProjectsExpandContent>
             </td>
           </template>

@@ -142,7 +142,7 @@ defineExpose({
               </v-select>
             </v-col>
             <v-col cols="12" xs="12" class="pt-0" v-if="!(item.LabelSets[item.LabelSets.length - 1]?.length <= 0)">
-              <div class="d-flex align-center border-md border-dashed border-opacity-25 px-3 py-3" @click="addLabelSet">
+              <div class="d-flex align-center border-md border-opacity-25 border-dashed px-3 py-3" @click="addLabelSet">
                 <v-icon color="primary">mdi-plus</v-icon>
                 <span class="font-weight-light pl-1">{{ t('NP_DIALOG_MORE_LABEL_SET') }}</span>
               </div>
@@ -164,19 +164,19 @@ defineExpose({
                 hide-details
                 color="primary"
                 :label="t('ACTIVE_FLAG')"
-                class="shrink mt-0 pt-0" />
+                class="mt-0 shrink pt-0" />
               <v-checkbox
                 v-model="item.ApplyToAll"
                 hide-details
                 color="primary"
                 :label="t('APPLY_TO_ALL_FLAG')"
-                class="shrink mt-0 pt-0" />
+                class="mt-0 shrink pt-0" />
               <v-checkbox
                 v-model="item.Auxiliary"
                 hide-details
                 color="primary"
                 :label="t('AUXILIARY_FLAG')"
-                class="shrink mt-0 pt-0" />
+                class="mt-0 shrink pt-0" />
             </v-col>
           </v-row>
         </v-card-text>

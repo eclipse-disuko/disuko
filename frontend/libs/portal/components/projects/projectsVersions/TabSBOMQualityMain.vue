@@ -133,7 +133,7 @@ watch(
       <v-spacer></v-spacer>
     </template>
     <template #table>
-      <div class="h-full mt-3">
+      <div class="mt-3 h-full">
         <component v-if="currentComponent" :is="currentComponent" />
       </div>
     </template>

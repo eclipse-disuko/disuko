@@ -96,7 +96,7 @@ defineExpose({open});
                   {{ t('NP_DIALOG_TITLE_EDIT') }}
                 </span>
               </v-col>
-              <v-col cols="2" class="text-right px-0">
+              <v-col cols="2" class="px-0 text-right">
                 <DCloseButton
                   @click="
                     () => {
@@ -153,7 +153,7 @@ defineExpose({open});
               <v-col cols="12" class="ma-1 border-data-table mt-3">
                 <!-- Labels Display -->
                 <div class="editProjectSubheadline mt-n4 bg-used-components mb-3">{{ t('HEADLINE_LABEL_SET') }}</div>
-                <Stack class="gap-2 ml-3 mb-3">
+                <Stack class="mb-3 ml-3 gap-2">
                   <ProjectLabel :label="labels.getLabelByKey(project.schemaLabel)"></ProjectLabel>
                   <div class="flex flex-wrap gap-1">
                     <ProjectLabel

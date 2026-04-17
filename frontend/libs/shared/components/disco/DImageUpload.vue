@@ -9,8 +9,8 @@
 
     <!-- Drag and Drop Area -->
     <div
-      class="border-2 border-dashed border-gray-300 rounded-lg p-5 text-center cursor-pointer transition-all duration-300 min-h-[150px] flex items-center justify-center relative"
-      :class="{'border-blue-500 border-solid': isDragOver}"
+      class="relative flex min-h-[150px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-5 text-center transition-all duration-300"
+      :class="{'border-solid border-blue-500': isDragOver}"
       @dragover="handleDragOver"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
@@ -27,7 +27,7 @@
 
       <!-- Image Preview -->
       <div v-else class="w-full">
-        <img :src="modelValue" alt="Preview" class="max-w-full max-h-[200px] rounded shadow-lg mb-2" />
+        <img :src="modelValue" alt="Preview" class="mb-2 max-h-[200px] max-w-full rounded shadow-lg" />
         <div class="flex justify-center gap-2">
           <v-btn
             icon="mdi-pencil"

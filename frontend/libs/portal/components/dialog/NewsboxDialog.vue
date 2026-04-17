@@ -113,15 +113,15 @@ const canGoPrevious = computed(() => newsboxItems.value.length > 1 && currentSli
             v-if="newsboxItems[currentSlide]?.link"
             :url="newsboxItems[currentSlide]?.link || ''"
             text="Read More" />
-          <div v-if="newsboxItems[currentSlide]?.image" class="flex justify-start items-start flex-1">
+          <div v-if="newsboxItems[currentSlide]?.image" class="flex flex-1 items-start justify-start">
             <img
               :src="newsboxItems[currentSlide].image!"
               :alt="currentTitle"
-              class="max-w-full object-contain h-auto @[400px]/newsbox:max-h-[500px] @[0px]/newsbox:max-h-[400px] rounded" />
+              class="h-auto max-w-full rounded object-contain @[0px]/newsbox:max-h-[400px] @[400px]/newsbox:max-h-[500px]" />
           </div>
         </Stack>
 
-        <div v-else-if="!newsboxStore.loading && newsboxItems.length === 0" class="text-center pa-4">
+        <div v-else-if="!newsboxStore.loading && newsboxItems.length === 0" class="pa-4 text-center">
           <v-icon size="48" color="grey">mdi-newspaper-variant-outline</v-icon>
           <p class="text-body-1 mt-2">No news items available</p>
         </div>
@@ -129,7 +129,7 @@ const canGoPrevious = computed(() => newsboxItems.value.length > 1 && currentSli
       <template #left>
         <div
           v-if="!newsboxStore.loading && newsboxItems.length > 0"
-          class="newsbox-pagination flex-shrink-0 d-flex justify-center align-center py-3">
+          class="newsbox-pagination d-flex align-center flex-shrink-0 justify-center py-3">
           <v-btn icon variant="text" size="medium" :disabled="!canGoPrevious" @click="goToPrevious" class="me-2">
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
@@ -142,7 +142,7 @@ const canGoPrevious = computed(() => newsboxItems.value.length > 1 && currentSli
               :color="index === currentSlide ? 'primary' : 'grey-lighten-1'"
               size="x-small"
               disabled
-              class="ma-1 rounded-full p-0 !rounded-full min-w-2.5 size-2.5">
+              class="ma-1 size-2.5 min-w-2.5 !rounded-full rounded-full p-0">
             </v-btn>
           </div>
 

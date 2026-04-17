@@ -107,7 +107,7 @@ watch(langTab, (newTab) => {
           color="primary"
           :disabled="!hasScrolledToBottom"
           :label="t('LABEL_CHECKBOX_TERMS_OF_USE')"
-          class="shrink mr-2 mt-0"></v-checkbox>
+          class="mt-0 mr-2 shrink"></v-checkbox>
         <v-spacer></v-spacer>
         <DCActionButton
           isDialogButton

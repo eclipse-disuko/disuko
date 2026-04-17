@@ -234,13 +234,13 @@ const getStatusClass = computed(() => (status?: string) => {
                   :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
               </template>
               <div class="bg-background" style="width: 280px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DIconButton icon="mdi-close" @clicked="statusFilterMenu = false" color="default" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterStatus"
                   :items="possibleStatus"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('FILTER_BY_STATUS')"
                   clearable
                   multiple
@@ -253,7 +253,7 @@ const getStatusClass = computed(() => (status?: string) => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{item, props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>

@@ -51,7 +51,7 @@ const onDidYouKnowClick = () => {
     <div role="heading" class="text-h4 font-weight-light">
       {{ t('WELCOME', {forename: forename}) }}
     </div>
-    <div class="flex flex-col md:flex-row gap-8 mt-10">
+    <div class="mt-10 flex flex-col gap-8 md:flex-row">
       <Stack v-if="rights.allowProject && rights.allowProject.create">
         <HomeTile
           type="action"

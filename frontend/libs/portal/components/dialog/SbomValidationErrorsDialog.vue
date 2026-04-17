@@ -13,7 +13,7 @@
         </v-list>
         <DCopyClipboardButton
           :tableButton="true"
-          class="mr-4 position-absolute top-0 right-0"
+          class="position-absolute top-0 right-0 mr-4"
           :hint="t('TT_COPY_TO_CLIPBOARD')"
           :content="rawErrors" />
       </div>

@@ -35,7 +35,7 @@ onBeforeMount(() => {
 <template>
   <Stack class="overflow-hidden">
     <h2 class="text-body-1 py-0">{{ t('WIZARD_page_summary') }}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <SummaryItem :label="t('WIZARD_project_name')" :value="wizardStore.project.name" />
       <div class="md:col-span-2">
         <SummaryItem :label="t('WIZARD_project_description')">
@@ -48,7 +48,7 @@ onBeforeMount(() => {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <SummaryItem :label="t('WIZARD_target_platform')" :value="wizardStore.project.targetPlatform" />
       <SummaryItem :label="t('WIZARD_architecture')" :value="wizardStore.project.architecture" />
       <SummaryItem :label="t('WIZARD_target_users')" :value="wizardStore.project.targetUsers" />
@@ -59,7 +59,7 @@ onBeforeMount(() => {
       </SummaryItem>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
       <Stack>
         <SummaryItem
           :label="t('WIZARD_Developer_CompanyCode_Department')"
@@ -94,9 +94,9 @@ onBeforeMount(() => {
       </div>
     </div>
 
-    <div class="text-xs d-text d-secondary-text">{{ t('WIZARD_resulting_labelset') }}</div>
+    <div class="d-text d-secondary-text text-xs">{{ t('WIZARD_resulting_labelset') }}</div>
     <Stack v-if="wizardStore.previewLoading" direction="row">
-      <div v-for="(_, i) in [0, 1, 2]" :key="i" class="h-7 w-[120px] animate-pulse bg-gray-500 rounded"></div>
+      <div v-for="(_, i) in [0, 1, 2]" :key="i" class="h-7 w-[120px] animate-pulse rounded bg-gray-500"></div>
     </Stack>
     <Stack v-else direction="row" class="pb-4" wrap>
       <ProjectLabel v-for="label in wizardStore.project.labels" :key="label" :label="labelStore.getLabelByKey(label)" />

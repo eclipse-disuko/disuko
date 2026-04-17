@@ -148,7 +148,7 @@ watch(
         @click="navIsCollapsed = !navIsCollapsed"
         :title="t('APP_NAME')"
         :prepend-icon="navIsCollapsed ? 'mdi-menu' : 'mdi-close'"
-        class="pt-5 pb-3 navbar">
+        class="navbar pt-5 pb-3">
       </v-list-item>
       <v-list flat v-if="appStore.navItemGroup">
         <div v-for="item in appStore.navItemGroup.items" :key="item.path" class="mb-4">
@@ -184,11 +184,11 @@ watch(
     :theme="config.useWinterTheme ? 'dark' : undefined">
     <DBreadcrumb></DBreadcrumb>
     <v-spacer></v-spacer>
-    <v-btn large color="button" variant="outlined" prepend-icon="mdi-help" class="mr-2 border-sm" @click="openHelp">
+    <v-btn large color="button" variant="outlined" prepend-icon="mdi-help" class="border-sm mr-2" @click="openHelp">
       <template v-slot:prepend>
         <span
           v-if="hasCustomHelp"
-          class="rounded-full ml-2 size-2 bg-blue-45"
+          class="bg-blue-45 ml-2 size-2 rounded-full"
           :class="{'animate-pulse': isHelpAnimating}"></span>
         <v-icon v-else color="primary"></v-icon>
       </template>
@@ -208,7 +208,7 @@ watch(
         <v-btn
           large
           v-bind="props"
-          class="mr-5 border-sm"
+          class="border-sm mr-5"
           color="button"
           variant="outlined"
           prepend-icon="mdi-account-circle-outline">

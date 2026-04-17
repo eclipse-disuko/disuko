@@ -245,7 +245,7 @@ watch(selectedInGrid, evaluateHeaderCheckboxState);
                     v-for="(label, i) in row._policyLabels"
                     :key="'a' + i"
                     :label="label"
-                    class="inline-block m-1"></ProjectLabel>
+                    class="m-1 inline-block"></ProjectLabel>
                 </div>
               </Stack>
             </template>

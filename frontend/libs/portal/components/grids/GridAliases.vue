@@ -4,7 +4,7 @@
 
 <template>
   <div class="pa-4">
-    <v-row class="header d-flex flex-row align-center ga-4" v-if="mode === 'edit'">
+    <v-row class="header d-flex align-center ga-4 flex-row" v-if="mode === 'edit'">
       <h2 class="d-headline">Alias</h2>
       <DCActionButton large :text="t('BTN_ADD')" icon="mdi-plus" :hint="t('TT_add_alias')" @click="createEmptyAlias" />
     </v-row>

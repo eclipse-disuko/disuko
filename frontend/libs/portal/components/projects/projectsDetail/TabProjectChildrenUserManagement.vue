@@ -432,13 +432,13 @@ watch(
                   :color="selectedFilterUserType.length > 0 ? 'primary' : 'default'" />
               </template>
               <div class="bg-background" style="width: 280px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterUserType"
                   :items="possibleUserTypes"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_userType')"
                   clearable
                   multiple
@@ -451,7 +451,7 @@ watch(
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>

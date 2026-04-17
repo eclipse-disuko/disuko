@@ -225,7 +225,7 @@ onMounted(async () => {
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid grid-cols-12 w-full">
+      <div class="grid w-full grid-cols-12">
         <div class="sm:col-span-5 md:col-span-4 lg:col-span-2">
           <v-checkbox v-model="unreferencedOnly" hide-details color="primary" :label="t('LABEL_UNREF_ONLY')" />
         </div>
@@ -270,13 +270,13 @@ onMounted(async () => {
                   " />
               </template>
               <div class="bg-background" style="width: 320px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DCloseButton @click="menuIsLicenseChart = false" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterIsLicenseChart"
                   :items="possibleIsLicenseChart"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_License_Chart_Status')"
                   clearable
                   multiple
@@ -289,7 +289,7 @@ onMounted(async () => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>
@@ -324,13 +324,13 @@ onMounted(async () => {
                   :color="selectedFilterSource && selectedFilterSource.length > 0 ? 'primary' : 'secondary'" />
               </template>
               <div class="bg-background" style="width: 320px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DCloseButton @click="menuSource = false" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterSource"
                   :items="possibleSources"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_License_Chart_Status')"
                   clearable
                   multiple
@@ -343,7 +343,7 @@ onMounted(async () => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>
@@ -378,13 +378,13 @@ onMounted(async () => {
                   :color="selectedFilterFamily && selectedFilterFamily.length > 0 ? 'primary' : 'secondary'" />
               </template>
               <div class="bg-background" style="width: 320px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DCloseButton @click="menuFamily = false" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterFamily"
                   :items="possibleFamilies"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_License_Chart_Status')"
                   clearable
                   multiple
@@ -397,7 +397,7 @@ onMounted(async () => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>
@@ -432,13 +432,13 @@ onMounted(async () => {
                   :color="selectedFilterType && selectedFilterType.length > 0 ? 'primary' : 'secondary'" />
               </template>
               <div class="bg-background" style="width: 320px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DCloseButton @click="menuType = false" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterType"
                   :items="possibleType"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_License_Chart_Status')"
                   clearable
                   multiple
@@ -451,7 +451,7 @@ onMounted(async () => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>
@@ -486,13 +486,13 @@ onMounted(async () => {
                   :color="selectedFilterApproval && selectedFilterApproval.length > 0 ? 'primary' : 'secondary'" />
               </template>
               <div class="bg-background" style="width: 320px">
-                <v-row class="d-flex justify-end ma-1 mr-2">
+                <v-row class="d-flex ma-1 mr-2 justify-end">
                   <DCloseButton @click="menuApproval = false" />
                 </v-row>
                 <v-select
                   v-model="selectedFilterApproval"
                   :items="possibleApproval"
-                  class="mx-2 pa-2 pb-4"
+                  class="pa-2 mx-2 pb-4"
                   :label="t('Lbl_filter_License_Chart_Status')"
                   clearable
                   multiple
@@ -505,7 +505,7 @@ onMounted(async () => {
                   persistent-clear
                   :list-props="{class: 'striped-filter-dd py-0'}">
                   <template v-slot:item="{props}">
-                    <v-list-item v-bind="props" class="py-0 px-2">
+                    <v-list-item v-bind="props" class="px-2 py-0">
                       <template v-slot:prepend="{isSelected}">
                         <v-checkbox hide-details :model-value="isSelected" />
                       </template>

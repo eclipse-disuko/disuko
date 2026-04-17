@@ -27,7 +27,7 @@ const noticeMeta = defineModel<NoticeContactMetaDTO>('noticeMeta', {required: tr
 </script>
 
 <template>
-  <Stack class="pt-4 gap-3">
+  <Stack class="gap-3 pt-4">
     <Stack direction="row" v-if="hasParent">
       <v-icon color="warning" class="mr-2">mdi-alert</v-icon>
       <span>{{ t('OWNER_SETTINGS_FROM_PARENT') }}</span>

@@ -154,7 +154,7 @@ defineExpose({openWithoutDetails, makeVisible});
               v-model="emphasiseConfirmation"
               :label="t(emphasiseConfirmationText)"
               hide-details
-              class="pt-1 mt-5" />
+              class="mt-5 pt-1" />
           </v-col>
         </v-row>
       </v-card-text>

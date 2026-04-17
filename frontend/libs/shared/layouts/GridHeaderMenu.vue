@@ -36,7 +36,7 @@ const showMenu = ref(false);
     <v-card class="w-[400px]">
       <Stack class="gap-1">
         <Stack direction="row" justify="between" align="center" class="ma-1 mr-2 ml-4">
-          <span class="text-base align-self-center">{{ cardTitle }}</span>
+          <span class="align-self-center text-base">{{ cardTitle }}</span>
           <DCloseButton @click="showMenu = false" />
         </Stack>
         <Stack
@@ -60,7 +60,7 @@ const showMenu = ref(false);
             transition="scale-transition"
             @update:modelValue="(value: string[]) => emit('update', value)">
             <template v-slot:item="{props, item}">
-              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="py-0 px-2">
+              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="px-2 py-0">
                 <template v-slot:prepend="{isSelected}">
                   <v-checkbox hide-details :model-value="isSelected" />
                 </template>

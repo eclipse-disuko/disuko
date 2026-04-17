@@ -215,24 +215,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-row class="pt-8 pa-4 m-0">
+  <v-row class="pa-4 m-0 pt-8">
     <v-col cols="12" xs="12" sm="6" md="4" lg="3" xl="2" v-for="(module, index) in tiles" :key="index" class="pa-4">
       <v-card :href="'#' + module.url" style="overflow: visible" class="card-border">
         <v-col cols="4" style="position: relative">
           <v-card
             width="80px"
             height="60px"
-            class="pt-2 d-flex align-center justify-center mt-n8 card-border"
+            class="d-flex align-center mt-n8 card-border justify-center pt-2"
             style="position: absolute"
             :href="'#' + module.url">
             <v-icon :icon="module.icon" size="x-large"></v-icon>
           </v-card>
         </v-col>
-        <v-card-title class="text-right font-weight-light">
+        <v-card-title class="font-weight-light text-right">
           {{ t(module.title) }}
         </v-card-title>
         <v-divider :thickness="1" class="border-opacity-100" color="mbti" inset></v-divider>
-        <v-card-text class="text-right text-body-2">
+        <v-card-text class="text-body-2 text-right">
           {{ module.cnt !== -1 ? module.cnt : '&#10240;' }}
         </v-card-text>
       </v-card>

@@ -650,7 +650,7 @@ onMounted(async () => {
 <template>
   <TableLayout data-testid="licenses" @mouseleave="headerExpands">
     <template #description>
-      <div class="d-flex flex-row align-center ga-3">
+      <div class="d-flex align-center ga-3 flex-row">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
         <NewOrEditLicenseDialog
           mode="create"

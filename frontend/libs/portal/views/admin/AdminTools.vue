@@ -60,7 +60,7 @@ defineExpose({
 
 <template>
   <v-container fluid>
-    <v-row class="pl-2 pt-2 align-center measure-height">
+    <v-row class="align-center measure-height pt-2 pl-2">
       <v-col xs="12" md="auto" class="d-flex align-center">
         <h1 class="text-h5 pr-2">{{ t('TOOLS') }}</h1>
       </v-col>

@@ -9,7 +9,7 @@
 </script>
 
 <template>
-  <div class="flex z-1 justify-between overflow-y-clip overflow-x-auto">
+  <div class="z-1 flex justify-between overflow-x-auto overflow-y-clip">
     <slot></slot>
   </div>
 </template>

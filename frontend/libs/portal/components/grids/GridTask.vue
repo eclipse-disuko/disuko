@@ -226,7 +226,7 @@ onMounted(async () => {
         :text="t('BTN_DOWNLOAD')"
         icon="mdi-download"
         :hint="t('TT_download_tasks_csv')"
-        class="mx-2 align-content-center"
+        class="align-content-center mx-2"
         @click="downloadCsv" />
       <v-text-field
         autocomplete="off"

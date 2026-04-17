@@ -69,7 +69,7 @@ const onCardSelect = (architecture: Architecture) => {
 <template>
   <Stack class="overflow-hidden">
     <h2 class="text-body-1 py-0">{{ t('WIZARD_page_architecture_hint') }}</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1">
+    <div class="mb-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
       <WizardCard v-for="card in cardList" :key="card.key" :card="card" @update="onCardSelect($event)" />
     </div>
   </Stack>

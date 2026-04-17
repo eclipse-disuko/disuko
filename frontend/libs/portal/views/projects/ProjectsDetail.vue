@@ -144,7 +144,7 @@ onUnmounted(() => {
 
 <template>
   <v-container v-if="currentProject" fluid class="h-full px-6" data-testid="projects-details">
-    <div v-if="!itemVersion" class="flex flex-row align-center pb-3 ga-2 flex-wrap">
+    <div v-if="!itemVersion" class="align-center ga-2 flex flex-row flex-wrap pb-3">
       <v-chip v-if="currentProject.isDummy" class="dummy-tag" label>DUMMY</v-chip>
       <span class="text-h5 inline-block" :class="{statusDeprecated: currentProject.status === 'deprecated'}">
         {{ currentProject.isGroup ? t('GROUP') : t('PROJECT') }} <q>{{ currentProject.name }}</q>

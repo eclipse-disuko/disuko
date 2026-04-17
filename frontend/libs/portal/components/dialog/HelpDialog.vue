@@ -8,19 +8,19 @@
       <div
         ref="contentRef"
         :class="tableOfContents.length > 0 ? 'flex-[3]' : 'flex-1'"
-        class="pr-4 border-r border-grey-70/50">
+        class="border-grey-70/50 border-r pr-4">
         <Markdown :text="enhancedText"></Markdown>
       </div>
-      <div v-if="tableOfContents.length > 0" class="flex-1 self-start sticky top-0 pl-4">
+      <div v-if="tableOfContents.length > 0" class="sticky top-0 flex-1 self-start pl-4">
         <Stack class="max-h-[70vh]">
-          <div class="text-sm font-semibold sticky top-0">Table of Contents</div>
+          <div class="sticky top-0 text-sm font-semibold">Table of Contents</div>
           <nav class="flex flex-col">
             <a
               v-for="item in tableOfContents"
               :key="item.id"
               :href="`#${item.id}`"
               :class="[
-                'block my-1 text-sm border-l-2 border-transparent text-font',
+                'text-font my-1 block border-l-2 border-transparent text-sm',
                 'hover:text-yellow-45 hover:border-l-yellow-45',
                 {
                   'text-yellow-45 border-l-yellow-45': activeId === item.id,

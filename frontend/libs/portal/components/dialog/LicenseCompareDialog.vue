@@ -229,7 +229,7 @@ export default defineComponent({
               </v-col>
             </v-row>
           </v-card-title>
-          <v-card-text class="pt-2 px-0">
+          <v-card-text class="px-0 pt-2">
             <v-col cols="12" xs="12">
               <span class="text-body-1">{{ t('LicenseTextSearchDialogHelperText') }}</span>
             </v-col>
@@ -284,7 +284,7 @@ export default defineComponent({
             </v-col>
             <v-col v-if="diffDetails.length > 0">
               <h2 class="d-headline mb-3">{{ t('DIFF_DETAILS') }}: {{ licenseId }}</h2>
-              <v-row class="mt-0 mb-3 mr-0 ml-0" v-for="(diff, i) in diffDetails" :key="i">
+              <v-row class="mt-0 mr-0 mb-3 ml-0" v-for="(diff, i) in diffDetails" :key="i">
                 <code-diff
                   :old-string="diff.oldValue"
                   :new-string="diff.newValue"

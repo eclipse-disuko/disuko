@@ -85,7 +85,7 @@ const activeRules = ref({
 
 <template>
   <div class="pa-4 pt-6">
-    <v-row class="header d-flex flex-row align-center ga-4" v-if="customIds.ids.length >= 1">
+    <v-row class="header d-flex align-center ga-4 flex-row" v-if="customIds.ids.length >= 1">
       <DCActionButton
         large
         :hint="t('TT_add_customid')"
@@ -94,7 +94,7 @@ const activeRules = ref({
         @click="createEmptyId"></DCActionButton>
     </v-row>
     <v-row>
-      <v-col cols="12" xs="12" class="pt-4 px-0">
+      <v-col cols="12" xs="12" class="px-0 pt-4">
         <v-data-table
           :items="currentCustomIds"
           :headers="headers"

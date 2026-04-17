@@ -300,7 +300,7 @@ defineExpose({
           </v-autocomplete>
           <div
             v-if="canAddLicense && item.triggerType === TriggerTypes.LICENSE"
-            class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+            class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
             @click="addLicense">
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_LICENSE') }}</span>
@@ -333,7 +333,7 @@ defineExpose({
           </v-autocomplete>
           <div
             v-if="item.triggerType === TriggerTypes.CLASS_AND || item.triggerType === TriggerTypes.CLASS_OR"
-            class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+            class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
             @click="addClassification">
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_OBLIGATION') }}</span>
@@ -347,7 +347,7 @@ defineExpose({
             dynamic-placeholder />
           <div
             v-if="item.triggerType === TriggerTypes.COMPONENT_NAME"
-            class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+            class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
             @click="addComponentName">
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('LBL_COMPONENT_NAME') }}</span>

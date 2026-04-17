@@ -55,13 +55,13 @@ const resetSelectedHeaders = () => {
     <template v-slot:activator="{props}">
       <div
         v-if="showBorders"
-        class="absolute top-0 left-0 w-[40px] h-[40px] border-[rgb(var(--v-theme-primary))] border-t-[2px] border-l-[2px]"></div>
+        class="absolute top-0 left-0 h-[40px] w-[40px] border-t-[2px] border-l-[2px] border-[rgb(var(--v-theme-primary))]"></div>
       <DIconButton
         :parentProps="props"
         icon="mdi-cog"
         :hint="t('TT_TABLE_SETTINGS')"
         color="primary"
-        class="absolute top-0 left-0 w-[40px] h-[40px]" />
+        class="absolute top-0 left-0 h-[40px] w-[40px]" />
     </template>
   </GridHeaderMenu>
 </template>

@@ -180,13 +180,13 @@ defineExpose({open, close});
               {{ t('LIC_FAMILY_' + oldLicense.meta.family?.toUpperCase().replace(' ', '_')) }}
             </p>
           </v-col>
-          <v-col cols="2" class="text-right px-0">
+          <v-col cols="2" class="px-0 text-right">
             <DCloseButton @click="close()" />
           </v-col>
         </v-row>
       </v-card-title>
       <v-card-text>
-        <v-row class="mt-0 mb-3 mr-0 ml-0" v-for="(diff, i) in diffDetails" :key="i">
+        <v-row class="mt-0 mr-0 mb-3 ml-0" v-for="(diff, i) in diffDetails" :key="i">
           <h3 class="d-subtitle d-secondary-text d-inline">{{ diff.field }}</h3>
           <code-diff
             :theme="getTheme()"

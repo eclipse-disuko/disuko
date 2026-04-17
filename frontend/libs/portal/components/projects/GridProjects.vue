@@ -220,7 +220,7 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
                       <Tooltip>{{ t('TT_SHOW_FILTER') }}</Tooltip>
                     </span>
                   </template>
-                  <div class="w-[320px] bg-background">
+                  <div class="bg-background w-[320px]">
                     <v-card class="d-flex justify-space-between align-center">
                       <v-checkbox hide-details v-model="filterGroups" :label="t('lbl_filter_on_group')" />
                       <DCloseButton @click="menuIsGroup = false" />
@@ -275,7 +275,7 @@ const customFilterTable = (rawCellValue: unknown, search: string, internalItem: 
           </template>
 
           <template v-slot:expanded-row="{item}">
-            <td :colspan="headers.length" class="cursor-default h-full overflow-y-clip bg-table-header">
+            <td :colspan="headers.length" class="bg-table-header h-full cursor-default overflow-y-clip">
               <GridProjectsExpandContent :item="item" :is-async="false" />
             </td>
           </template>

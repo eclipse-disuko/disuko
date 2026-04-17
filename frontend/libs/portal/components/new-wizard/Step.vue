@@ -54,7 +54,7 @@ const isClickable = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center space-y-1 relative min-w-[85px] max-w-[110px]">
+  <div class="relative flex max-w-[110px] min-w-[85px] flex-col items-center space-y-1">
     <v-btn
       :class="btnClasses"
       :variant="!isActive ? 'outlined' : undefined"
@@ -63,18 +63,18 @@ const isClickable = computed(() => {
       @click="emit('click')">
       <template v-if="props.step.isCompleted"><v-icon size="18">mdi-check</v-icon></template>
       <template v-else>
-        <span v-if="isActive" class="text-white font-bold">{{ props.step.index + 1 }}</span>
+        <span v-if="isActive" class="font-bold text-white">{{ props.step.index + 1 }}</span>
         <span v-else>{{ props.step.index + 1 }}</span>
       </template>
     </v-btn>
     <div
-      class="text-body-2 break-words hyphens-auto w-full text-center px-1"
+      class="text-body-2 w-full px-1 text-center break-words hyphens-auto"
       :class="{'opacity-50': !isActive}"
       :lang="appLanguage">
       {{ t(props.step.i18nKey) }}
     </div>
     <small
-      class="block text-[11px] leading-[1.1] min-h-[14px] text-center break-words w-full text-yellow-700 dark:text-yellow-500">
+      class="block min-h-[14px] w-full text-center text-[11px] leading-[1.1] break-words text-yellow-700 dark:text-yellow-500">
       {{ props.step.errorText || ' ' }}
     </small>
   </div>

@@ -59,7 +59,7 @@ const value = computed({
       <Tooltip :text="help" as-parent>
         <v-icon
           icon="mdi-help-circle-outline"
-          class="cursor-help text-gray-400 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-250"></v-icon>
+          class="cursor-help text-gray-400 opacity-0 transition-opacity duration-250 group-focus-within:opacity-100 group-hover:opacity-100"></v-icon>
       </Tooltip>
     </template>
   </v-select>
@@ -81,7 +81,7 @@ const value = computed({
       <Tooltip :text="help" as-parent>
         <v-icon
           icon="mdi-help-circle-outline"
-          class="cursor-help text-gray-400 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-250"></v-icon>
+          class="cursor-help text-gray-400 opacity-0 transition-opacity duration-250 group-focus-within:opacity-100 group-hover:opacity-100"></v-icon>
       </Tooltip>
     </template>
   </v-select>

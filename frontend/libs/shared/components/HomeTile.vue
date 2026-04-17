@@ -71,7 +71,7 @@ const expand = ref(false);
     size="x-large"
     variant="text"
     @click="emit('click')"
-    class="flex align-center justify-start">
+    class="align-center flex justify-start">
     <v-icon color="primary" size="x-large">{{ icon }}</v-icon>
     <span class="text-h4 font-weight-light">{{ title }}</span>
     <v-badge

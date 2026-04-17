@@ -569,7 +569,7 @@ defineExpose({
                             hide-details
                             color="primary"
                             :label="t('LICENSE_CHART_TITLE')"
-                            class="shrink mr-2 mt-0"></v-switch>
+                            class="mt-0 mr-2 shrink"></v-switch>
                         </v-col>
                         <v-col cols="12" v-if="formError">
                           <span class="text-[rgb(var(--v-theme-error))]">{{ t(formError) }}</span>

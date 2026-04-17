@@ -39,7 +39,7 @@
           :item-class="getCssClassForTableRow">
           <template v-slot:bottom>
             <v-row>
-              <v-col class="d-flex justify-end paddingRightItems mr-7 mb-4 fontColorItems">
+              <v-col class="d-flex paddingRightItems fontColorItems mr-7 mb-4 justify-end">
                 <span class="fontColorItems font-weight-light">
                   {{ t('TABLE_ITEMS') }}
                   <span class="font-weight-light fontColorItems"> {{ allObligations.length }}</span>

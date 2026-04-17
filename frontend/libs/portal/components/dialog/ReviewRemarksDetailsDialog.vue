@@ -12,7 +12,7 @@
       @secondary-action="close"
       @close="close">
       <template #title-right>
-        <div v-if="isOpen(item) || isInProgress(item)" class="flex gap-2 ml-4">
+        <div v-if="isOpen(item) || isInProgress(item)" class="ml-4 flex gap-2">
           <DCActionButton
             v-if="isOpen(item)"
             is-dialog-button
@@ -34,9 +34,9 @@
       </v-tabs>
       <v-tabs-window v-model="currentTab" class="h-100 overflow-auto">
         <v-tabs-window-item value="details">
-          <div class="grid grid-cols-2 mt-4 gap-4">
+          <div class="mt-4 grid grid-cols-2 gap-4">
             <div class="d-text label-text-field-color">
-              <p class="font-semibold mb-2">{{ t('COL_DESCRIPTION') }}:</p>
+              <p class="mb-2 font-semibold">{{ t('COL_DESCRIPTION') }}:</p>
               <div>
                 <template v-for="(part, index) in descriptionParts" :key="index">
                   <DExternalLink v-if="part.isUrl" :url="part.text" :text="part.text" />
@@ -45,7 +45,7 @@
               </div>
             </div>
             <div class="d-text label-text-field-color">
-              <p class="font-semibold mb-2">{{ t('COL_REFERENCES') }}:</p>
+              <p class="mb-2 font-semibold">{{ t('COL_REFERENCES') }}:</p>
 
               <!-- SBOM Reference -->
               <div v-if="item?.sbomId !== ''" class="mb-3">
@@ -56,7 +56,7 @@
 
               <!-- Components -->
               <div v-if="componentsDisplay.length > 0" class="mb-3">
-                <p class="text-sm font-medium mb-2">{{ t('COMPONENTS') }}:</p>
+                <p class="mb-2 text-sm font-medium">{{ t('COMPONENTS') }}:</p>
                 <div class="flex flex-wrap gap-1">
                   <router-link
                     v-for="component in componentsDisplay"
@@ -65,7 +65,7 @@
                     :key="component.key">
                     <v-chip size="small" variant="outlined" color="secondary">
                       <span class="font-semibold">{{ component.name }}</span>
-                      <span class="text-gray-500 ml-1">@{{ component.version }}</span>
+                      <span class="ml-1 text-gray-500">@{{ component.version }}</span>
                     </v-chip>
                   </router-link>
                 </div>
@@ -73,7 +73,7 @@
 
               <!-- Licenses -->
               <div v-if="licensesDisplay.length > 0">
-                <p class="text-sm font-medium mb-2">{{ t('LICENSES') }}:</p>
+                <p class="mb-2 text-sm font-medium">{{ t('LICENSES') }}:</p>
                 <div class="flex flex-wrap gap-1">
                   <template v-if="user.getRights.allowLicense.read">
                     <router-link v-for="license in licensesDisplay" :to="license.to" :key="license.key" target="_blank">

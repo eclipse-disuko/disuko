@@ -198,7 +198,7 @@ defineExpose({close});
                 chips
                 closable-chips
                 :label="t('PROJECTS')"
-                class="pb-2 required"
+                class="required pb-2"
                 hide-details="auto"
                 :rules="rulesMultiSelectbox">
                 <template v-slot:prepend-item>
@@ -261,7 +261,7 @@ defineExpose({close});
                 variant="outlined"
                 hide-details="auto"
                 v-model="item.comment"
-                class="pl-2 pr-2"
+                class="pr-2 pl-2"
                 :label="t('COL_USER_COMMENT')"
                 :rules="activeRules.comment" />
             </v-col>
@@ -274,7 +274,7 @@ defineExpose({close});
                       :disabled="isResponsible || item.userType != UserType.OWNER"
                       :label="t('COL_USER_ROLE_RESPONSIBLE')"
                       hide-details
-                      class="pt-1 mt-0" />
+                      class="mt-0 pt-1" />
                   </div>
                 </template>
                 <span>{{ t('TT_RESPONSIBLE') }}</span>

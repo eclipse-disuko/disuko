@@ -78,7 +78,7 @@ if (props.variant === 'slider') {
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
       <div
-        class="h-[100%] flex justify-start align-center pl-8 pr-5"
+        class="align-center flex h-[100%] justify-start pr-5 pl-8"
         @click.stop
         @mouseenter="stopSlideInTimerAndSlideOut"
         @mouseleave="startSlideInTimer">
@@ -111,7 +111,7 @@ if (props.variant === 'slider') {
           <template v-for="button in buttons" :key="button.icon">
             <div
               :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}"
-              class="transition-[opacity] ease-in-out duration-200">
+              class="transition-[opacity] duration-200 ease-in-out">
               <div
                 v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
                 class="d-inline size-10"

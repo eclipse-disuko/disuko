@@ -4,7 +4,7 @@
 
 <template>
   <Stack class="h-full p-6">
-    <h1 class="text-h5 pb-3 ga-2">{{ t('ANALYTICS') }}</h1>
+    <h1 class="text-h5 ga-2 pb-3">{{ t('ANALYTICS') }}</h1>
     <v-card>
       <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
         <v-tab value="overview" :to="tabUrl.overview">

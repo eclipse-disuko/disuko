@@ -28,7 +28,7 @@
           </template>
           <div style="width: 320px" class="bg-background">
             <v-card>
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DCloseButton @click="menu = false"></DCloseButton>
               </v-row>
 
@@ -36,7 +36,7 @@
                 variant="outlined"
                 v-model="selectedFilterStatus"
                 density="compact"
-                class="mx-2 pa-2"
+                class="pa-2 mx-2"
                 autofocus
                 clearable
                 :items="possibleStatus"
@@ -50,7 +50,7 @@
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
                 <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" :title="undefined" class="py-0 px-2">
+                  <v-list-item v-bind="props" :title="undefined" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>

@@ -132,7 +132,7 @@ defineExpose({
             <v-col cols="10" class="d-flex align-center">
               <span class="text-h5">{{ title }}</span>
             </v-col>
-            <v-col cols="2" class="text-right px-0">
+            <v-col cols="2" class="px-0 text-right">
               <DCloseButton @click="close" />
             </v-col>
           </v-row>

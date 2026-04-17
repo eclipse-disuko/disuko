@@ -22,7 +22,7 @@
                 <tr>
                   <td></td>
                   <td></td>
-                  <td class="d-flex justify-end mt-2">
+                  <td class="d-flex mt-2 justify-end">
                     <span class="font-weight-light">
                       {{ t('TABLE_ITEMS') }}
                       <span class="font-weight-light"> {{ items.length }}</span>
@@ -54,7 +54,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="shrink ma-5 d-flex justify-center" v-else>
+    <v-row class="ma-5 d-flex shrink justify-center" v-else>
       <h1 class="d-headline">{{ t('GRID_PROJECTS_RECENT_EMPTY') }}</h1>
     </v-row>
   </v-main>

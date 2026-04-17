@@ -117,7 +117,7 @@ watch(
                 </template>
               </span>
             </v-col>
-            <v-col cols="2" class="text-right px-0">
+            <v-col cols="2" class="px-0 text-right">
               <DCloseButton @click="closeDialog" />
             </v-col>
           </v-row>

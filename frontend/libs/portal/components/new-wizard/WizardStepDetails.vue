@@ -45,7 +45,7 @@ const onEnter = async () => {
     <Stack>
       <h2 class="text-body-1 py-0">{{ t('WIZARD_page_details_hint') }}</h2>
       <div
-        class="grid grid-cols-1 gap-3 w-full"
+        class="grid w-full grid-cols-1 gap-3"
         :class="{'md:grid-cols-2': wizardStore.isEnterpriseOrMobilePlatform && capabilitiesStore.applicationConnector}">
         <v-text-field
           autocomplete="off"

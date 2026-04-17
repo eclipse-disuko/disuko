@@ -259,7 +259,7 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
         @deniedPolicyDecision="emit('openPolicyDecisionDialog', getPolicy())" />
     </td>
     <td>
-      <span v-if="policyDecisionApplied" class="d-inline-block w-[18px] h-[16px]">
+      <span v-if="policyDecisionApplied" class="d-inline-block h-[16px] w-[18px]">
         <v-icon size="small" :color="policyDecisionApplied.previewMode ? 'grey' : ''">
           {{ policyDecisionApplied.previewMode ? 'mdi-progress-alert' : 'mdi-information-outline' }}
         </v-icon>
