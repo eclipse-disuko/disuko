@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import type ComponentCompareDialog from '@disclosure-portal/components/projects/projectsVersions/dialogs/ComponentCompareDialog.vue';
+import type ComponentCompareDialog from '@disclosure-portal/components/projects/projectsVersions/tab-sbom-compare/ComponentCompareDialog.vue';
 import Icons from '@disclosure-portal/constants/icons';
 import {PolicyState} from '@disclosure-portal/model/PolicyRule';
 import {SpdxIdentifier} from '@disclosure-portal/model/Spdx';

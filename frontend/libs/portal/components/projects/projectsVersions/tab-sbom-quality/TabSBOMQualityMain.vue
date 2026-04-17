@@ -20,16 +20,16 @@ type QualityTab = {
 
 const componentMap: Record<string, ReturnType<typeof defineAsyncComponent>> = {
   scanRemarks: defineAsyncComponent(
-    () => import('@disclosure-portal/components/projects/projectsVersions/sbom-quality/TabScanRemarks.vue'),
+    () => import('@disclosure-portal/components/projects/projectsVersions/tab-sbom-quality/TabScanRemarks.vue'),
   ),
   licenseRemarks: defineAsyncComponent(
-    () => import('@disclosure-portal/components/projects/projectsVersions/sbom-quality/TabLicenseRemarks.vue'),
+    () => import('@disclosure-portal/components/projects/projectsVersions/tab-sbom-quality/TabLicenseRemarks.vue'),
   ),
   reviewRemarks: defineAsyncComponent(
-    () => import('@disclosure-portal/components/projects/projectsVersions/sbom-quality/TabReviewRemarks.vue'),
+    () => import('@disclosure-portal/components/projects/projectsVersions/tab-sbom-quality/TabReviewRemarks.vue'),
   ),
   generalRemarks: defineAsyncComponent(
-    () => import('@disclosure-portal/components/projects/projectsVersions/sbom-quality/TabGeneralRemarks.vue'),
+    () => import('@disclosure-portal/components/projects/projectsVersions/tab-sbom-quality/TabGeneralRemarks.vue'),
   ),
 };
 

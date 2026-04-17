@@ -237,7 +237,7 @@
 </template>
 
 <script lang="ts" setup>
-import type ComponentDetailsDialog from '@disclosure-portal/components/projects/projectsVersions/dialogs/ComponentDetailsDialog.vue';
+import type ComponentDetailsDialog from '@disclosure-portal/components/projects/projectsVersions/tab-component-list/ComponentDetailsDialog.vue';
 import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
 import {ScanRemark, ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects';
