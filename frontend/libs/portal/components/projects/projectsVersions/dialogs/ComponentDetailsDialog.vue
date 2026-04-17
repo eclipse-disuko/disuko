@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {DialogReviewRemarkConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
-import ReviewRemarksDetailsDialog from '@disclosure-portal/components/dialog/ReviewRemarksDetailsDialog.vue';
 import {useReviewRemarkActions} from '@disclosure-portal/composables/useReviewRemarkActions';
 import Icons from '@disclosure-portal/constants/icons';
 import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';

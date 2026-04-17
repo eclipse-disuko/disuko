@@ -2,9 +2,7 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<script setup lang="ts">
-import GridSBOM from '@disclosure-portal/components/grids/GridSBOM.vue';
-</script>
+<script setup lang="ts"></script>
 <template>
   <GridSBOM channelView />
 </template>
