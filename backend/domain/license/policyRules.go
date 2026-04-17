@@ -23,11 +23,29 @@ type PolicyRules struct {
 	ComponentsDeny  []string
 	ComponentsWarn  []string
 
-	Auxiliary      bool
-	Active         bool
-	ApplyToAll     bool
-	Deprecated     bool
-	DeprecatedDate time.Time
+	Auxiliary        bool
+	Active           bool
+	ApplyToAll       bool
+	Calculated       bool
+	CalculatedConfig CalculatedPolicyConfig
+	Deprecated       bool
+	DeprecatedDate   time.Time
+}
+
+type BucketDefinition struct {
+	DeniedClassifications  []string `json:"deniedClassifications"`
+	WarnedClassifications  []string `json:"warnedClassifications"`
+	AllowedClassifications []string `json:"allowedClassifications"`
+}
+
+type CalculatedPolicyConfig struct {
+	BucketDefinition *BucketDefinition        `json:"bucketDefinition"`
+	LicenseScope     []CalculatedPolicyFilter `json:"licenseScope"`
+}
+
+type CalculatedPolicyFilter struct {
+	Name   string   `json:"name"`
+	Values []string `json:"values"`
 }
 
 type PolicyResult int
@@ -62,18 +80,20 @@ func ToDto(entity *PolicyRules) *PolicyRulesDto {
 		status = StatusDeprecated
 	}
 	policyRule := &PolicyRulesDto{
-		Status:          status,
-		Name:            entity.Name,
-		LabelSets:       entity.LabelSets,
-		Description:     entity.Description,
-		ComponentsAllow: entity.ComponentsAllow,
-		ComponentsDeny:  entity.ComponentsDeny,
-		ComponentsWarn:  entity.ComponentsWarn,
-		Auxiliary:       entity.Auxiliary,
-		Deprecated:      entity.Deprecated,
-		DeprecatedDate:  entity.DeprecatedDate,
-		Active:          entity.Active,
-		ApplyToAll:      entity.ApplyToAll,
+		Status:           status,
+		Name:             entity.Name,
+		LabelSets:        entity.LabelSets,
+		Description:      entity.Description,
+		ComponentsAllow:  entity.ComponentsAllow,
+		ComponentsDeny:   entity.ComponentsDeny,
+		ComponentsWarn:   entity.ComponentsWarn,
+		Auxiliary:        entity.Auxiliary,
+		Deprecated:       entity.Deprecated,
+		DeprecatedDate:   entity.DeprecatedDate,
+		Active:           entity.Active,
+		ApplyToAll:       entity.ApplyToAll,
+		Calculated:       entity.Calculated,
+		CalculatedConfig: entity.CalculatedConfig,
 	}
 	domain.SetBaseValues(entity, policyRule)
 	return policyRule
