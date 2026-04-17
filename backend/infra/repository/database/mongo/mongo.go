@@ -42,10 +42,13 @@ func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes
 		conf.Config.Database.Port,
 	)
 
+	if conf.Config.Database.AdditionalArgs != "" {
+		uri += "&" + conf.Config.Database.AdditionalArgs
+	}
+
 	tlsConfig := tls.Config{
 		InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
 	}
-
 	if conf.Config.Database.CAFile != "" {
 		certs, err := os.ReadFile(conf.Config.Database.CAFile)
 		exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
@@ -55,9 +58,7 @@ func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes
 		}
 	}
 
-	api := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(api).SetTLSConfig(&tlsConfig)
-
+	opts := options.Client().ApplyURI(uri).SetTLSConfig(&tlsConfig)
 	client, err := mongo.Connect(opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
 
