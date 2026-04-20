@@ -2558,7 +2558,7 @@ func (projectHandler *ProjectHandler) EditReviewRemark(w http.ResponseWriter, r 
 		SpdxService:             projectHandler.SpdxService,
 	}
 
-	if !rrs.EditReviewRemark(currentProject, version.Key, remarkUuid, username, projectHandler.fullNameForUserSafe(requestSession, username), editData) {
+	if !rrs.EditReviewRemark(currentProject, version.Key, remarkUuid, username, projectHandler.fullNameForUserSafe(requestSession, username, nil), editData) {
 		exception.ThrowExceptionBadRequestResponse()
 		return
 	}
@@ -2605,7 +2605,7 @@ func (projectHandler *ProjectHandler) CommentReviewRemark(w http.ResponseWriter,
 	}
 	var before reviewremarks.Remark
 	copier.Copy(&before, remark)
-	remark.Comment(username, projectHandler.fullNameForUserSafe(requestSession, username), commentData.Content)
+	remark.Comment(username, projectHandler.fullNameForUserSafe(requestSession, username, nil), commentData.Content)
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, version.Key, username, message.ReviewRemarkCommented, cmp.Diff, *remark, before)
 	projectHandler.ReviewRemarksRepository.Update(requestSession, remarks)
 	responseData := SuccessResponse{
@@ -2658,13 +2658,13 @@ func (projectHandler *ProjectHandler) SetReviewRemarkStatus(w http.ResponseWrite
 	var before reviewremarks.Remark
 	copier.Copy(&before, remark)
 	if status == reviewremarks.Closed {
-		remark.Close(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Close(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.Cancelled {
-		remark.Cancel(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Cancel(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.InProgress {
-		remark.InProgress(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.InProgress(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.Open {
-		remark.Reopen(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Reopen(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else {
 		exception.ThrowExceptionBadRequestResponse()
 	}
