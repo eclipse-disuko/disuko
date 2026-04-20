@@ -72,6 +72,9 @@ const dark: ThemeDefinition = {
     //RuleButton
     ruleButton: neutral[80],
 
+    //DisabledButton
+    disabledButton: neutral[45],
+
     //labels
     labels: neutral[80],
     // cards

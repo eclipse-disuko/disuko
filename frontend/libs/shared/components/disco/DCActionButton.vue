@@ -10,8 +10,12 @@
     :block="block"
     :color="color ? color : 'primary'"
     :loading="loading"
-    :class="isDialogButton ? '' : 'text-none'"
-    class="pointer-events-auto"
+    :class="[
+      isDialogButton ? '' : 'text-none',
+      'pointer-events-auto',
+      'dc-action-button',
+      text ? 'dc-action-button--with-text' : 'dc-action-button--icon-only',
+    ]"
     @click="$emit('clicked')">
     <div class="d-inline discoActionBtnHover">
       <v-icon :color="color ? color : 'primary'" v-if="icon">{{ icon }}</v-icon>

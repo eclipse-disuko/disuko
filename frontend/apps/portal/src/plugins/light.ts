@@ -72,6 +72,9 @@ const light: ThemeDefinition = {
     //RuleButton
     ruleButton: grey[50],
 
+    //DisabledButton
+    disabledButton: neutral[80],
+
     //labels
     labels: grey[50],
 
