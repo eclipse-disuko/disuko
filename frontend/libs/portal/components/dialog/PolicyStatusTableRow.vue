@@ -327,13 +327,15 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
         </tooltip>
         &nbsp;
       </span>
+      <v-chip v-if="isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
+        {{ t('RECOMMENDED') }}
+      </v-chip>
       <DInternalLink
         v-if="shouldShowInternalLink()"
         :text="getInternalLinkText()"
         :url="'/#/dashboard/licenses/' + getInternalLinkText()"
         class="" />
       <span v-else>{{ getLicenseDisplayText() }}</span>
-      <v-icon v-if="isRecommended" size="small" color="yellow" class="ml-2">mdi-star</v-icon>
     </td>
     <td>
       <a

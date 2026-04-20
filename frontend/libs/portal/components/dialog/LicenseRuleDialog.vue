@@ -272,26 +272,26 @@ defineExpose({open});
             :rules="licenseDecisionRules">
             <template #item="{item, props}">
               <v-list-item v-bind="props" title="">
+                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
+                  {{ t('RECOMMENDED') }}
+                </v-chip>
                 <v-icon size="small" :color="item.raw.iconColor">
                   {{ item.raw.icon }}
                 </v-icon>
                 <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
                 <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
-                <v-icon v-if="item.raw.isRecommended" size="x-small" color="yellow" class="ml-2"
-                  >&nbsp;{{ 'mdi-star' }}</v-icon
-                >
               </v-list-item>
             </template>
             <template #selection="{item}">
               <div class="d-inline">
+                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
+                  {{ t('RECOMMENDED') }}
+                </v-chip>
                 <v-icon size="small" :color="item.raw.iconColor">
                   {{ item.raw.icon }}
                 </v-icon>
                 <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
                 <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
-                <v-icon v-if="item.raw.isRecommended" size="x-small" color="yellow" class="ml-2"
-                  >&nbsp;{{ 'mdi-star' }}</v-icon
-                >
               </div>
             </template>
           </v-select>

@@ -2082,5 +2082,6 @@
   "PROJECT_TASK_APPROVAL_PENDING": "Projektgenehmigung steht noch aus",
   "PROJECT_HAS_DENIED_DECISIONS": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
   "PROJECT_HAS_DENIED_DECISIONS_TO_BE_CANCELLED": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
+  "RECOMMENDED": "empfohlen",
   "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Bitte löschen Sie alle ausstehenden Aufgaben/Rollen/Spuren, bevor Sie den Benutzer löschen."
 }
