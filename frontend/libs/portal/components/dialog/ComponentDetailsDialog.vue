@@ -447,10 +447,10 @@ const filteredAndSortedNotDeniedPolicyStatus = computed(() => {
       const bw = b.licenseRecommendationWeight;
 
       if (aw == null && bw == null) return 0;
-      if (aw == null) return 1; // a nach unten
-      if (bw == null) return -1; // b nach unten
+      if (aw == null) return 1;
+      if (bw == null) return -1;
 
-      return aw - bw; // aufsteigend
+      return aw - bw;
     });
 });
 
