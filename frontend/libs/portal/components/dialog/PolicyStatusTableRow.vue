@@ -28,6 +28,7 @@ interface Props {
   responsible: boolean;
   isDeprecated: boolean;
   isUnmatched?: boolean;
+  isRecommended: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -181,6 +182,7 @@ const isDeniedPolicyDecisionDisabled = computed(
     props.details.PolicyDecisionDeniedReason === 'DECISION_DENIED_COMPONENT_VERSION_NOT_SET' ||
     !!getPolicy()?.deniedDecisionDeniedReason,
 );
+
 const deniedPolicyDecisionTooltip = computed(() => {
   if (!isDeniedPolicyDecisionDisabled.value) {
     return t('TT_denied_policy_decision');
@@ -331,6 +333,7 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
         :url="'/#/dashboard/licenses/' + getInternalLinkText()"
         class="" />
       <span v-else>{{ getLicenseDisplayText() }}</span>
+      <v-icon v-if="isRecommended" size="small" color="yellow" class="ml-2">mdi-star</v-icon>
     </td>
     <td>
       <a

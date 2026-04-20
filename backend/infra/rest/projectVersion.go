@@ -1647,7 +1647,7 @@ func (projectHandler *ProjectHandler) ProjectVersionComponentsForSbom(w http.Res
 	isAllowDeniedPolicyDecision := evaluateIsAllowDeniedPolicyDecision(rights.IsDomainAdmin(), rights.IsFossOffice(), isVehicle)
 
 	response := components.ComponentsInfoResponse{
-		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision),
+		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession),
 		ComponentStats:                 evalRes.Stats,
 		BulkPolicyDecisionDeniedReason: policyDecisionDeniedReason,
 	}

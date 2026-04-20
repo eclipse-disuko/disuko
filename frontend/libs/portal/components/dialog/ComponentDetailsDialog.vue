@@ -106,6 +106,7 @@ const policyDecisionDialog = ref();
 const viewRemarkDialog = ref();
 const reviewRemarks = ref<ReviewRemark[]>([]);
 const loadingRemarks = ref(false);
+const licenseRecommended = ref('');
 
 const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
 
@@ -124,6 +125,7 @@ const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUu
 
 const open = async (
   data: ComponentDetails,
+  licenseRecommendedValue: string,
   policyStatus?: PolicyRuleStatus[],
   unmatched?: UnmatchedLicense[],
   policyDecisionsApplied?: PolicyDecisionSlim[],
@@ -156,6 +158,7 @@ const open = async (
   if (policyDecisionDeniedReason) {
     details.value.PolicyDecisionDeniedReason = policyDecisionDeniedReason;
   }
+  licenseRecommended.value = licenseRecommendedValue;
 
   project.value = projectData;
   projectVersionId.value = versionKey;
@@ -268,6 +271,7 @@ const openLicenseRuleDialog = (licenseId: string) => {
     licenseId,
     component,
     policyStatus: details.value.PolicyStatus,
+    licenseRecommended: licenseRecommended.value,
   });
 };
 
@@ -415,6 +419,8 @@ const findPolicyDecisionApplied = (item: PolicyRuleStatus): PolicyDecisionSlim |
 
 const isPolicyDecisionPresent = computed(() => (details.value?.PolicyDecisionsApplied?.length ?? 0) > 0);
 
+const isRecommended = (item: PolicyRuleStatus): boolean => item.licenseMatched === licenseRecommended.value;
+
 const sortedReviewRemarks = computed(() => {
   const statusOrder = new Map<ReviewRemarkStatus, number>([
     [ReviewRemarkStatus.OPEN, 1],
@@ -430,6 +436,22 @@ const sortedReviewRemarks = computed(() => {
 
     return compareRRLevel(b.level, a.level);
   });
+});
+
+const filteredAndSortedNotDeniedPolicyStatus = computed(() => {
+  return (details.value?.PolicyStatus ?? [])
+    .filter((p) => p.type !== 'deny')
+    .slice()
+    .sort((a, b) => {
+      const aw = a.licenseRecommendationWeight;
+      const bw = b.licenseRecommendationWeight;
+
+      if (aw == null && bw == null) return 0;
+      if (aw == null) return 1; // a nach unten
+      if (bw == null) return -1; // b nach unten
+
+      return aw - bw; // aufsteigend
+    });
 });
 
 defineExpose({
@@ -539,6 +561,7 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
+                      :isRecommended="false"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -554,13 +577,14 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="true"
+                      :isRecommended="false"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
                       @openLicenseRuleDialog="openLicenseRuleDialog"
                       @openPolicyDecisionDialog="openPolicyDecisionDialog" />
                     <PolicyStatusTableRow
-                      v-for="(item, index) in details.PolicyStatus.filter((p) => p.type !== 'deny')"
+                      v-for="(item, index) in filteredAndSortedNotDeniedPolicyStatus"
                       :key="`policy-status-other-${index}`"
                       :item="item"
                       :policyDecisionApplied="findPolicyDecisionApplied(item)"
@@ -570,6 +594,7 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
+                      :isRecommended="isRecommended(item)"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
