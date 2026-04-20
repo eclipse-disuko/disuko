@@ -1247,7 +1247,7 @@ func (projectHandler *ProjectHandler) ProjectGetApprovalList(w http.ResponseWrit
 	}
 	var (
 		res           []approval2.ApprovalDto
-		fullnameCache map[string]string
+		fullnameCache = make(map[string]string)
 	)
 	for _, app := range approvalList.Approvals {
 		approverFullNames := projectHandler.getApproverFullNames(requestSession, app, fullnameCache)
