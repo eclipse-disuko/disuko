@@ -78,9 +78,7 @@ export const useProjectStore = defineStore('project', () => {
 
   // API Calls
   const fetchProjects = async (options?: SearchOptions, signal?: AbortSignal) => {
-    if (state.projects.length === 0 || options) {
-      state.loading = true;
-    }
+    state.loading = true;
     try {
       const projectsResponse = options
         ? await projectService.getAllWithOptions(options, signal)
