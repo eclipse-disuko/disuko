@@ -10,7 +10,7 @@ import {useI18n} from 'vue-i18n';
  */
 export function usePageTitle() {
   const {t} = useI18n();
-  const baseTitle = import.meta.env.DEV ? 'Dev Disuko' : t('APP_NAME');
+  const baseTitle = import.meta.env.DEV ? 'Local Disuko' : t('APP_NAME');
 
   /**
    * Sets a reactive title directly with a string

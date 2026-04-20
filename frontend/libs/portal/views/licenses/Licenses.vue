@@ -52,6 +52,7 @@ const gridName = 'License';
 const headerSettingsStore = useHeaderSettingsStore();
 const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
+const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const dataGridLicenses = ref<HTMLElement | null>(null);
 const confirmVisible = ref(false);
@@ -85,7 +86,7 @@ const itemsPerPage = ref(100);
 const options = computed(
   (): SearchOptions =>
     ({
-      page: 1,
+      page: page.value,
       itemsPerPage: itemsPerPage.value,
       sortBy: sortItems.value,
       groupBy: [],
@@ -105,78 +106,78 @@ const options = computed(
 const possibleIsLicenseChart = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleCharts)
-      .map(([k, count]) => ({
-        text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
-        value: k,
-        chip: String(count),
-      }))
-      .sort()
+        .map(([k, count]) => ({
+          text: k === 'true' ? t('TABLE_LICENSE_CHART_STATUS_IS') : t('TABLE_LICENSE_CHART_STATUS_IS_NOT'),
+          value: k,
+          chip: String(count),
+        }))
+        .sort()
     : [],
 );
 
 const possibleSources = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleSources).map(([k, count]) => ({
-      text: k,
-      value: k,
-      chip: String(count),
-    }))
+        text: k,
+        value: k,
+        chip: String(count),
+      }))
     : [],
 );
 
 const possibleFamilies = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleFamilies)
-      .sort((a, b) => compareFamily(a[0], b[0]))
-      .map(([k, count]) => ({
-        text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
-        value: k.length === 0 ? 'not declared' : k,
-        chip: String(count),
-      }))
+        .sort((a, b) => compareFamily(a[0], b[0]))
+        .map(([k, count]) => ({
+          text: getI18NTextOfPrefixKey('LIC_FAMILY_', k),
+          value: k.length === 0 ? 'not declared' : k,
+          chip: String(count),
+        }))
     : [],
 );
 
 const possibleApproval = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleApproval)
-      .sort(
-        ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
-      )
-      .map(([k, count]) => ({
-        text: getI18NTextOfPrefixKey('LT_APP_', k),
-        value: k.length === 0 ? 'not set' : k,
-        chip: String(count),
-      }))
+        .sort(
+          ([keyA], [keyB]) => getLicenseApprovalTypeKeys().indexOf(keyA) - getLicenseApprovalTypeKeys().indexOf(keyB),
+        )
+        .map(([k, count]) => ({
+          text: getI18NTextOfPrefixKey('LT_APP_', k),
+          value: k.length === 0 ? 'not set' : k,
+          chip: String(count),
+        }))
     : [],
 );
 
 const possibleType = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? Object.entries(metaData.value.possibleType).map(([k, count]) => ({
-      text: getI18NTextOfPrefixKey('LT_', k),
-      value: k.length === 0 ? 'not declared' : k,
-      chip: String(count),
-    }))
+        text: getI18NTextOfPrefixKey('LT_', k),
+        value: k.length === 0 ? 'not declared' : k,
+        chip: String(count),
+      }))
     : [],
 );
 
 const possibleClassifications = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
     ? metaData.value.possibleClassifications.map(({classification, count}: ClassificationWithCount) => {
-      const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
-      return {
-        text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
-        value: value,
-        icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
-        iconColor: getIconColorOfLevel(getWarnLevel(value)),
-        chip: String(count),
-      };
-    })
+        const value = viewTools.getNameForLanguage(classification) ? classification.name : '';
+        return {
+          text: viewTools.getNameForLanguage(classification) || t('NO_CLASSIFICATIONS'),
+          value: value,
+          icon: getIconOfLevel(getWarnLevel(value).toUpperCase()),
+          iconColor: getIconColorOfLevel(getWarnLevel(value)),
+          chip: String(count),
+        };
+      })
     : [],
 );
 
 const resetPagination = () => {
-  options.value.page = 1;
+  page.value = 1;
 };
 
 const resetFilter = () => {
@@ -345,13 +346,13 @@ const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtil
 const headers = computed((): DataTableHeader[] => [
   ...(allowActions.value
     ? [
-      {
-        title: 'COL_ACTIONS',
-        align: 'center',
-        width: 120,
-        value: 'actions',
-      } as DataTableHeader,
-    ]
+        {
+          title: 'COL_ACTIONS',
+          align: 'center',
+          width: 120,
+          value: 'actions',
+        } as DataTableHeader,
+      ]
     : []),
   {
     title: 'COL_LICENSE_CHART_STATUS',
@@ -613,7 +614,24 @@ const debouncedSearch = debounce(searchChanged, 300);
 
 watch(selectedFilterSet, (_, oldVal) => onFilterSetChange(oldVal!));
 
-watch(options, debouncedSearch, {deep: true});
+watch(
+  [
+    selectedFilterIsLicenseChart,
+    selectedFilterSource,
+    selectedFilterFamily,
+    selectedFilterApproval,
+    selectedFilterType,
+    selectedFilterClassification,
+    search,
+  ],
+  debouncedSearch,
+  {deep: true},
+);
+
+const onUpdateOptions = async (tableOptions: {page: number; itemsPerPage: number; sortBy: SortItem[]}) => {
+  page.value = tableOptions.page;
+  await reload();
+};
 
 onMounted(async () => {
   rights.value = userStore.getRights;
@@ -728,9 +746,10 @@ onMounted(async () => {
           density="compact"
           show-footer
           class="striped-table custom-data-table fill-height"
-          :options="options"
+          v-model:page="page"
           v-model:items-per-page="itemsPerPage"
           v-model:sort-by="sortItems"
+          @update:options="onUpdateOptions"
           @click:row="onClickRow">
           <!-- Settings column header slot -->
           <template v-if="allowActions" #[`header.actions`]="{column}">
@@ -822,7 +841,7 @@ onMounted(async () => {
               <v-icon
                 :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'"
                 :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"
-              >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
+                >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
               </v-icon>
               <Tooltip location="bottom">
                 {{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}
