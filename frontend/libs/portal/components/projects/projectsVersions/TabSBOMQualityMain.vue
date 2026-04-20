@@ -116,24 +116,22 @@ watch(
 <template>
   <TableLayout has-tab has-title gap="0">
     <template #buttons>
-      <Stack direction="row" id="top-quality-remarks">
-        <v-btn
-          v-for="tab in tabs"
-          size="small"
-          :key="tab.id"
-          @click="changeTab(tab)"
-          :variant="selectedTabId === tab.id ? 'tonal' : 'text'"
-          :class="{active: selectedTabId === tab.id}"
-          class="text-none card-border"
-          min-width="130px">
-          <v-icon color="primary" class="pr-2">{{ tab.buttonIcon }}</v-icon>
-          {{ t(tab.buttonText) }}
-        </v-btn>
-      </Stack>
+      <v-btn
+        v-for="tab in tabs"
+        size="small"
+        :key="tab.id"
+        @click="changeTab(tab)"
+        :variant="selectedTabId === tab.id ? 'tonal' : 'text'"
+        :class="{active: selectedTabId === tab.id}"
+        class="text-none card-border"
+        min-width="130px">
+        <v-icon color="primary" class="pr-2">{{ tab.buttonIcon }}</v-icon>
+        {{ t(tab.buttonText) }}
+      </v-btn>
       <v-spacer></v-spacer>
     </template>
     <template #table>
-      <div class="mt-3 h-full">
+      <div class="h-full pt-3">
         <component v-if="currentComponent" :is="currentComponent" />
       </div>
     </template>

@@ -163,17 +163,7 @@ const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalIt
         :text="t('BTN_GROUP')"
         @click="wizardStore.openWizard({isGroup: true})"></DCActionButton>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        :label="t('labelSearch')"
-        single-line
-        hide-details
-        clearable></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div class="fill-height">

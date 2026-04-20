@@ -71,6 +71,7 @@ declare module 'vue' {
     DOverallStateIcon: typeof import('./../../libs/shared/components/disco/DOverallStateIcon.vue')['default']
     DRequiredTextField: typeof import('./../../libs/shared/components/disco/DRequiredTextField.vue')['default']
     DRuleButtons: typeof import('./../../libs/shared/components/disco/DRuleButtons.vue')['default']
+    DSearchField: typeof import('./../../libs/shared/components/disco/DSearchField.vue')['default']
     DSimpleDialog: typeof import('./../../libs/shared/components/disco/DSimpleDialog.vue')['default']
     DSnackbar: typeof import('./../../libs/shared/components/snackbar/DSnackbar.vue')['default']
     DSpdxTagDialog: typeof import('./../../libs/shared/components/disco/DSpdxTagDialog.vue')['default']

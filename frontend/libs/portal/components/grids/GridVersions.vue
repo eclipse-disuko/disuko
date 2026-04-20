@@ -52,14 +52,14 @@ const showActions = computed(
 const headers = computed((): DataTableHeader[] => [
   ...(showActions.value
     ? [
-      {
-        title: t('COL_ACTIONS'),
-        key: 'actions',
-        align: 'center',
-        width: 100,
-        sortable: false,
-      } as DataTableHeader,
-    ]
+        {
+          title: t('COL_ACTIONS'),
+          key: 'actions',
+          align: 'center',
+          width: 100,
+          sortable: false,
+        } as DataTableHeader,
+      ]
     : []),
   {
     title: t('COL_STATUS'),
@@ -262,16 +262,7 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
           currentProject && currentProject.accessRights && currentProject.accessRights.allowProjectVersion.create
         " />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        style="max-width: 500px"
-        model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        variant="outlined"
-        clearable
-        density="compact"
-        hide-details />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableVersions" class="fill-height">

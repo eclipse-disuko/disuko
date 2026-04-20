@@ -128,16 +128,7 @@ onMounted(async () => {
     <template #buttons>
       <h2 class="text-h5">{{ t('ANNOUNCEMENTS_HEADLINE') }}</h2>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        :label="t('labelSearch')"
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="gridAnnouncement" class="fill-height">

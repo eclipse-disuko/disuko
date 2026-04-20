@@ -702,16 +702,7 @@ onMounted(async () => {
           @click:clear="resetFilter"
           hide-details
           return-object></v-select>
-        <v-text-field
-          autocomplete="off"
-          style="max-width: 500px"
-          v-model="search"
-          append-inner-icon="mdi-magnify"
-          :label="t('labelSearch')"
-          variant="outlined"
-          clearable
-          density="compact"
-          hide-details />
+        <DSearchField v-model="search" />
       </div>
     </template>
     <template v-if="rights?.groups?.includes(Group.UserLicenseManager)" #buttons>

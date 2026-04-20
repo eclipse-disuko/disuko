@@ -314,18 +314,7 @@ const downloadLicenseRemarksCsv = async () => {
         @click="downloadLicenseRemarksCsv"
         class="ml-2 pr-4" />
       <div class="grow"></div>
-      <v-text-field
-        class="w-full grow-2 md:w-auto md:max-w-[400px]"
-        min-width="50"
-        autocomplete="off"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        hide-details
-        single-line></v-text-field>
+      <DSearchField v-model="search" />
     </Stack>
 
     <v-data-table

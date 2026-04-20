@@ -45,14 +45,14 @@ const projectModel = computed(() => projectStore.currentProject!);
 const userHeaders = computed((): DataTableHeader[] => [
   ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
     ? [
-      {
-        title: t('COL_ACTIONS'),
-        align: 'center',
-        value: 'actions',
-        width: 160,
-        sortable: false,
-      } as DataTableHeader,
-    ]
+        {
+          title: t('COL_ACTIONS'),
+          align: 'center',
+          value: 'actions',
+          width: 160,
+          sortable: false,
+        } as DataTableHeader,
+      ]
     : []),
   {
     title: t('COL_USER'),
@@ -280,17 +280,7 @@ onBeforeMount(async () => {
         @click="showCreateUserDialog"
         v-if="projectModel.allowUserManagementCreate && !projectModel.isDeprecated" />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        max-width="450px"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        single-line
-        clearable
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableUserManagement" class="fill-height">

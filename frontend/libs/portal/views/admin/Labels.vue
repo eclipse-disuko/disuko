@@ -246,15 +246,7 @@ const updateTableHeight = () => {
                     :hint="t('TT_add_schema_label')"
                     @click="showCreateSchemaLabelDialog" />
                   <v-spacer></v-spacer>
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="schemaLabelSearch"
-                    hide-details="auto"
-                    variant="outlined"
-                    density="compact"
-                    append-inner-icon="mdi-magnify"
-                    clearable
-                    :label="t('labelSearch')" />
+                  <DSearchField v-model="schemaLabelSearch" />
                 </template>
                 <template #table>
                   <v-data-table
@@ -310,15 +302,7 @@ const updateTableHeight = () => {
                     :text="t('BTN_DOWNLOAD')"
                     :hint="t('TT_download_label_csv')"
                     @click="downloadCsv" />
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="policyLabelSearch"
-                    hide-details="auto"
-                    variant="outlined"
-                    density="compact"
-                    append-inner-icon="mdi-magnify"
-                    clearable
-                    :label="t('labelSearch')" />
+                  <DSearchField v-model="policyLabelSearch" />
                 </template>
                 <template #table>
                   <v-data-table
@@ -374,15 +358,7 @@ const updateTableHeight = () => {
                     icon="mdi-download"
                     :hint="t('TT_download_label_csv')"
                     @click="downloadCsv" />
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="projectLabelSearch"
-                    hide-details="auto"
-                    variant="outlined"
-                    density="compact"
-                    append-inner-icon="mdi-magnify"
-                    clearable
-                    :label="t('labelSearch')" />
+                  <DSearchField v-model="projectLabelSearch" />
                 </template>
                 <template #table>
                   <v-data-table

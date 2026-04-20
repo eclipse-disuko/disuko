@@ -87,17 +87,7 @@ const isExpanded = (item: AuditLog) => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        style="max-width: 500px"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        density="compact"
-        clearable
-        single-line
-        hide-details="auto"></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableAuditLog" class="fill-height">

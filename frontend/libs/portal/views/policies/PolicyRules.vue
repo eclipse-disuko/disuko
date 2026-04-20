@@ -318,17 +318,7 @@ const headers = computed((): DataTableHeader[] => [
         :hint="t('TT_download_policy_csv')"
         @click="downloadCsv"
         v-if="isPolicyManager" />
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        density="compact"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableGridPolicyRules" class="fill-height action-slider-table">
@@ -359,8 +349,8 @@ const headers = computed((): DataTableHeader[] => [
           </template>
           <template #[`item.Status`]="{item}">
             <span class="font-bold" :style="{color: policyRulesUtils.getTextStatusColor(item.Status)}">{{
-                t('PR_STATUS_' + item.Status.toUpperCase())
-              }}</span>
+              t('PR_STATUS_' + item.Status.toUpperCase())
+            }}</span>
           </template>
           <template #[`item.Allowed`]="{item}">
             {{ item.ComponentsAllow.length }}
@@ -377,7 +367,7 @@ const headers = computed((): DataTableHeader[] => [
           <template #[`item.Description`]="{item}">
             <v-tooltip :text="item.Description" width="320" location="bottom" content-class="dpTooltip">
               <template #activator="{props}"
-              ><span v-bind="props">{{ getStrWithMaxLength(95, item.Description) }}</span>
+                ><span v-bind="props">{{ getStrWithMaxLength(95, item.Description) }}</span>
               </template></v-tooltip
             >
           </template>

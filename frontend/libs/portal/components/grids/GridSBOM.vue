@@ -101,14 +101,14 @@ const headers = computed((): DataTableHeader[] => [
   },
   ...(!props.channelView
     ? [
-      {
-        title: t('COL_SBOM_BRANCH'),
-        align: 'start',
-        value: 'versionName',
-        sortable: true,
-        width: 110,
-      } as DataTableHeader,
-    ]
+        {
+          title: t('COL_SBOM_BRANCH'),
+          align: 'start',
+          value: 'versionName',
+          sortable: true,
+          width: 110,
+        } as DataTableHeader,
+      ]
     : []),
   {
     title: t('COL_SBOM_TAG'),
@@ -487,15 +487,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
         v-if="projectModel && projectModel.accessRights && projectModel.accessRights.allowSBOMAction.upload"
         hide-details />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        density="compact"
-        variant="outlined"
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableSbomDeliveries" class="fill-height">
@@ -530,24 +522,24 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
             <span>{{ item._key }}</span>
             <br v-if="item.ApprovalInfo && item.ApprovalInfo.Status" />
             <span class="font-weight-bold" v-if="item.ApprovalInfo && item.ApprovalInfo.Status">{{
-                t(`SBOM_STATUS_${item.ApprovalInfo.Status}`)
-              }}</span>
+              t(`SBOM_STATUS_${item.ApprovalInfo.Status}`)
+            }}</span>
             <span v-if="item.ApprovalInfo && item.ApprovalInfo.Status">
               <v-icon
                 small
                 v-if="item.ApprovalInfo && item.ApprovalInfo.Comment && item.ApprovalInfo.Comment.length > 0"
-              >chevron_right</v-icon
+                >chevron_right</v-icon
               >
               {{ item.ApprovalInfo.Comment }}</span
             >
             <br v-if="item.IsToDelete" />
             <span v-if="item.IsToDelete" class="font-weight-bold text-[rgb(var(--v-theme-error))]">{{
-                t('SBOM_ABOUT_DELETION_NOTE')
-              }}</span>
+              t('SBOM_ABOUT_DELETION_NOTE')
+            }}</span>
             <br v-if="item.IsToRetain" />
             <span v-if="item.IsToRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">{{
-                t('SBOM_MARKED_FOR_RETENTION')
-              }}</span>
+              t('SBOM_MARKED_FOR_RETENTION')
+            }}</span>
           </template>
           <template #[`item.OverallReview`]="{item}">
             <DOverallStateIcon v-if="item.OverallReview" :review="item.OverallReview" />

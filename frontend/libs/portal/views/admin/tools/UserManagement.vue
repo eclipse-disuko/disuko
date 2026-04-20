@@ -509,15 +509,7 @@ const executeEntityDeletion = async () => {
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="tasksData.length > 0" class="pa-2">
                   <div class="d-flex mb-3 justify-end">
-                    <v-text-field
-                      v-model="tasksSearch"
-                      density="compact"
-                      :label="t('labelSearch')"
-                      append-inner-icon="mdi-magnify"
-                      variant="outlined"
-                      hide-details
-                      style="max-width: 500px"
-                      single-line></v-text-field>
+                    <DSearchField v-model="tasksSearch" />
                   </div>
                   <v-data-table
                     density="compact"
@@ -608,15 +600,7 @@ const executeEntityDeletion = async () => {
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="rolesData.length > 0" class="pa-2">
                   <div class="d-flex mb-3 justify-end">
-                    <v-text-field
-                      v-model="rolesSearch"
-                      density="compact"
-                      :label="t('labelSearch')"
-                      append-inner-icon="mdi-magnify"
-                      variant="outlined"
-                      hide-details
-                      style="max-width: 500px"
-                      single-line></v-text-field>
+                    <DSearchField v-model="rolesSearch" />
                   </div>
                   <v-data-table
                     density="compact"
@@ -691,15 +675,7 @@ const executeEntityDeletion = async () => {
                 <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
                 <div v-else-if="logsData.length > 0" class="pa-2">
                   <div class="d-flex mb-3 justify-end">
-                    <v-text-field
-                      v-model="logsSearch"
-                      density="compact"
-                      :label="t('labelSearch')"
-                      append-inner-icon="mdi-magnify"
-                      variant="outlined"
-                      hide-details
-                      style="max-width: 500px"
-                      single-line></v-text-field>
+                    <DSearchField v-model="logsSearch" />
                   </div>
                   <v-data-table
                     density="compact"

@@ -13,18 +13,7 @@
         @click="downloadScanRemarksCsv"
         class="pr-4" />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        class="w-full md:w-auto md:max-w-[400px]"
-        min-width="50"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </Stack>
     <v-data-table
       :items="filteredList"

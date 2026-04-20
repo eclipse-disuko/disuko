@@ -139,16 +139,7 @@ const getStatusClass = computed(() => (status?: string) => {
         @click.stop="showAddChildrenProjectDialog"
         v-if="currentProject?.allowGroupCreate" />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        v-model="search"
-        :label="t('labelSearch')"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        clearable
-        density="compact"
-        hide-details />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <v-data-table

@@ -231,14 +231,7 @@ onMounted(async () => {
         </div>
         <v-spacer class="sm:col-span-2 md:col-span-4 lg:col-span-7"></v-spacer>
         <div class="sm:col-span-5 md:col-span-4 lg:col-span-3">
-          <v-text-field
-            autocomplete="off"
-            v-model="search"
-            :label="t('labelSearch')"
-            append-inner-icon="mdi-magnify"
-            variant="outlined"
-            clearable
-            density="compact" />
+          <DSearchField v-model="search" />
         </div>
       </div>
     </template>

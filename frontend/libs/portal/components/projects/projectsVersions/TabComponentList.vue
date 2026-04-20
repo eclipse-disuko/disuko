@@ -591,16 +591,7 @@ onUnmounted(async () => {
         :disabled="bulkPolicyDecisionDisabled"
         class="pr-4">
       </DCActionButton>
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        density="compact"
-        clearable
-        single-line
-        hide-details="auto" />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableComponents" class="fill-height">

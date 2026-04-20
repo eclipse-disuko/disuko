@@ -556,18 +556,7 @@ onMounted(() => {
         </DCActionButton>
       </Stack>
 
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        class="w-full md:w-auto md:max-w-[400px]"
-        clearable
-        single-line
-        min-width="50"
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </div>
 
     <v-data-table

@@ -779,17 +779,7 @@ onBeforeMount(async () => {
       </template>
       <template #buttons>
         <v-spacer></v-spacer>
-        <v-text-field
-          autocomplete="off"
-          :max-width="500"
-          v-model="search"
-          :label="t('labelSearch')"
-          append-inner-icon="mdi-magnify"
-          variant="outlined"
-          class="mr-1"
-          clearable
-          hide-details
-          density="compact" />
+        <DSearchField v-model="search" class="mr-1" />
       </template>
       <template #table>
         <div ref="sgrid" class="fill-height">

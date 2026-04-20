@@ -143,17 +143,7 @@ watch(projectModel, async (value) => {
   <TableLayout has-title has-tab>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        max-width="450px"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        single-line
-        clearable
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tablePolicyRules" class="fill-height">

@@ -248,16 +248,7 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
         icon="mdi-download"
         :hint="t('TT_download_license_csv')"
         @click="downloadCsv" />
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        variant="outlined"
-        clearable
-        density="compact"
-        hide-details="auto"></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableGridClassifications" class="fill-height">

@@ -144,16 +144,7 @@ defineExpose({open});
         <v-card-text>
           <v-row class="justify-end">
             <v-col cols="12" xs="12" sm="6" md="5">
-              <v-text-field
-                autocomplete="off"
-                variant="outlined"
-                v-model="search"
-                append-inner-icon="mdi-magnify"
-                :label="t('labelSearch')"
-                clearable
-                density="compact"
-                single-line
-                hide-details></v-text-field>
+              <DSearchField v-model="search" />
             </v-col>
           </v-row>
           <v-row>

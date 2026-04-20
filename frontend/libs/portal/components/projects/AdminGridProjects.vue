@@ -123,17 +123,7 @@ onMounted(() => {
     <template #buttons>
       <h1 class="text-h5">{{ t('AllProjects') }}</h1>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        :label="t('labelSearch')"
-        single-line
-        hide-details
-        clearable />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div class="table-wrapper fill-height">

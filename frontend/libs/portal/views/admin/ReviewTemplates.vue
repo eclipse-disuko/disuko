@@ -219,16 +219,7 @@ onUnmounted(() => {
         :text="t('BTN_DOWNLOAD')"
         :hint="t('TT_download_label_csv')"
         @click="downloadCsv" />
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        v-model="search"
-        hide-details="auto"
-        variant="outlined"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        clearable
-        :label="t('labelSearch')"></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="dataTableAsElement" class="fill-height">
