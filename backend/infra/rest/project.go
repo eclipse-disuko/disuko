@@ -1268,15 +1268,21 @@ func (projectHandler *ProjectHandler) ProjectGetApprovalList(w http.ResponseWrit
 }
 
 func (projectHandler *ProjectHandler) fullNameForUserSafe(requestSession *logy.RequestSession, userId string, cache map[string]string) string {
-	res, ok := cache[userId]
-	if ok {
-		return res
+	var res string
+	if cache != nil {
+		var ok bool
+		res, ok = cache[userId]
+		if ok {
+			return res
+		}
 	}
 	user := projectHandler.UserRepository.FindByUserId(requestSession, userId)
 	if user != nil {
 		res = fmt.Sprintf("%s %s", user.Forename, user.Lastname)
 	}
-	cache[userId] = res
+	if cache != nil {
+		cache[userId] = res
+	}
 	return res
 }
 
