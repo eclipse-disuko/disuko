@@ -1,4 +1,4 @@
-FROM golang:1.26.1-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 WORKDIR /go/server/
 ENV CGO_ENABLED=0
 COPY ./go.mod .
