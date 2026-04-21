@@ -34,10 +34,10 @@ func MultiCompareSpdxFiles(evalOld, evalNew *components.EvaluationResult, isResp
 				}
 			}
 			for _, componentNew := range newList {
-				componentResult.ComponentsNew = append(componentResult.ComponentsNew, componentNew.ToComponentInfoDto(isResponsible, "_", false))
+				componentResult.ComponentsNew = append(componentResult.ComponentsNew, componentNew.ToComponentInfoDto(isResponsible, "_", false, nil, nil, nil))
 			}
 			for _, componentOld := range oldList {
-				componentResult.ComponentsOld = append(componentResult.ComponentsOld, componentOld.ToComponentInfoDto(isResponsible, "_", false))
+				componentResult.ComponentsOld = append(componentResult.ComponentsOld, componentOld.ToComponentInfoDto(isResponsible, "_", false, nil, nil, nil))
 			}
 			if len(componentResult.ComponentsNew) != len(componentResult.ComponentsOld) {
 				componentResult.DiffType = compare.CHANGED
@@ -46,7 +46,7 @@ func MultiCompareSpdxFiles(evalOld, evalNew *components.EvaluationResult, isResp
 		} else {
 			componentResult := compare.NewComponentMultiDiffDto(compare.NEW, componentName)
 			for _, componentNew := range newList {
-				componentResult.ComponentsNew = append(componentResult.ComponentsNew, componentNew.ToComponentInfoDto(isResponsible, "_", false))
+				componentResult.ComponentsNew = append(componentResult.ComponentsNew, componentNew.ToComponentInfoDto(isResponsible, "_", false, nil, nil, nil))
 			}
 			components = append(components, componentResult)
 		}
@@ -59,7 +59,7 @@ func MultiCompareSpdxFiles(evalOld, evalNew *components.EvaluationResult, isResp
 		}
 		componentResult := compare.NewComponentMultiDiffDto(compare.REMOVED, componentName)
 		for _, componentOld := range oldList {
-			componentResult.ComponentsOld = append(componentResult.ComponentsOld, componentOld.ToComponentInfoDto(isResponsible, "_", false))
+			componentResult.ComponentsOld = append(componentResult.ComponentsOld, componentOld.ToComponentInfoDto(isResponsible, "_", false, nil, nil, nil))
 		}
 		components = append(components, componentResult)
 	}

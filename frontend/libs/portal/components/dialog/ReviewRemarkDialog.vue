@@ -133,46 +133,49 @@ const open = (newConf: DialogReviewRemarkConfig) => {
   isVisible.value = true;
 };
 
-const loadSboms = async () => {
-  sbomsLoading.value = true;
-  versionService.getSbomHistory(projectModel.value._key, versionID.value).then((res) => {
-    const spdxFileHistory = res.data;
-    if (spdxFileHistory[0]) {
-      spdxFileHistory[0].isRecent = true;
+const setupAfterSbomsLoaded = () => {
+  sbomsLoading.value = false;
+  if (!config.value.spdxID) {
+    return;
+  }
+  selectedSbom.value = sboms.value.find((sbom) => sbom._key === config.value.spdxID);
+  if (config.value.components && config.value.components.length) {
+    selectedComponents.value = [...config.value.components];
+  }
+  loadLicenses().then(() => {
+    if (config.value.licenses && config.value.licenses.length) {
+      selectedLicenses.value = config.value.licenses.map(
+        (presetLicense) => licenses.value.find((l) => l.licenseId === presetLicense.licenseId) || presetLicense,
+      );
     }
-    sboms.value = spdxFileHistory;
-    sbomsLoading.value = false;
-
-    if (!config.value.spdxID) {
-      return;
-    }
-    selectedSbom.value = sboms.value.find((sbom) => sbom._key === config.value.spdxID);
-    if (config.value.components && config.value.components.length) {
-      selectedComponents.value = [...config.value.components];
-    }
-    loadLicenses().then(() => {
-      if (config.value.licenses && config.value.licenses.length) {
-        selectedLicenses.value = config.value.licenses.map(
-          (presetLicense) => licenses.value.find((l) => l.licenseId === presetLicense.licenseId) || presetLicense,
-        );
-      }
-    });
   });
 };
 
-const loadTemplates = () => {
+const getSbomsForVersion = (targetVersionId: string): SpdxFile[] =>
+  sbomStore.allSBOMSFlat
+    .filter((item) => item.versionKey === targetVersionId)
+    .map((item, index) => ({...item, isRecent: index === 0}));
+
+const loadSboms = async () => {
+  sbomsLoading.value = true;
+
+  await sbomStore.fetchAllSBOMsFlat();
+  sboms.value = getSbomsForVersion(versionID.value);
+  setupAfterSbomsLoaded();
+};
+
+const loadTemplates = async () => {
   templatesLoading.value = true;
-  projectService.getReviewTemplates(projectModel.value._key).then((res) => {
-    templates.value = res.data;
-    templates.value.sort((a, b) => {
-      const titleA = a.title.toLowerCase();
-      const titleB = b.title.toLowerCase();
-      if (titleA < titleB) return -1;
-      if (titleA > titleB) return 1;
-      return 0;
-    });
-    templatesLoading.value = false;
+  const res = await projectService.getReviewTemplates(projectModel.value._key);
+  templates.value = res.data;
+  templates.value.sort((a, b) => {
+    const titleA = a.title.toLowerCase();
+    const titleB = b.title.toLowerCase();
+    if (titleA < titleB) return -1;
+    if (titleA > titleB) return 1;
+    return 0;
   });
+  templatesLoading.value = false;
 };
 
 const templateChanged = () => {
@@ -191,18 +194,19 @@ const sbomChanged = () => {
   loadLicenses();
 };
 const wait = 300;
-const debouncedSearch = _.debounce((query: string) => {
+const debouncedSearch = _.debounce(async (query: string) => {
   if (!query) {
     comps.value = [];
     return;
   }
   compsLoading.value = true;
-  versionService
-    .getVersionComponentsBySearch(projectModel.value._key, versionID.value, selectedSbom.value!._key, query)
-    .then((res) => {
-      comps.value = res;
-      compsLoading.value = false;
-    });
+  comps.value = await versionService.getVersionComponentsBySearch(
+    projectModel.value._key,
+    versionID.value,
+    selectedSbom.value!._key,
+    query,
+  );
+  compsLoading.value = false;
 }, wait);
 const compSearchChanged = async (query: string) => debouncedSearch(query);
 
@@ -211,12 +215,12 @@ const loadLicenses = async () => {
     return;
   }
   licensesLoading.value = true;
-  return versionService
-    .getVersionSbomAllLicenses(projectModel.value._key, versionID.value, selectedSbom.value!._key)
-    .then((res) => {
-      sbomAllLicenses.value = res;
-      licensesLoading.value = false;
-    });
+  sbomAllLicenses.value = await versionService.getVersionSbomAllLicenses(
+    projectModel.value._key,
+    versionID.value,
+    selectedSbom.value!._key,
+  );
+  licensesLoading.value = false;
 };
 
 const close = () => {
@@ -326,8 +330,8 @@ defineExpose({open});
   <v-dialog v-model="isVisible" content-class="large" width="1400" height="800">
     <DialogLayout :config="dialogConfig" @secondary-action="close" @primary-action="doDialogAction" @close="close">
       <v-form ref="form">
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4">
-          <Stack class="w-full h-min">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr]">
+          <Stack class="h-min w-full">
             <h3>{{ t('TAB_TITLE_GENERAL') }}</h3>
             <v-select
               item-text="title"
@@ -383,7 +387,7 @@ defineExpose({open});
             </v-select>
           </Stack>
           <v-divider vertical></v-divider>
-          <Stack class="w-full h-min md:max-h-[580px] overflow-hidden md:overflow-auto">
+          <Stack class="h-min w-full overflow-hidden md:max-h-[580px] md:overflow-auto">
             <h3>{{ t('COL_REFERENCES') }}</h3>
             <v-select
               v-model="selectedSbom"
@@ -448,7 +452,7 @@ defineExpose({open});
             </v-autocomplete>
             <div
               v-if="canAddComponent"
-              class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+              class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
               @click="addComponent">
               <v-icon color="primary">mdi-plus</v-icon>
               <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_COMPONENT') }}</span>
@@ -482,7 +486,7 @@ defineExpose({open});
             </v-autocomplete>
             <div
               v-if="canAddLicense"
-              class="d-flex align-center border-md border-dashed border-opacity-25 p-3 mb-6"
+              class="d-flex align-center border-md border-opacity-25 mb-6 border-dashed p-3"
               @click="addLicense">
               <v-icon color="primary">mdi-plus</v-icon>
               <span class="font-weight-light pl-1">{{ t('RR_DIALOG_MORE_LICENSE') }}</span>

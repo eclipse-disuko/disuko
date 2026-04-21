@@ -353,12 +353,6 @@ export class ApprovableDto {
   public IsSpdxRecent = false;
 }
 
-export class ApprovableInfoDto {
-  public stats: ComponentStats = {} as ComponentStats;
-  public projects: ApprovableDto[] = [];
-  public hasDeniedDecisions = false;
-}
-
 export class TokenRequest {
   public Company: string;
   public Description: string;

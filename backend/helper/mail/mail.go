@@ -13,8 +13,6 @@ import (
 	//"html/template"
 	"net/smtp"
 	"text/template"
-
-	"github.com/eclipse-disuko/disuko/conf"
 )
 
 //go:embed templates
@@ -49,9 +47,6 @@ func explicitUTF8Subject(subject string) string {
 }
 
 func (c Client) Send(to string, templateName string, data any) error {
-	if conf.Config.Server.E2ETests {
-		return nil
-	}
 	if c.Host == "" {
 		return nil
 	}

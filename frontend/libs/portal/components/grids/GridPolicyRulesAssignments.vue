@@ -23,16 +23,7 @@
           rights.allowPolicy.update &&
           rights.allowPolicy.delete
         "></DCActionButton>
-      <v-text-field
-        autocomplete="off"
-        class="max-w-[500px]"
-        v-model="search"
-        variant="outlined"
-        clearable
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        hide-details />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <PolicyRulesTable class="fill-height" v-model="items" :loading="!dataLoaded"></PolicyRulesTable>

@@ -285,17 +285,7 @@ onMounted(() => {
         class="mx-2"
         @click="openCreateDialog"></DCActionButton>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        :label="t('labelSearch')"
-        single-line
-        hide-details
-        clearable></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div class="fill-height">
@@ -323,7 +313,7 @@ onMounted(() => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuImageFilter = false" color="default" />
                   </v-row>
                   <v-select
@@ -332,7 +322,7 @@ onMounted(() => {
                       {text: t('HAS_IMAGE'), value: 'true'},
                       {text: t('NO_IMAGE'), value: 'false'},
                     ]"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_on_type')"
                     clearable
                     multiple
@@ -345,7 +335,7 @@ onMounted(() => {
                     persistent-clear
                     :list-props="{class: 'striped-filter-dd py-0'}">
                     <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
+                      <v-list-item v-bind="props" class="px-2 py-0">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
@@ -385,7 +375,7 @@ onMounted(() => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuLinkFilter = false" color="default" />
                   </v-row>
                   <v-select
@@ -394,7 +384,7 @@ onMounted(() => {
                       {text: t('HAS_LINK'), value: 'true'},
                       {text: t('NO_LINK'), value: 'false'},
                     ]"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_on_type')"
                     clearable
                     multiple
@@ -407,7 +397,7 @@ onMounted(() => {
                     persistent-clear
                     :list-props="{class: 'striped-filter-dd py-0'}">
                     <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
+                      <v-list-item v-bind="props" class="px-2 py-0">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
@@ -447,7 +437,7 @@ onMounted(() => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuStatusFilter = false" color="default" />
                   </v-row>
                   <v-select
@@ -456,7 +446,7 @@ onMounted(() => {
                       {text: t('ACTIVE'), value: 'false'},
                       {text: t('EXPIRED'), value: 'true'},
                     ]"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_on_type')"
                     clearable
                     multiple
@@ -469,7 +459,7 @@ onMounted(() => {
                     persistent-clear
                     :list-props="{class: 'striped-filter-dd py-0'}">
                     <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
+                      <v-list-item v-bind="props" class="px-2 py-0">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>

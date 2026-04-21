@@ -7,16 +7,7 @@
     <v-row class="shrink pb-2">
       <v-spacer></v-spacer>
       <v-col cols="12" xs="12" sm="8" md="4" lg="2" class="pa-3 pb-0">
-        <v-text-field
-          autocomplete="off"
-          variant="outlined"
-          v-model="search"
-          append-inner-icon="mdi-magnify"
-          :label="t('labelSearch')"
-          clearable
-          density="compact"
-          single-line
-          hide-details></v-text-field>
+        <DSearchField v-model="search" />
       </v-col>
     </v-row>
     <v-row>
@@ -39,7 +30,7 @@
           :item-class="getCssClassForTableRow">
           <template v-slot:bottom>
             <v-row>
-              <v-col class="d-flex justify-end paddingRightItems mr-7 mb-4 fontColorItems">
+              <v-col class="d-flex paddingRightItems fontColorItems mr-7 mb-4 justify-end">
                 <span class="fontColorItems font-weight-light">
                   {{ t('TABLE_ITEMS') }}
                   <span class="font-weight-light fontColorItems"> {{ allObligations.length }}</span>

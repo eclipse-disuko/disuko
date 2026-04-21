@@ -19,7 +19,7 @@ const idle = useIdleStore();
             <SelfBuildingSquareSpinner v-if="idle.progress === -1" />
             <v-progress-circular v-else :model-value="idle.progress" />
 
-            <div v-if="idle.idleMessage" class="pt-4 msg text-nowrap">
+            <div v-if="idle.idleMessage" class="msg pt-4 text-nowrap">
               {{ idle.idleMessage }}
               <span v-if="idle.progress !== -1">{{ idle.progress }}{{ idle.progressUnit }}</span>
             </div>

@@ -395,7 +395,7 @@ const reloadInternal = async (forceReload: boolean) => {
   if (!currentProject.value._key) {
     return;
   }
-  await sbomStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMsFlat();
   selectedFilterLicenses.value = [];
   resetErrors();
 
@@ -403,11 +403,11 @@ const reloadInternal = async (forceReload: boolean) => {
 };
 
 const setSelection = () => {
-  const selectedSpdx = sbomStore.getSelectedSpdx;
+  const selectedSpdx = sbomStore.getSelectedSBOM;
   if (selectedSpdx === null) {
     selectedSpdxCurrent.value = groupedSpdxs.value.find((s) => s.versionKey === version.value._key) || null;
   } else {
-    selectedSpdxCurrent.value = groupedSpdxs.value.find((s) => s.spdxFileId === selectedSpdx._key) || null;
+    selectedSpdxCurrent.value = groupedSpdxs.value.find((s) => s.spdxFileId === selectedSpdx?._key) || null;
   }
   selectedSpdxPrevious.value = null;
 };
@@ -667,7 +667,7 @@ onBeforeMount(async () => {
   <v-form ref="compareForm">
     <TableLayout has-title has-tab>
       <template #description>
-        <div class="d-flex flex-row ga-4 flex-wrap align-center">
+        <div class="d-flex ga-4 align-center flex-row flex-wrap">
           <v-row>
             <v-col xs="12" md="6">
               <v-select
@@ -779,17 +779,7 @@ onBeforeMount(async () => {
       </template>
       <template #buttons>
         <v-spacer></v-spacer>
-        <v-text-field
-          autocomplete="off"
-          :max-width="500"
-          v-model="search"
-          :label="t('labelSearch')"
-          append-inner-icon="mdi-magnify"
-          variant="outlined"
-          class="mr-1"
-          clearable
-          hide-details
-          density="compact" />
+        <DSearchField v-model="search" class="mr-1" />
       </template>
       <template #table>
         <div ref="sgrid" class="fill-height">
@@ -819,13 +809,13 @@ onBeforeMount(async () => {
                       location="top" />
                   </template>
                   <div class="bg-background" style="width: 280px">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DIconButton icon="mdi-close" @clicked="licenseFilterOpened = false" color="default" />
                     </v-row>
                     <v-autocomplete
                       v-model="selectedFilterLicenses"
                       :items="allLicenses"
-                      class="mx-2 pa-2 pb-4"
+                      class="pa-2 mx-2 pb-4"
                       :label="t('Lbl_filter_license')"
                       clearable
                       multiple
@@ -836,7 +826,7 @@ onBeforeMount(async () => {
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
                       <template v-slot:item="{props, item}">
-                        <v-list-item v-bind="props" class="py-0 px-2" title="">
+                        <v-list-item v-bind="props" class="px-2 py-0" title="">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
@@ -874,13 +864,13 @@ onBeforeMount(async () => {
                       :color="selectedFilterPolicyTypes.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div class="bg-background" style="width: 280px">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DIconButton icon="mdi-close" @clicked="prStatusFilterOpened = false" color="default" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterPolicyTypes"
                       :items="allPolicyTypes"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       :label="t('Lbl_filter_policyType')"
                       clearable
                       multiple
@@ -894,7 +884,7 @@ onBeforeMount(async () => {
                       persistent-clea
                       :list-props="{class: 'striped-filter-dd py-0'}">
                       <template v-slot:item="{item, props}">
-                        <v-list-item v-bind="props" class="py-0 px-2">
+                        <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
@@ -902,7 +892,7 @@ onBeforeMount(async () => {
                             <v-icon small :color="getIconColorForPolicyType(item.raw)"
                               >{{ getIconForPolicyType(item.raw) }}
                             </v-icon>
-                            <span class="pl-1 pFilterEntry">{{ item.raw }}</span>
+                            <span class="pFilterEntry pl-1">{{ item.raw }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -911,7 +901,7 @@ onBeforeMount(async () => {
                           <v-icon small :color="getIconColorForPolicyType(item.raw)"
                             >{{ getIconForPolicyType(item.raw) }}
                           </v-icon>
-                          <span class="pl-1 pFilterEntry">{{ item.raw }}</span>
+                          <span class="pFilterEntry pl-1">{{ item.raw }}</span>
                         </div>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterPolicyTypes.length - 1 }} others
@@ -954,7 +944,7 @@ onBeforeMount(async () => {
               <div class="flex flex-col gap-2">
                 <div v-for="(entry, i) in getTableViewDataForLicenseEffective(item)" :key="i">
                   <span>
-                    <v-icon v-if="entry.icon" class="size-4 mr-2" small>{{ entry.icon }}</v-icon>
+                    <v-icon v-if="entry.icon" class="mr-2 size-4" small>{{ entry.icon }}</v-icon>
                     <span v-html="formatText(entry.value)"></span>
 
                     <Tooltip>

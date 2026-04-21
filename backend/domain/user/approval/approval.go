@@ -12,23 +12,6 @@ const (
 	ApDeclined  ApprovalStatus = "DECLINED"
 )
 
-type ComponentStats struct {
-	Total       int
-	Allowed     int
-	Warned      int
-	Denied      int
-	Questioned  int
-	NoAssertion int
-}
-
-func (s *ComponentStats) AddStats(a ComponentStats) {
-	s.Allowed += a.Allowed
-	s.Warned += a.Warned
-	s.Denied += a.Denied
-	s.Questioned += a.Questioned
-	s.NoAssertion += a.NoAssertion
-}
-
 type RequestApprovalDto struct {
 	RequestCreateDisclosureDocumentDto
 	UserRequested string           `json:"requestUser" validate:"required,gte=3,lte=50"`

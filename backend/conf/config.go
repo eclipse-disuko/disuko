@@ -60,7 +60,6 @@ type Server struct {
 	DevLog                        bool   `default:"false"`
 	DevLogDbQueries               bool   `default:"false"`
 	TestsWithoutDocker            bool   `default:"false"`
-	E2ETests                      bool   `default:"false" env:"E2E_TESTS"`
 	VanillaDisuko                 bool   `default:"false" env:"VANILLA_DISUKO"`
 	// base path of the disclosure document html templates
 	BasePath   string
@@ -152,9 +151,9 @@ var Config = struct {
 		UppercaseUsername     bool   `default:"true"`
 		RegexToken            string `default:"^[a-zA-Z0-9_\\-]{10,50}$"`
 	}
-	InternalUsersAllowList []string
-
-	PublicAuth struct {
+	InternalUsersAllowList              []string
+	DeprovisioningInactiveDaysThreshold int `default:"60"`
+	PublicAuth                          struct {
 		AccessTTLSeconds  int
 		RefreshTTLMinutes int
 		SigningKey        string
@@ -167,16 +166,18 @@ var Config = struct {
 	}
 	Server   Server
 	Database struct {
-		Host               string `default:""`
-		Scheme             string `default:"http"`
-		InsecureSkipVerify bool   `default:"true"`
-		Port               int    `default:""`
-		User               string `default:""`
-		Password           string
-		DatabaseName       string       `default:"disuko"`
-		MigrateOnly        bool         `default:"false"`
 		Type               DatabaseType `default:"CouchDB"`
-		ShardReplica       int          `default:"3"`
+		Host               string       `default:""`
+		Port               int          `default:""`
+		Scheme             string       `default:"http"`
+		InsecureSkipVerify bool         `default:"true"`
+		CAFile             string       `default:""`
+		User               string       `default:""`
+		Password           string
+		DatabaseName       string `default:"disuko"`
+		MigrateOnly        bool   `default:"false"`
+		ShardReplica       int    `default:"3"`
+		AdditionalArgs     string `default:""`
 	}
 	SPDXLicense struct {
 		LicensesInfoPath      string `default:"https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json"`
@@ -261,13 +262,15 @@ func setServerBasePath(err error) {
 }
 
 func checkEnvironmentVariables() {
+	Config.Database.Type = DatabaseType(getEnvVariable("DATABASE_TYPE", string(Config.Database.Type)))
+	Config.Database.Scheme = getEnvVariable("DATABASE_SCHEME", Config.Database.Scheme)
 	Config.Database.Host = getEnvVariable("DATABASE_HOST", Config.Database.Host)
 	Config.Database.Port = getEnvVariableInt("DATABASE_PORT", Config.Database.Port)
-	Config.Database.Scheme = getEnvVariable("DATABASE_SCHEME", Config.Database.Scheme)
 	Config.Database.User = getEnvVariable("DATABASE_USER", Config.Database.User)
 	Config.Database.Password = getEnvVariable("DATABASE_PASSWORD", Config.Database.Password)
-	Config.Database.Type = DatabaseType(getEnvVariable("DATABASE_TYPE", string(Config.Database.Type)))
+	Config.Database.CAFile = getEnvVariable("DATABASE_CA_FILE", Config.Database.CAFile)
 	Config.Database.ShardReplica = getEnvVariableInt("DATABASE_SHARD_REPLICA", Config.Database.ShardReplica)
+	Config.Database.AdditionalArgs = getEnvVariable("DATABASE_ADDITIONAL_ARGS", Config.Database.AdditionalArgs)
 
 	Config.Server.Port = getEnvVariable("SERVER_PORT", Config.Server.Port)
 	Config.Server.ApplicationToken = getEnvVariable("APPLICATION_TOKEN", Config.Server.ApplicationToken)
@@ -293,6 +296,8 @@ func checkEnvironmentVariables() {
 	Config.OAuth2.DebugLog = getEnvVariableBoolean("OAUTH2_DEBUG_LOG", Config.OAuth2.DebugLog)
 	Config.OAuth2.UppercaseUsername = getEnvVariableBoolean("OAUTH2_UPPERCASEUSERNAME", Config.OAuth2.UppercaseUsername)
 	Config.OAuth2.RegexToken = getEnvVariable("OAUTH2_REGEXTOKEN", Config.OAuth2.RegexToken)
+
+	Config.DeprovisioningInactiveDaysThreshold = getEnvVariableInt("DEPROVISIONING_INACTIVE_THRESHOLD", Config.DeprovisioningInactiveDaysThreshold)
 
 	Config.InternalUsersAllowList = strings.Split(getEnvVariable("INTERNAL_USERS_ALLOW_LIST", ""), ",")
 

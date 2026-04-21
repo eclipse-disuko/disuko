@@ -115,7 +115,7 @@ onMounted(() => {
           size="small"
           v-if="policy"
           :class="[
-            'ma-2 my-2 mx-2 text-none card-border',
+            'ma-2 text-none card-border mx-2 my-2',
             {active: isSelected(policy)},
             isSelected(policy) ? callbacks.getActiveClassForPolicyFilterBtn(policy) : '',
           ]"

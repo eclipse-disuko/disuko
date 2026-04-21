@@ -19,7 +19,7 @@ export class ProjectApprovable {
   public approvablespdx: ApprovableSPDXDto = {} as ApprovableSPDXDto;
 }
 
-export class ApprovalInfo {
+export class ApprovableInfo {
   public stats: ComponentStats = {} as ComponentStats;
   public projects: ProjectApprovable[] = [];
   public hasDeniedDecisions = false;
@@ -33,6 +33,7 @@ export enum ApprovalStates {
   CustomerApproved = 'CUSTOMER_APPROVED',
   Aborted = 'ABORTED',
   Generating = 'GENERATING',
+  GenerationFailed = 'GENERATION_FAILED',
 }
 
 export enum ApproverRoles {
@@ -94,7 +95,7 @@ export class Approval {
   public creatorFullName = '';
   public comment = '';
 
-  public info: ApprovalInfo = {} as ApprovalInfo;
+  public info: ApprovableInfo = {} as ApprovableInfo;
   public documents: DocumentDto[] = [];
   public flags: DocumentFlags = {} as DocumentFlags;
 

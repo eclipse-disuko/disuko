@@ -161,8 +161,8 @@ watch(
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid grid-cols-12 gap-3 w-full">
-        <div class="sm:col-span-5 md:col-span-4 lg:col-span-3 flex flex-row">
+      <div class="grid w-full grid-cols-12 gap-3">
+        <div class="flex flex-row sm:col-span-5 md:col-span-4 lg:col-span-3">
           <v-checkbox
             v-model="myProjects"
             hide-details
@@ -233,13 +233,13 @@ watch(
                 class="pl-2" />
             </template>
             <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex justify-end ma-1 mr-2">
+              <v-row class="d-flex ma-1 mr-2 justify-end">
                 <DCloseButton @click="menuSettings = false" />
               </v-row>
               <v-select
                 v-model="selectedHeaders"
                 :items="selectableHeaders"
-                class="mx-2 pa-2 dp-select"
+                class="pa-2 dp-select mx-2"
                 :label="t('LABEL_SELECT_COL')"
                 multiple
                 return-object
@@ -247,7 +247,7 @@ watch(
                 variant="outlined"
                 density="compact">
                 <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" class="py-0 px-2">
+                  <v-list-item v-bind="props" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>

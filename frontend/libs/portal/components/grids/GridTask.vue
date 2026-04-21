@@ -226,18 +226,9 @@ onMounted(async () => {
         :text="t('BTN_DOWNLOAD')"
         icon="mdi-download"
         :hint="t('TT_download_tasks_csv')"
-        class="mx-2 align-content-center"
+        class="align-content-center mx-2"
         @click="downloadCsv" />
-      <v-text-field
-        autocomplete="off"
-        style="max-width: 500px"
-        v-model="search"
-        density="compact"
-        :label="t('labelSearch')"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        hide-details
-        single-line></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableGridTasks" class="fill-height">

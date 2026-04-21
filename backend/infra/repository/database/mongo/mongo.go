@@ -7,7 +7,10 @@ package mongo
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 
@@ -38,21 +41,30 @@ func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes
 		conf.Config.Database.Host,
 		conf.Config.Database.Port,
 	)
-	api := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(api).SetTLSConfig(&tls.Config{
-		InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
-	})
 
+	if conf.Config.Database.AdditionalArgs != "" {
+		uri += "&" + conf.Config.Database.AdditionalArgs
+	}
+
+	tlsConfig := tls.Config{
+		InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
+	}
+	if conf.Config.Database.CAFile != "" {
+		certs, err := os.ReadFile(conf.Config.Database.CAFile)
+		exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
+		tlsConfig.RootCAs = x509.NewCertPool()
+		if ok := tlsConfig.RootCAs.AppendCertsFromPEM(certs); !ok {
+			exception.HandleErrorServerMessage(errors.New("failed parsing ca file"), message.GetI18N(message.DatabaseConnection))
+		}
+	}
+
+	opts := options.Client().ApplyURI(uri).SetTLSConfig(&tlsConfig)
 	client, err := mongo.Connect(opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
 
 	db.client = client
 	db.base = client.Database(conf.Config.Database.DatabaseName)
 	db.collection = db.base.Collection(collectionName)
-
-	if conf.Config.Server.E2ETests {
-		return
-	}
 
 	for _, fields := range indexes {
 		var keys bson.D

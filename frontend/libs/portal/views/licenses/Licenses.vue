@@ -24,15 +24,15 @@ import {SearchOptions} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, openUrl} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
-import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
-import _ from 'lodash';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
+import {debounce} from 'lodash';
 import {storeToRefs} from 'pinia';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 
 interface FilterCondition {
   field: string;
@@ -52,6 +52,7 @@ const gridName = 'License';
 const headerSettingsStore = useHeaderSettingsStore();
 const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
+const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const dataGridLicenses = ref<HTMLElement | null>(null);
 const confirmVisible = ref(false);
@@ -63,13 +64,11 @@ const rights = ref<Rights>({} as Rights);
 const selectedFilterIsLicenseChart = ref<string[]>([]);
 const selectedFilterSource = ref<string[]>([]);
 const selectedFilterFamily = ref<string[]>([]);
-const selectedFilterApproval = ref<string[]>(['approved', 'deprecated', 'forbidden']);
+const selectedFilterApproval = ref<string[]>([]);
 const selectedFilterType = ref<string[]>([]);
 const selectedFilterClassification = ref<string[]>([]);
-const options = ref<SearchOptions>({} as SearchOptions);
 const total = ref(0);
 const metaData = ref<PossibleFilterValues | null>(null);
-const filterChanged = ref(false);
 const selectedFilterSet = ref<FilterSetDto | null>(null);
 const filterSets = ref<FilterSetDto[]>([]);
 const classifications = ref<IObligation[]>([]);
@@ -82,6 +81,27 @@ const licenseDialogRef = ref();
 const currentLicenseForAction = ref<License | null>(null);
 const licenseDialogMode = ref<'edit' | 'duplicate'>('edit');
 const abort = ref<AbortController | null>(null);
+const itemsPerPage = ref(100);
+
+const options = computed(
+  (): SearchOptions =>
+    ({
+      page: page.value,
+      itemsPerPage: itemsPerPage.value,
+      sortBy: sortItems.value,
+      groupBy: [],
+      search: search.value,
+      filterString: search.value,
+      filterBy: {
+        isLicenseChart: selectedFilterIsLicenseChart.value,
+        source: selectedFilterSource.value,
+        family: selectedFilterFamily.value,
+        approvalState: selectedFilterApproval.value,
+        licenseType: selectedFilterType.value,
+        classifications: selectedFilterClassification.value,
+      },
+    }) as SearchOptions,
+);
 
 const possibleIsLicenseChart = computed((): DataTableHeaderFilterItems[] =>
   metaData.value
@@ -156,15 +176,14 @@ const possibleClassifications = computed((): DataTableHeaderFilterItems[] =>
     : [],
 );
 
-const setFilterChangedAndResetPagination = () => {
-  filterChanged.value = true;
-  if (options.value.page > 1) options.value.page = 1;
+const resetPagination = () => {
+  page.value = 1;
 };
 
 const resetFilter = () => {
+  resetPagination();
   items.value = [];
   selectedFilterSet.value = null;
-  search.value = '';
   selectedFilterIsLicenseChart.value = [];
   selectedFilterSource.value = [];
   selectedFilterFamily.value = [];
@@ -322,15 +341,6 @@ const getActionButtons = (item: LicenseSlim): TableActionButtonsProps['buttons']
   ];
 };
 
-const {baseWidth} = useTableActionSlider();
-
-const expandedWidth = ref<number>(baseWidth.value);
-
-const headerExpands = (value: number) => {
-  expandedWidth.value = value;
-  headerSettingsStore.setupStore(gridName, headers.value);
-};
-
 const allowActions = computed(() => RightsUtils.hasLicenseAccess() || RightsUtils.hasPolicyAccess());
 
 const headers = computed((): DataTableHeader[] => [
@@ -339,7 +349,7 @@ const headers = computed((): DataTableHeader[] => [
         {
           title: 'COL_ACTIONS',
           align: 'center',
-          width: expandedWidth.value,
+          width: 120,
           value: 'actions',
         } as DataTableHeader,
       ]
@@ -438,12 +448,6 @@ const headers = computed((): DataTableHeader[] => [
 
 headerSettingsStore.setupStore(gridName, headers.value);
 
-const onClearFilter = async () => {
-  resetFilter();
-
-  await reload();
-};
-
 const filterForCondition = (condition: FilterCondition) => {
   const filterAndMap = (
     possibleItems: DataTableHeaderFilterItems[],
@@ -483,7 +487,7 @@ const filterForCondition = (condition: FilterCondition) => {
 const applyFilterSet = async (filter: FilterSetDto) => {
   selectedFilterSet.value = filter;
 
-  Object.keys(getSelectedFilters()).forEach((key) => {
+  Object.keys(options.value.filterBy).forEach((key) => {
     const includedFilter = filter.includedFilters.find((filter) => filter.name === key);
     const filterValues = includedFilter ? includedFilter.values : [];
 
@@ -539,7 +543,7 @@ const getSortedFilterSets = async () => {
 
 const sendSelectedFilters = () => {
   if (dlgFilterSets.value) {
-    dlgFilterSets.value.setFilterData(getSelectedFilters());
+    dlgFilterSets.value.setFilterData(options.value.filterBy);
   }
 };
 const onConfirm = async (config: IConfirmationDialogConfig) => {
@@ -567,34 +571,21 @@ const getWarnLevel = (name: string) => {
 };
 const reactiveTotal = computed(() => total.value);
 
-const getSelectedFilters = () => {
-  return {
-    isLicenseChart: selectedFilterIsLicenseChart.value,
-    source: selectedFilterSource.value,
-    family: selectedFilterFamily.value,
-    approvalState: selectedFilterApproval.value,
-    licenseType: selectedFilterType.value,
-    classifications: selectedFilterClassification.value,
-  };
-};
-
 const retrieveClassifications = async () => {
   const response = (await AdminService.getAllObligations()).data;
   classifications.value = response.items;
 };
 
-const loadData = async () => {
-  licensesLoading.value = true;
+const headerExpands = () => {
+  headerSettingsStore.setupStore(gridName, headers.value);
+};
 
-  options.value.filterString = search.value;
-  options.value.filterBy = {
-    isLicenseChart: selectedFilterIsLicenseChart.value,
-    source: selectedFilterSource.value,
-    family: selectedFilterFamily.value,
-    approvalState: selectedFilterApproval.value,
-    licenseType: selectedFilterType.value,
-    classifications: selectedFilterClassification.value,
-  };
+const reload = async () => {
+  if (abort.value) {
+    abort.value.abort();
+  }
+
+  licensesLoading.value = true;
 
   abort.value = new AbortController();
 
@@ -609,39 +600,38 @@ const loadData = async () => {
   licensesLoading.value = false;
 };
 
-const reload = async () => {
-  if (abort.value) {
-    abort.value.abort();
-  }
-
-  await loadData();
-};
-
 const searchChanged = async () => {
   if (search.value && search.value.length > 80) {
     return;
   }
 
-  setFilterChangedAndResetPagination();
+  resetPagination();
 
   await reload();
 };
 
-const debouncedSearch = _.debounce(searchChanged, 300);
+const debouncedSearch = debounce(searchChanged, 300);
 
 watch(selectedFilterSet, (_, oldVal) => onFilterSetChange(oldVal!));
+
 watch(
   [
-    search,
     selectedFilterIsLicenseChart,
     selectedFilterSource,
     selectedFilterFamily,
     selectedFilterApproval,
     selectedFilterType,
     selectedFilterClassification,
+    search,
   ],
   debouncedSearch,
+  {deep: true},
 );
+
+const onUpdateOptions = async (tableOptions: {page: number; itemsPerPage: number; sortBy: SortItem[]}) => {
+  page.value = tableOptions.page;
+  await reload();
+};
 
 onMounted(async () => {
   rights.value = userStore.getRights;
@@ -651,6 +641,8 @@ onMounted(async () => {
   }
 
   await retrieveClassifications();
+
+  filterSets.value = await getSortedFilterSets();
 
   initBreadcrumbs();
 
@@ -672,9 +664,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TableLayout data-testid="licenses" @mouseleave="headerExpands(baseWidth)">
+  <TableLayout data-testid="licenses">
     <template #description>
-      <div class="d-flex flex-row align-center ga-3">
+      <div class="d-flex align-center ga-3 flex-row">
         <h1 class="text-h5">{{ t('Licenses') }}</h1>
         <NewOrEditLicenseDialog
           mode="create"
@@ -707,19 +699,10 @@ onMounted(async () => {
           variant="outlined"
           density="compact"
           clearable
-          @click:clear="onClearFilter"
+          @click:clear="resetFilter"
           hide-details
           return-object></v-select>
-        <v-text-field
-          autocomplete="off"
-          style="max-width: 500px"
-          v-model="search"
-          append-inner-icon="mdi-magnify"
-          :label="t('labelSearch')"
-          variant="outlined"
-          clearable
-          density="compact"
-          hide-details />
+        <DSearchField v-model="search" />
       </div>
     </template>
     <template v-if="rights?.groups?.includes(Group.UserLicenseManager)" #buttons>
@@ -737,27 +720,28 @@ onMounted(async () => {
         variant="outlined"
         density="compact"
         clearable
-        @click:clear="onClearFilter"
+        @click:clear="resetFilter"
         hide-details="auto"
         v-bind:menu-props="{location: 'bottom'}"
         return-object></v-select>
     </template>
     <template #table>
-      <div ref="dataGridLicenses" class="table-wrapper fill-height action-slider-table">
+      <div ref="dataGridLicenses" class="table-wrapper fill-height">
         <v-data-table-server
           :headers="filteredHeaders"
           fixed-header
           :items-length="reactiveTotal"
           :loading="licensesLoading"
           :items="items"
-          :items-per-page="100"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
-          @click:row="onClickRow"
-          v-model:sort-by="sortItems"
           density="compact"
           show-footer
           class="striped-table custom-data-table fill-height"
-          v-model:options="options">
+          v-model:page="page"
+          v-model:items-per-page="itemsPerPage"
+          v-model:sort-by="sortItems"
+          @update:options="onUpdateOptions"
+          @click:row="onClickRow">
           <!-- Settings column header slot -->
           <template v-if="allowActions" #[`header.actions`]="{column}">
             <GridFilterHeader :column="column">
@@ -812,6 +796,7 @@ onMounted(async () => {
                   v-model="selectedFilterApproval"
                   :column="column"
                   :label="t('APPROVAL_STATUS')"
+                  :initial-selected="['approved', 'deprecated', 'forbidden']"
                   :allItems="possibleApproval">
                 </GridHeaderFilterIcon>
               </template>
@@ -880,14 +865,13 @@ onMounted(async () => {
           </template>
           <template v-if="allowActions" #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="slider"
+              variant="compact"
               :buttons="getActionButtons(item)"
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"
               @delete="showDeletionConfirmationDialog(item)"
               @configure="configurePoliciesForLicense(item)"
-              @slideOut="headerExpands($event as number)"
-              @slideIn="headerExpands($event as number)" />
+              @slideToggle="headerExpands" />
           </template>
           <template #[`item.aliases`]="{item}">
             <span v-if="Array.isArray(item.aliases) && item.aliases.length > 0">

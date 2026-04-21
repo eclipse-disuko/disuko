@@ -385,6 +385,8 @@ type SPDXMetaPublicResponse struct {
 	Uploaded time.Time `json:"uploaded" example:"2023-06-13T07:58:40.572647367Z"`
 	Status   bool      `json:"status"`
 	IsRetain bool      `json:"isRetain" example:"false"`
+	IsLocked bool      `json:"isLocked" example:"true"`
+	Tag      string    `json:"tag" example:"release-2025"`
 } //	@name	SpdxMetaData
 
 type ScanRemarkStatus string

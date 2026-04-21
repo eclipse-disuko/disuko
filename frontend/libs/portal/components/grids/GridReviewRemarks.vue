@@ -521,7 +521,7 @@ onMounted(() => {
 
 <template>
   <div class="h-[calc(100%-56px)]">
-    <div class="pb-1 gap-5 flex flex-col justify-between md:flex-row">
+    <div class="flex flex-col justify-between gap-5 pb-1 md:flex-row">
       <Stack direction="row">
         <DCActionButton
           v-if="projectModel.accessRights.allowExecuteChecklist"
@@ -556,18 +556,7 @@ onMounted(() => {
         </DCActionButton>
       </Stack>
 
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        class="w-full md:max-w-[400px] md:w-auto"
-        clearable
-        single-line
-        min-width="50"
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </div>
 
     <v-data-table
@@ -581,7 +570,7 @@ onMounted(() => {
       :height="tableHeight"
       density="compact"
       fixed-header
-      class="striped-table py-0 my-0 h-full"
+      class="striped-table my-0 h-full py-0"
       :sort-by="sortItems"
       sort-desc
       show-select

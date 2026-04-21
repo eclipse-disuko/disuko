@@ -29,6 +29,7 @@ const (
 	CustomerApproved StateInfo = "CUSTOMER_APPROVED"
 	Aborted          StateInfo = "ABORTED"
 	GeneratingDocs   StateInfo = "GENERATING"
+	GenerationFailed StateInfo = "GENERATION_FAILED"
 )
 
 func ParseStateInfo(state string) (valid bool, result StateInfo) {
@@ -47,6 +48,8 @@ func ParseStateInfo(state string) (valid bool, result StateInfo) {
 		valid, result = true, Aborted
 	case string(GeneratingDocs):
 		valid, result = true, GeneratingDocs
+	case string(GenerationFailed):
+		valid, result = true, GenerationFailed
 	default:
 		valid, result = false, Unset
 	}
@@ -111,12 +114,13 @@ type Info struct {
 }
 
 type InternalApproval struct {
-	ApproveStates   [4]ApproveState
-	Approver        [4]string
-	ApproveComments [4]string
-	DocVersion      int
-	Aborted         bool
-	Generating      bool
+	ApproveStates    [4]ApproveState
+	Approver         [4]string
+	ApproveComments  [4]string
+	DocVersion       int
+	Aborted          bool
+	Generating       bool
+	GenerationFailed bool
 }
 
 type PlausibilityCheck struct {

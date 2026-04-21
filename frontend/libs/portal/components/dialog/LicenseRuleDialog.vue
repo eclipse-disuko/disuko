@@ -28,6 +28,8 @@ interface LicenseItemWithPolicyStatus {
   policyType: string;
   icon: string;
   iconColor: string;
+  isRecommended: boolean;
+  weight: number | null;
 }
 
 const {t} = useI18n();
@@ -50,6 +52,7 @@ const licensesLoading = ref(false);
 const comment = ref<string | undefined>(undefined);
 const selectedComponentStr = ref<string>('');
 const licenseExpression = ref<string>('');
+const licenseRecommended = ref<string>('');
 const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
 
@@ -59,13 +62,14 @@ const commentRules = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
 const config = ref<DialogLicenseRuleConfig>({
   licenseId: '',
   component: new ComponentInfoSlim(),
+  licenseRecommended: '',
 });
 
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
-const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
+const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
 
 const policyTypeMap = computed(() => {
   const statuses = config.value.policyStatus ?? [];
@@ -74,6 +78,15 @@ const policyTypeMap = computed(() => {
 
 function getPolicyType(id: string): string {
   return policyTypeMap.value.get(id) ?? 'noassertion';
+}
+
+const licenseRecommendationWeightMap = computed(() => {
+  const statuses = config.value.policyStatus ?? [];
+  return new Map<string, number | null>(statuses.map((p) => [p.licenseMatched, p.licenseRecommendationWeight]));
+});
+
+function getLicenseRecommendationWeight(id: string): number | null {
+  return licenseRecommendationWeightMap.value.get(id) ?? null;
 }
 
 const licenses = computed((): LicenseItemWithPolicyStatus[] => {
@@ -91,6 +104,8 @@ const licenses = computed((): LicenseItemWithPolicyStatus[] => {
       policyType: type,
       icon: getIconForPolicyType(type),
       iconColor: getIconColorForPolicyType(type),
+      isRecommended: l.License.licenseId === licenseRecommended.value,
+      weight: getLicenseRecommendationWeight(id),
     };
   });
   const unknown = componentLicenses.value.UnknownLicenses.map((id) => {
@@ -101,17 +116,33 @@ const licenses = computed((): LicenseItemWithPolicyStatus[] => {
       policyType: type,
       icon: getIconForPolicyType(type),
       iconColor: getIconColorForPolicyType(type),
+      isRecommended: false,
+      weight: null,
     };
   });
 
-  return [...known, ...unknown];
+  return [...sortByWeight(known), ...unknown];
 });
+
+function sortByWeight(items: LicenseItemWithPolicyStatus[]): LicenseItemWithPolicyStatus[] {
+  return [...items].sort((a, b) => {
+    const aw = a.weight;
+    const bw = b.weight;
+
+    if (aw === null && bw === null) return 0;
+    if (aw === null) return 1;
+    if (bw === null) return -1;
+
+    return aw - bw;
+  });
+}
 
 const open = async (
   newConfig: DialogLicenseRuleConfig = {
     licenseId: '',
     component: new ComponentInfoSlim(),
     policyStatus: [],
+    licenseRecommended: '',
   },
 ) => {
   config.value = newConfig;
@@ -125,12 +156,15 @@ const loadAndPrefillData = async () => {
   selectedComponent.value = config.value.component;
   selectedComponentStr.value = `${config.value.component.name} (${config.value.component.version})`;
   licenseExpression.value = config.value.component.licenseExpression;
+  licenseRecommended.value = config.value.licenseRecommended;
 
   await loadLicenses();
 
-  if (!config.value.licenseId) return;
+  const licenseIdToSelect = config.value.licenseId || config.value.licenseRecommended;
 
-  selectedLicense.value = licenses.value.find((license) => license.id === config.value.licenseId);
+  selectedLicense.value = licenseIdToSelect
+    ? licenses.value.find((license) => license.id === licenseIdToSelect)
+    : undefined;
 };
 
 const loadLicenses = async () => {
@@ -238,6 +272,9 @@ defineExpose({open});
             :rules="licenseDecisionRules">
             <template #item="{item, props}">
               <v-list-item v-bind="props" title="">
+                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
+                  {{ t('RECOMMENDED') }}
+                </v-chip>
                 <v-icon size="small" :color="item.raw.iconColor">
                   {{ item.raw.icon }}
                 </v-icon>
@@ -247,6 +284,9 @@ defineExpose({open});
             </template>
             <template #selection="{item}">
               <div class="d-inline">
+                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
+                  {{ t('RECOMMENDED') }}
+                </v-chip>
                 <v-icon size="small" :color="item.raw.iconColor">
                   {{ item.raw.icon }}
                 </v-icon>

@@ -69,7 +69,7 @@ const onEditProject = async () => {
 
 <template>
   <v-card
-    class="p-12 bg-[rgb(var(--v-theme-backgroundColor))]"
+    class="bg-[rgb(var(--v-theme-backgroundColor))] p-12"
     :class="{'barrier-tape-background': wizardStore.project?.isDummy}">
     <Stack>
       <Stack direction="row" align="center">

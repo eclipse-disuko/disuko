@@ -27,7 +27,7 @@ const users = ref<UserDto[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'user', order: 'asc'}]);
 const abort = ref<AbortController | null>(null);
 const tableAllUsers = ref<HTMLElement | null>(null);
-const searchField = ref<InstanceType<typeof TextField> | null>(null);
+const searchField = ref<InstanceType<typeof DSearchField> | null>(null);
 const selectedFilterStatus = ref<string[]>([]);
 const selectedFilterScopes = ref<string[]>([]);
 
@@ -228,7 +228,7 @@ watch([options, selectedFilterStatus, selectedFilterScopes], debouncedOptions);
 watch(loading, async (newValue) => {
   if (!newValue) {
     await nextTick(() => {
-      searchField.value?.$el?.querySelector('input')?.focus();
+      searchField.value?.focus();
     });
   }
 });
@@ -239,15 +239,7 @@ watch(loading, async (newValue) => {
     <template #buttons>
       <h1 class="text-h5">{{ t('TITLE_USERS') }}</h1>
       <v-spacer></v-spacer>
-      <TextField
-        ref="searchField"
-        :max-width="500"
-        density="compact"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        :disabled="loading"
-        dynamic-placeholder />
+      <DSearchField ref="searchField" v-model="search" :disabled="loading" />
     </template>
     <template #table>
       <div ref="tableAllUsers" class="fill-height">

@@ -23,7 +23,7 @@ const displayValue = (val: string | null | undefined): string => {
 
 <template>
   <div>
-    <div class="text-xs d-text d-secondary-text mb-2">{{ label }}</div>
+    <div class="d-text d-secondary-text mb-2 text-xs">{{ label }}</div>
     <div>
       <slot>{{ displayValue(value) }}</slot>
     </div>

@@ -8,7 +8,6 @@ import {LicenseMeta, ReviewRemark} from '@disclosure-portal/model/Quality';
 import {ComponentInfoSlim, PolicyRuleStatus, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 
 export interface DialogVersionFormConfig {
-  projectID: string;
   version?: VersionSlim;
 }
 export interface DialogReviewRemarkConfig {
@@ -30,6 +29,7 @@ export interface DialogLicenseRuleConfig {
   licenseId: string;
   component: ComponentInfoSlim;
   policyStatus?: PolicyRuleStatus[];
+  licenseRecommended: string;
 }
 
 export type DecisionType = 'warn' | 'deny';

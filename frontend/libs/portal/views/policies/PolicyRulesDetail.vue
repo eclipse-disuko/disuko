@@ -117,7 +117,7 @@ watch(
           <DCActionButton
             v-if="isPolicyManager && !rule.Deprecated"
             large
-            class="mx-2 align-content-center"
+            class="align-content-center mx-2"
             icon="mdi-pencil"
             :text="t('BTN_EDIT')"
             :hint="t('TT_edit_rule')"

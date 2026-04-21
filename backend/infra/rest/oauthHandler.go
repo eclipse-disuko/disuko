@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
-	"github.com/go-chi/chi/v5"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/eclipse-disuko/disuko/conf"
@@ -28,7 +27,6 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	jwt2 "github.com/eclipse-disuko/disuko/helper/jwt"
 	"github.com/eclipse-disuko/disuko/helper/message"
-	"github.com/eclipse-disuko/disuko/helper/requestHelper"
 	"github.com/eclipse-disuko/disuko/helper/roles"
 	user2 "github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/eclipse-disuko/disuko/logy"
@@ -316,99 +314,6 @@ func (handler *OAuthHandler) HandleRefreshToken(writer http.ResponseWriter, requ
 		Success: true,
 	}
 	render.JSON(writer, request, result)
-}
-
-func (handler *OAuthHandler) HandleRequestTechnicalLogin(writer http.ResponseWriter, request *http.Request) {
-	requestSession := logy.GetRequestSession(request)
-	logy.Infof(requestSession, "oauthHandler::HandleRequestTechnicalLogin")
-	username, password, ok := request.BasicAuth()
-
-	if !ok {
-		exception.WriteErrorWithCode(requestSession, &writer, message.BasicAuth, message.GetI18N(message.BasicAuth).Text, "Missing Basic", http.StatusUnauthorized, zapcore.ErrorLevel)
-		return
-	}
-
-	form := url.Values{}
-	form.Add("grant_type", "client_credentials")
-	resp, err := requestHelper.DoPostFormRequestWithBasicAuth(handler.Config.Endpoint.TokenURL, nil, form, username, password, handler.HttpClient)
-
-	var accessResponse oauth.AccessResponse
-	errMarshal := json.Unmarshal(resp, &accessResponse)
-	if errMarshal != nil {
-		exception.WriteErrorWithCode(requestSession, &writer, message.Auth, message.GetI18N(message.Auth).Text, err.Error(), http.StatusUnauthorized, zapcore.ErrorLevel)
-		return
-	}
-
-	if len(accessResponse.AccessToken) <= 0 {
-		exception.WriteErrorWithCode(requestSession, &writer, message.Auth, message.GetI18N(message.Auth).Text, err.Error(), http.StatusUnauthorized, zapcore.ErrorLevel)
-		return
-	}
-
-	userData := jwt2.CreateTechnicalUserdata(request)
-	tokenDetails := jwt2.CreateToken(userData)
-	accessData := roles.GetAccessAndRolesRightsFromClaim(userData)
-	response := oauth.OAuthTokenResponse{
-		Profile: &user.UserDto{
-			User:           userData.Username,
-			Forename:       "",
-			Lastname:       "",
-			Email:          userData.Email,
-			TermsOfUse:     true,
-			TermsOfUseDate: nil,
-			Active:         !conf.IsProdEnv(),
-		},
-		Rights: accessData,
-	}
-	cookieRefreshToken := createRefreshCookie(tokenDetails.RefreshToken)
-	cookieAccessToken := createAccessCookie(tokenDetails.AccessToken)
-	http.SetCookie(writer, &cookieRefreshToken)
-	http.SetCookie(writer, &cookieAccessToken)
-	logy.Infof(requestSession, "oauthHandler::HandleRequestTechnicalLogin %v", response)
-	http.Redirect(writer, request, "https://disco-nginx:3009", http.StatusMovedPermanently)
-	// render.JSON(writer, request, response)
-}
-
-func (handler *OAuthHandler) HandleRequestTestLogin(writer http.ResponseWriter, request *http.Request) {
-	userId := chi.URLParam(request, "user")
-	requestSession := logy.GetRequestSession(request)
-	remoteAddress := jwt2.TrimPortFromRemoteAddress(request.RemoteAddr)
-
-	u := handler.UserRepository.FindByUserId(requestSession, userId)
-	if u == nil {
-
-		panic("testuser not found")
-	}
-	userData := jwt2.TokenData{
-		Username:           u.User,
-		Email:              u.Email,
-		Groups:             strings.Join(u.Roles, ";"),
-		GroupType:          jwt2.GROUP_TYPE_DAIMLER,
-		IsInternalEmployee: true,
-		RemoteAddress:      remoteAddress,
-		IsEnabled:          conf.Config.Server.E2ETests,
-		TermsOfUse:         true,
-	}
-	tokenDetails := jwt2.CreateToken(userData)
-	accessData := roles.GetAccessAndRolesRightsFromClaim(userData)
-	response := oauth.OAuthTokenResponse{
-		Profile: &user.UserDto{
-			User:           userData.Username,
-			Forename:       u.Forename,
-			Lastname:       u.Lastname,
-			Email:          userData.Email,
-			TermsOfUse:     true,
-			TermsOfUseDate: nil,
-			Active:         conf.Config.Server.E2ETests,
-		},
-		Rights: accessData,
-	}
-	cookieRefreshToken := createRefreshCookie(tokenDetails.RefreshToken)
-	cookieAccessToken := createAccessCookie(tokenDetails.AccessToken)
-	http.SetCookie(writer, &cookieRefreshToken)
-	http.SetCookie(writer, &cookieAccessToken)
-	logy.Infof(requestSession, "oauthHandler::HandleRequestTestLogin %v", response)
-	http.Redirect(writer, request, conf.Config.OAuth2.RedirectURL, http.StatusMovedPermanently)
-	// render.JSON(writer, request, response)
 }
 
 func extractUserInfoWithGroups(userInfo *oidc.UserInfo) *oauth.UserInfoWithGroups {

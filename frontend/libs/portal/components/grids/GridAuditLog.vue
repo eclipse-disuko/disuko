@@ -5,8 +5,6 @@
 <script setup lang="ts">
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -25,6 +23,7 @@ const headers = computed<DataTableHeader[]>(() => [
   },
   {
     title: t('COL_TITLE'),
+    width: 200,
     align: 'start',
     value: 'message',
     sortable: true,
@@ -88,17 +87,7 @@ const isExpanded = (item: AuditLog) => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        style="max-width: 500px"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        density="compact"
-        clearable
-        single-line
-        hide-details="auto"></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableAuditLog" class="fill-height">

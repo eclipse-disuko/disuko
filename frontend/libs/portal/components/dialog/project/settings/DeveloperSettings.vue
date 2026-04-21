@@ -14,14 +14,14 @@
         v-model="projectSettings.supplierExtraData.external"
         hide-details
         color="primary"
-        class="shrink mr-0 mt-0"
+        class="mt-0 mr-0 shrink"
         :readonly="hasParent || isNotProjectOwner"
         :disabled="hasParent || isNotProjectOwner">
         <template v-slot:label>
           {{ t('EXTERNAL') }} <span class="small-text ml-2">{{ t('INFO_TEXT_ETERNAL') }}</span>
         </template>
       </v-checkbox>
-      <div class="mt-n5 ml-1 mb-4" v-if="!inWizard && projectSettings.supplierExtraData.external">
+      <div class="mt-n5 mb-4 ml-1" v-if="!inWizard && projectSettings.supplierExtraData.external">
         <v-icon size="x-small" class="mx-2 ml-8" color="mbti">mdi-alert</v-icon>
         <span class="text-body-2">{{ t('EXTERNAL_REMARK') }}</span>
       </div>

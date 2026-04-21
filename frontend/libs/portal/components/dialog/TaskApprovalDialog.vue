@@ -275,7 +275,7 @@ watch(
                 {{ t('COL_APPROVAL_STATUS_' + approval.status) }}
               </div>
             </v-col>
-            <v-col cols="2" class="text-right px-0">
+            <v-col cols="2" class="px-0 text-right">
               <DCloseButton @click="close" />
             </v-col>
           </v-row>
@@ -315,7 +315,7 @@ watch(
                 v-model="showButton"
                 hide-details
                 color="primary"
-                class="shrink mr-2 mt-0 text-caption">
+                class="text-caption mt-0 mr-2 shrink">
                 <template v-slot:label>
                   <span class="custom-checkbox-label">{{ t('LABEL_CHECKBOX_TASK_APPROVAL') }}</span>
                 </template>
@@ -358,7 +358,7 @@ watch(
               :text="t('TAD_BTN_FILL')"
               :hint="t('TT_TAD_BTN_FILL')"
               @click="openFillDialog"
-              :disabled="approval.status == 'GENERATING'" />
+              :disabled="approval.status == 'GENERATING' || approval.status == 'GENERATION_FAILED'" />
             &nbsp;
             <DCActionButton
               isDialogButton
@@ -368,7 +368,7 @@ watch(
               :hint="t('TT_TAD_BTN_ABORT')"
               @click="abort"
               color="error"
-              :disabled="approval.status == 'GENERATING'" />
+              :disabled="approval.status == 'GENERATING' || approval.status == 'GENERATION_FAILED'" />
           </v-col>
           <v-col v-if="item.type == 'APPROVAL'" class="text-right">
             <DCActionButton

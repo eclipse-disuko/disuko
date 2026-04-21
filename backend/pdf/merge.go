@@ -86,7 +86,7 @@ func ConvertAndMerge(rs *logy.RequestSession, outfile string, pageHeader, pageFo
 
 func setupChrome() (context.Context, func()) {
 	opts := chromedp.DefaultExecAllocatorOptions[:]
-	if conf.Config.Server.E2ETests || conf.Config.Server.VanillaDisuko {
+	if conf.Config.Server.VanillaDisuko {
 		// no sandbox needed for chromedp when using docker compose
 		opts = append(opts,
 			chromedp.NoSandbox,

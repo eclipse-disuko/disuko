@@ -93,7 +93,7 @@ services:
         ]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 15
   server:
     build: backend
     depends_on:

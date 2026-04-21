@@ -3,7 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {getApi} from '@disclosure-portal/api';
-import {Approval, ApprovalUpdate, ApproverRoles, CreateApprovalResponse} from '@disclosure-portal/model/Approval';
+import {
+  Approval,
+  ApprovableInfo,
+  ApprovalUpdate,
+  ApproverRoles,
+  CreateApprovalResponse,
+} from '@disclosure-portal/model/Approval';
 import {
   ExternalApprovalRequest,
   InternalApprovalRequest,
@@ -18,7 +24,6 @@ import type {WizardProject} from '@disclosure-portal/model/NewWizard';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import PolicyRule, {PolicyRuleDto} from '@disclosure-portal/model/PolicyRule';
 import {
-  ApprovableInfoDto,
   ApprovableSPDXDto,
   ComponentDetails,
   FillCustomerReq,
@@ -74,7 +79,8 @@ class ProjectService {
 
    */
 
-  public getAll = () => api.get<ProjectsResponse>(`/api/v1/${modelName}`);
+  public getAll = (signal?: AbortSignal) =>
+    api.get<ProjectsResponse>(`/api/v1/${modelName}`, signal ? {signal} : undefined);
 
   public getDisclosures = () => api.get<ProjectsResponse>(`/api/v1/disclosures`);
 
@@ -85,8 +91,8 @@ class ProjectService {
     return (await api.get<ProjectsResponse>(`/api/v1/${modelName}/${projectUid}/possibleChildren`)).data;
   }
 
-  public async getAllWithOptions(options: SearchOptions) {
-    return api.post<ProjectsResponse>(`/api/v1/${modelName}/search`, options);
+  public async getAllWithOptions(options: SearchOptions, signal?: AbortSignal) {
+    return api.post<ProjectsResponse>(`/api/v1/${modelName}/search`, options, signal ? {signal} : undefined);
   }
 
   public async get(projectUid: string) {
@@ -101,7 +107,7 @@ class ProjectService {
 
   public async getApprovableInfo(projectUid: string) {
     projectUid = encodeURIComponent('' + projectUid).replace(/\./g, '%2E');
-    return (await api.get<ApprovableInfoDto>(`/api/v1/${modelName}/${projectUid}/approvableinfo`)).data;
+    return (await api.get<ApprovableInfo>(`/api/v1/${modelName}/${projectUid}/approvableinfo`)).data;
   }
 
   public async getAllApprovals(projectUid: string) {

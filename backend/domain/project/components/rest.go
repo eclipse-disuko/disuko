@@ -5,23 +5,30 @@
 package components
 
 import (
+	"strings"
+
 	"github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/domain/licenserules"
+	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
 	"github.com/eclipse-disuko/disuko/domain/policydecisions"
 	"github.com/eclipse-disuko/disuko/helper/message"
+	licRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type PolicyRuleStatusDto struct {
-	Key                        string           `json:"key"`
-	Name                       string           `json:"name"`
-	LicenseMatched             string           `json:"licenseMatched"`
-	Type                       license.ListType `json:"type"`
-	Used                       bool             `json:"used"`
-	Description                string           `json:"description"`
-	IsDecisionMade             bool             `json:"isDecisionMade"`
-	CanMakeWarnedDecision      bool             `json:"canMakeWarnedDecision"`
-	CanMakeDeniedDecision      bool             `json:"canMakeDeniedDecision"`
-	DeniedDecisionDeniedReason string           `json:"deniedDecisionDeniedReason"`
+	Key                         string           `json:"key"`
+	Name                        string           `json:"name"`
+	LicenseMatched              string           `json:"licenseMatched"`
+	Type                        license.ListType `json:"type"`
+	Used                        bool             `json:"used"`
+	Description                 string           `json:"description"`
+	IsDecisionMade              bool             `json:"isDecisionMade"`
+	CanMakeWarnedDecision       bool             `json:"canMakeWarnedDecision"`
+	CanMakeDeniedDecision       bool             `json:"canMakeDeniedDecision"`
+	DeniedDecisionDeniedReason  string           `json:"deniedDecisionDeniedReason"`
+	LicenseRecommendationWeight *float64         `json:"licenseRecommendationWeight"`
 }
 type UnmatchedLicenseDto struct {
 	OrigName       string `json:"orig"`
@@ -58,6 +65,8 @@ type ComponentInfoDto struct {
 
 	PolicyDecisionsApplied     []*policydecisions.PolicyDecisionSlimDto `json:"policyDecisionsApplied"`
 	PolicyDecisionDeniedReason string                                   `json:"policyDecisionDeniedReason"`
+
+	LicenseRecommended *string `json:"licenseRecommended"`
 }
 
 type ComponentInfoSlimDto struct {
@@ -82,7 +91,14 @@ type ComponentsInfoResponse struct {
 	BulkPolicyDecisionDeniedReason string             `json:"bulkPolicyDecisionDeniedReason"`
 }
 
-func (entity *ComponentResult) ToComponentInfoDto(isResponsible bool, policyDecisionDeniedReason string, isAllowDeniedPolicyDecision bool) *ComponentInfoDto {
+func (entity *ComponentResult) ToComponentInfoDto(
+	isResponsible bool,
+	policyDecisionDeniedReason string,
+	isAllowDeniedPolicyDecision bool,
+	licensesRepository licRepo.ILicensesRepository,
+	rs *logy.RequestSession,
+	cache *recommendationCache,
+) *ComponentInfoDto {
 	status, rule := entity.GetUsedPolicyRule()
 
 	var (
@@ -106,6 +122,12 @@ func (entity *ComponentResult) ToComponentInfoDto(isResponsible bool, policyDeci
 		}
 	}
 
+	var licenseRecommended *string
+	policyStatusDtos := ToPolicyStatusDto(entity.Status, isAllowDeniedPolicyDecision)
+	if deniedReason == "" && canChoose {
+		licenseRecommended = recommendLicense(policyStatusDtos, licensesRepository, rs, cache)
+	}
+
 	return &ComponentInfoDto{
 		SpdxId:                     entity.Component.SpdxId,
 		Name:                       entity.Component.Name,
@@ -123,7 +145,7 @@ func (entity *ComponentResult) ToComponentInfoDto(isResponsible bool, policyDeci
 		Modified:                   entity.Component.Modified,
 		Questioned:                 entity.Questioned,
 		Unasserted:                 entity.Unasserted,
-		PolicyRuleStatus:           ToPolicyStatusDto(entity.Status, isAllowDeniedPolicyDecision),
+		PolicyRuleStatus:           policyStatusDtos,
 		UnmatchedLicenses:          ToUnmatchedDto(entity.Unmatched),
 		PrStatus:                   status,
 		UsedPolicyRule:             rule,
@@ -133,13 +155,183 @@ func (entity *ComponentResult) ToComponentInfoDto(isResponsible bool, policyDeci
 		LicenseRuleApplied:         entity.Component.LicenseRuleApplied.ToSlimDto(),
 		PolicyDecisionsApplied:     policydecisions.ToSlimDtos(entity.Component.PolicyDecisionsApplied),
 		PolicyDecisionDeniedReason: policyDecisionDeniedReason,
+		LicenseRecommended:         licenseRecommended,
 	}
 }
 
-func (entity *EvaluationResult) ToComponentInfoDtos(isResponsible bool, policyDecisionDeniedReason string, isAllowDeniedPolicyDecision bool) []ComponentInfoDto {
+type recommendationCache struct {
+	licenses    map[string]*license.License
+	obligations map[string]*obligation2.Obligation
+}
+
+func recommendLicense(
+	policyStatusDtos []*PolicyRuleStatusDto,
+	licensesRepository licRepo.ILicensesRepository,
+	rs *logy.RequestSession,
+	cache *recommendationCache,
+) *string {
+	if len(policyStatusDtos) == 0 {
+		return nil
+	}
+
+	var allows []*PolicyRuleStatusDto
+	var warns []*PolicyRuleStatusDto
+
+	for _, ps := range policyStatusDtos {
+		if ps == nil {
+			continue
+		}
+
+		switch ps.Type {
+		case license.ALLOW:
+			allows = append(allows, ps)
+		case license.WARN:
+			warns = append(warns, ps)
+		}
+	}
+
+	if len(allows) == 1 {
+		return &allows[0].LicenseMatched
+	}
+	if len(allows) > 1 {
+		return recommendByClassificationWeight(allows, licensesRepository, rs, cache)
+	}
+
+	if len(warns) == 1 {
+		return &warns[0].LicenseMatched
+	}
+	if len(warns) > 1 {
+		return recommendByClassificationWeight(warns, licensesRepository, rs, cache)
+	}
+
+	return nil
+}
+
+func recommendByClassificationWeight(
+	policyStatusDtos []*PolicyRuleStatusDto,
+	licensesRepository licRepo.ILicensesRepository,
+	rs *logy.RequestSession,
+	cache *recommendationCache,
+) *string {
+	if licensesRepository == nil || rs == nil || cache == nil {
+		return nil
+	}
+
+	licensesWeightMap := calculateLicenseWeights(policyStatusDtos, licensesRepository, rs, cache)
+	applyLicenseWeights(policyStatusDtos, licensesWeightMap)
+
+	return findRecommendedLicense(licensesWeightMap)
+}
+
+func findRecommendedLicense(licensesWeightMap map[string]float64) *string {
+	var recommendedLicense string
+	var bestScore float64
+	found := false
+	bestScoreCount := 0
+
+	for licenseId, score := range licensesWeightMap {
+		if !found || score < bestScore {
+			recommendedLicense = licenseId
+			bestScore = score
+			found = true
+			bestScoreCount = 1
+		} else if score == bestScore {
+			bestScoreCount++
+		}
+	}
+
+	if !found || bestScoreCount > 1 {
+		return nil
+	}
+
+	return &recommendedLicense
+}
+
+func calculateLicenseWeights(policyStatusDtos []*PolicyRuleStatusDto, licensesRepository licRepo.ILicensesRepository, rs *logy.RequestSession, cache *recommendationCache) map[string]float64 {
+	licensesWeightMap := make(map[string]float64)
+	processedLicenses := make(map[string]struct{})
+
+	for _, ps := range policyStatusDtos {
+		licenseId := ps.LicenseMatched
+		if _, alreadyProcessed := processedLicenses[licenseId]; alreadyProcessed {
+			continue
+		}
+		processedLicenses[licenseId] = struct{}{}
+
+		l := getLicenseFromCacheOrRepo(cache, licensesRepository, rs, licenseId)
+		if l == nil {
+			continue
+		}
+
+		for _, obligationKey := range l.Meta.ObligationsKeyList {
+			o := cache.obligations[obligationKey]
+			if o == nil {
+				continue
+			}
+
+			switch strings.ToLower(string(o.WarnLevel)) {
+			case obligation2.Information:
+				licensesWeightMap[licenseId] += obligation2.InfoWeight
+			case obligation2.Warning:
+				licensesWeightMap[licenseId] += obligation2.WarnWeight
+			case obligation2.Alarm:
+				licensesWeightMap[licenseId] += obligation2.AlarmWeight
+			}
+		}
+
+		if _, exists := licensesWeightMap[licenseId]; !exists {
+			licensesWeightMap[licenseId] = 0
+		}
+	}
+	return licensesWeightMap
+}
+
+func applyLicenseWeights(
+	policyStatusDtos []*PolicyRuleStatusDto,
+	licensesWeightMap map[string]float64,
+) {
+	for _, ps := range policyStatusDtos {
+		ps.LicenseRecommendationWeight = new(licensesWeightMap[ps.LicenseMatched])
+	}
+}
+
+func getLicenseFromCacheOrRepo(cache *recommendationCache, licensesRepository licRepo.ILicensesRepository, rs *logy.RequestSession, licenseId string) *license.License {
+	if l, ok := cache.licenses[licenseId]; ok {
+		return l
+	}
+	l := licensesRepository.FindById(rs, licenseId)
+	if l != nil {
+		cache.licenses[licenseId] = l
+	}
+	return l
+}
+
+func (entity *EvaluationResult) ToComponentInfoDtos(isResponsible bool,
+	policyDecisionDeniedReason string,
+	isAllowDeniedPolicyDecision bool,
+	obligationProvider obligation.IObligationRepository,
+	licensesRepository licRepo.ILicensesRepository,
+	rs *logy.RequestSession,
+) []ComponentInfoDto {
 	dtos := make([]ComponentInfoDto, 0)
+
+	cache := &recommendationCache{
+		licenses:    make(map[string]*license.License),
+		obligations: make(map[string]*obligation2.Obligation),
+	}
+
+	if obligationProvider != nil && rs != nil {
+		allObligations := obligationProvider.FindAll(rs, false)
+		for _, o := range allObligations {
+			if o == nil || o.Key == "" {
+				continue
+			}
+			cache.obligations[o.Key] = o
+		}
+	}
+
 	for _, compRes := range entity.Results {
-		dtos = append(dtos, *compRes.ToComponentInfoDto(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision))
+		dtos = append(dtos, *compRes.ToComponentInfoDto(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, licensesRepository, rs, cache))
 	}
 	return dtos
 }

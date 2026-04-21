@@ -117,7 +117,7 @@ func (db *dbRepos) processSeedFile(requestSession *logy.RequestSession, path str
 		db.label.LoadFromDb(requestSession)
 	}
 
-	if conf.Config.Server.E2ETests || conf.Config.Server.VanillaDisuko {
+	if conf.Config.Server.VanillaDisuko {
 		db.department.LoadFromDb(requestSession)
 	}
 

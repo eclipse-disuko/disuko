@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
 import {ProjectSubscriptions} from '@disclosure-portal/model/Project';
-import {ProjectSlim, ProjectSlimDto} from '@disclosure-portal/model/ProjectsResponse';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -15,6 +14,7 @@ import {storeToRefs} from 'pinia';
 import {computed, nextTick, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useProjectUtils} from '@disclosure-portal/utils/projects';
 
 const route = useRoute();
 const router = useRouter();
@@ -24,6 +24,7 @@ const {useReactiveTitle} = usePageTitle();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
 const idleStore = useIdleStore();
+const projectsUtils = useProjectUtils();
 
 const {currentProject} = storeToRefs(projectStore);
 
@@ -39,11 +40,6 @@ const itemVersion = computed(() =>
 const encodedCurrentProjectParent = computed(() => encodeURIComponent(currentProject.value?.parent ?? ''));
 const encodedProjectId = computed(() => encodeURIComponent(projectId.value));
 
-const slimFromProject = (): ProjectSlim => {
-  const projectSlim = new ProjectSlim(new ProjectSlimDto());
-  projectSlim.fromProjectModel(currentProject.value!);
-  return projectSlim;
-};
 const tabUrl = computed(() => {
   const type = currentProject.value?.isGroup ? 'groups' : 'projects';
   return `/dashboard/${type}/${encodedProjectId.value}`;
@@ -148,13 +144,13 @@ onUnmounted(() => {
 
 <template>
   <v-container v-if="currentProject" fluid class="h-full px-6" data-testid="projects-details">
-    <div v-if="!itemVersion" class="flex flex-row align-center pb-3 ga-2 flex-wrap">
+    <div v-if="!itemVersion" class="align-center ga-2 flex flex-row flex-wrap pb-3">
       <v-chip v-if="currentProject.isDummy" class="dummy-tag" label>DUMMY</v-chip>
       <span class="text-h5 inline-block" :class="{statusDeprecated: currentProject.status === 'deprecated'}">
         {{ currentProject.isGroup ? t('GROUP') : t('PROJECT') }} <q>{{ currentProject.name }}</q>
       </span>
-      <span :class="'pStatus' + (!currentProject.status ? 'new' : currentProject.status)">
-        {{ !currentProject.status ? 'new' : t('STATUS_' + currentProject.status) }}
+      <span class="font-bold" :style="{color: projectsUtils.getTextStatusColor(currentProject.status)}">
+        {{ t('STATUS_' + (!currentProject.status ? 'new' : currentProject.status)) }}
       </span>
       <DIconButton
         v-if="currentProject.parent"
@@ -265,16 +261,17 @@ onUnmounted(() => {
         </v-card>
       </v-col>
     </v-row>
-    <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
-      <ProjectSubscriptionsDialog
-        :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
-        :confirm-text="t('NP_DIALOG_BTN_EDIT')"
-        :item="currentProject.subscriptions"
-        @confirm="saveProjectSubscriptions"
-        @close="projectSubscriptionsDialogOpen = false">
-      </ProjectSubscriptionsDialog>
-    </DFormDialog>
   </v-container>
+
+  <DFormDialog v-model:dialog="projectSubscriptionsDialogVisible" v-model="projectSubscriptionsDialogOpen" persistent>
+    <ProjectSubscriptionsDialog
+      :title="t('TITLE_PROJECT_SUBSCRIPTIONS')"
+      :confirm-text="t('NP_DIALOG_BTN_EDIT')"
+      :item="currentProject!.subscriptions"
+      @confirm="saveProjectSubscriptions"
+      @close="projectSubscriptionsDialogOpen = false">
+    </ProjectSubscriptionsDialog>
+  </DFormDialog>
 </template>
 
 <style scoped lang="scss">

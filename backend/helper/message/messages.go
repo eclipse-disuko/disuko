@@ -337,17 +337,20 @@ const (
 	ApprovalStatusExternalPending             = "APPROVAL_STATUS_EXTERNAL_PENDING"
 	ApprovalStatusExternalDeclined            = "APPROVAL_STATUS_EXTERNAL_DECLINED"
 	ApprovalStatusExternalAborted             = "APPROVAL_STATUS_EXTERNAL_ABORTED"
+	ApprovalStatusExternalGenerationFailed    = "APPROVAL_STATUS_EXTERNAL_GENERATION_FAILED"
 	ApprovalStatusExternalSupplierApproved    = "APPROVAL_STATUS_EXTERNAL_SUPPLIER_APPROVED"
 	ApprovalStatusExternalCustomerApproved    = "APPROVAL_STATUS_EXTERNAL_CUSTOMER_APPROVED"
 	ApprovalStatusInternalPending             = "APPROVAL_STATUS_INTERNAL_PENDING"
 	ApprovalStatusInternalDeclined            = "APPROVAL_STATUS_INTERNAL_DECLINED"
 	ApprovalStatusInternalApproved            = "APPROVAL_STATUS_INTERNAL_APPROVED"
 	ApprovalStatusInternalAborted             = "APPROVAL_STATUS_INTERNAL_ABORTED"
+	ApprovalStatusInternalGenerationFailed    = "APPROVAL_STATUS_INTERNAL_GENERATION_FAILED"
 	ApprovalStatusInternalDeveloperApproved   = "APPROVAL_STATUS_INTERNAL_DEVELOPER_APPROVED"
 	ApprovalStatusPending                     = "APPROVAL_STATUS_PENDING"
 	ApprovalStatusDeclined                    = "APPROVAL_STATUS_DECLINED"
 	ApprovalStatusApproved                    = "APPROVAL_STATUS_APPROVED"
 	ApprovalStatusAborted                     = "APPROVAL_STATUS_ABORTED"
+	ApprovalStatusGenerationFailed            = "APPROVAL_STATUS_GENERATION_FAILED"
 	FilterSetNotFound                         = "FILTER_SET_NOT_FOUND"
 	UserAddedToTheProject                     = "USER_ADDED_TO_THE_PROJECT"
 	ConnectorReqFailed                        = "CONNECTOR_REQUEST_FAILED"
@@ -659,17 +662,20 @@ func InitI18N() {
 	addI18NKeyValue(ApprovalStatusExternalPending, "Pending")
 	addI18NKeyValue(ApprovalStatusExternalDeclined, "Declined")
 	addI18NKeyValue(ApprovalStatusExternalAborted, "Aborted")
+	addI18NKeyValue(ApprovalStatusExternalGenerationFailed, "Generation Failed")
 	addI18NKeyValue(ApprovalStatusExternalSupplierApproved, "Developer Approved")
 	addI18NKeyValue(ApprovalStatusExternalCustomerApproved, "Owner Approved")
 	addI18NKeyValue(ApprovalStatusInternalPending, "Pending")
 	addI18NKeyValue(ApprovalStatusInternalDeclined, "Declined")
 	addI18NKeyValue(ApprovalStatusInternalApproved, "Approved")
 	addI18NKeyValue(ApprovalStatusInternalAborted, "Aborted")
+	addI18NKeyValue(ApprovalStatusInternalGenerationFailed, "Generation Failed")
 	addI18NKeyValue(ApprovalStatusInternalDeveloperApproved, "Developer Approved")
 	addI18NKeyValue(ApprovalStatusPending, "Pending")
 	addI18NKeyValue(ApprovalStatusDeclined, "Declined")
 	addI18NKeyValue(ApprovalStatusApproved, "Approved")
 	addI18NKeyValue(ApprovalStatusAborted, "Aborted")
+	addI18NKeyValue(ApprovalStatusGenerationFailed, "Generation Failed")
 	addI18NKeyValue(TaskTypeInternalApprovalinfo, "Your own approval request status")
 	addI18NKeyValue(TaskTypePlausibilityApprovalinfo, "Your own review request status")
 	addI18NKeyValue(TaskTypeInternalApproval, "Approval request")

@@ -17,7 +17,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'test-results/', '**/*.spec.ts', '**/*.test.ts', '**/e2e-tests/**'],
+      exclude: ['node_modules/', 'test-results/', '**/*.spec.ts', '**/*.test.ts'],
     },
   },
   resolve: {

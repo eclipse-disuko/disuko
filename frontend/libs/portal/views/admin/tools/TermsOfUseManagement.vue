@@ -79,7 +79,7 @@ const userHasPermission = computed(() => {
             v-model="termsOfUseVersion"
             class="required"></v-text-field>
         </v-col>
-        <v-col cols="12" class="justify-center mr-2" xs="6" md="4">
+        <v-col cols="12" class="mr-2 justify-center" xs="6" md="4">
           <DCActionButton
             :disabled="!termsOfUseVersion || isInProgress || !userHasPermission"
             @click="triggerResetTermsAcceptanceJob"

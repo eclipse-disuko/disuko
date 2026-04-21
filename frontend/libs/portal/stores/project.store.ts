@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {IDefaultSelectItem} from '@disclosure-portal/model/ISelectItem';
 import {createProjectModel, type Project, ProjectSubscriptions} from '@disclosure-portal/model/Project';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
@@ -14,9 +13,11 @@ import useSnackbar from '@shared/composables/useSnackbar';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {DataTableHeaderFilterItems} from '@shared/types/table';
+import {useProjectUtils} from '@disclosure-portal/utils/projects';
 
 export enum ProjectStatusType {
-  statusNew = 'ready',
+  ready = 'ready',
   active = 'active',
   deprecated = 'deprecated',
 }
@@ -24,6 +25,7 @@ export enum ProjectStatusType {
 export const useProjectStore = defineStore('project', () => {
   const {info} = useSnackbar();
   const {t} = useI18n();
+  const projectsUtils = useProjectUtils();
 
   const state = reactive({
     projects: [] as ProjectSlim[],
@@ -34,23 +36,36 @@ export const useProjectStore = defineStore('project', () => {
     hasOnlyVehiclePlatformChildren: false,
   });
 
-  const projectPossibleStatuses = computed((): IDefaultSelectItem[] => {
-    return Object.keys(ProjectStatusType).map((key) => ({
-      text: key,
-      value: ProjectStatusType[key as keyof typeof ProjectStatusType],
-    }));
-  });
+  const projectPossibleStatuses = computed((): DataTableHeaderFilterItems[] =>
+    Object.keys(ProjectStatusType).map((key) => {
+      const status = ProjectStatusType[key as keyof typeof ProjectStatusType];
+      return {
+        text: t('STATUS_' + status),
+        textColor: projectsUtils.getTextStatusColor(status),
+        textBold: true,
+        value: key,
+      };
+    }),
+  );
 
   const resetCurrentProject = () => {
     state.currentProject = null;
     useSbomStore().reset();
   };
 
+  const resetVehiclePlatformInfo = () => {
+    state.hasVehiclePlatformChildren = false;
+    state.hasOnlyVehiclePlatformChildren = false;
+  };
+
   watch(
     () => state.currentProject,
     async () => {
       if (!state.currentProject) return;
-      if (!state.currentProject.isGroup) return;
+      if (!state.currentProject.isGroup) {
+        resetVehiclePlatformInfo();
+        return;
+      }
       state.hasVehiclePlatformChildren = (
         await projectService.getVehiclePlatform(state.currentProject._key)
       ).data.found;
@@ -62,14 +77,12 @@ export const useProjectStore = defineStore('project', () => {
   );
 
   // API Calls
-  const fetchProjects = async (options?: SearchOptions) => {
-    if (state.projects.length === 0 || options) {
-      state.loading = true;
-    }
+  const fetchProjects = async (options?: SearchOptions, signal?: AbortSignal) => {
+    state.loading = true;
     try {
       const projectsResponse = options
-        ? await projectService.getAllWithOptions(options)
-        : await projectService.getAll();
+        ? await projectService.getAllWithOptions(options, signal)
+        : await projectService.getAll(signal);
       state.projects = projectsResponse.data.projects;
       state.projectsCount = projectsResponse.data.count;
     } catch (error) {

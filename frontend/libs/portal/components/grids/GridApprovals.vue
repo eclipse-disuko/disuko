@@ -157,6 +157,8 @@ const getColorForApproval = (status: ApprovalStates) => {
       return 'rgb(var(--v-theme-approvalApproved))';
     case ApprovalStates.Aborted:
       return 'rgb(var(--v-theme-approvalDeclined))';
+    case ApprovalStates.GenerationFailed:
+      return 'rgb(var(--v-theme-approvalDeclined))';
   }
 };
 
@@ -299,17 +301,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
     </template>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        max-width="450px"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        density="compact"
-        clearable
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableApprovals" class="fill-height">

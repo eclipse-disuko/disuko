@@ -720,8 +720,8 @@ onMounted(async () => {
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid grid-cols-2 gap-6 w-full">
-        <div v-if="isPolicyManager" class="d-flex flex-row ga-2 align-center mt-2" style="height: 36px">
+      <div class="grid w-full grid-cols-2 gap-6">
+        <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 flex-row" style="height: 36px">
           <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_LICENSES') }}</h3>
           <DCActionButton
             :text="t('BTN_SAVE')"
@@ -730,11 +730,11 @@ onMounted(async () => {
             @click="saveChanges"
             v-if="hasChanges && rule.Deprecated === false" />
         </div>
-        <div v-if="isPolicyManager" class="d-flex flex-row align-center mt-2">
+        <div v-if="isPolicyManager" class="d-flex align-center mt-2 flex-row">
           <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}</h3>
         </div>
         <div :class="{'col-span-2': !isPolicyManager}">
-          <div class="d-flex flex-row ga-1 label-filter">
+          <div class="d-flex ga-1 label-filter flex-row">
             <div class="overflow-auto">
               <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
             </div>
@@ -752,7 +752,7 @@ onMounted(async () => {
           </div>
         </div>
         <div v-if="isPolicyManager && !rule.Deprecated">
-          <div class="d-flex flex-row ga-1 label-filter">
+          <div class="d-flex ga-1 label-filter flex-row">
             <DCActionButton
               large
               variant="outlined"
@@ -804,12 +804,12 @@ onMounted(async () => {
                         :color="selectedFilterIsLicenseChartSelected.length > 0 ? 'primary' : 'default'" />
                     </template>
                     <div style="width: 280px" class="bg-background">
-                      <v-row class="d-flex justify-end ma-1 mr-2">
+                      <v-row class="d-flex ma-1 mr-2 justify-end">
                         <DCloseButton @click="menuIsLicenseChartSelected = false" />
                       </v-row>
                       <v-select
                         v-model="selectedFilterIsLicenseChartSelected"
-                        class="mx-2 pa-2"
+                        class="pa-2 mx-2"
                         density="compact"
                         @focus="onACFocus"
                         variant="outlined"
@@ -834,7 +834,7 @@ onMounted(async () => {
                           </span>
                         </template>
                         <template v-slot:item="{item, props}">
-                          <v-list-item v-bind="props" class="py-0 px-2">
+                          <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
@@ -860,12 +860,12 @@ onMounted(async () => {
                         :color="selectedFilterTypeSelected.length > 0 ? 'primary' : 'default'" />
                     </template>
                     <div style="width: 280px" class="bg-background">
-                      <v-row class="d-flex justify-end ma-1 mr-2">
+                      <v-row class="d-flex ma-1 mr-2 justify-end">
                         <DCloseButton @click="menu5 = false" />
                       </v-row>
                       <v-select
                         v-model="selectedFilterTypeSelected"
-                        class="mx-2 pa-2"
+                        class="pa-2 mx-2"
                         density="compact"
                         clearable
                         @focus="onACFocus"
@@ -890,7 +890,7 @@ onMounted(async () => {
                           </span>
                         </template>
                         <template v-slot:item="{item, props}">
-                          <v-list-item v-bind="props" class="py-0 px-2">
+                          <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
@@ -920,12 +920,12 @@ onMounted(async () => {
                         :color="selectedFilterApprovalSelected.length > 0 ? 'primary' : 'default'" />
                     </template>
                     <div style="width: 280px" class="bg-background">
-                      <v-row class="d-flex justify-end ma-1 mr-2">
+                      <v-row class="d-flex ma-1 mr-2 justify-end">
                         <DCloseButton @click="menu4 = false" />
                       </v-row>
                       <v-select
                         v-model="selectedFilterApprovalSelected"
-                        class="mx-2 pa-2"
+                        class="pa-2 mx-2"
                         density="compact"
                         clearable
                         @focus="onACFocus"
@@ -950,7 +950,7 @@ onMounted(async () => {
                           </span>
                         </template>
                         <template v-slot:item="{item, props}">
-                          <v-list-item v-bind="props" class="py-0 px-2">
+                          <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
@@ -980,12 +980,12 @@ onMounted(async () => {
                         :color="selectedFilterFamilySelected.length > 0 ? 'primary' : 'default'" />
                     </template>
                     <div style="width: 280px" class="bg-background">
-                      <v-row class="d-flex justify-end ma-1 mr-2">
+                      <v-row class="d-flex ma-1 mr-2 justify-end">
                         <DCloseButton @click="menu = false" />
                       </v-row>
                       <v-select
                         v-model="selectedFilterFamilySelected"
-                        class="mx-2 pa-2"
+                        class="pa-2 mx-2"
                         density="compact"
                         clearable
                         @focus="onACFocus"
@@ -1010,7 +1010,7 @@ onMounted(async () => {
                           </span>
                         </template>
                         <template v-slot:item="{item, props}">
-                          <v-list-item v-bind="props" class="py-0 px-2">
+                          <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
@@ -1040,12 +1040,12 @@ onMounted(async () => {
                         :color="selectedFilterFamilySelected.length > 0 ? 'primary' : 'default'" />
                     </template>
                     <div style="width: 520px" class="bg-background">
-                      <v-row class="d-flex justify-end ma-1 mr-2">
+                      <v-row class="d-flex ma-1 mr-2 justify-end">
                         <DCloseButton @click="menuClassification = false" />
                       </v-row>
                       <v-select
                         v-model="selectedFilterClassificationsSelected"
-                        class="mx-2 pa-2"
+                        class="pa-2 mx-2"
                         density="compact"
                         clearable
                         @focus="onACFocus"
@@ -1166,12 +1166,12 @@ onMounted(async () => {
                       :color="selectedFilterIsLicenseChartNotSelected.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div style="width: 280px" class="bg-background">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DCloseButton @click="menuIsLicenseChartNotSelected = false" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterIsLicenseChartNotSelected"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       density="compact"
                       @focus="onACFocus"
                       variant="outlined"
@@ -1196,7 +1196,7 @@ onMounted(async () => {
                         </span>
                       </template>
                       <template v-slot:item="{item, props}">
-                        <v-list-item v-bind="props" class="py-0 px-2">
+                        <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
@@ -1222,12 +1222,12 @@ onMounted(async () => {
                       :color="selectedFilterTypeNotSelected.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div style="width: 280px" class="bg-background">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DCloseButton @click="menu6 = false" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterTypeNotSelected"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       density="compact"
                       clearable
                       @focus="onACFocus"
@@ -1252,7 +1252,7 @@ onMounted(async () => {
                         </span>
                       </template>
                       <template v-slot:item="{item, props}">
-                        <v-list-item v-bind="props" class="py-0 px-2">
+                        <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
@@ -1282,12 +1282,12 @@ onMounted(async () => {
                       :color="selectedFilterApprovalNotSelected.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div style="width: 280px" class="bg-background">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DCloseButton @click="menu3 = false" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterApprovalNotSelected"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       density="compact"
                       clearable
                       @focus="onACFocus"
@@ -1312,7 +1312,7 @@ onMounted(async () => {
                         </span>
                       </template>
                       <template v-slot:item="{item, props}">
-                        <v-list-item v-bind="props" class="py-0 px-2">
+                        <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
@@ -1342,12 +1342,12 @@ onMounted(async () => {
                       :color="selectedFilterFamilyNotSelected.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div style="width: 280px" class="bg-background">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DCloseButton @click="menu2 = false" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterFamilyNotSelected"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       density="compact"
                       clearable
                       @focus="onACFocus"
@@ -1372,7 +1372,7 @@ onMounted(async () => {
                         </span>
                       </template>
                       <template v-slot:item="{item, props}">
-                        <v-list-item v-bind="props" class="py-0 px-2">
+                        <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
@@ -1402,12 +1402,12 @@ onMounted(async () => {
                       :color="selectedFilterClassificationsNotSelected.length > 0 ? 'primary' : 'default'" />
                   </template>
                   <div style="width: 520px" class="bg-background">
-                    <v-row class="d-flex justify-end ma-1 mr-2">
+                    <v-row class="d-flex ma-1 mr-2 justify-end">
                       <DCloseButton @click="menuClassificationNot = false" />
                     </v-row>
                     <v-select
                       v-model="selectedFilterClassificationsNotSelected"
-                      class="mx-2 pa-2"
+                      class="pa-2 mx-2"
                       density="compact"
                       clearable
                       @focus="onACFocus"

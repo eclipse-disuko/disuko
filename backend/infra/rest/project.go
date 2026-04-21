@@ -1213,8 +1213,8 @@ func (projectHandler *ProjectHandler) ProjectGetApproval(w http.ResponseWriter, 
 		if app.Key != appId {
 			continue
 		}
-		creatorFullName := projectHandler.fullNameForUserSafe(requestSession, app.Creator)
-		approverFullNames := projectHandler.getApproverFullNames(requestSession, app)
+		creatorFullName := projectHandler.fullNameForUserSafe(requestSession, app.Creator, nil)
+		approverFullNames := projectHandler.getApproverFullNames(requestSession, app, nil)
 		dto := app.ToDto(creatorFullName, approverFullNames)
 
 		for _, appPr := range dto.Info.Projects {
@@ -1245,10 +1245,13 @@ func (projectHandler *ProjectHandler) ProjectGetApprovalList(w http.ResponseWrit
 		render.JSON(w, r, []interface{}{})
 		return
 	}
-	var res []approval2.ApprovalDto
+	var (
+		res           []approval2.ApprovalDto
+		fullnameCache = make(map[string]string)
+	)
 	for _, app := range approvalList.Approvals {
-		approverFullNames := projectHandler.getApproverFullNames(requestSession, app)
-		dto := app.ToDto(projectHandler.fullNameForUserSafe(requestSession, app.Creator), approverFullNames)
+		approverFullNames := projectHandler.getApproverFullNames(requestSession, app, fullnameCache)
+		dto := app.ToDto(projectHandler.fullNameForUserSafe(requestSession, app.Creator, fullnameCache), approverFullNames)
 		for _, doc := range pr.GetDocuments() {
 			if doc.ApprovalId == app.Key {
 				dto.Documents = append(dto.Documents, doc.ToDto())
@@ -1264,12 +1267,23 @@ func (projectHandler *ProjectHandler) ProjectGetApprovalList(w http.ResponseWrit
 	render.JSON(w, r, res)
 }
 
-func (projectHandler *ProjectHandler) fullNameForUserSafe(requestSession *logy.RequestSession, userId string) string {
+func (projectHandler *ProjectHandler) fullNameForUserSafe(requestSession *logy.RequestSession, userId string, cache map[string]string) string {
+	var res string
+	if cache != nil {
+		var ok bool
+		res, ok = cache[userId]
+		if ok {
+			return res
+		}
+	}
 	user := projectHandler.UserRepository.FindByUserId(requestSession, userId)
 	if user != nil {
-		return fmt.Sprintf("%s %s", user.Forename, user.Lastname)
+		res = fmt.Sprintf("%s %s", user.Forename, user.Lastname)
 	}
-	return ""
+	if cache != nil {
+		cache[userId] = res
+	}
+	return res
 }
 
 func (projectHandler *ProjectHandler) ProjectCheckVehicleChildren(w http.ResponseWriter, r *http.Request) {
@@ -2655,15 +2669,15 @@ func (p *ProjectHandler) ProjectUpdateTaskApprovableSPDX(w http.ResponseWriter, 
 	w.WriteHeader(200)
 }
 
-func (p *ProjectHandler) getApproverFullNames(requestSession *logy.RequestSession, app approval2.Approval) [4]string {
+func (p *ProjectHandler) getApproverFullNames(requestSession *logy.RequestSession, app approval2.Approval, cache map[string]string) [4]string {
 	var approverFullNames [4]string
 	switch app.Type {
 	case approval2.TypeInternal:
 		for i, approver := range app.Internal.Approver {
-			approverFullNames[i] = p.fullNameForUserSafe(requestSession, approver)
+			approverFullNames[i] = p.fullNameForUserSafe(requestSession, approver, cache)
 		}
 	case approval2.TypePlausibility:
-		approverFullNames[0] = p.fullNameForUserSafe(requestSession, app.Plausibility.Approver)
+		approverFullNames[0] = p.fullNameForUserSafe(requestSession, app.Plausibility.Approver, cache)
 	}
 	return approverFullNames
 }
@@ -2699,15 +2713,6 @@ func (projectHandler *ProjectHandler) SetSubscribedHandler(w http.ResponseWriter
 
 	projectHandler.ProjectRepository.Update(requestSession, currentProject)
 	render.JSON(w, r, req)
-}
-
-func (projectHandler *ProjectHandler) HandleDeleteProjectsForTest(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	projectKeys := projectHandler.ProjectRepository.FindAllKeys(requestSession)
-	for _, key := range projectKeys {
-		projectHandler.ProjectRepository.Delete(requestSession, key)
-	}
-	w.WriteHeader(http.StatusNoContent)
 }
 
 func (projectHandler *ProjectHandler) GetReviewTemplates(w http.ResponseWriter, r *http.Request) {

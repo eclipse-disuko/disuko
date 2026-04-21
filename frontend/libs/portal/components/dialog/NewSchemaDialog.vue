@@ -92,7 +92,7 @@ watch(
                 {{ t('SCHEMA_DIALOG_TITLE') }}
               </span>
             </v-col>
-            <v-col cols="2" class="text-right px-0">
+            <v-col cols="2" class="px-0 text-right">
               <DCloseButton @click="closeDialog" />
             </v-col>
           </v-row>
@@ -150,7 +150,7 @@ watch(
           </v-row>
           <v-row>
             <v-col>
-              <div class="d-flex align-center border-md border-dashed border-opacity-25 px-3 py-3">
+              <div class="d-flex align-center border-md border-opacity-25 border-dashed px-3 py-3">
                 <DiscoFileUpload
                   ref="upload"
                   :uploadTargetUrl="uploadURL"
@@ -177,7 +177,7 @@ watch(
                           color="primary"
                           icon="mdi-file-document-outline"></v-icon>
                       </span>
-                      <span class="pl-1 pr-2 opacity-50">or</span>
+                      <span class="pr-2 pl-1 opacity-50">or</span>
                       <DCActionButton
                         icon="mdi-upload"
                         :text="t('BTN_UPLOAD')"

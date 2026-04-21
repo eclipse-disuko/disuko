@@ -229,3 +229,19 @@
 .icon-filled {
   font-variation-settings: 'FILL' 1;
 }
+
+:root .v-btn.v-btn--disabled.dc-action-button.dc-action-button--with-text {
+  opacity: 0.6 !important;
+  background-color: rgba(var(--v-theme-disabledButton), 1) !important;
+
+  .v-btn__overlay {
+    opacity: 0 !important;
+  }
+
+  .v-icon,
+  span {
+    color: rgb(var(--v-theme-font)) !important;
+    background-color: rgba(var(--v-theme-disabledButton), 0.8) !important;
+    opacity: 0.8 !important;
+  }
+}

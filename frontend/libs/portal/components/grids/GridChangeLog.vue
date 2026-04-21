@@ -193,17 +193,7 @@ onMounted(async () => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        density="compact"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="gridChangeLog" class="fill-height">
@@ -232,13 +222,13 @@ onMounted(async () => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuFilterLicenseIds = false" color="default" />
                   </v-row>
                   <v-autocomplete
                     v-model="selectedFilterLicenseIds"
                     :items="possibleFilterLicenseIds"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_license')"
                     clearable
                     multiple
@@ -281,13 +271,13 @@ onMounted(async () => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuFilterPolicyStatus = false" color="default" />
                   </v-row>
                   <v-select
                     v-model="selectedFilterPolicyStatus"
                     :items="possibleFilterPolicyStatus"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('Lbl_filter_status')"
                     clearable
                     multiple
@@ -340,13 +330,13 @@ onMounted(async () => {
                     location="top" />
                 </template>
                 <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
+                  <v-row class="d-flex ma-1 mr-2 justify-end">
                     <DIconButton icon="mdi-close" @clicked="menuFilterChange = false" color="default" />
                   </v-row>
                   <v-select
                     v-model="selectedFilterChange"
                     :items="possibleFilterChange"
-                    class="mx-2 pa-2 pb-4"
+                    class="pa-2 mx-2 pb-4"
                     :label="t('lbl_filter_on_change')"
                     clearable
                     multiple

@@ -5,6 +5,7 @@ import {
   type SpdxFile,
   type VersionSlim,
 } from '@disclosure-portal/model/VersionDetails';
+import {type VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 const {projectStoreMock, versionServiceMock, projectServiceMock} = vi.hoisted(() => ({
@@ -18,11 +19,9 @@ const {projectStoreMock, versionServiceMock, projectServiceMock} = vi.hoisted(()
   versionServiceMock: {
     getSBOMStats: vi.fn(),
     getGeneralVersionStats: vi.fn(),
-    getSbomHistory: vi.fn(),
   },
   projectServiceMock: {
     getAllSbomsFlat: vi.fn(),
-    getAllSboms: vi.fn(),
   },
 }));
 
@@ -44,6 +43,8 @@ const version = (key: string, name: string): VersionSlim => ({_key: key, name}) 
 const spdx = (key: string): SpdxFile => ({_key: key}) as SpdxFile;
 const sbomStats = (allowed: number): SbomStats => ({PolicyState: {Allowed: allowed}}) as SbomStats;
 const generalStats = (acceptable: number): GeneralStats => ({ReviewRemark: {Acceptable: acceptable}}) as GeneralStats;
+const flatItem = (key: string, versionKey: string, versionName: string): VersionSbomsFlat =>
+  ({_key: key, versionKey, versionName}) as VersionSbomsFlat;
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -60,7 +61,6 @@ describe('useSbomStore', () => {
     setActivePinia(createPinia());
     versionServiceMock.getSBOMStats.mockReset();
     versionServiceMock.getGeneralVersionStats.mockReset();
-    versionServiceMock.getSbomHistory.mockReset();
     projectStoreMock.currentProject = {
       _key: 'project-1',
       isGroup: false,
@@ -74,7 +74,7 @@ describe('useSbomStore', () => {
   it('reuses current sbom stats after they are loaded', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     versionServiceMock.getSBOMStats.mockResolvedValueOnce({data: sbomStats(3)});
 
@@ -92,7 +92,7 @@ describe('useSbomStore', () => {
   it('does not deduplicate concurrent sbom requests before stats are loaded', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     const firstPending = deferred<{data: SbomStats}>();
     const secondPending = deferred<{data: SbomStats}>();
@@ -117,7 +117,7 @@ describe('useSbomStore', () => {
     store.sbomStats = sbomStats(1);
     store.generalStats = generalStats(2);
 
-    store.setSelectedSpdx(spdx('spdxB'));
+    store.setSelectedSBOMKey('spdxB');
 
     expect(store.getSbomStats).toEqual({});
     expect(store.getGeneralStats).toEqual({ReviewRemark: {Acceptable: 2}});
@@ -138,13 +138,13 @@ describe('useSbomStore', () => {
   it('ignores stale sbom responses after the selected SPDX changes', async () => {
     const store = useSbomStore();
     store.setCurrentVersion(version('versionA', 'Version A'));
-    store.setSelectedSpdx(spdx('spdxA'));
+    store.setSelectedSBOMKey('spdxA');
 
     const oldRequest = deferred<{data: SbomStats}>();
     versionServiceMock.getSBOMStats.mockReturnValueOnce(oldRequest.promise);
     const oldPromise = store.fetchSBOMStats('spdxA');
 
-    store.setSelectedSpdx(spdx('spdxB'));
+    store.setSelectedSBOMKey('spdxB');
 
     const newRequest = deferred<{data: SbomStats}>();
     versionServiceMock.getSBOMStats.mockReturnValueOnce(newRequest.promise);
@@ -197,5 +197,71 @@ describe('useSbomStore', () => {
 
     expect(versionServiceMock.getGeneralVersionStats).toHaveBeenCalledTimes(1);
     expect(store.getGeneralStats).toEqual({ReviewRemark: {Acceptable: 7}});
+  });
+
+  describe('channelSpdxs (derived)', () => {
+    it('returns only items for the current version', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [
+        flatItem('spdx-1', 'versionA', 'Version A'),
+        flatItem('spdx-2', 'versionA', 'Version A'),
+        flatItem('spdx-3', 'versionB', 'Version B'),
+      ];
+      store.setCurrentVersion(version('versionA', 'Version A'));
+
+      expect(store.channelSpdxs.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
+    });
+
+    it('sets isRecent on the first item only', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
+      store.setCurrentVersion(version('versionA', 'Version A'));
+
+      expect(store.channelSpdxs[0].isRecent).toBe(true);
+      expect(store.channelSpdxs[1].isRecent).toBe(false);
+    });
+
+    it('returns an empty array when no items match the current version', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-3', 'versionB', 'Version B')];
+      store.setCurrentVersion(version('versionA', 'Version A'));
+
+      expect(store.channelSpdxs).toEqual([]);
+    });
+  });
+
+  describe('getAllSBOMs (derived)', () => {
+    it('groups flat items into VersionSboms by versionKey', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [
+        flatItem('spdx-1', 'versionA', 'Version A'),
+        flatItem('spdx-2', 'versionA', 'Version A'),
+        flatItem('spdx-3', 'versionB', 'Version B'),
+      ];
+
+      const result = store.getAllSBOMs;
+
+      expect(result).toHaveLength(2);
+      expect(result[0].VersionKey).toBe('versionA');
+      expect(result[0].VersionName).toBe('Version A');
+      expect(result[0].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
+      expect(result[1].VersionKey).toBe('versionB');
+      expect(result[1].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-3']);
+    });
+
+    it('preserves insertion order of versions', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-3', 'versionB', 'Version B'), flatItem('spdx-1', 'versionA', 'Version A')];
+
+      const result = store.getAllSBOMs;
+
+      expect(result[0].VersionKey).toBe('versionB');
+      expect(result[1].VersionKey).toBe('versionA');
+    });
+
+    it('returns an empty array when allSBOMSFlat is empty', () => {
+      const store = useSbomStore();
+      expect(store.getAllSBOMs).toEqual([]);
+    });
   });
 });

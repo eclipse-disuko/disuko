@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
-  <Stack class="gap-4 mt-4">
+  <Stack class="mt-4 gap-4">
     <v-form ref="form" v-if="!readonly">
       <v-textarea
         rows="3"

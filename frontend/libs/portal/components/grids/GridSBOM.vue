@@ -4,17 +4,12 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
-import ReviewRemarkDialog from '@disclosure-portal/components/dialog/ReviewRemarkDialog.vue';
-import SbomValidationErrorsDialog from '@disclosure-portal/components/dialog/SbomValidationErrorsDialog.vue';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
-import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {NameKeyIdentifier, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
 import {Group} from '@disclosure-portal/model/Rights';
 import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
-import versionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@disclosure-portal/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -22,18 +17,17 @@ import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@disclosure-portal/utils/View';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
-import DSpdxTagDialog from '@shared/components/disco/DSpdxTagDialog.vue';
-import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import DiscoFileUpload from '@shared/components/widgets/DiscoFileUpload.vue';
+import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
-import {DataTabelIndex, DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {
+  DataTabelIndex,
+  DataTableHeader,
+  DataTableHeaderFilterItems,
+  DataTableItem,
+  SortItem,
+} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
 import config from '@shared/utils/config';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
@@ -68,105 +62,90 @@ const search = ref('');
 const uploadURL = ref('');
 const isBranchSelectionEnabled = ref(true);
 const selectedFilterChannel = ref<string[]>([]);
-const statusFilterOpened = ref(false);
 const selectedBranch = ref<NameKeyIdentifier>({} as NameKeyIdentifier);
 const sortItems = ref<SortItem[]>([{key: 'Uploaded', order: 'desc'}]);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
 const {info: snack} = useSnackbar();
-const branches = ref<NameKeyIdentifier[]>([]);
-const tableSbomDeliveries = ref<HTMLElement | null>(null);
-const reviewRemarkDialog = ref<InstanceType<typeof ReviewRemarkDialog>>();
-const dlgSbomValidationErrors = ref<InstanceType<typeof SbomValidationErrorsDialog>>();
+const branches = computed(() => sbomStore.allVersions);
+const reviewRemarkDialog = ref();
+const dlgSbomValidationErrors = ref();
 const helpText = ref('');
-const upload = ref<InstanceType<typeof DiscoFileUpload>>();
+const upload = ref();
 
 const sortByName = (a: SpdxFile, b: SpdxFile): number => {
   return b.MetaInfo.Name.localeCompare(a.MetaInfo.Name);
 };
 
-const headers = (): DataTableHeader[] => {
-  const res: DataTableHeader[] = [
-    {
-      title: t('COL_ACTIONS'),
-      sortable: false,
-      align: 'center',
-      class: 'tableHeaderCell',
-      value: 'Actions',
-      width: 100,
-    },
-    {
-      title: t('COL_SPDX_FILENAME'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'searchIndex',
-      width: 380,
-      sortable: true,
-      sortRaw: sortByName,
-    },
-    {
-      title: t('COL_REVIEW_STATUS'),
-      align: 'center',
-      class: 'tableHeaderCell',
-      value: 'OverallReview',
-      width: 80,
-    },
-  ];
-  if (!props.channelView) {
-    res.push({
-      title: t('COL_SBOM_BRANCH'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'versionName',
-      sortable: true,
-      width: 110,
-    });
-  }
-  res.push(
-    {
-      title: t('COL_SBOM_TAG'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'Tag',
-      sortable: true,
-      width: 100,
-    },
-    {
-      title: t('COL_SBOM_FORMAT'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'MetaInfo.SpdxVersion',
-      sortable: true,
-      width: 100,
-    },
-    {
-      title: t('COL_SBOM_ORIGIN'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'Origin',
-      sortable: true,
-      width: 100,
-    },
-    {
-      title: t('COL_SBOM_UPLOADER'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'Uploader',
-      sortable: true,
-      width: 110,
-    },
-    {
-      title: t('COL_UPLOADED'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'Uploaded',
-      sortable: true,
-      width: 110,
-    },
-  );
-
-  return res;
-};
+const headers = computed((): DataTableHeader[] => [
+  {
+    title: t('COL_ACTIONS'),
+    sortable: false,
+    align: 'center',
+    value: 'actions',
+    width: 100,
+  },
+  {
+    title: t('COL_SPDX_FILENAME'),
+    align: 'start',
+    value: 'searchIndex',
+    width: 380,
+    sortable: true,
+    sortRaw: sortByName,
+  },
+  {
+    title: t('COL_REVIEW_STATUS'),
+    align: 'center',
+    value: 'OverallReview',
+    width: 80,
+  },
+  ...(!props.channelView
+    ? [
+        {
+          title: t('COL_SBOM_BRANCH'),
+          align: 'start',
+          value: 'versionName',
+          sortable: true,
+          width: 110,
+        } as DataTableHeader,
+      ]
+    : []),
+  {
+    title: t('COL_SBOM_TAG'),
+    align: 'start',
+    value: 'Tag',
+    sortable: true,
+    width: 130,
+  },
+  {
+    title: t('COL_SBOM_FORMAT'),
+    align: 'start',
+    value: 'MetaInfo.SpdxVersion',
+    sortable: true,
+    width: 100,
+  },
+  {
+    title: t('COL_SBOM_ORIGIN'),
+    align: 'start',
+    value: 'Origin',
+    sortable: true,
+    width: 100,
+  },
+  {
+    title: t('COL_SBOM_UPLOADER'),
+    align: 'start',
+    value: 'Uploader',
+    sortable: true,
+    width: 110,
+  },
+  {
+    title: t('COL_UPLOADED'),
+    align: 'start',
+    value: 'Uploaded',
+    sortable: true,
+    width: 110,
+  },
+]);
 
 const items = computed((): DataTableItems[] => {
   const getSearchIndex = (file: VersionSbomsFlat) => {
@@ -195,20 +174,18 @@ const filteredList = computed((): DataTableItems[] => {
   return items.value.filter(filterOnChannel);
 });
 
-const possibleChannels = computed((): IDefaultSelectItem[] => {
+const possibleChannels = computed((): DataTableHeaderFilterItems[] => {
   if (!items.value) {
     return [];
   }
 
-  return _.chain(items.value)
-    .uniqBy((item: VersionSbomsFlat) => item.versionName)
-    .map((item: VersionSbomsFlat) => {
-      return {
-        text: item.versionName,
-        value: item.versionName,
-      } as IDefaultSelectItem;
-    })
-    .value();
+  const uniqueVersionNames = [...new Set(items.value.map((item: VersionSbomsFlat) => item.versionName))];
+
+  return uniqueVersionNames.map((value: string) => {
+    return {
+      value,
+    } as DataTableHeaderFilterItems;
+  });
 });
 
 const isOwnerOrDomainAdmin = computed(
@@ -255,17 +232,7 @@ Deliveries Link: ${deleviryLink}`;
 };
 
 const reloadSboms = async () => {
-  if (props.channelView) {
-    const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, versionDetails.value._key))
-      .data;
-    if (spdxFileHistory[0]) {
-      spdxFileHistory[0].isRecent = true;
-    }
-    sbomStore.setChannelSpdxs(spdxFileHistory);
-    await sbomStore.fetchAllSBOMs();
-  } else {
-    await sbomStore.fetchAllSBOMsFlat();
-  }
+  await sbomStore.fetchAllSBOMsFlat(true);
 };
 const toggleLock = async (item: VersionSbomsFlat) => {
   await projectService.toggleSpdxLock(projectModel.value._key, item.versionKey, item._key);
@@ -284,7 +251,7 @@ const setApprovable = async (item: VersionSbomsFlat) => {
   await projectService
     .updateApprovableSpdx(approvableSpdx, projectModel.value._key)
     .then(() => (projectModel.value.approvablespdx = approvableSpdx));
-  await sbomStore.fetchAllSBOMs();
+  await sbomStore.fetchAllSBOMsFlat(true);
 };
 const downloadFile = (item: VersionSbomsFlat) => {
   const link = document.createElement('a');
@@ -309,7 +276,6 @@ const downloadFile = (item: VersionSbomsFlat) => {
 onMounted(async () => {
   if (!props.channelView) {
     sbomStore.fetchAllSBOMsFlat().then(() => {
-      branches.value = sbomStore.allVersions;
       selectedBranch.value = branches.value[0];
       if (versionDetails.value) {
         const branchFromVersion = branches.value.find((g) => g.key == versionDetails.value._key);
@@ -521,15 +487,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
         v-if="projectModel && projectModel.accessRights && projectModel.accessRights.allowSBOMAction.upload"
         hide-details />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        density="compact"
-        variant="outlined"
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableSbomDeliveries" class="fill-height">
@@ -538,71 +496,26 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
           fixed-header
           :sort-by="sortItems"
           :search="search"
-          :headers="headers()"
+          :headers="headers"
           :items="filteredList"
           @click:row="openSBOM"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"
           class="striped-table fill-height">
-          <template v-slot:[`header.versionName`]="{column, getSortIcon, toggleSort}">
-            <div class="v-data-table-header__content">
-              <span>{{ column.title }}</span>
-              <v-menu :close-on-content-click="false" v-model="statusFilterOpened">
-                <template v-slot:activator="{props}">
-                  <DIconButton
-                    :parentProps="props"
-                    icon="mdi-filter-variant"
-                    :hint="t('TT_SHOW_FILTER')"
-                    :color="selectedFilterChannel.length > 0 ? 'primary' : 'default'"
-                    location="top" />
-                </template>
-                <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex justify-end ma-1 mr-2">
-                    <DIconButton icon="mdi-close" @clicked="statusFilterOpened = false" color="default" />
-                  </v-row>
-                  <v-select
-                    v-model="selectedFilterChannel"
-                    :items="possibleChannels"
-                    class="mx-2 pa-2 pb-4"
-                    :label="t('Lbl_filter_branches')"
-                    clearable
-                    multiple
-                    item-title="text"
-                    item-value="value"
-                    variant="outlined"
-                    density="compact"
-                    menu
-                    transition="scale-transition"
-                    persistent-clear
-                    :list-props="{class: 'striped-filter-dd py-0'}">
-                    <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="py-0 px-2">
-                        <template v-slot:prepend="{isSelected}">
-                          <v-checkbox hide-details :model-value="isSelected" />
-                        </template>
-                        <template v-slot:title="{title}">
-                          <span class="pFilterEntry">
-                            {{ title }}
-                          </span>
-                        </template>
-                      </v-list-item>
-                    </template>
-                    <template v-slot:selection="{item, index}">
-                      <div v-if="index === 0" class="d-flex align-center">
-                        <span class="pFilterEntry">{{ item.title }}</span>
-                      </div>
-                      <span v-if="index === 1" class="pAdditionalFilter">
-                        +{{ selectedFilterChannel.length - 1 }} others
-                      </span>
-                    </template>
-                  </v-select>
-                </div>
-              </v-menu>
-              <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-            </div>
+          <template #[`header.versionName`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterChannel"
+                  :column="column"
+                  :label="t('COL_SBOM_BRANCH')"
+                  :allItems="possibleChannels">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
-          <template v-slot:[`item.searchIndex`]="{item}">
+          <template #[`item.searchIndex`]="{item}">
             {{ formatDateTime(item.Uploaded) }} -&nbsp;{{ item.MetaInfo.Name }}
             <br />
             <span class="font-weight-bold">UUID: </span>
@@ -628,13 +541,13 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
               t('SBOM_MARKED_FOR_RETENTION')
             }}</span>
           </template>
-          <template v-slot:[`item.OverallReview`]="{item}">
+          <template #[`item.OverallReview`]="{item}">
             <DOverallStateIcon v-if="item.OverallReview" :review="item.OverallReview" />
           </template>
-          <template v-slot:[`item.Uploaded`]="{item}">
+          <template #[`item.Uploaded`]="{item}">
             <DDateCellWithTooltip :value="item.Uploaded" />
           </template>
-          <template v-slot:[`item.Tag`]="{item}">
+          <template #[`item.Tag`]="{item}">
             <v-chip
               v-if="
                 item.ApprovalInfo.IsInApproval ||
@@ -643,7 +556,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
                 !projectModel.accessRights.allowSBOMAction.delete
               "
               color="labelBackgroundColor"
-              class="px-2 py-2 mr-1 mb-1"
+              class="mr-1 mb-1 px-2 py-2"
               label>
               <v-icon class="pr-2" small color="labelIconColor" left>mdi-label</v-icon>
               <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
@@ -653,11 +566,11 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
               :presetTag="item.Tag"
               :versionID="item.versionKey"
               :spdxID="item._key"
-              :spdxName="item.versionName"
+              :spdxName="item.MetaInfo.Name"
               :channel-view="channelView"
               v-slot="{showDialog}"
               v-else>
-              <v-chip color="labelBackgroundColor" class="px-2 py-2 mr-1 mb-1" label link @click.stop="showDialog">
+              <v-chip color="labelBackgroundColor" class="mr-1 mb-1 px-2 py-2" label link @click.stop="showDialog">
                 <v-icon class="pr-2" small color="primary" left>mdi-label</v-icon>
                 <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
                 <span v-else class="letterSpacing">{{ item.Tag }}</span>
@@ -665,21 +578,12 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
             </DSpdxTagDialog>
           </template>
           <template v-slot:[`item.Origin`]="{item}">
-            <v-tooltip
-              :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-              location="bottom"
-              v-if="originTooltip(item.Origin)"
-              content-class="dpTooltip">
-              <template v-slot:activator="{props}">
-                <span v-bind="props">
-                  {{ originShort(item.Origin) }}
-                </span>
-              </template>
-              <span>{{ originTooltip(item.Origin) }}</span>
-            </v-tooltip>
+            <Tooltip v-if="originTooltip(item.Origin)" location="bottom" :text="originTooltip(item.Origin)" as-parent>
+              {{ originShort(item.Origin) }}
+            </Tooltip>
             <span v-else>{{ item.Origin }}</span>
           </template>
-          <template v-slot:[`item.Actions`]="{item}">
+          <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="compact"
               :buttons="getActionButtons(item)"

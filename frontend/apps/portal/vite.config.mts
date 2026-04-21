@@ -81,7 +81,7 @@ export default defineConfig(({mode}) => {
         strictMessage: false,
         runtimeOnly: false,
       }),
-      isDevelopment && vueDevTools({launchEditor: 'idea'}),
+      isDevelopment && vueDevTools({launchEditor: 'code'}),
       !hasCerts && viteBasicSslPlugin(),
       visualizer({
         filename: `bundle-disclosure-portal.html`,
@@ -91,6 +91,7 @@ export default defineConfig(({mode}) => {
       oxlintPlugin({
         lintOnStart: false,
         failOnError: false,
+        quiet: true,
       }),
       tailwindcss(),
       generateTailwindColors(),

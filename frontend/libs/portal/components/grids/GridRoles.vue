@@ -82,16 +82,7 @@ onMounted(() => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        max-width="450px"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        density="compact"
-        variant="outlined"
-        hide-details />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <v-data-table

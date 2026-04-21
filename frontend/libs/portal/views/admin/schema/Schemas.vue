@@ -218,16 +218,7 @@ onUnmounted(() => {
         @click="showCreateSchemaDialog"
         v-if="rights.allowSchema && rights.allowSchema.create" />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        v-model="search"
-        hide-details="auto"
-        variant="outlined"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        clearable
-        :label="t('labelSearch')"></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="dataTableAsElement" class="fill-height">

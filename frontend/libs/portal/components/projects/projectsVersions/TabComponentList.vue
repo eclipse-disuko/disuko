@@ -56,7 +56,7 @@ const {filteredHeaders} = storeToRefs(headerSettingsStore);
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
 const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
-const currentSpdx = computed(() => sbomStore.getSelectedSpdx);
+const currentSpdx = computed(() => sbomStore.getSelectedSBOM);
 
 const search = ref('');
 const sortBy = ref<SortItem[]>([{key: 'prStatus', order: 'desc'}]);
@@ -255,10 +255,8 @@ const showDetails = async (item: TabelItem) => {
 
   if (newComponentDetailsDlg.value) {
     newComponentDetailsDlg.value?.open(
-      projectModel.value,
-      versionDetails.value._key,
-      currentSpdx.value._key,
       response.data,
+      item.licenseRecommended,
       item.policyRuleStatus,
       item.unmatchedLicenses,
       item.policyDecisionsApplied,
@@ -280,6 +278,7 @@ const openLicenseRuleDialog = (item: TabelItem) => {
     licenseId: '',
     component: component,
     policyStatus: item.policyRuleStatus,
+    licenseRecommended: item.licenseRecommended,
   });
 };
 
@@ -594,16 +593,7 @@ onUnmounted(async () => {
         :disabled="bulkPolicyDecisionDisabled"
         class="pr-4">
       </DCActionButton>
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        density="compact"
-        clearable
-        single-line
-        hide-details="auto" />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div ref="tableComponents" class="fill-height">
@@ -645,7 +635,7 @@ onUnmounted(async () => {
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
             <HeaderSettings :column="column" :grid-name="gridName" />
-            <span class="ml-6 mr-1">{{ column.title }}</span>
+            <span class="mr-1 ml-6">{{ column.title }}</span>
             <GridHeaderFilterIcon
               v-model="selectedFilterPolicyTypes"
               :column="column"

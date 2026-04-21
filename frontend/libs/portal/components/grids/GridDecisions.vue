@@ -262,17 +262,7 @@ onMounted(async () => {
   <TableLayout has-title has-tab>
     <template #buttons>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        variant="outlined"
-        v-model="search"
-        :max-width="500"
-        density="compact"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        single-line
-        hide-details />
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <v-data-table

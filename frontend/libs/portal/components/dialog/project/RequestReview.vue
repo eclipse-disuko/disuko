@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {DocumentMeta, PlausibilityCheckRequest} from '@disclosure-portal/model/ApprovalRequest';
-import {ApprovableInfoDto, ApprovableSPDXDto} from '@disclosure-portal/model/Project';
+import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {UserDto} from '@disclosure-portal/model/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import profileService from '@disclosure-portal/services/profile';
@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
@@ -35,7 +36,7 @@ const sboms = ref<SpdxFile[]>([]);
 const selectedSbom = ref<SpdxFile | null>(null);
 const sbomStats = ref<ComponentStats>({} as ComponentStats);
 const tab = ref('');
-const approvableInfo = ref<ApprovableInfoDto>({} as ApprovableInfoDto);
+const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const comment = ref('');
 const approver = ref('');
 const approverPreselect = ref<UserDto | undefined>(undefined);
@@ -96,8 +97,8 @@ const loadSBOMHist = async () => {
   if (!selectedChannel.value?._key) {
     return;
   }
-  const spdxFileHistory = (await versionService.getSbomHistory(projectModel.value._key, selectedChannel.value._key, 5))
-    .data;
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }
@@ -124,7 +125,7 @@ const autoSelect = async () => {
     return;
   }
 
-  if (Object.keys(sbomStore.selectedSpdx).length > 0 && !projectModel.value.isGroup) {
+  if (!!sbomStore.selectedSBOMKey && !projectModel.value.isGroup) {
     selectedChannel.value = sbomStore.currentVersion;
   } else {
     selectedChannel.value =
@@ -137,8 +138,8 @@ const autoSelect = async () => {
     }
     selectedSbom.value =
       sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
-    if (Object.keys(sbomStore.selectedSpdx).length > 0) {
-      selectedSbom.value = sbomStore.selectedSpdx ?? null;
+    if (!!sbomStore.selectedSBOMKey) {
+      selectedSbom.value = sbomStore.getSelectedSBOM ?? null;
     }
     await loadStats();
   }

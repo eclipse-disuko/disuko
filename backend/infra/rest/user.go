@@ -543,24 +543,6 @@ func (handler *UserHandler) EnableDisableHandlerForAdmin(w http.ResponseWriter, 
 	render.JSON(w, r, dto)
 }
 
-func (handler *UserHandler) EnableDisableHandlerForTest(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	userName, _ := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-
-	currentUser := handler.loadRequestedUserTest(requestSession, r)
-
-	oldAudit := currentUser.ToUserAudit()
-	userData := handler.extractRequestBody(r)
-	currentUser.Active = userData.Active
-	newAudit := currentUser.ToUserAudit()
-	auditHelper.CreateAndAddAuditEntry(&currentUser.Container, userName, message.UserUpdated, audit.DiffWithReporter, newAudit, oldAudit)
-
-	handler.UserRepository.Update(requestSession, currentUser)
-
-	dto := currentUser.ToDto()
-	render.JSON(w, r, dto)
-}
-
 func (handler *UserHandler) UpdateHandlerForAdmin(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)

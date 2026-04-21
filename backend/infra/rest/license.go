@@ -763,6 +763,7 @@ func (licensesHandler *LicensesHandler) handleUpdate(requestSession *logy.Reques
 	if existingLicense == nil {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.LicenseUpdate, key), "")
 	}
+	beforeId := existingLicense.LicenseId
 
 	oldLicenseAudit := existingLicense.ToAudit(requestSession, licensesHandler.ObligationRepository)
 
@@ -818,7 +819,46 @@ func (licensesHandler *LicensesHandler) handleUpdate(requestSession *logy.Reques
 
 	auditHelper.CreateAndAddAuditEntry(&existingLicense.Container, username, auditTitle, audit.DiffWithReporter, existingLicenseAudit, oldLicenseAudit)
 	licensesHandler.LicenseRepository.Update(requestSession, existingLicense)
+	if beforeId != licenseData.LicenseId {
+		licensesHandler.setNewLicIdInRules(requestSession, beforeId, licenseData.LicenseId)
+	}
 	render.JSON(w, r, existingLicense.LicenseId)
+}
+
+func (licensesHandler *LicensesHandler) setNewLicIdInRules(rs *logy.RequestSession, oldId, newId string) {
+	qc := database.New().SetMatcher(
+		database.AndChain(
+			database.OrChain(
+				database.ArrayElemMatcher("Componentsallow", database.EQ, oldId),
+				database.ArrayElemMatcher("Componentswarn", database.EQ, oldId),
+				database.ArrayElemMatcher("Componentsdeny", database.EQ, oldId),
+			),
+			database.AttributeMatcher("Deleted", database.EQ, false),
+		),
+	)
+	rules := licensesHandler.PolicyRulesRepository.Query(requestSessionTest, qc)
+	for _, r := range rules {
+		lists := [][]string{
+			r.ComponentsAllow,
+			r.ComponentsDeny,
+			r.ComponentsWarn,
+		}
+		var changed bool
+	LicListLoop:
+		for _, l := range lists {
+			for i, licId := range l {
+				if licId == oldId {
+					l[i] = newId
+					changed = true
+					break LicListLoop
+				}
+			}
+		}
+		if changed {
+			logy.Infof(rs, "updated licenseId reference in policy rule %s", r.Name)
+			licensesHandler.PolicyRulesRepository.UpdateWithoutTimestamp(rs, r)
+		}
+	}
 }
 
 func aliasDiff(prev []license.Alias, updated []license.Alias) (del []license.Alias, new []license.Alias) {

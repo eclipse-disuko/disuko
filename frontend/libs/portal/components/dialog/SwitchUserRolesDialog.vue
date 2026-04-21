@@ -114,7 +114,7 @@ export default defineComponent({
               hide-details
               color="primary"
               :label="t('FORCE_NON_INTERNAL')"
-              class="shrink mr-2 mt-0" />
+              class="mt-0 mr-2 shrink" />
           </v-col>
         </v-card-text>
         <v-card-actions>

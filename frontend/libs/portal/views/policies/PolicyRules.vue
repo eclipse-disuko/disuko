@@ -4,9 +4,6 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
-import NewPolicyRuleDialog from '@disclosure-portal/components/dialog/NewPolicyRuleDialog.vue';
-import {IDefaultSelectItem} from '@disclosure-portal/model/ISelectItem';
 import Label from '@disclosure-portal/model/Label';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import AdminService from '@disclosure-portal/services/admin';
@@ -16,23 +13,21 @@ import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {openUrl} from '@disclosure-portal/utils/url';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
 const {info} = useSnackbar();
 const router = useRouter();
+const policyRulesUtils = usePolicyRulesUtils();
 
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
@@ -40,22 +35,27 @@ const confirmDeprConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDial
 const confirmDeprVisible = ref(false);
 const confirmCopyConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmCopyVisible = ref(false);
-const possibleStatus = ref<IDefaultSelectItem[]>([
+const possibleStatus = ref<DataTableHeaderFilterItems[]>([
   {
     text: t('PR_STATUS_ACTIVE'),
+    textColor: policyRulesUtils.getTextStatusColor('active'),
+    textBold: true,
     value: 'active',
   },
   {
     text: t('PR_STATUS_INACTIVE'),
+    textColor: policyRulesUtils.getTextStatusColor('inactive'),
+    textBold: true,
     value: 'inactive',
   },
   {
     text: t('PR_STATUS_DEPRECATED'),
+    textColor: policyRulesUtils.getTextStatusColor('deprecated'),
+    textBold: true,
     value: 'deprecated',
   },
 ]);
-const menu = ref(false);
-const selectedFilterStatus = ref<string[]>(['active', 'inactive']);
+const selectedFilterStatus = ref<string[]>([]);
 const items = ref<PolicyRule[]>([]);
 const search = ref('');
 const isPolicyManager = ref(false);
@@ -225,99 +225,78 @@ onMounted(async () => {
   await reload();
 });
 
-const headers = computed(() => {
-  return [
-    {
-      title: t('COL_ACTIONS'),
-      align: 'center',
-      filterable: true,
-      class: 'tableHeaderCell',
-      value: 'actions',
-      width: 80,
-      sortable: false,
-    },
-    {
-      title: t('COL_STATUS'),
-      align: 'start',
-      class: 'tableHeaderCell',
-      value: 'Status',
-      width: 110,
-      sortable: true,
-    },
-    {
-      title: t('COL_NAME'),
-      align: 'start',
-      filterable: true,
-      class: 'tableHeaderCell',
-      value: 'Name',
-      width: 300,
-      sortable: true,
-    },
-    {
-      title: t('DESCRIPTION'),
-      align: 'start',
-      filterable: false,
-      class: 'tableHeaderCell',
-      value: 'Description',
-      width: 350,
-      sortable: false,
-    },
-    {
-      title: t('TOTAL'),
-      align: 'center',
-      filterable: false,
-      class: 'tableHeaderCell',
-      value: 'Total',
-      width: 75,
-      sortable: false,
-    },
-    {
-      title: t('ALLOWED'),
-      align: 'center',
-      filterable: false,
-      class: 'tableHeaderCell',
-      value: 'Allowed',
-      width: 75,
-      sortable: false,
-    },
-    {
-      title: t('WARNED'),
-      align: 'center',
-      filterable: false,
-      class: 'tableHeaderCell',
-      value: 'Warned',
-      width: 75,
-      sortable: false,
-    },
-    {
-      title: t('DENIED'),
-      align: 'center',
-      filterable: false,
-      class: 'tableHeaderCell',
-      value: 'Denied',
-      width: 75,
-      sortable: false,
-    },
-    {
-      title: t('CREATED'),
-      align: 'center',
-      filterable: true,
-      class: 'tableHeaderCell',
-      value: 'created',
-      width: 108,
-      sortable: true,
-    },
-    {
-      title: t('UPDATED'),
-      align: 'center',
-      filterable: true,
-      class: 'tableHeaderCell',
-      value: 'updated',
-      width: 108,
-      sortable: true,
-    },
-  ] as DataTableHeader[];
-});
+const headers = computed((): DataTableHeader[] => [
+  {
+    title: t('COL_ACTIONS'),
+    align: 'center',
+    value: 'actions',
+    width: 80,
+    sortable: false,
+  },
+  {
+    title: t('COL_STATUS'),
+    align: 'start',
+    value: 'Status',
+    width: 110,
+    sortable: true,
+  },
+  {
+    title: t('COL_NAME'),
+    align: 'start',
+    value: 'Name',
+    width: 300,
+    sortable: true,
+  },
+  {
+    title: t('DESCRIPTION'),
+    align: 'start',
+    value: 'Description',
+    width: 350,
+    sortable: false,
+  },
+  {
+    title: t('TOTAL'),
+    align: 'center',
+    value: 'Total',
+    width: 75,
+    sortable: false,
+  },
+  {
+    title: t('ALLOWED'),
+    align: 'center',
+    value: 'Allowed',
+    width: 75,
+    sortable: false,
+  },
+  {
+    title: t('WARNED'),
+    align: 'center',
+    value: 'Warned',
+    width: 75,
+    sortable: false,
+  },
+  {
+    title: t('DENIED'),
+    align: 'center',
+    value: 'Denied',
+    width: 75,
+    sortable: false,
+  },
+  {
+    title: t('CREATED'),
+    align: 'center',
+    value: 'created',
+    width: 108,
+    sortable: true,
+  },
+  {
+    title: t('UPDATED'),
+    align: 'center',
+    value: 'updated',
+    width: 108,
+    sortable: true,
+  },
+]);
 </script>
 
 <template>
@@ -339,20 +318,10 @@ const headers = computed(() => {
         :hint="t('TT_download_policy_csv')"
         @click="downloadCsv"
         v-if="isPolicyManager" />
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        density="compact"
-        variant="outlined"
-        v-model="search"
-        append-inner-icon="mdi-magnify"
-        :label="t('labelSearch')"
-        clearable
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableGridPolicyRules" class="fill-height">
+      <div ref="tableGridPolicyRules" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           class="striped-table fill-height"
@@ -365,92 +334,50 @@ const headers = computed(() => {
           :items-per-page="-1"
           :search="search"
           :sort-by="sortItems">
-          <template v-slot:[`header.Status`]="{column, getSortIcon, toggleSort}">
-            <div class="v-data-table-header__content">
-              <span>{{ column.title }}</span>
-              <v-menu offset-y :close-on-content-click="false" v-model="menu">
-                <template v-slot:activator="{props}">
-                  <DIconButton
-                    :parentProps="props"
-                    icon="mdi-filter-variant"
-                    :hint="t('TT_SHOW_FILTER')"
-                    :color="selectedFilterStatus && selectedFilterStatus.length > 0 ? 'primary' : 'secondary'" />
-                </template>
-                <div style="width: 320px" class="bg-background">
-                  <v-card>
-                    <v-row class="d-flex justify-end ma-1 mr-2">
-                      <DCloseButton @click="menu = false" />
-                    </v-row>
-
-                    <v-select
-                      variant="outlined"
-                      v-model="selectedFilterStatus"
-                      density="compact"
-                      class="mx-2 pa-2"
-                      autofocus
-                      clearable
-                      :items="possibleStatus"
-                      :label="t('lbl_filter_on_status')"
-                      hide-details
-                      item-title="text"
-                      item-value="value"
-                      multiple
-                      menu
-                      transition="scale-transition"
-                      persistent-clear
-                      :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:item="{props, item}">
-                        <v-list-item v-bind="props" :title="undefined" class="py-0 px-2">
-                          <template v-slot:prepend="{isSelected}">
-                            <v-checkbox hide-details :model-value="isSelected" />
-                          </template>
-                          <span :class="'prStatus' + item.value + ' prStatusFilter'">{{ item.title }}</span>
-                        </v-list-item>
-                      </template>
-                      <template v-slot:selection="{item, index}">
-                        <div v-if="index === 0" class="d-flex align-center">
-                          <span :class="'prStatus' + item.value + ' prStatusFilter'">{{ item.title }}</span>
-                        </div>
-                        <span v-if="index === 1" class="pAdditionalFilter">
-                          +{{ selectedFilterStatus.length - 1 }} others
-                        </span>
-                      </template>
-                    </v-select>
-                  </v-card>
-                </div>
-              </v-menu>
-              <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-            </div>
+          <template #[`header.Status`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterStatus"
+                  :column="column"
+                  :label="t('COL_STATUS')"
+                  :initial-selected="['active', 'inactive']"
+                  :allItems="possibleStatus">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
-          <template v-slot:[`item.Status`]="{item}">
-            <span :class="'prStatus' + item.Status">{{ t('PR_STATUS_' + item.Status.toUpperCase()) }}</span>
+          <template #[`item.Status`]="{item}">
+            <span class="font-bold" :style="{color: policyRulesUtils.getTextStatusColor(item.Status)}">{{
+              t('PR_STATUS_' + item.Status.toUpperCase())
+            }}</span>
           </template>
-          <template v-slot:item.Allowed="{item}">
+          <template #[`item.Allowed`]="{item}">
             {{ item.ComponentsAllow.length }}
           </template>
-          <template v-slot:item.Warned="{item}">
+          <template #[`item.Warned`]="{item}">
             {{ item.ComponentsWarn.length }}
           </template>
-          <template v-slot:item.Denied="{item}">
+          <template #[`item.Denied`]="{item}">
             {{ item.ComponentsDeny.length }}
           </template>
-          <template v-slot:item.Total="{item}">
+          <template #[`item.Total`]="{item}">
             {{ item.ComponentsAllow.length + item.ComponentsDeny.length + item.ComponentsWarn.length }}
           </template>
-          <template v-slot:item.Description="{item}">
+          <template #[`item.Description`]="{item}">
             <v-tooltip :text="item.Description" width="320" location="bottom" content-class="dpTooltip">
-              <template v-slot:activator="{props}"
+              <template #activator="{props}"
                 ><span v-bind="props">{{ getStrWithMaxLength(95, item.Description) }}</span>
               </template></v-tooltip
             >
           </template>
-          <template v-slot:item.updated="{item}">
+          <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated" />
           </template>
-          <template v-slot:item.created="{item}">
+          <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />
           </template>
-          <template v-slot:item.actions="{item}">
+          <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="compact"
               :buttons="getActionButtons(item)"

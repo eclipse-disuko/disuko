@@ -4,7 +4,10 @@
 
 package approval
 
-import "github.com/eclipse-disuko/disuko/domain/project/approvable"
+import (
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+)
 
 type ChildApprovable struct {
 	Key             string
@@ -12,12 +15,12 @@ type ChildApprovable struct {
 	ApprovableSPDX  approvable.ApprovableSPDX
 	CustomerDiffers bool
 	SupplierDiffers bool
-	ApprovableStats ComponentStats
+	ApprovableStats components.ComponentStats
 	SpdxName        string
 }
 
 type GroupApprovableInfo struct {
-	GroupCompStats ComponentStats
+	GroupCompStats components.ComponentStats
 	Children       []ChildApprovable
 }
 
@@ -27,7 +30,7 @@ type ChildApprovableDto struct {
 	ApprovableSPDX  approvable.ApprovableSPDXDto `json:"approvablespdx"`
 	CustomerDiffers bool                         `json:"customerdiff"`
 	SupplierDiffers bool                         `json:"supplierdiff"`
-	ApprovableStats ComponentStats               `json:"stats"`
+	ApprovableStats components.ComponentStats    `json:"stats"`
 	SpdxName        string                       `json:"spdxname"`
 }
 
@@ -56,8 +59,8 @@ func (c *ChildApprovable) ToDto() ChildApprovableDto {
 }
 
 type GroupApprovableDto struct {
-	GroupCompStats ComponentStats       `json:"stats"`
-	Children       []ChildApprovableDto `json:"children"`
+	GroupCompStats components.ComponentStats `json:"stats"`
+	Children       []ChildApprovableDto      `json:"children"`
 }
 
 func (g *GroupApprovableDto) ToEntity() (res GroupApprovableInfo) {

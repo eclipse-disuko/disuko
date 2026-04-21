@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/connector/userrole"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/eclipse-disuko/disuko/domain/job"
@@ -20,10 +21,7 @@ import (
 	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
-var (
-	desiredChunkSize      = 500
-	inactiveDaysThreshold = 60
-)
+var desiredChunkSize = 500
 
 type Config struct {
 	InProgress bool `json:"inProgress"`
@@ -45,13 +43,15 @@ func Init(repo userRepo.IUsersRepository, connector *userrole.Connector) *Job {
 }
 
 func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.ExecutionResult {
-	if j.connector == nil {
-		return scheduler.ExecutionResult{
-			Success: true,
-		}
-	}
 	var log job.Log
 	log.AddEntry(job.Info, "started")
+	if j.connector == nil {
+		log.AddEntry(job.Info, "no connector set, nothing to do")
+		return scheduler.ExecutionResult{
+			Success: true,
+			Log:     log,
+		}
+	}
 
 	confStr := info.Config
 	var config Config
@@ -174,7 +174,7 @@ func (j *Job) affectedUsers(rs *logy.RequestSession) []*user.User {
 		if !u.Deprovisioned.IsZero() {
 			continue
 		}
-		if time.Since(u.Created) < time.Hour*24*time.Duration(inactiveDaysThreshold) {
+		if time.Since(u.Updated) < time.Hour*24*time.Duration(conf.Config.DeprovisioningInactiveDaysThreshold) {
 			continue
 		}
 		filtered = append(filtered, u)

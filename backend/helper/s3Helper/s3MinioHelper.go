@@ -58,7 +58,8 @@ func checkIfS3IsEnabledOrThrowException() {
 }
 
 func (client *MinioS3Client) ListObjects(requestSession *logy.RequestSession,
-	folder string) <-chan minio.ObjectInfo {
+	folder string,
+) <-chan minio.ObjectInfo {
 	checkIfS3IsEnabledOrThrowException()
 
 	logS3(requestSession, "List S3 (Minio)")
@@ -106,6 +107,7 @@ func (client *MinioS3Client) ReadFileMetaData(requestSession *logy.RequestSessio
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ReadMetaData, fileName))
 	return objectReader
 }
+
 func (client *MinioS3Client) Exist(requestSession *logy.RequestSession, fileName string) bool {
 	checkIfS3IsEnabledOrThrowException()
 
@@ -133,7 +135,8 @@ func (client *MinioS3Client) ReadFile(requestSession *logy.RequestSession, fileN
 }
 
 func (client *MinioS3Client) UploadObject(requestSession *logy.RequestSession, fileName string, fileContent io.Reader,
-	metadata map[string]string) int64 {
+	metadata map[string]string,
+) int64 {
 	checkIfS3IsEnabledOrThrowException()
 
 	logS3(requestSession, "Write file on S3 (Minio), filename: "+fileName)

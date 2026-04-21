@@ -14,7 +14,7 @@ func (a *InternalApproval) FirstPendingApproverRole(username string) Approver {
 }
 
 func (a *InternalApproval) IsActive() bool {
-	if a.Aborted {
+	if a.Aborted || a.Generating || a.GenerationFailed {
 		return false
 	}
 

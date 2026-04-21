@@ -28,8 +28,6 @@ export const grey = {
 };
 
 export const blue = {
-  [88]: '#2EF0F0',
-  [58]: '#1FA3A3',
   [95]: '#E6F5FF',
   [90]: '#CCE8FF',
   [85]: '#B4DDFE',
@@ -118,8 +116,6 @@ export const yellow = {
 };
 
 export const orange = {
-  [42]: '#B38000',
-  [72]: '#F7B100',
   [95]: '#FFF4E6',
   [90]: '#FFE8CC',
   [85]: '#FFDDB3',
@@ -166,5 +162,8 @@ export const neutral = {
   [30]: '#212121',
   [25]: '#1f1f1f',
   [20]: '#141414',
+  [15]: '#0d0d0d',
+  [10]: '#080808',
+  [5]: '#040404',
   [0]: '#000000', // pure black
 };

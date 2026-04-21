@@ -14,6 +14,7 @@ import {LicenseMeta, ReviewRemark, ReviewRemarkStatus, compareRRLevel} from '@di
 import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {
   getIconColorForPolicyType,
@@ -40,6 +41,8 @@ interface LocalComponentDetails extends ComponentDetails {
 const emit = defineEmits(['reloadAfterCreation', 'triggerBulk']);
 
 const userStore = useUserStore();
+const projectStore = useProjectStore();
+const sbomStore = useSbomStore();
 const snack = useSnackbar();
 const {t} = useI18n();
 
@@ -103,8 +106,9 @@ const policyDecisionDialog = ref();
 const viewRemarkDialog = ref();
 const reviewRemarks = ref<ReviewRemark[]>([]);
 const loadingRemarks = ref(false);
+const licenseRecommended = ref('');
 
-const isDeprecated = computed(() => useProjectStore().currentProject!.isDeprecated);
+const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
 
 const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUuid: string, spdxId: string) => {
   loadingRemarks.value = true;
@@ -120,15 +124,17 @@ const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUu
 };
 
 const open = async (
-  projectData: ProjectModel,
-  versionKey: string,
-  sbomIdData: string,
   data: ComponentDetails,
+  licenseRecommendedValue: string,
   policyStatus?: PolicyRuleStatus[],
   unmatched?: UnmatchedLicense[],
   policyDecisionsApplied?: PolicyDecisionSlim[],
   policyDecisionDeniedReason?: string,
 ) => {
+  const projectData = projectStore.currentProject!;
+  const versionKey = sbomStore.getCurrentVersion._key;
+  const sbomIdData = sbomStore.getSelectedSBOM?._key;
+
   responsible.value = userStore.getProfile.user === projectData.responsible;
   details.value = data;
 
@@ -152,6 +158,7 @@ const open = async (
   if (policyDecisionDeniedReason) {
     details.value.PolicyDecisionDeniedReason = policyDecisionDeniedReason;
   }
+  licenseRecommended.value = licenseRecommendedValue;
 
   project.value = projectData;
   projectVersionId.value = versionKey;
@@ -264,6 +271,7 @@ const openLicenseRuleDialog = (licenseId: string) => {
     licenseId,
     component,
     policyStatus: details.value.PolicyStatus,
+    licenseRecommended: licenseRecommended.value,
   });
 };
 
@@ -409,7 +417,9 @@ const findPolicyDecisionApplied = (item: PolicyRuleStatus): PolicyDecisionSlim |
   );
 };
 
-const isPolicyDecisionPresent = computed(() => details.value.PolicyDecisionsApplied.length > 0);
+const isPolicyDecisionPresent = computed(() => (details.value?.PolicyDecisionsApplied?.length ?? 0) > 0);
+
+const isRecommended = (item: PolicyRuleStatus): boolean => item.licenseMatched === licenseRecommended.value;
 
 const sortedReviewRemarks = computed(() => {
   const statusOrder = new Map<ReviewRemarkStatus, number>([
@@ -426,6 +436,22 @@ const sortedReviewRemarks = computed(() => {
 
     return compareRRLevel(b.level, a.level);
   });
+});
+
+const filteredAndSortedNotDeniedPolicyStatus = computed(() => {
+  return (details.value?.PolicyStatus ?? [])
+    .filter((p) => p.type !== 'deny')
+    .slice()
+    .sort((a, b) => {
+      const aw = a.licenseRecommendationWeight;
+      const bw = b.licenseRecommendationWeight;
+
+      if (aw == null && bw == null) return 0;
+      if (aw == null) return 1;
+      if (bw == null) return -1;
+
+      return aw - bw;
+    });
 });
 
 defineExpose({
@@ -498,7 +524,7 @@ defineExpose({
                     <template v-if="details.UnmatchedLicenses?.length === 0 && details.PolicyStatus?.length === 0">
                       <tr>
                         <td>
-                          <div class="d-flex justify-center flex-row">
+                          <div class="d-flex flex-row justify-center">
                             <DIconButton :icon="Icons.QUESTIONED" :hint="t('HELP_TT_UNASSERTED')" />
                             <DIconButton
                               icon="mdi-message-plus-outline"
@@ -535,6 +561,7 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
+                      :isRecommended="false"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -550,13 +577,14 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="true"
+                      :isRecommended="false"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
                       @openLicenseRuleDialog="openLicenseRuleDialog"
                       @openPolicyDecisionDialog="openPolicyDecisionDialog" />
                     <PolicyStatusTableRow
-                      v-for="(item, index) in details.PolicyStatus.filter((p) => p.type !== 'deny')"
+                      v-for="(item, index) in filteredAndSortedNotDeniedPolicyStatus"
                       :key="`policy-status-other-${index}`"
                       :item="item"
                       :policyDecisionApplied="findPolicyDecisionApplied(item)"
@@ -566,6 +594,7 @@ defineExpose({
                       :responsible="responsible"
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
+                      :isRecommended="isRecommended(item)"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -577,13 +606,13 @@ defineExpose({
               <div v-if="details.Problems && details.Problems.length > 0" class="d-flex flex-column align-start">
                 <div>
                   <v-icon class="pl-2" color="warning" size="small">mdi mdi-alert</v-icon>
-                  <span class="text-caption pl-2 pr-3">{{ t('COMP_PROBLEM_FOUND') }}</span>
+                  <span class="text-caption pr-3 pl-2">{{ t('COMP_PROBLEM_FOUND') }}</span>
                 </div>
                 <span class="text-caption pl-4" v-for="(p, i) in details.Problems" :key="`0-problem-${p}-${i}`">
                   - {{ t(p) }}
                 </span>
               </div>
-              <span v-if="details.ContainsOr" class="text-caption pl-2 pr-3">{{ t('POLICY_RULES_DISCLAIMER') }}</span>
+              <span v-if="details.ContainsOr" class="text-caption pr-3 pl-2">{{ t('POLICY_RULES_DISCLAIMER') }}</span>
             </Stack>
           </v-tabs-window-item>
 
@@ -652,7 +681,7 @@ defineExpose({
                 <div class="d-flex flex-column align-start pa-4" v-if="details.Problems && details.Problems.length > 0">
                   <div>
                     <v-icon class="pl-2" color="warning" size="small">mdi mdi-alert</v-icon>
-                    <span class="d-subtitle-2 pl-2 pr-3">{{ t('COMP_PROBLEM_FOUND') }}</span>
+                    <span class="d-subtitle-2 pr-3 pl-2">{{ t('COMP_PROBLEM_FOUND') }}</span>
                   </div>
                   <span class="d-subtitle-2 pl-4" v-for="(p, i) in details.Problems" :key="`1-problem-${p}-${i}`">
                     - {{ t(p) }}
@@ -757,7 +786,7 @@ defineExpose({
           </v-tabs-window-item>
 
           <v-tabs-window-item class="dialogContent" value="additional_info">
-            <div class="h-[344px] overflow-y-auto pa-4">
+            <div class="pa-4 h-[344px] overflow-y-auto">
               <v-progress-linear v-if="loadingRemarks" indeterminate color="primary"></v-progress-linear>
               <div v-else-if="reviewRemarks.length > 0">
                 <div class="text-h6 mb-2">{{ t('TAB_REVIEW_REMARKS') }}</div>
@@ -817,7 +846,7 @@ defineExpose({
           <v-tabs-window-item class="dialogContent" value="raw">
             <div class="h-[344px] overflow-x-auto">
               <Stack class="pa-4">
-                <Stack direction="row" class="sticky top-0 z-1 align-center bg-[rgba(var(--v-theme-surface))]">
+                <Stack direction="row" class="align-center sticky top-0 z-1 bg-[rgba(var(--v-theme-surface))]">
                   <h3 class="text-h6">
                     {{ t('CAPTION_SCHEMA_DETAILS') }}
                   </h3>

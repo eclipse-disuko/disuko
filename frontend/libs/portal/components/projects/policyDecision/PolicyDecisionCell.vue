@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {DecisionType} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ComponentInfo} from '@disclosure-portal/model/VersionDetails';
-import config from '@shared/utils/config';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -129,164 +128,121 @@ const handleDeniedClick = () => {
 </script>
 
 <template>
-  <span v-if="config.isProd">
-    <span v-if="isWarnedPolicyDecisionInfosAvailable">
-      <span v-if="canMakeWarnedPolicyDecision" @click.stop="handleWarnedClick">
-        <v-icon size="small" :color="warnedIconColor" :style="isWarnedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-          {{ warnedIcon }}
-        </v-icon>
-      </span>
-      <v-icon v-else size="small" :color="warnedIconColor">
+  <span v-if="isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
+    <span v-if="canMakeWarnedPolicyDecision" @click.stop="handleWarnedClick">
+      <v-icon size="small" :color="warnedIconColor" :style="isWarnedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
         {{ warnedIcon }}
       </v-icon>
-
-      <Tooltip>
-        <span v-if="canMakeWarnedPolicyDecision">
-          {{ warnedPolicyDecisionTooltip }}
-          <br />
-        </span>
-
-        <template v-if="hasAnyDecisions">
-          <v-divider></v-divider>
-          {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
-          <br />
-
-          <PolicyDecisionList
-            v-if="activeDecisions.length > 0"
-            :decisions="activeDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED')"
-            icon="mdi-information-outline"
-            arrow="→" />
-
-          <PolicyDecisionList
-            v-if="previewDecisions.length > 0"
-            :decisions="previewDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-            icon="mdi-progress-alert"
-            icon-color="grey"
-            arrow="⇢" />
-        </template>
-      </Tooltip>
     </span>
+    <v-icon v-else size="small" :color="warnedIconColor">
+      {{ warnedIcon }}
+    </v-icon>
+
+    <Tooltip>
+      <span v-if="canMakeWarnedPolicyDecision">
+        {{ warnedPolicyDecisionTooltip }}
+        <br />
+      </span>
+
+      <template v-if="hasAnyDecisions">
+        <v-divider></v-divider>
+        {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
+        <br />
+
+        <PolicyDecisionList
+          v-if="activeDecisions.length > 0"
+          :decisions="activeDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED')"
+          icon="mdi-information-outline"
+          arrow="→" />
+
+        <PolicyDecisionList
+          v-if="previewDecisions.length > 0"
+          :decisions="previewDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
+          icon="mdi-progress-alert"
+          icon-color="grey"
+          arrow="⇢" />
+      </template>
+    </Tooltip>
+    &nbsp;
+  </span>
+  <span v-else-if="!isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
+    <v-icon size="small">mdi-blank</v-icon>
+    &nbsp;
   </span>
 
-  <span v-if="!config.isProd">
-    <span v-if="isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-      <span v-if="canMakeWarnedPolicyDecision" @click.stop="handleWarnedClick">
-        <v-icon size="small" :color="warnedIconColor" :style="isWarnedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-          {{ warnedIcon }}
-        </v-icon>
-      </span>
-      <v-icon v-else size="small" :color="warnedIconColor">
-        {{ warnedIcon }}
-      </v-icon>
-
-      <Tooltip>
-        <span v-if="canMakeWarnedPolicyDecision">
-          {{ warnedPolicyDecisionTooltip }}
-          <br />
-        </span>
-
-        <template v-if="hasAnyDecisions">
-          <v-divider></v-divider>
-          {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
-          <br />
-
-          <PolicyDecisionList
-            v-if="activeDecisions.length > 0"
-            :decisions="activeDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED')"
-            icon="mdi-information-outline"
-            arrow="→" />
-
-          <PolicyDecisionList
-            v-if="previewDecisions.length > 0"
-            :decisions="previewDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-            icon="mdi-progress-alert"
-            icon-color="grey"
-            arrow="⇢" />
-        </template>
-      </Tooltip>
-      &nbsp;
-    </span>
-    <span v-else-if="!isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-      <v-icon size="small">mdi-blank</v-icon>
-      &nbsp;
-    </span>
-
-    <span v-if="isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-      <span v-if="canMakeDeniedPolicyDecision" @click.stop="handleDeniedClick">
-        <v-icon size="small" :color="deniedIconColor" :style="isDeniedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-          {{ deniedIcon }}
-        </v-icon>
-      </span>
-      <v-icon v-else size="small" :color="deniedIconColor">
+  <span v-if="isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
+    <span v-if="canMakeDeniedPolicyDecision" @click.stop="handleDeniedClick">
+      <v-icon size="small" :color="deniedIconColor" :style="isDeniedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
         {{ deniedIcon }}
       </v-icon>
-
-      <Tooltip>
-        <span v-if="canMakeDeniedPolicyDecision">
-          {{ deniedPolicyDecisionTooltip }}
-          <br />
-        </span>
-
-        <template v-if="hasAnyDecisions">
-          <v-divider></v-divider>
-          {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
-          <br />
-
-          <PolicyDecisionList
-            v-if="activeDecisions.length > 0"
-            :decisions="activeDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED')"
-            icon="mdi-information-outline"
-            arrow="→" />
-
-          <PolicyDecisionList
-            v-if="previewDecisions.length > 0"
-            :decisions="previewDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-            icon="mdi-progress-alert"
-            icon-color="grey"
-            arrow="⇢" />
-        </template>
-      </Tooltip>
     </span>
-    <span v-else-if="!isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-      <v-icon size="small">mdi-blank</v-icon>
-    </span>
+    <v-icon v-else size="small" :color="deniedIconColor">
+      {{ deniedIcon }}
+    </v-icon>
 
-    <span v-if="isOnlyPolicyDecisionsAppliedPresent">
-      <v-icon size="small" :color="onlyAppliedDecisionsIconColor">
-        {{ onlyAppliedDecisionsIcon }}
-      </v-icon>
+    <Tooltip>
+      <span v-if="canMakeDeniedPolicyDecision">
+        {{ deniedPolicyDecisionTooltip }}
+        <br />
+      </span>
 
-      <Tooltip>
-        <span v-if="canMakeDeniedPolicyDecision">
-          {{ deniedPolicyDecisionTooltip }}
-          <br />
-        </span>
+      <template v-if="hasAnyDecisions">
+        <v-divider></v-divider>
+        {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
+        <br />
 
-        <template v-if="hasAnyDecisions">
-          <PolicyDecisionList
-            v-if="activeDecisions.length > 0"
-            :decisions="activeDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED')"
-            icon="mdi-information-outline"
-            arrow="→" />
+        <PolicyDecisionList
+          v-if="activeDecisions.length > 0"
+          :decisions="activeDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED')"
+          icon="mdi-information-outline"
+          arrow="→" />
 
-          <PolicyDecisionList
-            v-if="previewDecisions.length > 0"
-            :decisions="previewDecisions"
-            :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-            icon="mdi-progress-alert"
-            icon-color="grey"
-            arrow="⇢" />
-        </template>
-      </Tooltip>
-      &nbsp;
-      <v-icon size="small">mdi-blank</v-icon>
-    </span>
+        <PolicyDecisionList
+          v-if="previewDecisions.length > 0"
+          :decisions="previewDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
+          icon="mdi-progress-alert"
+          icon-color="grey"
+          arrow="⇢" />
+      </template>
+    </Tooltip>
+  </span>
+  <span v-else-if="!isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
+    <v-icon size="small">mdi-blank</v-icon>
+  </span>
+
+  <span v-if="isOnlyPolicyDecisionsAppliedPresent">
+    <v-icon size="small" :color="onlyAppliedDecisionsIconColor">
+      {{ onlyAppliedDecisionsIcon }}
+    </v-icon>
+
+    <Tooltip>
+      <span v-if="canMakeDeniedPolicyDecision">
+        {{ deniedPolicyDecisionTooltip }}
+        <br />
+      </span>
+
+      <template v-if="hasAnyDecisions">
+        <PolicyDecisionList
+          v-if="activeDecisions.length > 0"
+          :decisions="activeDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED')"
+          icon="mdi-information-outline"
+          arrow="→" />
+
+        <PolicyDecisionList
+          v-if="previewDecisions.length > 0"
+          :decisions="previewDecisions"
+          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
+          icon="mdi-progress-alert"
+          icon-color="grey"
+          arrow="⇢" />
+      </template>
+    </Tooltip>
+    &nbsp;
+    <v-icon size="small">mdi-blank</v-icon>
   </span>
 </template>

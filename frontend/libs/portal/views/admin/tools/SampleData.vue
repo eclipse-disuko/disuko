@@ -52,7 +52,7 @@ onMounted(() => {
             label="Count projects"
             v-model="cntSampleData"></v-text-field>
         </v-col>
-        <v-col cols="1" class="d-flex justify-center mr-2">
+        <v-col cols="1" class="d-flex mr-2 justify-center">
           <DCActionButton
             @click="startSampleData(false)"
             :hint="t('TT_CREATE_SAMPLE_DATA')"

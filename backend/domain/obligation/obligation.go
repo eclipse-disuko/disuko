@@ -51,6 +51,12 @@ func GetLevelWeight(level WarnLevel) int64 {
 	return int64(levelWeight[level])
 }
 
+const (
+	InfoWeight  = 0.1
+	WarnWeight  = 3.0
+	AlarmWeight = 10.0
+)
+
 func (entity *Obligation) Update(obligation *ObligationDto) {
 	entity.Name = obligation.Name
 	entity.NameDe = obligation.NameDe

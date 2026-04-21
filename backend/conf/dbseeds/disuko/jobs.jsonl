@@ -85,7 +85,6 @@
   "_id": "jobs/315d3c7e-0856-4a8f-a8a8-08dca55586b3",
   "_key": "315d3c7e-0856-4a8f-a8a8-08dca55586b3",
   "_rev": "18-6fcf5542d7983ecea6e080359a6c00c8",
-  "Config": "",
   "Created": "2025-09-17T11:13:56.231556676Z",
   "Execution": 0,
   "JobType": 9,
@@ -94,4 +93,72 @@
   "Schedule": "",
   "Status": 0,
   "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_id": "jobs/96b0bc30-d330-4df0-86ee-309eaba5dbf8",
+  "_key": "96b0bc30-d330-4df0-86ee-309eaba5dbf8",
+  "_rev": "36-f5f9925c7622ddd82d0fd684140e1b59",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "Jobtype": 7,
+  "MultiExec": false,
+  "Name": "Set deprovisioning",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}
+{
+  "_id": "jobs/eb590daf-21ec-4fe3-bc5c-669c59ec1441",
+  "_key": "eb590daf-21ec-4fe3-bc5c-669c59ec1441",
+  "_rev": "25-25fb4e2b1a21068235e6195e3bbb8c17",
+  "Created": "2024-07-17T07:10:08.515829106Z",
+  "Execution": 0,
+  "JobType": 5,
+  "MultiExec": false,
+  "Name": "Rebuild analytic",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2026-01-26T11:01:30.23056982Z"
+}
+{
+  "_id": "jobs/42eefe9c-9149-4fa5-963e-05b96248a873",
+  "_key": "42eefe9c-9149-4fa5-963e-05b96248a873",
+  "_rev": "1075-3a2aa2ea56e0fc04f86fa3730f89c65c",
+  "Config": "",
+  "Created": "2024-10-25T07:47:30.775929471Z",
+  "Execution": 1,
+  "JobType": 8,
+  "MultiExec": false,
+  "Name": "Policy Rules Change Logs Generation",
+  "Schedule": "0 2 * * *",
+  "Status": 0,
+  "Updated": "2026-04-16T02:00:11.142905498Z"
+}
+{
+  "_id": "jobs/dc416f97-41cf-42bc-a64c-e68a1bd20068",
+  "_key": "dc416f97-41cf-42bc-a64c-e68a1bd20068",
+  "_rev": "1208-c7c1f34111dc35594071c3a0aa12231a",
+  "Config": "",
+  "Created": "2024-08-22T06:28:49.690984059Z",
+  "Execution": 1,
+  "JobType": 4,
+  "MultiExec": false,
+  "Name": "License Announcement Generation",
+  "Schedule": "30 3 * * *",
+  "Status": 0,
+  "Updated": "2026-04-16T03:30:09.252819729Z"
+}
+{
+  "_id": "jobs/6c0d6698-2766-4376-9fc9-267eeae441ce",
+  "_key": "6c0d6698-2766-4376-9fc9-267eeae441ce",
+  "_rev": "5362522-c35e0298c44198846b59fb27c01e6f58",
+  "Config": "",
+  "Created": "2024-07-26T07:34:23.136592557Z",
+  "Execution": 1,
+  "JobType": 6,
+  "MultiExec": true,
+  "Name": "Notification refresh",
+  "Schedule": "*/30 * * * * * *",
+  "Status": 0,
+  "Updated": "2026-04-16T13:57:36.059961189Z"
 }

@@ -544,7 +544,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxUnlockHandler(w http.ResponseWriter, r
 
 	if !spdx.IsLocked {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.SpdxNotLocked))
-	} else if IsSpdxRetained(spdx, currentProject, version) {
+	} else if sbomlockRetained.IsSpdxToRetain(spdx, version) {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.SpdxRetainedForApprovalOrReview))
 	} else {
 		spdx.IsLocked = false
@@ -885,9 +885,3 @@ func IsSpdxInUse(spdx *project.SpdxFileBase, prj *project.Project, version *proj
 	return spdxIsInUse
 }
 
-func IsSpdxRetained(spdx *project.SpdxFileBase, prj *project.Project, version *project.ProjectVersion) bool {
-	spdxRetained := spdx.Key == prj.ApprovableSPDX.SpdxKey ||
-		sbomlockRetained.AnyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
-		spdx.ApprovalInfo.IsInApproval
-	return spdxRetained
-}

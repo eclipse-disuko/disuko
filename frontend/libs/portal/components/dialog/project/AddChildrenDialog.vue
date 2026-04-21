@@ -180,16 +180,7 @@ watch(selectedInGrid, evaluateHeaderCheckboxState);
         <Stack>
           <Stack direction="row">
             <div class="grow"></div>
-            <v-text-field
-              autocomplete="off"
-              v-model="search"
-              append-inner-icon="mdi-magnify"
-              :label="t('labelSearch')"
-              clearable
-              single-line
-              hide-details
-              variant="outlined"
-              density="compact" />
+            <DSearchField v-model="search" />
           </Stack>
 
           <v-data-table
@@ -245,7 +236,7 @@ watch(selectedInGrid, evaluateHeaderCheckboxState);
                     v-for="(label, i) in row._policyLabels"
                     :key="'a' + i"
                     :label="label"
-                    class="inline-block m-1"></ProjectLabel>
+                    class="m-1 inline-block"></ProjectLabel>
                 </div>
               </Stack>
             </template>

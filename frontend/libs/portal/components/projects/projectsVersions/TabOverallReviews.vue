@@ -4,9 +4,7 @@
 
 <script setup lang="ts">
 import useDimensions from '@disclosure-portal/composables/useDimensions';
-import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import {OverallReview, OverallReviewState} from '@disclosure-portal/model/VersionDetails';
-import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@disclosure-portal/utils/eventbus';
@@ -17,7 +15,6 @@ import {computed, nextTick, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
-const labelStore = useLabelStore();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const {calculateHeight} = useDimensions();
@@ -31,19 +28,7 @@ const overallAuditDialog = ref();
 
 const currentProject = computed(() => projectStore.currentProject!);
 const spdxHistory = computed(() => sbomStore.getChannelSpdxs);
-const selectedSpdx = computed(() => sbomStore.getSelectedSpdx);
 const version = computed(() => sbomStore.getCurrentVersion);
-const hasVehiclePlatformChildren = computed(() => projectStore.hasVehiclePlatformChildren);
-
-const isVehiclePlatform = computed(() => {
-  if (!currentProject.value) return false;
-  for (const lbl of currentProject.value.policyLabels) {
-    if (labelStore.getLabelByKey(lbl)?.name === PolicyLabels.VEHICLE_PLATFORM) {
-      return true;
-    }
-  }
-  return false;
-});
 
 const canAddAudit = computed(() => {
   const hasPermission = RightsUtils.isFOSSOffice();
@@ -117,23 +102,11 @@ const compareStatus = (a: OverallReviewState, b: OverallReviewState): number => 
 };
 
 const showOverallReviewDialog = async () => {
-  overallReviewDialog.value.open(
-    currentProject.value._key,
-    version.value._key,
-    spdxHistory.value,
-    selectedSpdx.value,
-    currentProject.value.approvablespdx.spdxkey,
-  );
+  overallReviewDialog.value.open();
 };
 
 const showOverallAuditDialog = async () => {
-  overallAuditDialog.value.open(
-    currentProject.value._key,
-    version.value._key,
-    spdxHistory.value,
-    selectedSpdx.value,
-    currentProject.value.approvablespdx.spdxkey,
-  );
+  overallAuditDialog.value.open();
 };
 
 onMounted(async () => {

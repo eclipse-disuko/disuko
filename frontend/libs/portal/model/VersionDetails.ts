@@ -58,6 +58,7 @@ export class PolicyRuleStatus {
   public canMakeWarnedDecision = false;
   public canMakeDeniedDecision = false;
   public deniedDecisionDeniedReason = '';
+  public licenseRecommendationWeight: number | null = null;
 }
 
 export interface IComponentInfo {
@@ -191,6 +192,7 @@ export class ComponentInfo implements IComponentInfo {
   public licenseRuleApplied?: LicenseRuleSlim;
   public policyDecisionsApplied: PolicyDecisionSlim[] = [];
   public policyDecisionDeniedReason = '';
+  public licenseRecommended = '';
 }
 
 export class ComponentInfoSlim {
@@ -212,9 +214,12 @@ export type Nullable<T> = T | null;
 
 export class SpdxFile implements IUploaded {
   public _key = '';
+  public Created = '';
   public Hash = '';
   public Content = '';
   public ContentValid = false;
+  public SchemaValid = false;
+  public Type = 0;
   public ValidationErrors = '';
   public SchemaId = '';
   public SchemaName = '';

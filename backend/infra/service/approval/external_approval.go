@@ -9,7 +9,6 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/eclipse-disuko/disuko/domain/project"
-	"github.com/eclipse-disuko/disuko/domain/project/approvable"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/google/uuid"
@@ -50,7 +49,6 @@ func (s *ApprovalService) CreateExternalApproval(pr *project.Project, req approv
 		},
 	}
 
-	s.addTargetUsers(&appr, approvable.APPROVAL_TYPE_EXTERNAL, pr, creator)
 	s.AuditLogListRepo.AddStaticAuditEntryByKey(s.RequestSession, pr.Key, creator, message.ExternalApprovalCreated, appr.ToAudit())
 	// auditHelper.CreateAndAddAuditEntry(&res.Container, creator, message.ExternalApprovalCreated, audit.DiffWithReporter, res.ToAudit(), approval.ApprovalAudit{})
 
@@ -74,6 +72,9 @@ func (s *ApprovalService) processExternalApprovalUpdate(pr *project.Project, tar
 	if m := pr.GetMember(username); m == nil || m.UserType != project.OWNER {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
+	if targetApproval.External.State == approval.GenerationFailed {
+		exception.ThrowExceptionBadRequestResponse()
+	}
 	before := targetApproval.ToAudit()
 
 	targetApproval.External.Comment = req.Comment
@@ -88,7 +89,7 @@ func (s *ApprovalService) processExternalApprovalUpdate(pr *project.Project, tar
 	// auditHelper.CreateAndAddAuditEntry(&targetApproval.Container, username, message.ExternalApprovalUpdated, audit.DiffWithReporter, targetApproval.ToAudit(), before)
 }
 
-func (s *ApprovalService) SetExternalGenerated(prKey, key string) {
+func (s *ApprovalService) SetExternalState(prKey, key string, state approval.StateInfo) {
 	approvalList := s.ApprovalListRepo.FindByKey(s.RequestSession, prKey, false)
 	if approvalList == nil {
 		exception.ThrowExceptionBadRequestResponse()
@@ -99,7 +100,7 @@ func (s *ApprovalService) SetExternalGenerated(prKey, key string) {
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	appr.External.State = approval.Pending
+	appr.External.State = state
 
 	s.ApprovalListRepo.Update(s.RequestSession, approvalList)
 }

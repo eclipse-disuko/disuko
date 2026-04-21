@@ -36,7 +36,7 @@ const showMenu = ref(false);
     <v-card class="w-[400px]">
       <Stack class="gap-1">
         <Stack direction="row" justify="between" align="center" class="ma-1 mr-2 ml-4">
-          <span class="text-base align-self-center">{{ cardTitle }}</span>
+          <span class="align-self-center text-base">{{ cardTitle }}</span>
           <DCloseButton @click="showMenu = false" />
         </Stack>
         <Stack
@@ -60,12 +60,17 @@ const showMenu = ref(false);
             transition="scale-transition"
             @update:modelValue="(value: string[]) => emit('update', value)">
             <template v-slot:item="{props, item}">
-              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="py-0 px-2">
+              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="px-2 py-0">
                 <template v-slot:prepend="{isSelected}">
                   <v-checkbox hide-details :model-value="isSelected" />
                 </template>
                 <v-icon v-if="item.raw?.icon" small :color="item.raw.iconColor">{{ item.raw.icon }}</v-icon>
-                <span class="text-sm" :class="{'ml-1': item.raw?.icon}">{{ item.raw?.text || item.raw.value }}</span>
+                <span
+                  :style="{color: item.raw?.textColor || 'inherit'}"
+                  class="text-sm"
+                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
+                  >{{ item.raw?.text || item.raw.value }}</span
+                >
                 <v-chip
                   v-if="item.raw?.chip"
                   :color="item.raw?.chipColor || 'default'"
@@ -79,9 +84,13 @@ const showMenu = ref(false);
             <template v-slot:selection="{item, index}">
               <div v-if="index === 0" class="d-flex align-center">
                 <v-icon v-if="item.raw?.icon" small :color="item.raw.iconColor">{{ item.raw.icon }}</v-icon>
-                <span v-if="index === 0" class="text-sm" :class="{'ml-1': item.raw?.icon}">{{
-                  item.raw?.text || item.raw.value
-                }}</span>
+                <span
+                  v-if="index === 0"
+                  :style="{color: item.raw?.textColor || 'inherit'}"
+                  class="text-sm"
+                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
+                  >{{ item.raw?.text || item.raw.value }}</span
+                >
                 <v-chip
                   v-if="item.raw?.chip"
                   :color="item.raw?.chipColor || 'default'"

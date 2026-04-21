@@ -629,6 +629,8 @@ func (projectHandler *ProjectHandler) DownloadDocumentByTaskHandler(w http.Respo
 	}
 
 	taskGuid := rest.GetURLParam(r, "taskId")
+	err := validation.CheckUuid(taskGuid)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorKeyRequestParamNotValid, "taskId"), zapcore.InfoLevel)
 	fileTypeStr := rest.GetURLParam(r, "fileType")
 
 	documentVersionIndexStr := rest.GetURLParam(r, "docVersion")
@@ -1545,7 +1547,7 @@ func ValidateIDOrLatest(escaped string) string {
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, version, _ := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
+	_, version, _ := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 
 	sbomUuidEscaped := chi.URLParam(r, "sbomUuid")
 	sbomUuid := ValidateIDOrLatest(sbomUuidEscaped)
@@ -1568,7 +1570,9 @@ func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.Re
 		Created:  spdxFile.Updated,
 		Uploaded: spdxFile.Updated,
 		Status:   true,
-		IsRetain: IsSpdxRetained(spdxFile, currentProject, version),
+		IsRetain: sbomlockRetained.IsSpdxToRetain(spdxFile, version),
+		IsLocked: spdxFile.IsLocked,
+		Tag:      spdxFile.Tag,
 	}
 	render.JSON(w, r, responseData)
 }
@@ -1643,7 +1647,7 @@ func (projectHandler *ProjectHandler) ProjectVersionComponentsForSbom(w http.Res
 	isAllowDeniedPolicyDecision := evaluateIsAllowDeniedPolicyDecision(rights.IsDomainAdmin(), rights.IsFossOffice(), isVehicle)
 
 	response := components.ComponentsInfoResponse{
-		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision),
+		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession),
 		ComponentStats:                 evalRes.Stats,
 		BulkPolicyDecisionDeniedReason: policyDecisionDeniedReason,
 	}
@@ -2554,7 +2558,7 @@ func (projectHandler *ProjectHandler) EditReviewRemark(w http.ResponseWriter, r 
 		SpdxService:             projectHandler.SpdxService,
 	}
 
-	if !rrs.EditReviewRemark(currentProject, version.Key, remarkUuid, username, projectHandler.fullNameForUserSafe(requestSession, username), editData) {
+	if !rrs.EditReviewRemark(currentProject, version.Key, remarkUuid, username, projectHandler.fullNameForUserSafe(requestSession, username, nil), editData) {
 		exception.ThrowExceptionBadRequestResponse()
 		return
 	}
@@ -2601,7 +2605,7 @@ func (projectHandler *ProjectHandler) CommentReviewRemark(w http.ResponseWriter,
 	}
 	var before reviewremarks.Remark
 	copier.Copy(&before, remark)
-	remark.Comment(username, projectHandler.fullNameForUserSafe(requestSession, username), commentData.Content)
+	remark.Comment(username, projectHandler.fullNameForUserSafe(requestSession, username, nil), commentData.Content)
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, version.Key, username, message.ReviewRemarkCommented, cmp.Diff, *remark, before)
 	projectHandler.ReviewRemarksRepository.Update(requestSession, remarks)
 	responseData := SuccessResponse{
@@ -2654,13 +2658,13 @@ func (projectHandler *ProjectHandler) SetReviewRemarkStatus(w http.ResponseWrite
 	var before reviewremarks.Remark
 	copier.Copy(&before, remark)
 	if status == reviewremarks.Closed {
-		remark.Close(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Close(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.Cancelled {
-		remark.Cancel(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Cancel(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.InProgress {
-		remark.InProgress(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.InProgress(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.Open {
-		remark.Reopen(username, projectHandler.fullNameForUserSafe(requestSession, username))
+		remark.Reopen(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else {
 		exception.ThrowExceptionBadRequestResponse()
 	}

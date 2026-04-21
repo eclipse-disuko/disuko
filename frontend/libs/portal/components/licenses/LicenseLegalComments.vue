@@ -31,7 +31,7 @@ const translateContentInNewTab = () => {
             :text="license.meta?.legalComments"></Markdown>
           <div v-else>{{ t('NO_COMMENT') }}</div>
         </div>
-        <div class="position-absolute top-0 right-0 d-flex justify-start">
+        <div class="position-absolute d-flex top-0 right-0 justify-start">
           <DCopyClipboardButton
             v-if="license && license.meta && license.meta.legalComments"
             class="ma-2"

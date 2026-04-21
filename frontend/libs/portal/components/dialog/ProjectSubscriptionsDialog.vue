@@ -12,7 +12,7 @@
               {{ title }}
             </span>
           </v-col>
-          <v-col cols="2" class="text-right px-0">
+          <v-col cols="2" class="px-0 text-right">
             <DCloseButton @click="$emit('close')" />
           </v-col>
         </v-row>
@@ -25,7 +25,7 @@
               hide-details
               color="primary"
               :label="t('COL_DELIVERY')"
-              class="shrink mr-2 mt-0" />
+              class="mt-0 mr-2 shrink" />
             <div class="d-text ml-12">{{ t('SBOM_SUBSCRIPTION_TEXT') }}</div>
           </v-col>
         </v-row>
@@ -36,7 +36,7 @@
               hide-details
               color="primary"
               :label="t('HEADLINE_OVERALL_REVIEW')"
-              class="shrink mr-2 mt-0" />
+              class="mt-0 mr-2 shrink" />
             <div class="d-text ml-12">{{ t('OVERALL_REVIEW_SUBSCRIPTION_TEXT') }}</div>
           </v-col>
         </v-row>

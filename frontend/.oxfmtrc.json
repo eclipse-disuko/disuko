@@ -5,6 +5,7 @@
   "printWidth": 120,
   "bracketSameLine": true,
   "sortPackageJson": false,
+  "sortTailwindcss": true,
   "ignorePatterns": [
     ".DS_Store",
     "**/node_modules",

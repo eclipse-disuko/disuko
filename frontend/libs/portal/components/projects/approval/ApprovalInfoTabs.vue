@@ -72,7 +72,7 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
           <v-col cols="12" xs="12" class="pa-0">
             <blockquote class="taskMessage" v-html="taskDescription"></blockquote>
           </v-col>
-          <v-col cols="12" xs="12" class="pt-8 px-0">
+          <v-col cols="12" xs="12" class="px-0 pt-8">
             <DApprovalComponents
               :stats="item.info.stats"
               :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
@@ -84,7 +84,7 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
           :showRedWarnDeniedDecisionsMessage="showRedWarnDeniedDecisionsMessage" />
         <template v-if="tab == 'generalReview'">
           <v-row>
-            <v-col cols="6" class="pb-0 px-0">
+            <v-col cols="6" class="px-0 pb-0">
               <v-text-field
                 autocomplete="off"
                 :label="t('TAD_USER_ID')"
@@ -93,7 +93,7 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
                 variant="outlined"
                 hide-details></v-text-field>
             </v-col>
-            <v-col cols="6" class="pb-0 px-0">
+            <v-col cols="6" class="px-0 pb-0">
               <v-text-field
                 autocomplete="off"
                 :label="t('APPROVER_LABEL')"

@@ -113,7 +113,7 @@ const clipboardContent = (key: string) => {
                 <v-col>
                   <Markdown :text="tab.content" :id="'providerStatement' + tab.key"></Markdown>
                 </v-col>
-                <v-col class="d-flex justify-end ml-2" cols="1">
+                <v-col class="d-flex ml-2 justify-end" cols="1">
                   <DCopyClipboardButton :hint="t('TT_CopyText')" :content="clipboardContent(tab.key)" />
                 </v-col>
               </v-row>

@@ -4,9 +4,9 @@
 
 <template>
   <v-container fluid class="h-full" data-testid="licenses-details">
-    <div class="pb-3 d-flex justify-end">
+    <div class="d-flex justify-end pb-3">
       <span class="text-h5 inline-block">{{ t('LICENSE') }}</span>
-      <span class="text-h5 px-2 inline-block">
+      <span class="text-h5 inline-block px-2">
         <q> {{ item.name }} </q>
       </span>
 

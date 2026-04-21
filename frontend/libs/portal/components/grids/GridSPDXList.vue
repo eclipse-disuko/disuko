@@ -187,7 +187,7 @@ export default defineComponent({
             if (!isGroupOpen(item)) toggleGroup(item);
           }
         "></template>
-      <th colspan="3" class="px-3 p-1 text-caption expand-header text-start">
+      <th colspan="3" class="text-caption expand-header p-1 px-3 text-start">
         <span @click="openProject(item.items[0].raw.projectKey)" class="cursor-pointer">
           <span class="font-color-table">{{ t('PROJECT') }}:</span>
           {{ item.items[0].raw.projectName }}
@@ -205,7 +205,7 @@ export default defineComponent({
 
         <span
           v-if="item.items[0].raw.approvablespdx.versionName"
-          class="cursor-pointer ml-4"
+          class="ml-4 cursor-pointer"
           @click="openVersion(item.items[0].raw)">
           <span class="font-color-table">&nbsp;{{ t('VERSION') }}:</span>
           {{ item.items[0].raw.approvablespdx.versionName }}
@@ -219,7 +219,7 @@ export default defineComponent({
           <v-icon v-if="showSbomExtras" color="primary" size="small" class="pb-1">mdi-star</v-icon>
         </v-col>
         <v-col cols="auto" class="pa-0">
-          <v-icon v-if="isApproved(item)" color="green" size="small" class="pb-1 ml-1">
+          <v-icon v-if="isApproved(item)" color="green" size="small" class="ml-1 pb-1">
             mdi-clipboard-check-outline
           </v-icon>
         </v-col>
@@ -232,7 +232,7 @@ export default defineComponent({
             <span v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
           </span>
           <span v-if="showSbomExtras && sbomOutdated(item.spdxUploaded)" class="d-text d-secondary-text inline-block">
-            <v-icon class="mr-1 -mt-0.5" color="red" x-small>mdi-priority-high</v-icon>
+            <v-icon class="-mt-0.5 mr-1" color="red" x-small>mdi-priority-high</v-icon>
             <span>{{ t('SBOM_IS_OUTDATED') }}</span>
           </span>
         </v-col>
@@ -243,7 +243,7 @@ export default defineComponent({
         <div class="flex flex-row justify-between">
           <div class="flex flex-col items-center justify-center">
             <v-icon size="small">mdi-layers</v-icon>
-            <div class="pt-1 text-center text-no-wrap">{{ item.stats.Total }}</div>
+            <div class="text-no-wrap pt-1 text-center">{{ item.stats.Total }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
             <v-icon size="small" :color="item.stats.Denied > 0 ? 'policyStatusDeniedColor' : ''">
@@ -267,7 +267,7 @@ export default defineComponent({
           </div>
           <div class="flex flex-col items-center justify-center">
             <v-icon size="small" :color="item.stats.Allowed > 0 ? 'green' : ''">mdi-check-circle</v-icon>
-            <div class="pt-1 text-center text-no-wrap">{{ item.stats.Allowed }}</div>
+            <div class="text-no-wrap pt-1 text-center">{{ item.stats.Allowed }}</div>
           </div>
         </div>
       </div>

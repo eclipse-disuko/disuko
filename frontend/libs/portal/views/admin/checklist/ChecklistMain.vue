@@ -28,9 +28,7 @@ const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogCo
 const sortBy: SortItem[] = [{key: 'updated', order: 'desc'}];
 const dialogItem = ref();
 
-const policyLabels = computed(() =>
-  checklist.value.policyLabels.map((labelKey) => labelStore.getLabelByKey(labelKey)),
-);
+const policyLabels = computed(() => checklist.value.policyLabels.map((labelKey) => labelStore.getLabelByKey(labelKey)));
 
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs([

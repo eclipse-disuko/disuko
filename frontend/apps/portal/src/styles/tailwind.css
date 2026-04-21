@@ -29,8 +29,6 @@
   --color-grey-5: #0d0d0d;
 
   /* Blue scale */
-  --color-blue-88: #2ef0f0;
-  --color-blue-58: #1fa3a3;
   --color-blue-95: #e6f5ff;
   --color-blue-90: #cce8ff;
   --color-blue-85: #b4ddfe;
@@ -115,8 +113,6 @@
   --color-yellow-5: #2e2600;
 
   /* Orange scale */
-  --color-orange-42: #b38000;
-  --color-orange-72: #f7b100;
   --color-orange-95: #fff4e6;
   --color-orange-90: #ffe8cc;
   --color-orange-85: #ffddb3;
@@ -161,9 +157,12 @@
   --color-neutral-30: #212121;
   --color-neutral-25: #1f1f1f;
   --color-neutral-20: #141414;
+  --color-neutral-15: #0d0d0d;
+  --color-neutral-10: #080808;
+  --color-neutral-5: #040404;
   --color-neutral-0: #000000;
 }
 
 @variant dark (.dark &);
 
-@source "../../../../libs";
+@source '../../../../libs';

@@ -9,22 +9,18 @@ import {computed, ref, watch} from 'vue';
 export const useTableActionSlider = () => {
   // Need the store to have one timeout across all sliders
   const tableActionSliderStore = useTableActionSliderStore();
-  const {slideInTimeout} = storeToRefs(tableActionSliderStore);
+  const {slideInTimeout, sliderWidth, baseWidth} = storeToRefs(tableActionSliderStore);
 
   const buttonWidth = 40;
   const spaceAfter = 20;
 
-  const baseWidth = ref<number>(100);
   const buttonsLength = ref<number>(1);
-  const sliderWidth = ref<number>(baseWidth.value);
   const slideInTimer = ref<number>(0);
 
-  const slideOutAction = ref<() => unknown>(() => {});
-  const slideInAction = ref<() => unknown>(() => {});
+  const slideToggleAction = ref<() => unknown>(() => {});
 
   const setupTableActionSlider = (
-    newSlideOutAction: () => unknown,
-    newSlideInAction: () => unknown,
+    newSlideToggleAction: () => unknown,
     newButtonsLength?: number,
     newBaseWidth?: number,
   ) => {
@@ -36,12 +32,8 @@ export const useTableActionSlider = () => {
       buttonsLength.value = newButtonsLength;
     }
 
-    if (newSlideOutAction) {
-      slideOutAction.value = newSlideOutAction;
-    }
-
-    if (newSlideInAction) {
-      slideInAction.value = newSlideInAction;
+    if (newSlideToggleAction) {
+      slideToggleAction.value = newSlideToggleAction;
     }
   };
 
@@ -64,12 +56,12 @@ export const useTableActionSlider = () => {
 
   const slideOut = () => {
     sliderWidth.value = expandedMaxWidth.value;
-    slideOutAction.value();
+    slideToggleAction.value();
   };
 
   const slideIn = () => {
     sliderWidth.value = baseWidth.value;
-    slideInAction.value();
+    slideToggleAction.value();
   };
 
   const stopSlideInTimerAndSlideOut = () => {

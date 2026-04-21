@@ -49,9 +49,9 @@ const config = ref<DialogPolicyDecisionConfig>({
 
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionKey = computed(() => sbomStore.getCurrentVersion._key);
-const currentSbomId = computed(() => sbomStore.getSelectedSpdx._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSpdx.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSpdx.Uploaded);
+const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
 
 const selectedComponent = computed(() => config.value.component);
 const policies = computed(() => config.value.policies);
