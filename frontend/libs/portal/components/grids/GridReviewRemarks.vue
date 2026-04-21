@@ -16,17 +16,16 @@ import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
-import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
+import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {chain} from 'lodash';
-import {storeToRefs} from 'pinia';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
@@ -49,10 +48,6 @@ const {
   doCancelRemark: doCancelRemarkAction,
   doReopenRemark: doReopenRemarkAction,
 } = useReviewRemarkActions();
-
-const gridName = 'ReviewRemarksGrid';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const items = ref<ReviewRemark[]>([]);
 const on = ref(false);
@@ -102,18 +97,21 @@ const possibleSbom = computed((): DataTableHeaderFilterItems[] => {
     (remark: ReviewRemark) => !!(remark.sbomName && remark.sbomName.trim() && remark.sbomId),
   );
 
-  return chain(allReviewRemarkSboms)
-    .sortBy('sbomUploaded')
-    .map((remark: ReviewRemark) => {
-      const uploadedDate = remark.sbomUploaded ? formatDateAndTime(remark.sbomUploaded.toString()) : '';
-      return {
-        value: remark.sbomId || '',
-        text: `${uploadedDate}- ${remark.sbomName}`,
-      } as DataTableHeaderFilterItems;
-    })
-    .uniqBy('value')
-    .reverse()
-    .value();
+  return (
+    chain(allReviewRemarkSboms)
+      .sortBy('sbomUploaded')
+      .map((remark: ReviewRemark) => {
+        const uploadedDate = remark.sbomUploaded ? formatDateAndTime(remark.sbomUploaded.toString()) : '';
+        return {
+          value: remark.sbomId || '',
+          text: `${uploadedDate}- ${remark.sbomName}`,
+        } as DataTableHeaderFilterItems;
+      })
+      .uniqBy('value')
+      // oxlint-disable-next-line unicorn/no-array-reverse
+      .reverse()
+      .value()
+  );
 });
 
 const possibleStatus = computed((): DataTableHeaderFilterItems[] => {
@@ -218,7 +216,9 @@ const headers: DataTableHeader[] = [
   },
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'ReviewRemarksGrid';
+const headerSettings = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettings;
 
 const sortItems = ref([{key: 'level', order: 'desc' as const}]);
 
@@ -272,9 +272,9 @@ const filterOnReviewRemarkLevel = () => {
 
 const reload = async (): Promise<void> => {
   loading.value = true;
-  const selectedKeys = selected.value.map((item) => item.key);
+  const uniqueSelectedKeys = new Set(selected.value.map(({key}) => key));
   items.value = (await versionService.getReviewRemarks(projectModel.value._key, version.value._key)).data;
-  selected.value = items.value.filter((item) => selectedKeys.includes(item.key));
+  selected.value = items.value.filter((item) => uniqueSelectedKeys.has(item.key));
   loading.value = false;
 };
 
@@ -286,14 +286,14 @@ onMounted(async () => {
   await reload();
 });
 
-const customFilter = (value: unknown, search: string | null, item: unknown): boolean => {
-  if (!search) return true;
+const customFilter = (_: unknown, searchTerm: string | null, item: unknown): boolean => {
+  if (!searchTerm) return true;
 
   const itemObj = item as {raw?: ReviewRemark};
   if (!itemObj?.raw) return false;
 
   const reviewRemark = itemObj.raw;
-  const searchTerms = search.toLowerCase().split(' ');
+  const searchTerms = searchTerm.toLowerCase().split(' ');
   const itemText = [
     reviewRemark.title,
     reviewRemark.description,
@@ -580,7 +580,7 @@ onMounted(() => {
       @click:row="rowClick"
       @update:modelValue="(val) => (selected = val || [])">
       <template v-slot:[`header.actions`]="{column}">
-        <HeaderSettings :column="column" :grid-name="gridName" :show-borders="false" />
+        <HeaderSettings :column="column" :grid-name="tableName" :show-borders="false" />
         <span>{{ column.title }}</span>
       </template>
       <template v-slot:[`header.level`]="{column, getSortIcon, toggleSort}">

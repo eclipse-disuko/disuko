@@ -49,6 +49,13 @@ export type DataTableHeader = {
   sortRaw?: DataTableCompareFunction;
 };
 
+export type HeaderSettings = {
+  headers: DataTableHeader[];
+  hideInitially: string[];
+  initialSelectedHeaders: number[];
+  settingsColumn?: InternalDataTableHeader;
+};
+
 export type DataTableHeaderFilterItems = {
   text?: string;
   textColor?: string;
