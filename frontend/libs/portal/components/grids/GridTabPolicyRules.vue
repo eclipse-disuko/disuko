@@ -739,16 +739,7 @@ onMounted(async () => {
               <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
             </div>
             <v-spacer />
-            <v-text-field
-              autocomplete="off"
-              :max-width="500"
-              v-model="filterSelected"
-              :label="t('labelSearch')"
-              append-inner-icon="mdi-magnify"
-              variant="outlined"
-              clearable
-              density="compact"
-              hide-details />
+            <DSearchField v-model="filterSelected" />
           </div>
         </div>
         <div v-if="isPolicyManager && !rule.Deprecated">
@@ -762,16 +753,7 @@ onMounted(async () => {
               @click="moveAllFilteredToSelectedList"
               v-if="filteredListNotSelected.length > 0" />
             <v-spacer />
-            <v-text-field
-              autocomplete="off"
-              :max-width="500"
-              v-model="filterUnSelected"
-              :label="t('labelSearch')"
-              append-inner-icon="mdi-magnify"
-              variant="outlined"
-              clearable
-              density="compact"
-              hide-details />
+            <DSearchField v-model="filterUnSelected" />
           </div>
         </div>
       </div>
