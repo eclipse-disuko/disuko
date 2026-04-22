@@ -884,4 +884,3 @@ func IsSpdxInUse(spdx *project.SpdxFileBase, prj *project.Project, version *proj
 		spdx.IsInUse
 	return spdxIsInUse
 }
-
