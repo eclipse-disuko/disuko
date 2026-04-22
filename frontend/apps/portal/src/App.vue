@@ -14,9 +14,11 @@
 </template>
 
 <script setup lang="ts">
+import {getApi} from '@disclosure-portal/api';
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
 import DHTTPError from '@disclosure-portal/model/DHTTPError';
 import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import i18n from '@disclosure-portal/i18n';
 import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
@@ -147,6 +149,30 @@ onUnmounted(() => {
   window.removeEventListener('resize', onResizeWindow);
 });
 
+const loadI18nLocale = async (i18nApi: ReturnType<typeof getApi>['api'], code: string) => {
+  const res = await i18nApi.get(`/api/v1/i18n/${encodeURIComponent(code)}`);
+  if (res.data?.entries) {
+    i18n.global.setLocaleMessage(code, res.data.entries);
+  }
+};
+
+interface I18nLocaleListItem {
+  localeCode: string;
+  displayName?: string;
+  nativeName?: string;
+}
+
+const loadLocales = async (i18nApi: ReturnType<typeof getApi>['api']) => {
+  const list = await i18nApi.get<I18nLocaleListItem[]>('/api/v1/i18n');
+  const locales = list.data || [];
+  await Promise.all(locales.map((item) => loadI18nLocale(i18nApi, item.localeCode)));
+  return locales.map((item) => ({
+    code: item.localeCode,
+    displayName: item.displayName,
+    nativeName: item.nativeName,
+  }));
+};
+
 onMounted(async () => {
   eventBus.on('on-api-error', showAPIError);
   eventBus.on('on-error', showError);
@@ -154,7 +180,14 @@ onMounted(async () => {
 
   locale.value = appLanguage.value;
 
-  const simpleProfileData = await profileService.getProfileData();
+  const {api: i18nApi} = getApi();
+  const [simpleProfileData, locales] = await Promise.all([
+    profileService.getProfileData(),
+    loadLocales(i18nApi),
+  ]);
+
+  appStore.setPublishedLanguages(locales);
+  locale.value = appStore.getAppLanguage;
 
   await appStore.fetchLabelsTools();
   await labelStore.fetchAllLabels();
