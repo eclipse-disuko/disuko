@@ -2169,7 +2169,7 @@ func extractAppIdFromRequest(r *http.Request) string {
 //	@Success	200		{object}	project.ProjectPublicResponse	"Project"
 //	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid} [get]
+//	@Router		/v1/projects/{uuid} [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectGetExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2186,7 +2186,7 @@ func (projectHandler *ProjectHandler) ProjectGetExternHandler(w http.ResponseWri
 //	@Success	200		{object}	[]project.ProjectPublicResponse	"Project"
 //	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/groups/{uuid}/children [get]
+//	@Router		/v1/groups/{uuid}/children [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2229,7 +2229,7 @@ func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.Res
 //	@Success	200		{object}	project.ProjectStatusPublicResponse	"Project Status"
 //	@Failure	404		{object}	exception.HttpError404				"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError					"Unauthorized Error"
-//	@Router		/projects/{uuid}/status [get]
+//	@Router		/v1/projects/{uuid}/status [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2358,7 +2358,7 @@ func (projectHandler *ProjectHandler) HandleProjectStatus(requestSession *logy.R
 //	@Success		200		{string}	string					"Schema Details"
 //	@Failure		404		{object}	exception.HttpError404	"NotFound Error"
 //	@Failure		401		{object}	exception.HttpError		"Unauthorized Error"
-//	@Router			/projects/{uuid}/schema [get]
+//	@Router			/v1/projects/{uuid}/schema [get]
 //	@security		Bearer
 func (projectHandler *ProjectHandler) ProjectSchemaExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
