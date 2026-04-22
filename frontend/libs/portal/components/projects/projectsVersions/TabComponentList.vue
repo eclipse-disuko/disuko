@@ -30,12 +30,11 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
-import {storeToRefs} from 'pinia';
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 type TabelItem = ComponentInfo & {
   showPolicyDecision: boolean;
@@ -48,10 +47,6 @@ const {getI18NTextOfPrefixKey} = useLicense();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const idle = useIdleStore();
-
-const gridName = 'ComponentList';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
@@ -168,7 +163,9 @@ const headers: DataTableHeader[] = [
   },
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'ComponentList';
+const headerSettingsStore = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettingsStore;
 
 const filteredList = computed(() => {
   return componentList.value.filter((info: TabelItem) => {
@@ -249,7 +246,7 @@ const showDetails = async (item: TabelItem) => {
   const response = await ProjectService.getComponentDetailsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? '',
     item.spdxId,
   );
 
@@ -440,7 +437,7 @@ const load = async () => {
   } = await VersionService.getVersionComponentsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? null,
   );
 
   componentList.value = componentInfo ? getTableItems(componentInfo) : [];
@@ -634,7 +631,7 @@ onUnmounted(async () => {
             <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
-            <HeaderSettings :column="column" :grid-name="gridName" />
+            <HeaderSettings :column="column" :grid-name="tableName" />
             <span class="mr-1 ml-6">{{ column.title }}</span>
             <GridHeaderFilterIcon
               v-model="selectedFilterPolicyTypes"
