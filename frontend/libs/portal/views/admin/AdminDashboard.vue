@@ -192,6 +192,16 @@ const tiles = computed<ITile[]>(() => {
       expandGroup: false,
       expand: false,
     });
+    res.push({
+      color: 'primary',
+      cnt: -1,
+      visible: true,
+      title: 'Internationalization',
+      url: '/dashboard/admin/i18n',
+      icon: 'mdi-translate',
+      expandGroup: false,
+      expand: false,
+    });
   }
   if (RightsUtils.isDomainAdmin()) {
     res.push({

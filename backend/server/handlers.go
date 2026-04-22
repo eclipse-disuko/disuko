@@ -44,6 +44,7 @@ type handlers struct {
 	basicauth     rest.InternalTokenHandler
 	customid      rest.CustomidHandler
 	publicAuth    rest.PublicAuthHandler
+	i18n          rest.I18nHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -259,5 +260,8 @@ func (s *Server) setupHandlers() {
 	}
 	s.handlers.publicAuth = rest.PublicAuthHandler{
 		ProjectRepo: s.repos.project,
+	}
+	s.handlers.i18n = rest.I18nHandler{
+		I18nRepository: s.repos.i18nLocale,
 	}
 }

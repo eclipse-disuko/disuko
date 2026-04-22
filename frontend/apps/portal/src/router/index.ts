@@ -41,6 +41,8 @@ const InternalToken = () => import('@disclosure-portal/views/admin/InternalToken
 const Newsbox = () => import('@disclosure-portal/views/admin/Newsbox.vue');
 const FeatureFlags = () => import('@disclosure-portal/views/admin/FeatureFlags.vue');
 const UserManagement = () => import('@disclosure-portal/views/admin/tools/UserManagement.vue');
+const I18nAdmin = () => import('@disclosure-portal/views/admin/i18n/I18n.vue');
+const I18nLocaleDetails = () => import('@disclosure-portal/views/admin/i18n/LocaleDetails.vue');
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -502,6 +504,28 @@ const routes: RouteRecordRaw[] = [
           title: {
             en: 'Feature Flags',
             de: 'Feature Flags',
+          },
+        },
+      },
+      {
+        path: 'admin/i18n',
+        name: 'I18nAdmin',
+        component: I18nAdmin,
+        meta: {
+          title: {
+            en: 'Internationalization',
+            de: 'Internationalisierung',
+          },
+        },
+      },
+      {
+        path: 'admin/i18n/:localeCode',
+        name: 'I18nLocaleDetails',
+        component: I18nLocaleDetails,
+        meta: {
+          title: {
+            en: 'I18n Locale Details',
+            de: 'I18n Locale Details',
           },
         },
       },
