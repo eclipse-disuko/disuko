@@ -3,11 +3,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
-import {storeToRefs} from 'pinia';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {InternalDataTableHeader} from 'vuetify/lib/components/VDataTable/types';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 interface Props {
   column: InternalDataTableHeader;
@@ -20,12 +19,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const {t} = useI18n();
-const headerSettingsStore = useHeaderSettingsStore();
+const headerSettings = useHeaderSettings({tableName: props.gridName, settingsColumn: props.column});
 
-headerSettingsStore.setupStore(props.gridName);
-headerSettingsStore.setSettingsColumn(props.column);
-
-const {selectableHeaders, selectedHeaders, initialSelectedHeaders} = storeToRefs(headerSettingsStore);
+const {selectableHeaders, selectedHeaders, initialSelectedHeaders} = headerSettings;
 
 const selectedItems = computed((): string[] =>
   selectedHeaders.value
@@ -34,11 +30,11 @@ const selectedItems = computed((): string[] =>
 );
 
 const updateSelectedHeaders = (newHeaders: string[]) => {
-  headerSettingsStore.updateSelectedHeadersFromStringList(newHeaders);
+  headerSettings.updateSelectedHeadersFromStringList(newHeaders);
 };
 
 const resetSelectedHeaders = () => {
-  headerSettingsStore.resetSelectedHeaders();
+  headerSettings.resetSelectedHeaders();
 };
 </script>
 
