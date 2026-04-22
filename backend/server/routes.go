@@ -457,7 +457,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	//	@termsOfService	https://mb4.me/FOSS_Disclosure_Portal_ToU
 
 	//	@schemes	https
-	//	@BasePath	/disco
+	//	@basePath	/disco
 
 	//	@securityDefinitions.apiKey	Bearer
 	//	@in							header
