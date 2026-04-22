@@ -311,7 +311,7 @@ func (handler *PolicyRulesHandler) CreateRuleCSVHandler(w http.ResponseWriter, r
 //	@Success	200		{object}	[]license.PolicyRulePublicResponseDto	"Policy Rules"
 //	@Failure	404		{object}	exception.HttpError404					"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError						"Unauthorized Error"
-//	@Router		/projects/{uuid}/policyrules [get]
+//	@Router		/v1/projects/{uuid}/policyrules [get]
 //	@security	Bearer
 func (policyRulesHandler *PolicyRulesHandler) PolicyRulesGetExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
