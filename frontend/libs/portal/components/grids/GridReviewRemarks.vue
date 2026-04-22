@@ -584,34 +584,40 @@ onMounted(() => {
         <span>{{ column.title }}</span>
       </template>
       <template v-slot:[`header.level`]="{column, getSortIcon, toggleSort}">
-        <span class="mr-1">{{ column.title }}</span>
-        <GridHeaderFilterIcon
-          v-model="selectedFilterLevel"
-          :column="column"
-          :label="t('Lbl_filter_status')"
-          :allItems="possibleLevel">
-        </GridHeaderFilterIcon>
-        <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterLevel"
+              :column="column"
+              :label="t('Lbl_filter_status')"
+              :allItems="possibleLevel">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
       <template v-slot:[`header.status`]="{column, getSortIcon, toggleSort}">
-        <span class="mr-1">{{ column.title }}</span>
-        <GridHeaderFilterIcon
-          v-model="selectedFilterStatus"
-          :column="column"
-          :label="t('Lbl_filter_status')"
-          :allItems="possibleStatus">
-        </GridHeaderFilterIcon>
-        <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterStatus"
+              :column="column"
+              :label="t('Lbl_filter_status')"
+              :allItems="possibleStatus">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
       <template v-slot:[`header.sbomName`]="{column, getSortIcon, toggleSort}">
-        <span class="mr-1">{{ column.title }}</span>
-        <GridHeaderFilterIcon
-          v-model="selectedFilterSbom"
-          :column="column"
-          :label="t('Lbl_filter_sbom')"
-          :allItems="possibleSbom">
-        </GridHeaderFilterIcon>
-        <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterSbom"
+              :column="column"
+              :label="t('Lbl_filter_sbom')"
+              :allItems="possibleSbom">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
       <template v-slot:[`item.level`]="{item}">
         <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom content-class="dpTooltip">
@@ -648,8 +654,8 @@ onMounted(() => {
           {{
             item.licenses
               ? item.licenses
-                  .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
-                  .join(';\n')
+                .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
+                .join(';\n')
               : ''
           }}
         </Truncated>

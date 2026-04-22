@@ -276,18 +276,23 @@ onMounted(async () => {
         items-per-page="50"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}">
         <template v-slot:[`header.actions`]="{column}">
-          <HeaderSettings :column="column" :grid-name="tableName" />
-          <span class="ml-6">{{ column.title }}</span>
+          <GridFilterHeader :column="column">
+            <template #settings>
+              <HeaderSettings :column="column" :grid-name="tableName" />
+            </template>
+          </GridFilterHeader>
         </template>
         <template v-slot:[`header.active`]="{column, toggleSort, getSortIcon}">
-          <span class="mr-1">{{ column.title }}</span>
-          <GridHeaderFilterIcon
-            v-model="selectedStatus"
-            :column="column"
-            :label="t('STATUS')"
-            :allItems="possibleStatus">
-          </GridHeaderFilterIcon>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedStatus"
+                :column="column"
+                :label="t('STATUS')"
+                :allItems="possibleStatus">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
         </template>
         <template v-slot:[`header.type`]="{column, toggleSort, getSortIcon}">
           <span class="mr-1">{{ column.title }}</span>

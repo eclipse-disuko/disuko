@@ -286,20 +286,12 @@ const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => 
   component.version = item.version;
   component.licenseExpression = item.licenseEffective;
 
-  let policies: PolicyRuleStatus[];
-  switch (type) {
-    case 'warn':
-      policies = item.policyRuleStatus.filter((pr) => pr.canMakeWarnedDecision);
-      break;
-    case 'deny':
-      policies = item.policyRuleStatus.filter(
-        (pr) => pr.canMakeDeniedDecision && !pr.deniedDecisionDeniedReason?.trim(),
-      );
-  }
-
   policyDecisionDialog.value?.open({
     component,
-    policies,
+    policies: item.policyRuleStatus.filter(
+      (policyRule: PolicyRuleStatus) =>
+        policyRule.canMakeDeniedDecision && (type === 'deny' ? !policyRule.deniedDecisionDeniedReason?.trim() : true),
+    ),
     type,
   });
 };
@@ -611,45 +603,55 @@ onUnmounted(async () => {
           v-model:sort-by="sortBy"
           @click:row="(_: Event, dataItem: DataTableItem<TabelItem>) => showDetails(dataItem.item)">
           <template v-slot:[`header.type`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterTypes"
-              :column="column"
-              :label="t('TYPE')"
-              :allItems="allTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterTypes"
+                  :column="column"
+                  :label="t('TYPE')"
+                  :allItems="allTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.licenseEffective`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterLicenses"
-              :column="column"
-              :label="t('LICENSE')"
-              :allItems="allLicenses">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterLicenses"
+                  :column="column"
+                  :label="t('LICENSE')"
+                  :allItems="allLicenses">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
-            <HeaderSettings :column="column" :grid-name="tableName" />
-            <span class="mr-1 ml-6">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterPolicyTypes"
-              :column="column"
-              :label="t('POLICY_STATE')"
-              :allItems="allPolicyTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #settings>
+                <HeaderSettings :column="column" :grid-name="tableName" />
+              </template>
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterPolicyTypes"
+                  :column="column"
+                  :label="t('POLICY_STATE')"
+                  :allItems="allPolicyTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.worstFamily`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterFamily"
-              :column="column"
-              :label="t('LICENSE_FAMILY')"
-              :allItems="allFamilies">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterFamily"
+                  :column="column"
+                  :label="t('LICENSE_FAMILY')"
+                  :allItems="allFamilies">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`item.prStatus`]="{item}">
             <span v-if="item.unasserted">
@@ -695,10 +697,10 @@ onUnmounted(async () => {
               </v-icon>
               <Tooltip>
                 <span class="text-subtitle-1">{{
-                  item.licenseRuleApplied.previewMode
-                    ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
-                    : t('TT_LICENSE_RULE_APPLIED')
-                }}</span>
+                    item.licenseRuleApplied.previewMode
+                      ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
+                      : t('TT_LICENSE_RULE_APPLIED')
+                  }}</span>
                 <br />
                 <span class="d-text d-secondary-text">{{ t('TT_LICENSE_RULE_EXPRESSION') }}</span>
                 <br />
@@ -707,18 +709,18 @@ onUnmounted(async () => {
                   v-html="formatText(item.licenseRuleApplied.licenseExpression)"></span>
                 <br />
                 <span class="d-text d-secondary-text">{{
-                  t('TT_LICENSE_RULE_DECISION', {
-                    decision: item.licenseRuleApplied.licenseDecisionName,
-                    decisionId: item.licenseRuleApplied.licenseDecisionId,
-                  })
-                }}</span>
+                    t('TT_LICENSE_RULE_DECISION', {
+                      decision: item.licenseRuleApplied.licenseDecisionName,
+                      decisionId: item.licenseRuleApplied.licenseDecisionId,
+                    })
+                  }}</span>
                 <br />
                 <span class="d-text d-secondary-text">{{
-                  t('TT_LICENSE_RULE_BY_AT', {
-                    creator: item.licenseRuleApplied.creator,
-                    created: formatDateAndTime(item.licenseRuleApplied.created),
-                  })
-                }}</span>
+                    t('TT_LICENSE_RULE_BY_AT', {
+                      creator: item.licenseRuleApplied.creator,
+                      created: formatDateAndTime(item.licenseRuleApplied.created),
+                    })
+                  }}</span>
               </Tooltip>
             </span>
             <span

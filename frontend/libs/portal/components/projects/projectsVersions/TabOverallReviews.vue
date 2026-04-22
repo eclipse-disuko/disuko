@@ -39,7 +39,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('COL_STATUS'),
     align: 'center',
-    class: 'tableHeaderCell',
     value: 'state',
     sortable: true,
     sort: compareStatus,
@@ -48,14 +47,12 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('COL_SPDX_FILENAME'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'sbom',
     width: 250,
   },
   {
     title: t('COL_COMMENT'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'comment',
     width: 200,
     sortable: true,
@@ -63,7 +60,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('COL_CREATOR'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'creator',
     width: 200,
     sortable: true,
@@ -71,7 +67,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('COL_CREATED'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'created',
     width: 150,
     sortable: true,
