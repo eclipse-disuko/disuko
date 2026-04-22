@@ -2708,7 +2708,7 @@ func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExtern(w http.R
 // ProjectVersionReviewRemarksExternV2 godoc
 //
 //	@Summary	Get review remarks for version (also known as channel)
-//	@Id			getProjectVersionReviewRemarks
+//	@Id			getProjectVersionReviewRemarksV2
 //	@Produce	json
 //	@Param		uuid	path		string							true	"Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
 //	@Param		version	path		string							true	"Project Version Name (also known as Channel Name) e.g.: main"
