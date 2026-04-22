@@ -33,19 +33,22 @@ type PolicyRules struct {
 }
 
 type BucketDefinition struct {
-	DeniedClassifications  []string `json:"deniedClassifications"`
-	WarnedClassifications  []string `json:"warnedClassifications"`
-	AllowedClassifications []string `json:"allowedClassifications"`
+	DeniedClassifications  []string `json:"deniedClassifications" validate:"dive,gte=1,lte=80"`
+	WarnedClassifications  []string `json:"warnedClassifications" validate:"dive,gte=1,lte=80"`
+	AllowedClassifications []string `json:"allowedClassifications" validate:"dive,gte=1,lte=80"`
 }
 
 type CalculatedPolicyConfig struct {
-	BucketDefinition *BucketDefinition        `json:"bucketDefinition"`
-	LicenseScope     []CalculatedPolicyFilter `json:"licenseScope"`
+	BucketDefinition *BucketDefinition      `json:"bucketDefinition"`
+	LicenseScope     CalculatedPolicyScope `json:"licenseScope"`
 }
 
-type CalculatedPolicyFilter struct {
-	Name   string   `json:"name"`
-	Values []string `json:"values"`
+type CalculatedPolicyScope struct {
+	IsLicenseChart []bool            `json:"isLicenseChart" validate:"omitempty,unique"`
+	ApprovalState  []ApprovalStatus  `json:"approvalState" validate:"omitempty,unique,dive,lte=80"`
+	Family         []FamilyOfLicense `json:"family" validate:"omitempty,unique,dive,lte=80"`
+	LicenseType    []TypeOfLicenses  `json:"licenseType" validate:"omitempty,unique,dive,lte=50"`
+	Source         []Source          `json:"source" validate:"omitempty,unique,dive,lte=80"`
 }
 
 type PolicyResult int

@@ -7,9 +7,6 @@ package rest
 import (
 	"fmt"
 	"net/http"
-	"sort"
-	"strconv"
-	"strings"
 	"time"
 
 	changeloglist2 "github.com/eclipse-disuko/disuko/domain/changeloglist"
@@ -166,10 +163,8 @@ func (policyRulesHandler *PolicyRulesHandler) PolicyRulesUpdateOrCreateHandler(w
 	}
 	var ruleRequestDto license.PolicyRuleRequestDto
 	validation.DecodeAndValidate(r, &ruleRequestDto, false)
-
-	ruleRequestDto.CalculatedConfig = normalizeCalculatedPolicyConfig(ruleRequestDto.CalculatedConfig)
 	if ruleRequestDto.Calculated {
-		componentsAllow, componentsWarn, componentsDeny := policyRulesHandler.calculatePolicyRuleComponents(requestSession, ruleRequestDto)
+		componentsAllow, componentsWarn, componentsDeny := policyRulesHandler.PolicyRulesService.CalculatePolicyRuleComponents(requestSession, ruleRequestDto.CalculatedConfig)
 		ruleRequestDto.ComponentsAllow = componentsAllow
 		ruleRequestDto.ComponentsWarn = componentsWarn
 		ruleRequestDto.ComponentsDeny = componentsDeny
@@ -248,174 +243,6 @@ func (policyRulesHandler *PolicyRulesHandler) PolicyRulesUpdateOrCreateHandler(w
 	}
 
 	render.JSON(w, r, policyRuleEntity.ToDto())
-}
-
-func normalizeCalculatedPolicyConfig(cfg license.CalculatedPolicyConfig) license.CalculatedPolicyConfig {
-	if cfg.BucketDefinition == nil {
-		cfg.BucketDefinition = &license.BucketDefinition{}
-	}
-	cfg.BucketDefinition.DeniedClassifications = uniqueStrings(cfg.BucketDefinition.DeniedClassifications)
-	cfg.BucketDefinition.WarnedClassifications = uniqueStrings(cfg.BucketDefinition.WarnedClassifications)
-	cfg.BucketDefinition.AllowedClassifications = uniqueStrings(cfg.BucketDefinition.AllowedClassifications)
-	cfg.LicenseScope = normalizeCalculatedPolicyFilters(cfg.LicenseScope)
-	return cfg
-}
-
-func normalizeCalculatedPolicyFilters(filters []license.CalculatedPolicyFilter) []license.CalculatedPolicyFilter {
-	result := make([]license.CalculatedPolicyFilter, 0, len(filters))
-	for _, currentFilter := range filters {
-		if currentFilter.Name == "" {
-			continue
-		}
-		result = append(result, license.CalculatedPolicyFilter{
-			Name:   currentFilter.Name,
-			Values: uniqueStrings(currentFilter.Values),
-		})
-	}
-	return result
-}
-
-func uniqueStrings(values []string) []string {
-	result := make([]string, 0, len(values))
-	seen := make(map[string]bool)
-	for _, value := range values {
-		if value == "" {
-			continue
-		}
-		if seen[value] {
-			continue
-		}
-		seen[value] = true
-		result = append(result, value)
-	}
-	return result
-}
-
-func (policyRulesHandler *PolicyRulesHandler) calculatePolicyRuleComponents(requestSession *logy.RequestSession, ruleRequestDto license.PolicyRuleRequestDto) ([]string, []string, []string) {
-	allLicenses := policyRulesHandler.LicenseRepository.FindAll(requestSession, false)
-
-	if ruleRequestDto.CalculatedConfig.BucketDefinition == nil {
-		return []string{}, []string{}, []string{}
-	}
-
-	deniedClassifications := make(map[string]bool)
-	for _, key := range ruleRequestDto.CalculatedConfig.BucketDefinition.DeniedClassifications {
-		deniedClassifications[key] = true
-	}
-	warnedClassifications := make(map[string]bool)
-	for _, key := range ruleRequestDto.CalculatedConfig.BucketDefinition.WarnedClassifications {
-		warnedClassifications[key] = true
-	}
-	allowedClassifications := make(map[string]bool)
-	for _, key := range ruleRequestDto.CalculatedConfig.BucketDefinition.AllowedClassifications {
-		allowedClassifications[key] = true
-	}
-
-	allowMap := make(map[string]bool)
-	warnMap := make(map[string]bool)
-	denyMap := make(map[string]bool)
-
-	for _, currentLicense := range allLicenses {
-		if currentLicense == nil || currentLicense.LicenseId == "" {
-			continue
-		}
-		if !matchesCalculatedScopeFilters(currentLicense, ruleRequestDto.CalculatedConfig) {
-			continue
-		}
-
-		hasDenied := false
-		hasWarned := false
-		hasAllowed := false
-		for _, classificationKey := range currentLicense.Meta.ObligationsKeyList {
-			if deniedClassifications[classificationKey] {
-				hasDenied = true
-				break
-			}
-			if warnedClassifications[classificationKey] {
-				hasWarned = true
-			}
-			if allowedClassifications[classificationKey] {
-				hasAllowed = true
-			}
-		}
-
-		if hasDenied {
-			denyMap[currentLicense.LicenseId] = true
-			continue
-		}
-		if hasWarned {
-			warnMap[currentLicense.LicenseId] = true
-			continue
-		}
-		if hasAllowed {
-			allowMap[currentLicense.LicenseId] = true
-		}
-	}
-
-	componentsAllow := make([]string, 0, len(allowMap))
-	for licenseID := range allowMap {
-		if !warnMap[licenseID] && !denyMap[licenseID] {
-			componentsAllow = append(componentsAllow, licenseID)
-		}
-	}
-	componentsWarn := make([]string, 0, len(warnMap))
-	for licenseID := range warnMap {
-		if !denyMap[licenseID] {
-			componentsWarn = append(componentsWarn, licenseID)
-		}
-	}
-	componentsDeny := make([]string, 0, len(denyMap))
-	for licenseID := range denyMap {
-		componentsDeny = append(componentsDeny, licenseID)
-	}
-
-	sort.Strings(componentsAllow)
-	sort.Strings(componentsWarn)
-	sort.Strings(componentsDeny)
-
-	return componentsAllow, componentsWarn, componentsDeny
-}
-
-func matchesCalculatedScopeFilters(currentLicense *license.License, config license.CalculatedPolicyConfig) bool {
-	for _, includeFilter := range config.LicenseScope {
-		if len(includeFilter.Values) == 0 {
-			continue
-		}
-		if !matchesCalculatedScopeFilter(currentLicense, includeFilter) {
-			return false
-		}
-	}
-	return true
-}
-
-func matchesCalculatedScopeFilter(currentLicense *license.License, scopeFilter license.CalculatedPolicyFilter) bool {
-	actualValue := getCalculatedScopeFilterValue(currentLicense, scopeFilter.Name)
-	if actualValue == "" {
-		return false
-	}
-	for _, filterValue := range scopeFilter.Values {
-		if strings.EqualFold(actualValue, filterValue) {
-			return true
-		}
-	}
-	return false
-}
-
-func getCalculatedScopeFilterValue(currentLicense *license.License, filterName string) string {
-	switch filterName {
-	case "isLicenseChart":
-		return strconv.FormatBool(currentLicense.Meta.IsLicenseChart)
-	case "approvalState":
-		return currentLicense.Meta.ApprovalState.Value()
-	case "family":
-		return currentLicense.Meta.Family.Value()
-	case "licenseType":
-		return currentLicense.Meta.LicenseType.Value()
-	case "source":
-		return string(currentLicense.Source)
-	default:
-		return ""
-	}
 }
 
 func (policyRulesHandler *PolicyRulesHandler) removeUnknownLicenses(requestSession *logy.RequestSession, licenses []string, known map[string]bool) []string {
