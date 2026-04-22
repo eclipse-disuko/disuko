@@ -29,6 +29,7 @@ interface Props {
   isDeprecated: boolean;
   isUnmatched?: boolean;
   isRecommended: boolean;
+  isRecommendationPlaceholderShown: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -294,48 +295,52 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
       </span>
     </td>
     <td>
-      <span v-if="shouldShowLicenseRuleInfo()">
-        <v-icon size="small" :color="details?.LicenseRuleApplied?.previewMode ? 'grey' : ''">
-          {{ details?.LicenseRuleApplied?.previewMode ? 'mdi-progress-alert' : 'mdi-information-outline' }}
-        </v-icon>
-        <tooltip>
-          <span class="text-subtitle-1">{{
-            details?.LicenseRuleApplied?.previewMode
-              ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
-              : t('TT_LICENSE_RULE_APPLIED')
-          }}</span>
-          <br />
-          <span class="d-text d-secondary-text">{{ t('TT_LICENSE_RULE_EXPRESSION') }}</span>
-          <br />
-          <span
-            class="d-text d-secondary-text"
-            v-html="formatText(details?.LicenseRuleApplied?.licenseExpression || '')"></span>
-          <br />
-          <span class="d-text d-secondary-text">{{
-            t('TT_LICENSE_RULE_DECISION', {
-              decision: details?.LicenseRuleApplied?.licenseDecisionName || '',
-              decisionId: details?.LicenseRuleApplied?.licenseDecisionId || '',
-            })
-          }}</span>
-          <br />
-          <span class="d-text d-secondary-text">{{
-            t('TT_LICENSE_RULE_BY_AT', {
-              creator: details?.LicenseRuleApplied?.creator || '',
-              created: formatDateAndTime(details?.LicenseRuleApplied?.created || ''),
-            })
-          }}</span>
-        </tooltip>
-        &nbsp;
-      </span>
-      <v-chip v-if="isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
-        {{ t('RECOMMENDED') }}
-      </v-chip>
-      <DInternalLink
-        v-if="shouldShowInternalLink()"
-        :text="getInternalLinkText()"
-        :url="'/#/dashboard/licenses/' + getInternalLinkText()"
-        class="" />
-      <span v-else>{{ getLicenseDisplayText() }}</span>
+      <div class="align-center flex flex-row gap-2">
+        <span v-if="shouldShowLicenseRuleInfo()" class="align-center item-center flex">
+          <v-icon size="small" :color="details?.LicenseRuleApplied?.previewMode ? 'grey' : ''">
+            {{ details?.LicenseRuleApplied?.previewMode ? 'mdi-progress-alert' : 'mdi-information-outline' }}
+          </v-icon>
+          <tooltip>
+            <span class="text-subtitle-1">{{
+              details?.LicenseRuleApplied?.previewMode
+                ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
+                : t('TT_LICENSE_RULE_APPLIED')
+            }}</span>
+            <br />
+            <span class="d-text d-secondary-text">{{ t('TT_LICENSE_RULE_EXPRESSION') }}</span>
+            <br />
+            <span
+              class="d-text d-secondary-text"
+              v-html="formatText(details?.LicenseRuleApplied?.licenseExpression || '')"></span>
+            <br />
+            <span class="d-text d-secondary-text">{{
+              t('TT_LICENSE_RULE_DECISION', {
+                decision: details?.LicenseRuleApplied?.licenseDecisionName || '',
+                decisionId: details?.LicenseRuleApplied?.licenseDecisionId || '',
+              })
+            }}</span>
+            <br />
+            <span class="d-text d-secondary-text">{{
+              t('TT_LICENSE_RULE_BY_AT', {
+                creator: details?.LicenseRuleApplied?.creator || '',
+                created: formatDateAndTime(details?.LicenseRuleApplied?.created || ''),
+              })
+            }}</span>
+          </tooltip>
+          &nbsp;
+        </span>
+        <span v-if="!shouldShowLicenseRuleInfo() && isRecommendationPlaceholderShown" class="inline-block min-w-22">
+          <v-chip v-if="isRecommended" variant="outlined" label size="x-small" class="flex justify-center font-bold">
+            {{ t('RECOMMENDED') }}
+          </v-chip>
+        </span>
+        <DInternalLink
+          v-if="shouldShowInternalLink()"
+          :text="getInternalLinkText()"
+          :url="'/#/dashboard/licenses/' + getInternalLinkText()"
+          class="" />
+        <span v-else>{{ getLicenseDisplayText() }}</span>
+      </div>
     </td>
     <td>
       <a

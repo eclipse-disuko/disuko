@@ -503,13 +503,13 @@ defineExpose({
                 <template v-slot:default>
                   <thead>
                     <tr>
-                      <th class="text-center">
+                      <th class="w-24 text-center">
                         {{ t('COL_ACTIONS') }}
                       </th>
-                      <th>
+                      <th class="w-20">
                         {{ t('COL_STATUS') }}
                       </th>
-                      <th class="text-left">
+                      <th class="w-72 text-left">
                         {{ t('COL_LICENSE') }}
                       </th>
                       <th class="text-left">
@@ -562,6 +562,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -578,6 +579,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="true"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -595,6 +597,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="isRecommended(item)"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
