@@ -194,7 +194,7 @@ type RemarkDtoExternV2 struct {
 
 	Components []ComponentMetaDto `json:"components"`
 	Licenses   []LicenseMetaDto   `json:"licenses"`
-} //	@name	RemarkDtoV2
+} //	@name	RemarkDtoExternV2
 
 type RRCommentExternDTO struct {
 	Content string `json:"content" validate:"required,gte=3,lte=500" example:"Problem solved"`

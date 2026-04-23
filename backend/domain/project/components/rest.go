@@ -7,6 +7,7 @@ package components
 import (
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/domain/licenserules"
 	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
@@ -126,7 +127,7 @@ func (entity *ComponentResult) ToComponentInfoDto(
 	var licenseRecommended *string
 	var licenseRecommendedMsg *string
 	policyStatusDtos := ToPolicyStatusDto(entity.Status, isAllowDeniedPolicyDecision)
-	if deniedReason == "" && canChoose {
+	if !conf.IsProdEnv() && deniedReason == "" && canChoose {
 		licenseRecommended, licenseRecommendedMsg = recommendLicense(policyStatusDtos, licensesRepository, rs, cache)
 	}
 
