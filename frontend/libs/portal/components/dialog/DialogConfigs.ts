@@ -30,6 +30,7 @@ export interface DialogLicenseRuleConfig {
   component: ComponentInfoSlim;
   policyStatus?: PolicyRuleStatus[];
   licenseRecommended: string;
+  licenseRecommendedMsg: string;
 }
 
 export type DecisionType = 'warn' | 'deny';

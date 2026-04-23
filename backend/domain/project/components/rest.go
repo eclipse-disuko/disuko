@@ -66,7 +66,8 @@ type ComponentInfoDto struct {
 	PolicyDecisionsApplied     []*policydecisions.PolicyDecisionSlimDto `json:"policyDecisionsApplied"`
 	PolicyDecisionDeniedReason string                                   `json:"policyDecisionDeniedReason"`
 
-	LicenseRecommended *string `json:"licenseRecommended"`
+	LicenseRecommended    *string `json:"licenseRecommended"`
+	LicenseRecommendedMsg *string `json:"licenseRecommendedMsg"`
 }
 
 type ComponentInfoSlimDto struct {
@@ -123,9 +124,10 @@ func (entity *ComponentResult) ToComponentInfoDto(
 	}
 
 	var licenseRecommended *string
+	var licenseRecommendedMsg *string
 	policyStatusDtos := ToPolicyStatusDto(entity.Status, isAllowDeniedPolicyDecision)
 	if deniedReason == "" && canChoose {
-		licenseRecommended = recommendLicense(policyStatusDtos, licensesRepository, rs, cache)
+		licenseRecommended, licenseRecommendedMsg = recommendLicense(policyStatusDtos, licensesRepository, rs, cache)
 	}
 
 	return &ComponentInfoDto{
@@ -156,6 +158,7 @@ func (entity *ComponentResult) ToComponentInfoDto(
 		PolicyDecisionsApplied:     policydecisions.ToSlimDtos(entity.Component.PolicyDecisionsApplied),
 		PolicyDecisionDeniedReason: policyDecisionDeniedReason,
 		LicenseRecommended:         licenseRecommended,
+		LicenseRecommendedMsg:      licenseRecommendedMsg,
 	}
 }
 
@@ -169,13 +172,14 @@ func recommendLicense(
 	licensesRepository licRepo.ILicensesRepository,
 	rs *logy.RequestSession,
 	cache *recommendationCache,
-) *string {
+) (*string, *string) {
 	if len(policyStatusDtos) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	var allows []*PolicyRuleStatusDto
 	var warns []*PolicyRuleStatusDto
+	var denies []*PolicyRuleStatusDto
 
 	for _, ps := range policyStatusDtos {
 		if ps == nil {
@@ -187,24 +191,31 @@ func recommendLicense(
 			allows = append(allows, ps)
 		case license.WARN:
 			warns = append(warns, ps)
+		case license.DENY:
+			denies = append(denies, ps)
 		}
 	}
 
 	if len(allows) == 1 {
-		return &allows[0].LicenseMatched
+		return &allows[0].LicenseMatched, new(message.LicenseRecommendedMsg)
 	}
 	if len(allows) > 1 {
 		return recommendByClassificationWeight(allows, licensesRepository, rs, cache)
 	}
 
 	if len(warns) == 1 {
-		return &warns[0].LicenseMatched
+		return &warns[0].LicenseMatched, new(message.LicenseRecommendedMsg)
 	}
 	if len(warns) > 1 {
 		return recommendByClassificationWeight(warns, licensesRepository, rs, cache)
 	}
 
-	return nil
+	if len(denies) > 0 {
+		return nil, new(message.DeniedLicensesMsg)
+
+	}
+
+	return nil, nil
 }
 
 func recommendByClassificationWeight(
@@ -212,15 +223,22 @@ func recommendByClassificationWeight(
 	licensesRepository licRepo.ILicensesRepository,
 	rs *logy.RequestSession,
 	cache *recommendationCache,
-) *string {
+) (*string, *string) {
 	if licensesRepository == nil || rs == nil || cache == nil {
-		return nil
+		return nil, nil
 	}
 
 	licensesWeightMap := calculateLicenseWeights(policyStatusDtos, licensesRepository, rs, cache)
 	applyLicenseWeights(policyStatusDtos, licensesWeightMap)
 
-	return findRecommendedLicense(licensesWeightMap)
+	recommendedLicense := findRecommendedLicense(licensesWeightMap)
+	if recommendedLicense != nil {
+		return recommendedLicense, new(message.LicenseRecommendedMsg)
+	}
+	if len(licensesWeightMap) > 0 {
+		return nil, new(message.EqualWeightLicensesMsg)
+	}
+	return nil, nil
 }
 
 func findRecommendedLicense(licensesWeightMap map[string]float64) *string {

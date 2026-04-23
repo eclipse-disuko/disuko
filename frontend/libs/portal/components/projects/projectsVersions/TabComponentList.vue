@@ -254,6 +254,7 @@ const showDetails = async (item: TabelItem) => {
     newComponentDetailsDlg.value?.open(
       response.data,
       item.licenseRecommended,
+      item.licenseRecommendedMsg,
       item.policyRuleStatus,
       item.unmatchedLicenses,
       item.policyDecisionsApplied,
@@ -276,6 +277,7 @@ const openLicenseRuleDialog = (item: TabelItem) => {
     component: component,
     policyStatus: item.policyRuleStatus,
     licenseRecommended: item.licenseRecommended,
+    licenseRecommendedMsg: item.licenseRecommendedMsg,
   });
 };
 

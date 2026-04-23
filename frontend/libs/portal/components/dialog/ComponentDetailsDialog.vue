@@ -107,6 +107,7 @@ const viewRemarkDialog = ref();
 const reviewRemarks = ref<ReviewRemark[]>([]);
 const loadingRemarks = ref(false);
 const licenseRecommended = ref('');
+const licenseRecommendedMsg = ref('');
 
 const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
 
@@ -126,6 +127,7 @@ const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUu
 const open = async (
   data: ComponentDetails,
   licenseRecommendedValue: string,
+  licenseRecommendedMsgValue: string,
   policyStatus?: PolicyRuleStatus[],
   unmatched?: UnmatchedLicense[],
   policyDecisionsApplied?: PolicyDecisionSlim[],
@@ -159,6 +161,7 @@ const open = async (
     details.value.PolicyDecisionDeniedReason = policyDecisionDeniedReason;
   }
   licenseRecommended.value = licenseRecommendedValue;
+  licenseRecommendedMsg.value = licenseRecommendedMsgValue;
 
   project.value = projectData;
   projectVersionId.value = versionKey;
@@ -272,6 +275,7 @@ const openLicenseRuleDialog = (licenseId: string) => {
     component,
     policyStatus: details.value.PolicyStatus,
     licenseRecommended: licenseRecommended.value,
+    licenseRecommendedMsg: licenseRecommendedMsg.value,
   });
 };
 
