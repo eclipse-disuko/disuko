@@ -2569,47 +2569,6 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 	render.JSON(w, r, newResult)
 }
 
-func (p *ProjectHandler) ProjectGetAllSbomlists(w http.ResponseWriter, r *http.Request) {
-	currentProject, requestSession := p.retrieveProject2(r, true)
-
-	_, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
-	if !rights.AllowProjectVersion.Read {
-		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ViewSbom))
-	}
-
-	type VersionSboms struct {
-		VersionKey      string
-		VersionName     string
-		VersionUpdated  time.Time
-		SpdxFileHistory []*project.SpdxFileBase
-	}
-	res := []*VersionSboms{}
-	for versionKey, version := range currentProject.Versions {
-		if version.Deleted {
-			continue
-		}
-		vs := VersionSboms{
-			VersionKey:     versionKey,
-			VersionName:    version.Name,
-			VersionUpdated: version.Updated,
-		}
-		sbomList := p.SbomListRepository.FindByKey(requestSession, versionKey, false)
-		if sbomList == nil {
-			continue
-		}
-		sort.Slice(sbomList.SpdxFileHistory, func(i, j int) bool {
-			return (*sbomList.SpdxFileHistory[i].Uploaded).After(*sbomList.SpdxFileHistory[j].Uploaded)
-		})
-		vs.SpdxFileHistory = sbomList.SpdxFileHistory
-		res = append(res, &vs)
-	}
-	sort.Slice(res, func(i, j int) bool {
-		return res[i].VersionUpdated.After(res[j].VersionUpdated)
-	})
-
-	render.JSON(w, r, res)
-}
-
 func policyListToDto(rules []*license2.PolicyRules) []license2.PolicyRuleDto {
 	res := make([]license2.PolicyRuleDto, 0)
 	for _, rule := range rules {

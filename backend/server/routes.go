@@ -48,7 +48,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 				r.Get("/recent", s.handlers.project.ProjectRecentHandler)
 				r.Get("/{uuid}/checklists", s.handlers.project.ProjectFindApplicableChecklists)
 				r.Get("/{uuid}/possibleChildren", s.handlers.project.ProjectGetPossibleChildrenHandler)
-				r.Get("/{uuid}/allSbomLists", s.handlers.project.ProjectGetAllSbomlists)
 				r.Get("/{uuid}/allSBOM", s.handlers.project.ProjectGetAllSbom)
 				r.Put("/{uuid}", s.handlers.project.ProjectUpdateHandler)
 				r.Put("/{uuid}/deprecate", s.handlers.project.ProjectDeprecateHandler)
@@ -183,7 +182,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 								r.Put("/{remarkId}/status", s.handlers.project.SetReviewRemarkStatus)
 							})
 						})
-						r.Get("/sbomhistory", s.handlers.project.ProjectVersionSPDXHistory) // test missing
 						r.Route("/spdx", func(r chi.Router) {
 							r.Post("/", s.handlers.spdx.SPDXUploadFileHandler)
 							r.Route("/{spdxFileKey}", func(r chi.Router) {

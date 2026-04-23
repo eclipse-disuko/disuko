@@ -1458,66 +1458,6 @@ func (projectHandler *ProjectHandler) createQualityLicenseRemarks(requestSession
 	return result
 }
 
-func (p *ProjectHandler) ProjectVersionSPDXHistory(w http.ResponseWriter, r *http.Request) {
-	currentProject, version, requestSession := p.retrieveProjectAndVersion2(r)
-
-	_, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
-	if !rights.AllowProjectVersion.Read {
-		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ViewSbom))
-	}
-
-	sbomList := p.SbomListRepository.FindByKey(requestSession, version.Key, false)
-	if sbomList == nil {
-		render.JSON(w, r, []interface{}{})
-		return
-	}
-	spdxFileHistory := sbomList.SpdxFileHistory
-
-	sort.Slice(spdxFileHistory, func(i, j int) bool {
-		return spdxFileHistory[i].Uploaded.UTC().After(spdxFileHistory[j].Uploaded.UTC())
-	})
-	count := len(spdxFileHistory)
-	if count > 0 {
-		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-		if err == nil && limit > 0 {
-			if limit > count {
-				limit = count
-			}
-			spdxFileHistory = spdxFileHistory[:limit]
-		}
-
-		approvableIncluded := false
-		unusedSpdxCount := 0
-		for i, spdxFile := range spdxFileHistory {
-			if limit > 0 && len(currentProject.ApprovableSPDX.SpdxKey) > 0 && spdxFile.Key == currentProject.ApprovableSPDX.SpdxKey {
-				approvableIncluded = true
-			}
-
-			if sbomlockRetained.IsSpdxToRetain(spdxFile, version) {
-				spdxFileHistory[i].IsToRetain = true
-			}
-			if !IsSpdxInUse(spdxFile, currentProject, version) {
-				if unusedSpdxCount < 5 {
-					unusedSpdxCount++
-				} else {
-					spdxFileHistory[i].IsToDelete = true
-				}
-			} else {
-				spdxFileHistory[i].IsInUse = true
-			}
-		}
-		if !approvableIncluded && limit > 0 && len(currentProject.ApprovableSPDX.SpdxKey) > 0 {
-			for _, spdxFile := range sbomList.SpdxFileHistory {
-				if spdxFile.Key == currentProject.ApprovableSPDX.SpdxKey {
-					spdxFileHistory = append(spdxFileHistory, spdxFile)
-				}
-			}
-		}
-	}
-
-	render.JSON(w, r, spdxFileHistory)
-}
-
 func ValidateIDOrLatest(escaped string) string {
 	sbomUuid, err := url.QueryUnescape(escaped)
 	exception.HandleErrorClientMessage(err, message.GetI18N(message.ParamSbomUuidEmpty))
