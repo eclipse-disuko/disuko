@@ -244,19 +244,24 @@ onMounted(async () => {
           item-value="_key"
           @click:row="(_: Event, dataItem: DataTableItem<TaskDto>) => showTaskApprovalDialog(dataItem.item)">
           <template v-slot:[`header.actions`]="{column}">
-            <HeaderSettings :column="column" :grid-name="tableName" />
-            <span class="ml-6">{{ column.title }}</span>
+            <GridFilterHeader :column="column">
+              <template #settings>
+                <HeaderSettings :column="column" :grid-name="tableName" />
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.status`]="{column, toggleSort, getSortIcon}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterStatus"
-              :column="column"
-              :label="t('STATUS')"
-              :allItems="possibleStatus"
-              :initialSelected="initialSelectedStatus">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterStatus"
+                  :column="column"
+                  :label="t('STATUS')"
+                  :allItems="possibleStatus"
+                  :initialSelected="initialSelectedStatus">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />
@@ -275,7 +280,7 @@ onMounted(async () => {
           </template>
           <template v-slot:[`item.creatorDepartment`]="{item}">
             <span v-if="item.creatorDepartmentDescription && item.creatorDepartment"
-              >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
+            >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
             >
             <span v-else>-</span>
           </template>

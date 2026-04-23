@@ -2,232 +2,8 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <div class="h-[calc(100%-56px)]">
-    <Stack direction="row" class="pb-1">
-      <DCActionButton
-        :text="t('BTN_DOWNLOAD')"
-        large
-        icon="mdi-download"
-        :hint="t('TT_download_scan_remarks')"
-        @click="downloadScanRemarksCsv"
-        class="pr-4" />
-      <v-spacer></v-spacer>
-      <DSearchField v-model="search" />
-    </Stack>
-    <v-data-table
-      :items="filteredList"
-      density="compact"
-      class="striped-table my-0 h-full py-0"
-      fixed-header
-      :headers="headers"
-      item-key="_key"
-      :custom-key-sort="customKeySort"
-      :sort-by.sync="sortBy"
-      :loading="!dataAreLoaded"
-      @click:row="showDetails"
-      :search="search"
-      :custom-filter="customFilterTable"
-      :items-per-page="100"
-      :footer-props="{
-        'items-per-page-options': [10, 50, 100, 500],
-      }">
-      <template v-slot:header.status="{column, getSortIcon, toggleSort}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterStatus"
-                :items="possibleStatuses"
-                class="pa-2 mx-2 pb-4"
-                :label="t('Lbl_filter_status')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                menu
-                transition="scale-transition"
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <template v-slot:title>
-                      <v-icon class="mr-1" :color="getIconColorScanRemarkLevel(item.value)" small>mdi-circle</v-icon>
-                      <span class="pFilterEntry">{{ item.value }}</span>
-                    </template>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <v-icon class="mr-1" :color="getIconColorScanRemarkLevel(item.value)" small>mdi-circle</v-icon>
-                    <span class="pStatusFilter">{{ item.value }}</span>
-                  </div>
-                  <span v-if="index === 1" class="additionalFilter">
-                    +{{ selectedFilterStatus.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
-      </template>
-      <template v-slot:header.remarkKey="{column, getSortIcon, toggleSort}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu2">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterQualityRemark.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu2 = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterQualityRemark"
-                :items="possibleRemarks"
-                class="pa-2 mx-2 pb-4"
-                :label="t('LABEL_FILTER_QUALITY_REMARK')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                menu
-                transition="scale-transition"
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="px-2 py-0">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <template v-slot:title>
-                      <span class="pFilterEntry">{{ t(item.value) }}</span>
-                    </template>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <span class="pFilterEntry">{{ t(item.value) }}</span>
-                  </div>
-                  <span v-if="index === 1" class="pAdditionalFilter">
-                    +{{ selectedFilterQualityRemark.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
-      </template>
-      <template v-slot:header.type="{column, getSortIcon, toggleSort}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu3">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterTypes.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu3 = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterTypes"
-                :items="possibleTypes"
-                class="pa-2 mx-2 pb-4"
-                :label="t('Lbl_filter_on_type')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                menu
-                transition="scale-transition"
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="px-2 py-0">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <template v-slot:title>
-                      <span class="pFilterEntry">{{ t(item.value) }}</span>
-                    </template>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <span class="pFilterEntry">{{ t(item.value) }}</span>
-                  </div>
-                  <span v-if="index === 1" class="pAdditionalFilter">
-                    +{{ selectedFilterTypes.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
-      </template>
-
-      <template v-slot:item.status="{item}">
-        <div>
-          <v-icon :color="getIconColorScanRemarkLevel(item.status)" x-small>mdi-circle</v-icon>
-        </div>
-      </template>
-      <template v-slot:item.remarkKey="{item}">
-        {{ t('' + item.remarkKey) }}
-      </template>
-      <template v-slot:item.descriptionKey="{item}">
-        <span>
-          {{ getStrWithMaxLength(120, t(item.descriptionKey)) }}
-          <Tooltip>
-            {{ t(item.descriptionKey) }}
-          </Tooltip>
-        </span>
-      </template>
-      <template v-slot:item.Actions="{item}">
-        <DCopyClipboardButton
-          tableButton="true"
-          :hint="t('TT_COPY_SCAN_REMARKS')"
-          :content="getRemarkTextForClipboard(item)" />
-      </template>
-    </v-data-table>
-
-    <ComponentDetailsDialog ref="newComponentDetailsDlg" />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import ComponentDetailsDialog from '@disclosure-portal/components/dialog/ComponentDetailsDialog.vue';
-import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
 import {ScanRemark, ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
@@ -241,7 +17,7 @@ import {
 } from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
-import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -252,20 +28,73 @@ const sbomStore = useSbomStore();
 const {t} = useI18n();
 
 const search = ref('');
+const sortBy = ref<SortItem[]>([{key: 'status', order: 'desc'}]);
+const dataAreLoaded = ref(false);
+const selectedFilterStatus = ref<ScanRemarkLevel[]>([]);
+const selectedFilterQualityRemark = ref<string[]>([]);
+const selectedFilterTypes = ref<string[]>([]);
+const tableItems = ref<ScanRemark[]>([]);
+const route = useRoute();
+const newComponentDetailsDlg = ref<InstanceType<typeof ComponentDetailsDialog> | null>(null);
+
+const possibleTypes = computed((): DataTableHeaderFilterItems[] => {
+  if (!tableItems.value) {
+    return [];
+  }
+
+  const uniqueTypes = [...new Set(tableItems.value.map(({type}) => type))];
+
+  return uniqueTypes.map((types: string) => ({
+    value: types,
+  }));
+});
+
+const possibleRemarks = computed((): DataTableHeaderFilterItems[] => {
+  if (!tableItems.value) {
+    return [];
+  }
+
+  const uniqueRemarkKeys = [...new Set(tableItems.value.map(({remarkKey}) => remarkKey))];
+
+  return uniqueRemarkKeys.map(
+    (remarkKey: string) =>
+      ({
+        value: remarkKey,
+        text: t(remarkKey),
+      }) as DataTableHeaderFilterItems,
+  );
+});
+
+const possibleStatuses = computed((): DataTableHeaderFilterItems[] => {
+  if (!tableItems.value) {
+    return [];
+  }
+
+  const uniqueStatuses = [...new Set(tableItems.value.map(({status}) => status))];
+
+  return uniqueStatuses.map(
+    (status: string) =>
+      ({
+        value: status,
+        text: t('SCAN_REMARK_STATUS_' + status),
+        icon: 'mdi-circle',
+        iconColor: getIconColorScanRemarkLevel(status as ScanRemarkLevel),
+      }) as DataTableHeaderFilterItems,
+  );
+});
+
 const headers: DataTableHeader[] = [
   {
     title: t('COL_ACTIONS'),
     sortable: false,
     align: 'center',
     width: 60,
-    class: 'tableHeaderCell',
     value: 'Actions',
   },
   {
     title: t('COL_LEVEL'),
     width: 100,
     align: 'center',
-    class: 'tableHeaderCell',
     key: 'status',
     sortable: true,
   },
@@ -273,7 +102,6 @@ const headers: DataTableHeader[] = [
     title: t('COL_QUALITY_REMARK'),
     width: 210,
     align: 'start',
-    class: 'tableHeaderCell',
     key: 'remarkKey',
     sortable: true,
   },
@@ -281,7 +109,6 @@ const headers: DataTableHeader[] = [
     title: t('COL_COMPONENT_NAME'),
     width: 240,
     align: 'start',
-    class: 'tableHeaderCell',
     key: 'name',
     sortable: true,
   },
@@ -289,14 +116,12 @@ const headers: DataTableHeader[] = [
     title: t('COL_COMPONENT_VERSION'),
     width: 80,
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'version',
     sortable: true,
   },
   {
     title: t('COL_COMPONENT_TYPE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'type',
     width: 100,
     sortable: true,
@@ -304,60 +129,11 @@ const headers: DataTableHeader[] = [
   {
     title: t('COL_DESCRIPTION'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'descriptionKey',
     width: 320,
     sortable: true,
   },
 ];
-const sortBy = ref<SortItem[]>([{key: 'status', order: 'desc'}]);
-const dataAreLoaded = ref(false);
-const selectedFilterStatus = ref<ScanRemarkLevel[]>([]);
-const selectedFilterQualityRemark = ref<string[]>([]);
-const selectedFilterTypes = ref<string[]>([]);
-const menu = ref(false);
-const menu2 = ref(false);
-const menu3 = ref(false);
-const tableItems = ref<ScanRemark[]>([]);
-const route = useRoute();
-const newComponentDetailsDlg = ref<InstanceType<typeof ComponentDetailsDialog> | null>(null);
-const possibleTypes = computed(() => {
-  const types = tableItems.value
-    .map((remark: ScanRemark) => {
-      return remark.type;
-    })
-    .sort();
-  const distinctTypes = [...new Set(types)];
-  return distinctTypes;
-});
-const possibleRemarks = computed(() => {
-  if (!tableItems.value) {
-    return [];
-  }
-  return _.chain(tableItems.value)
-    .uniqBy('remarkKey')
-    .map((remark: ScanRemark) => {
-      return {
-        value: remark.remarkKey,
-        text: t(remark.remarkKey),
-      } as IDefaultSelectItem;
-    })
-    .value();
-});
-const possibleStatuses = computed(() => {
-  if (!tableItems.value) {
-    return [];
-  }
-  return _.chain(tableItems.value)
-    .uniqBy('status')
-    .map((remark: ScanRemark) => {
-      return {
-        value: remark.status,
-        text: t('SCAN_REMARK_STATUS_' + remark.status),
-      } as IDefaultSelectItem;
-    })
-    .value();
-});
 
 const handleFilterQuery = () => {
   const filter = route.query.scanRemarkLevel as string;
@@ -365,12 +141,6 @@ const handleFilterQuery = () => {
     selectedFilterStatus.value = [filter as ScanRemarkLevel];
   }
 };
-
-onMounted(async () => {
-  handleFilterQuery();
-
-  await reload();
-});
 
 const projectModel = computed(() => projectStore.currentProject!);
 const version = computed(() => sbomStore.getCurrentVersion);
@@ -382,13 +152,6 @@ const filteredList = computed(() => {
   });
 });
 
-watch(
-  () => spdx.value,
-  async () => {
-    dataAreLoaded.value = false;
-    await reload();
-  },
-);
 const reload = async () => {
   if (!spdx.value) {
     dataAreLoaded.value = true;
@@ -401,28 +164,27 @@ const reload = async () => {
   );
   dataAreLoaded.value = true;
 };
-onMounted(reload);
 
-const customFilterTable = (value: string, search: string) => {
+const customFilterTable = (value: string, searchTerm: string) => {
   if (value != null && value) {
     const valueTranslated = t(value);
-    return ('' + valueTranslated).toLowerCase().indexOf(search.toLowerCase()) > -1;
+    return ('' + valueTranslated).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
   return false;
 };
 
-const showDetails = async (event: Event, row: DataTableItem<ScanRemark>) => {
+const showDetails = async (_: Event, row: DataTableItem<ScanRemark>) => {
   if (!row.item.spdxId) {
     return;
   }
   await ProjectService.getComponentDetailsForSbom(
     projectModel.value._key,
     version.value._key,
-    spdx.value._key,
+    spdx.value!._key,
     row.item.spdxId,
   ).then((response) => {
     if (newComponentDetailsDlg.value) {
-      newComponentDetailsDlg.value?.open(response.data, row.item.policyRuleStatus, row.item.unmatchedLicenses);
+      newComponentDetailsDlg.value?.open(response.data, '', row.item.policyRuleStatus, row.item.unmatchedLicenses);
     }
   });
 };
@@ -433,7 +195,7 @@ const downloadScanRemarksCsv = async () => {
       projectModel.value._key,
       version.value._key,
       RemarkTypes.scan,
-      spdx.value._key,
+      spdx.value!._key,
     ),
     true,
   );
@@ -499,9 +261,118 @@ ${t(item.descriptionKey)}
 };
 
 watch(
+  () => spdx.value,
+  async () => {
+    dataAreLoaded.value = false;
+    await reload();
+  },
+);
+
+watch(
   () => route.path,
   async (_newPath, _oldPath) => {
     handleFilterQuery();
   },
 );
+
+onMounted(async () => {
+  handleFilterQuery();
+
+  await reload();
+});
 </script>
+
+<template>
+  <div class="h-[calc(100%-56px)]">
+    <Stack direction="row" class="pb-1">
+      <DCActionButton
+        :text="t('BTN_DOWNLOAD')"
+        large
+        icon="mdi-download"
+        :hint="t('TT_download_scan_remarks')"
+        @click="downloadScanRemarksCsv"
+        class="pr-4" />
+      <v-spacer></v-spacer>
+      <DSearchField v-model="search" />
+    </Stack>
+    <v-data-table
+      :items="filteredList"
+      density="compact"
+      class="striped-table my-0 h-full py-0"
+      fixed-header
+      :headers="headers"
+      item-key="_key"
+      :custom-key-sort="customKeySort"
+      :sort-by.sync="sortBy"
+      :loading="!dataAreLoaded"
+      @click:row="showDetails"
+      :search="search"
+      :custom-filter="customFilterTable"
+      :items-per-page="100"
+      :footer-props="{
+        'items-per-page-options': [10, 50, 100, 500],
+      }">
+      <template #[`header.status`]="{column, getSortIcon, toggleSort}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterStatus"
+              :column="column"
+              :label="t('COL_LEVEL')"
+              :allItems="possibleStatuses">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
+      </template>
+      <template #[`header.remarkKey`]="{column, getSortIcon, toggleSort}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterQualityRemark"
+              :column="column"
+              :label="t('COL_QUALITY_REMARK')"
+              :allItems="possibleRemarks">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
+      </template>
+      <template #[`header.type`]="{column, getSortIcon, toggleSort}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterTypes"
+              :column="column"
+              :label="t('COL_COMPONENT_TYPE')"
+              :allItems="possibleTypes">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
+      </template>
+
+      <template #[`item.status`]="{item}">
+        <div>
+          <v-icon :color="getIconColorScanRemarkLevel(item.status)" x-small>mdi-circle</v-icon>
+        </div>
+      </template>
+      <template #[`item.remarkKey`]="{item}">
+        {{ t('' + item.remarkKey) }}
+      </template>
+      <template #[`item.descriptionKey`]="{item}">
+        <span>
+          {{ getStrWithMaxLength(120, t(item.descriptionKey)) }}
+          <Tooltip>
+            {{ t(item.descriptionKey) }}
+          </Tooltip>
+        </span>
+      </template>
+      <template #[`item.Actions`]="{item}">
+        <DCopyClipboardButton
+          tableButton="true"
+          :hint="t('TT_COPY_SCAN_REMARKS')"
+          :content="getRemarkTextForClipboard(item)" />
+      </template>
+    </v-data-table>
+
+    <ComponentDetailsDialog ref="newComponentDetailsDlg" />
+  </div>
+</template>

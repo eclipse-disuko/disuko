@@ -105,7 +105,7 @@ const reload = async (forceReload = false) => {
   }, 600);
 
   sbomStats.value = (
-    await VersionService.getSBOMStats(currentProjectId.value, currentVersionId.value, spdx.value._key, true)
+    await VersionService.getSBOMStats(currentProjectId.value, currentVersionId.value, spdx.value!._key, true)
   ).data;
 
   clearTimeout(delayTimeout);

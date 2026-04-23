@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <script setup lang="ts">
 import {useView} from '@disclosure-portal/composables/useView';
-import {IDefaultSelectItem, IObligation, ObligationDTO} from '@disclosure-portal/model/IObligation';
+import {IObligation, ObligationDTO} from '@disclosure-portal/model/IObligation';
 import {compareLevel, LicenseRemarks} from '@disclosure-portal/model/Quality';
 import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
@@ -13,7 +13,7 @@ import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, getStrWithMaxLength} from '@disclosure-portal/utils/View';
-import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
@@ -25,28 +25,6 @@ const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const viewTools = useViewTools();
 const {getTextOfLevel, getTextOfType} = useView();
-
-const classificationsCustomFilterTable = (value: string, search: string, item: IObligation) => {
-  if (value != null && value) {
-    const dateTime = formatDateAndTime(value);
-    if (dateTime && dateTime !== 'Invalid date') {
-      return dateTime.indexOf(search) > -1;
-    }
-
-    let found = ('' + value).toLowerCase().indexOf(search.toLowerCase()) > -1;
-    if (!found && value === item.type) {
-      found = ('' + getTextOfType(value)).toLowerCase().indexOf(search.toLowerCase()) > -1;
-    }
-    if (!found && value === item.name && appStore.getAppLanguage === 'de') {
-      found = ('' + item.nameDe).toLowerCase().indexOf(search.toLowerCase()) > -1;
-    }
-    if (!found && value === item.description && appStore.getAppLanguage === 'de') {
-      found = ('' + item.descriptionDe).toLowerCase().indexOf(search.toLowerCase()) > -1;
-    }
-    return found;
-  }
-  return false;
-};
 
 const selectedLicenseRemarks = ref<LicenseRemarks>({
   license: '',
@@ -62,48 +40,42 @@ const filteredRemarks = ref<LicenseRemarks[]>([]);
 const search = ref('');
 const sortBy = ref<SortItem[]>([{key: 'warnLevel', order: 'desc'}]);
 const headers = ref<DataTableHeader[]>([
-  {title: '', class: 'tableHeaderCell', value: 'data-table-expand', width: '53'},
+  {title: '', value: 'data-table-expand', width: 53},
   {
-    title: '' + t('COL_LEVEL'),
+    title: t('COL_LEVEL'),
     align: 'center',
-    class: 'tableHeaderCell',
     width: 130,
     key: 'warnLevel',
     sort: compareLevel,
   },
   {
-    title: '' + t('COL_TYPE'),
+    title: t('COL_TYPE'),
     align: 'start',
-    class: 'tableHeaderCell',
     width: 130,
     key: 'type',
   },
   {
-    title: '' + t('COL_QUALITY_REMARK'),
+    title: t('COL_QUALITY_REMARK'),
     width: 210,
     align: 'start',
-    class: 'tableHeaderCell',
     key: 'name',
   },
   {
-    title: '' + t('COL_DESCRIPTION'),
+    title: t('COL_DESCRIPTION'),
     align: 'start',
-    class: 'tableHeaderCell',
     key: 'description',
   },
 ]);
 
 const innerHeaders = ref<DataTableHeader[]>([
   {
-    title: '' + t('COL_NAME'),
+    title: t('COL_NAME'),
     align: 'start',
-    class: 'tableHeaderCell',
     key: 'name',
   },
   {
-    title: '' + t('COL_VERSION'),
+    title: t('COL_VERSION'),
     align: 'start',
-    class: 'tableHeaderCell',
     width: 150,
     key: 'version',
   },
@@ -113,56 +85,87 @@ const dataAreLoaded = ref(false);
 const selectedFilterStatus = ref<string[]>([]);
 const selectedFilterQualityRemark = ref<string[]>([]);
 const selectedFilterTypes = ref<string[]>([]);
-const allRemarks = ref<IDefaultSelectItem[]>([]);
-const menu = ref(false);
-const menu2 = ref(false);
-const menu3 = ref(false);
 const tableHeight = ref(0);
-
-// Menu states
-watch(menu, () => (menu2.value = menu3.value = false));
-watch(menu2, () => (menu.value = menu3.value = false));
-watch(menu3, () => (menu.value = menu2.value = false));
-
 const searchFieldInput = ref<string>('');
 
 const projectModel = computed(() => projectStore.currentProject!);
 const version = computed(() => sbomStore.getCurrentVersion);
 const spdx = computed(() => sbomStore.getSelectedSBOM);
 
-const possibleTypes = computed(() => {
-  if (!selectedLicenseRemarks.value.obligations) {
-    return [];
-  }
-  return _.chain(selectedLicenseRemarks.value.obligations)
-    .uniqBy((item: ObligationDTO) => {
-      return item.type;
-    })
-    .map((item: ObligationDTO) => {
-      return {
-        text: getTextOfType(item.type),
-        value: item.type,
-      } as IDefaultSelectItem;
-    })
-    .value();
+const possibleRemarks = computed((): DataTableHeaderFilterItems[] => {
+  const remarkSet = new Set();
+
+  selectedLicenseRemarks.value.obligations.forEach((item: ObligationDTO) => {
+    remarkSet.add(item.name);
+  });
+
+  return [...remarkSet].map((value) => ({value: value as string}));
 });
 
-const possibleStatuses = computed(() => {
+const possibleTypes = computed((): DataTableHeaderFilterItems[] => {
   if (!selectedLicenseRemarks.value.obligations) {
     return [];
   }
-  return _.chain(selectedLicenseRemarks.value.obligations)
-    .uniqBy((item: ObligationDTO) => {
-      return item.warnLevel;
-    })
-    .map((item: ObligationDTO) => {
-      return {
-        text: item.warnLevel,
-        value: item.warnLevel,
-      } as IDefaultSelectItem;
-    })
-    .value();
+
+  const uniqueTypes = [...new Set(selectedLicenseRemarks.value.obligations.map(({type}) => type))];
+
+  return uniqueTypes.map(
+    (type: string) =>
+      ({
+        text: getTextOfType(type),
+        value: type,
+      }) as DataTableHeaderFilterItems,
+  );
 });
+
+const possibleStatuses = computed((): DataTableHeaderFilterItems[] => {
+  if (!selectedLicenseRemarks.value.obligations) {
+    return [];
+  }
+
+  const uniqueLicenseRemarks = [...new Set(selectedLicenseRemarks.value.obligations.map(({warnLevel}) => warnLevel))];
+
+  return uniqueLicenseRemarks.map(
+    (warnLevel: string) =>
+      ({
+        text: getTextOfLevel(warnLevel),
+        value: warnLevel,
+        iconColor: getIconColorOfLevel(warnLevel),
+        icon: getIconOfLevel(warnLevel),
+      }) as DataTableHeaderFilterItems,
+  );
+});
+
+const filteredList = computed(() => {
+  if (!selectedLicenseRemarks.value) {
+    return [];
+  }
+  return selectedLicenseRemarks.value.obligations.filter((item: ObligationDTO) => {
+    return filterOnStatus(item) && filterOnRemark(item) && filterOnType(item);
+  });
+});
+
+const classificationsCustomFilterTable = (value: string, searchTerm: string, item: IObligation ) => {
+  if (value != null && value) {
+    const dateTime = formatDateAndTime(value);
+    if (dateTime && dateTime !== 'Invalid date') {
+      return dateTime.indexOf(searchTerm) > -1;
+    }
+
+    let found = ('' + value).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    if (!found && value === item.type) {
+      found = ('' + getTextOfType(value)).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    }
+    if (!found && value === item.name && appStore.getAppLanguage === 'de') {
+      found = ('' + item.nameDe).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    }
+    if (!found && value === item.description && appStore.getAppLanguage === 'de') {
+      found = ('' + item.descriptionDe).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    }
+    return found;
+  }
+  return false;
+};
 
 const selectedLicenseChanged = () => {
   if (!selectedLicenseRemarks.value) {
@@ -172,14 +175,6 @@ const selectedLicenseChanged = () => {
   filteredRemarks.value = remarks.value;
   searchFieldInput.value = '';
   expanded.value = [];
-  const remarkSet = new Set<string>();
-  allRemarks.value = [];
-  selectedLicenseRemarks.value.obligations.forEach((item: ObligationDTO) => {
-    remarkSet.add(item.name);
-  });
-  Array.from(remarkSet).forEach((item: string) => {
-    allRemarks.value.push({value: item, text: item} as IDefaultSelectItem);
-  });
 };
 
 const reload = async (): Promise<void> => {
@@ -204,12 +199,6 @@ const reload = async (): Promise<void> => {
   selectedLicenseChanged();
 };
 
-onMounted(async () => {
-  await reload();
-});
-
-watch(() => spdx.value, reload);
-
 const searchForLicense = async () => {
   if (!searchFieldInput.value) {
     return [];
@@ -218,15 +207,6 @@ const searchForLicense = async () => {
     .filter((r) => r.license.toLowerCase().includes(searchFieldInput.value.toLowerCase()))
     .value();
 };
-
-const filteredList = computed(() => {
-  if (!selectedLicenseRemarks.value) {
-    return [];
-  }
-  return selectedLicenseRemarks.value.obligations.filter((item: ObligationDTO) => {
-    return filterOnStatus(item) && filterOnRemark(item) && filterOnType(item);
-  });
-});
 
 const filterOnRemark = (item: ObligationDTO): boolean => {
   if (!selectedFilterQualityRemark.value.length) {
@@ -256,11 +236,17 @@ const downloadLicenseRemarksCsv = async () => {
       projectModel.value._key,
       version.value._key,
       RemarkTypes.license,
-      spdx.value._key,
+      spdx.value!._key,
     ),
     true,
   );
 };
+
+onMounted(async () => {
+  await reload();
+});
+
+watch(() => spdx.value, reload);
 </script>
 
 <template>
@@ -284,24 +270,24 @@ const downloadLicenseRemarksCsv = async () => {
         color="inputActiveBorderColor"
         @change="selectedLicenseChanged"
         style="max-height: 40px !important">
-        <template v-slot:item="{item, props}">
+        <template #item="{item, props}">
           <v-list-item v-bind="props" :title="undefined">
             <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
-              >{{ getIconOfLevel('alarm') }}
+            >{{ getIconOfLevel('alarm') }}
             </v-icon>
             <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
-              >{{ getIconOfLevel('warning') }}
+            >{{ getIconOfLevel('warning') }}
             </v-icon>
             <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
           </v-list-item>
         </template>
-        <template v-slot:selection="{item}">
+        <template #selection="{item}">
           <div class="d-inline">
             <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
-              >{{ getIconOfLevel('alarm') }}
+            >{{ getIconOfLevel('alarm') }}
             </v-icon>
             <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
-              >{{ getIconOfLevel('warning') }}
+            >{{ getIconOfLevel('warning') }}
             </v-icon>
             <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
           </div>
@@ -332,197 +318,73 @@ const downloadLicenseRemarksCsv = async () => {
       :items="filteredList"
       :expanded.sync="expanded"
       @click:row.stop="
-        (event: Event, tableItem: DataTableItem<any>) =>
+        (_: Event, tableItem: DataTableItem<any>) =>
           expanded.some((e: string) => e === tableItem.item._key) ? (expanded = []) : (expanded = [tableItem.item._key])
       "
       :footer-props="{
         'items-per-page-options': [10, 50, 100, -1],
       }"
       :custom-filter="classificationsCustomFilterTable">
-      <template v-slot:header.warnLevel="{column, toggleSort, getSortIcon}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterStatus"
-                :items="possibleStatuses"
-                class="pa-2 mx-2 pb-4"
-                :label="t('Lbl_filter_status')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                transition="scale-transition"
-                menu
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" class="px-2 py-0">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <template v-slot:title>
-                      <v-icon :color="getIconColorOfLevel(item.value)" dense>{{ getIconOfLevel(item.value) }}</v-icon>
-                      <span class="pFilterEntry ml-1">{{ getTextOfLevel(item.value) }}</span>
-                    </template>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <v-icon :color="getIconColorOfLevel(item.value)" dense>{{ getIconOfLevel(item.value) }}</v-icon>
-                    <span class="pFilterEntry ml-1">{{ getTextOfLevel(item.value) }}</span>
-                  </div>
-                  <span v-if="index === 1" class="pAdditionalFilter">
-                    +{{ selectedFilterStatus.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
+      <template #[`header.warnLevel`]="{column, toggleSort, getSortIcon}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterStatus"
+              :column="column"
+              :label="t('COL_LEVEL')"
+              :allItems="possibleStatuses">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
-      <template v-slot:header.type="{column, toggleSort, getSortIcon}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu2">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterTypes.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu2 = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterTypes"
-                :items="possibleTypes"
-                class="pa-2 mx-2 pb-4"
-                :label="t('Lbl_filter_on_type')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                transition="scale-transition"
-                menu
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" class="px-2 py-0" title="">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <span class="pFilterEntry">{{ item.title }}</span>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <span class="pFilterEntry">{{ item.title }}</span>
-                  </div>
-                  <span v-if="index === 1" class="pAdditionalFilter">
-                    +{{ selectedFilterTypes.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
+      <template #[`header.type`]="{column, toggleSort, getSortIcon}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterTypes"
+              :column="column"
+              :label="t('COL_TYPE')"
+              :allItems="possibleTypes">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
-      <template v-slot:header.name="{column, toggleSort, getSortIcon}">
-        <div class="v-data-table-header__content">
-          <span>{{ column.title }}</span>
-          <v-menu :close-on-content-click="false" v-model="menu3">
-            <template v-slot:activator="{props}">
-              <DIconButton
-                :parentProps="props"
-                icon="mdi-filter-variant"
-                :hint="t('TT_SHOW_FILTER')"
-                :color="selectedFilterQualityRemark.length > 0 ? 'primary' : 'default'" />
-            </template>
-            <div class="bg-background" style="width: 280px">
-              <v-row class="d-flex ma-1 mr-2 justify-end">
-                <DIconButton icon="mdi-close" @clicked="menu3 = false" color="default" />
-              </v-row>
-              <v-select
-                v-model="selectedFilterQualityRemark"
-                :items="allRemarks"
-                class="pa-2 mx-2 pb-4"
-                :label="t('LABEL_FILTER_QUALITY_REMARK')"
-                clearable
-                multiple
-                item-title="text"
-                item-value="value"
-                variant="outlined"
-                density="compact"
-                menu
-                transition="scale-transition"
-                persistent-clear
-                :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{props, item}">
-                  <v-list-item v-bind="props" class="px-2 py-0" title="">
-                    <template v-slot:prepend="{isSelected}">
-                      <v-checkbox hide-details :model-value="isSelected" />
-                    </template>
-                    <span class="pFilterEntry">{{ item.title }}</span>
-                  </v-list-item>
-                </template>
-                <template v-slot:selection="{item, index}">
-                  <div v-if="index === 0" class="d-flex align-center">
-                    <span class="pFilterEntry">{{ item.title }}</span>
-                  </div>
-                  <span v-if="index === 1" class="pAdditionalFilter">
-                    +{{ selectedFilterQualityRemark.length - 1 }} others
-                  </span>
-                </template>
-              </v-select>
-            </div>
-          </v-menu>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-        </div>
+      <template #[`header.name`]="{column, toggleSort, getSortIcon}">
+        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+          <template #filter>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterQualityRemark"
+              :column="column"
+              :label="t('COL_QUALITY_REMARK')"
+              :allItems="possibleRemarks">
+            </GridHeaderFilterIcon>
+          </template>
+        </GridFilterHeader>
       </template>
-      <template v-slot:item.type="{item}">
+      <template #[`item.type`]="{item}">
         {{ getTextOfType(item.type) }}
       </template>
-      <template v-slot:item.warnLevel="{item}">
+      <template #[`item.warnLevel`]="{item}">
         <span>
           <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom>
-            <template v-slot:activator="{props, targetRef}">
+            <template #activator="{props, targetRef}">
               <v-icon v-bind="props" v-on="targetRef" :color="getIconColorOfLevel(item.warnLevel)" dense>{{
-                getIconOfLevel(item.warnLevel)
-              }}</v-icon>
+                  getIconOfLevel(item.warnLevel)
+                }}</v-icon>
             </template>
             <span>{{ getTextOfLevel(item.warnLevel) }}</span>
           </v-tooltip>
         </span>
       </template>
-      <template v-slot:item.remark="{item}">
+      <template #[`item.remark`]="{item}">
         {{ t('' + item.remark) }}
       </template>
-      <template v-slot:item.name="{item}">
+      <template #[`item.name`]="{item}">
         {{ viewTools.getNameForLanguage(item) }}
       </template>
-      <template v-slot:item.description="{item}">
+      <template #[`item.description`]="{item}">
         <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom>
-          <template v-slot:activator="{props, targetRef}">
+          <template #activator="{props, targetRef}">
             <span v-bind="props" v-on="targetRef">
               {{ getStrWithMaxLength(180, t(viewTools.getDescriptionForLanguage(item))) }}
             </span>
@@ -530,14 +392,14 @@ const downloadLicenseRemarksCsv = async () => {
           <span>{{ t(viewTools.getDescriptionForLanguage(item)) }}</span>
         </v-tooltip>
       </template>
-      <template v-slot:item.data-table-expand="{item}">
+      <template #[`item.data-table-expand`]="{item}">
         <v-icon
           color="primary"
           @click.stop="expanded.some((e: string) => e === item._key) ? (expanded = []) : (expanded = [item._key])">
           {{ expanded.some((e: string) => e === item._key) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
         </v-icon>
       </template>
-      <template v-slot:expanded-row="{columns, item}">
+      <template #expanded-row="{columns, item}">
         <td v-if="selectedLicenseRemarks" :colspan="columns.length" style="height: 10%">
           <v-data-table
             :headers="innerHeaders"
@@ -548,7 +410,7 @@ const downloadLicenseRemarksCsv = async () => {
             disable-pagination
             class="custom-data-table"
             density="compact">
-            <template v-slot:item="{item}">
+            <template #item="{item}">
               <tr>
                 <td style="width: 100px"></td>
                 <td style="width: 150px">{{ item.name }}</td>
