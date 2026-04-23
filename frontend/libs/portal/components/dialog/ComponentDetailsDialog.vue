@@ -107,6 +107,7 @@ const viewRemarkDialog = ref();
 const reviewRemarks = ref<ReviewRemark[]>([]);
 const loadingRemarks = ref(false);
 const licenseRecommended = ref('');
+const licenseRecommendedMsg = ref('');
 
 const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
 
@@ -126,6 +127,7 @@ const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUu
 const open = async (
   data: ComponentDetails,
   licenseRecommendedValue: string,
+  licenseRecommendedMsgValue: string,
   policyStatus?: PolicyRuleStatus[],
   unmatched?: UnmatchedLicense[],
   policyDecisionsApplied?: PolicyDecisionSlim[],
@@ -159,6 +161,7 @@ const open = async (
     details.value.PolicyDecisionDeniedReason = policyDecisionDeniedReason;
   }
   licenseRecommended.value = licenseRecommendedValue;
+  licenseRecommendedMsg.value = licenseRecommendedMsgValue;
 
   project.value = projectData;
   projectVersionId.value = versionKey;
@@ -272,6 +275,7 @@ const openLicenseRuleDialog = (licenseId: string) => {
     component,
     policyStatus: details.value.PolicyStatus,
     licenseRecommended: licenseRecommended.value,
+    licenseRecommendedMsg: licenseRecommendedMsg.value,
   });
 };
 
@@ -503,13 +507,13 @@ defineExpose({
                 <template v-slot:default>
                   <thead>
                     <tr>
-                      <th class="text-center">
+                      <th class="w-24 text-center">
                         {{ t('COL_ACTIONS') }}
                       </th>
-                      <th>
+                      <th class="w-20">
                         {{ t('COL_STATUS') }}
                       </th>
-                      <th class="text-left">
+                      <th class="w-72 text-left">
                         {{ t('COL_LICENSE') }}
                       </th>
                       <th class="text-left">
@@ -562,6 +566,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -578,6 +583,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="true"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -595,6 +601,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="isRecommended(item)"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"

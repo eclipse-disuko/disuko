@@ -2094,5 +2094,9 @@
   "PROJECT_HAS_DENIED_DECISIONS": "This project contains one or more denied components.",
   "PROJECT_HAS_DENIED_DECISIONS_TO_BE_CANCELLED": "This project contains one or more denied components.",
   "RECOMMENDED": "recommended",
+  "LICENSE_RECOMMENDED_MSG": "License \"{license}\" is recommended based on our automated analysis as it has fewer restrictions.",
+  "DENIED_LICENSES_MSG": "There is no acceptable license option listed for this component. Please investigate if further licensing options are available or replace the component.",
+  "EQUAL_WEIGHT_LICENSES_MSG": "No recommendation is possible because the license evaluation is equal.",
+  "UNASSERTED_LICENSES_MSG": "The license \"{license}\" has an unasserted status and has not been included in this comparison. Please investigate the license information and update the SBOM if you want to consider it.",
   "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Please delete pending tasks/roles/traces before deleting user"
 }

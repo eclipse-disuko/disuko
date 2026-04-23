@@ -53,6 +53,7 @@ const comment = ref<string | undefined>(undefined);
 const selectedComponentStr = ref<string>('');
 const licenseExpression = ref<string>('');
 const licenseRecommended = ref<string>('');
+const licenseRecommendedMsg = ref<string>('');
 const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
 
@@ -63,6 +64,7 @@ const config = ref<DialogLicenseRuleConfig>({
   licenseId: '',
   component: new ComponentInfoSlim(),
   licenseRecommended: '',
+  licenseRecommendedMsg: '',
 });
 
 const projectKey = computed(() => projectStore.currentProject!._key);
@@ -143,6 +145,7 @@ const open = async (
     component: new ComponentInfoSlim(),
     policyStatus: [],
     licenseRecommended: '',
+    licenseRecommendedMsg: '',
   },
 ) => {
   config.value = newConfig;
@@ -157,6 +160,7 @@ const loadAndPrefillData = async () => {
   selectedComponentStr.value = `${config.value.component.name} (${config.value.component.version})`;
   licenseExpression.value = config.value.component.licenseExpression;
   licenseRecommended.value = config.value.licenseRecommended;
+  licenseRecommendedMsg.value = config.value.licenseRecommendedMsg;
 
   await loadLicenses();
 
@@ -217,6 +221,12 @@ const doDialogAction = async () => {
   info(t('LICENSE_RULE_CREATED'));
 };
 
+const translatedLicenseRecommendedMsg = computed(() =>
+  licenseRecommendedMsg.value === 'LICENSE_RECOMMENDED_MSG'
+    ? t(licenseRecommendedMsg.value, {license: licenseRecommended.value})
+    : t(licenseRecommendedMsg.value),
+);
+
 const dialogConfig = computed(() => ({
   title: t('LICENSE_RULE_CREATE'),
   primaryButton: {text: t('BTN_CREATE'), disabled: !verification.value},
@@ -256,6 +266,16 @@ defineExpose({open});
             :label="t('LICENSE_EXPRESSION')"
             :model-value="selectedComponent?.licenseExpression"
             hide-details />
+          <v-alert v-if="licenseRecommendedMsg" density="compact" variant="outlined" type="info">
+            {{ translatedLicenseRecommendedMsg }}
+          </v-alert>
+          <v-alert
+            v-if="selectedLicense?.policyType === 'noassertion'"
+            density="compact"
+            variant="outlined"
+            type="warning">
+            {{ t('UNASSERTED_LICENSES_MSG', {license: selectedLicense?.id}) }}
+          </v-alert>
           <v-select
             v-model="selectedLicense"
             clearable

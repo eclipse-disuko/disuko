@@ -2086,5 +2086,9 @@
   "PROJECT_HAS_DENIED_DECISIONS": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
   "PROJECT_HAS_DENIED_DECISIONS_TO_BE_CANCELLED": "Dieses Projekt enthält eine oder mehrere Denied Komponenten.",
   "RECOMMENDED": "empfohlen",
+  "LICENSE_RECOMMENDED_MSG": "Die Lizenz \"{license}\" wird auf Grundlage unserer automatisierten Analyse empfohlen, da sie weniger Einschränkungen aufweist.",
+  "DENIED_LICENSES_MSG": "Für diese Komponente ist keine akzeptable Lizenzoption aufgeführt. Bitte prüfe, ob weitere Lizenzierungsoptionen verfügbar sind, oder ersetze die Komponente.",
+  "EQUAL_WEIGHT_LICENSES_MSG": "Keine Empfehlung möglich, da Lizenzbewertung gleich ist.",
+  "UNASSERTED_LICENSES_MSG": "Die Lizenz \"{license}\" hat den Status „nicht zugeordnet“ und wurde daher nicht in diesen Vergleich einbezogen. Bitte prüfe die Lizenzinformationen und aktualisiere die SBOM, wenn du diese Lizenz berücksichtigen möchtest.",
   "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Bitte löschen Sie alle ausstehenden Aufgaben/Rollen/Spuren, bevor Sie den Benutzer löschen."
 }

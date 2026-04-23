@@ -193,6 +193,7 @@ export class ComponentInfo implements IComponentInfo {
   public policyDecisionsApplied: PolicyDecisionSlim[] = [];
   public policyDecisionDeniedReason = '';
   public licenseRecommended = '';
+  public licenseRecommendedMsg = '';
 }
 
 export class ComponentInfoSlim {
