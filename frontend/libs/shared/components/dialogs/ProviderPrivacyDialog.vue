@@ -99,7 +99,7 @@ const clipboardContent = (key: string) => {
         <v-card-text>
           <v-tabs
             v-model="selectedTabIndex"
-            slider-color="mbti"
+            slider-color="brand"
             active-class="active"
             show-arrows
             bg-color="tabsHeader">

@@ -179,7 +179,7 @@ onUnmounted(() => {
     <v-row class="expand" v-if="!itemVersion">
       <v-col cols="12">
         <v-card>
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab value="overview" :to="`${tabUrl}/overview`">
               {{ t('TAB_PROJECT_OVERVIEW') }}
             </v-tab>

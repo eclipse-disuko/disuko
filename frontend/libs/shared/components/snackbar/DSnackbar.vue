@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
-  <v-snackbar v-model="visible" :timeout="timeout" bottom color="mbti">
+  <v-snackbar v-model="visible" :timeout="timeout" bottom color="brand">
     <div class="text-center">{{ message }}</div>
   </v-snackbar>
 </template>

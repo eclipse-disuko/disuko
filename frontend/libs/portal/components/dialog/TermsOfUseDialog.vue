@@ -82,7 +82,7 @@ watch(langTab, (newTab) => {
         </v-row>
       </v-card-title>
       <v-card-text>
-        <v-tabs v-model="langTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="langTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="en">English</v-tab>
           <v-tab value="de">Deutsch</v-tab>
         </v-tabs>

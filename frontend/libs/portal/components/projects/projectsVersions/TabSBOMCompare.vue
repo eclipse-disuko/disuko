@@ -691,7 +691,7 @@ onBeforeMount(async () => {
                       v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
                       size="small"
                       class="pb-1"
-                    >mdi-star
+                      >mdi-star
                     </v-icon>
                     <span class="d-subtitle-2 ml-2">{{ item.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
@@ -705,7 +705,7 @@ onBeforeMount(async () => {
                       v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
                       size="small"
                       class="pr-2 pb-1"
-                    >mdi-star
+                      >mdi-star
                     </v-icon>
                     <span class="d-subtitle-2">{{ item.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
@@ -741,7 +741,7 @@ onBeforeMount(async () => {
                       v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
                       size="small"
                       class="pb-1"
-                    >mdi-star
+                      >mdi-star
                     </v-icon>
                     <span class="d-subtitle-2 ml-2">{{ item.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
@@ -755,7 +755,7 @@ onBeforeMount(async () => {
                       v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
                       size="small"
                       class="pr-2 pb-1"
-                    >mdi-star
+                      >mdi-star
                     </v-icon>
                     <span class="d-subtitle-2">{{ item.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
@@ -886,7 +886,7 @@ onBeforeMount(async () => {
                           </template>
                           <template #title>
                             <v-icon small :color="getIconColorForPolicyType(item.raw)"
-                            >{{ getIconForPolicyType(item.raw) }}
+                              >{{ getIconForPolicyType(item.raw) }}
                             </v-icon>
                             <span class="pFilterEntry pl-1">{{ item.raw }}</span>
                           </template>
@@ -895,7 +895,7 @@ onBeforeMount(async () => {
                       <template #selection="{item, index}">
                         <div v-if="index === 0" class="d-flex align-center">
                           <v-icon small :color="getIconColorForPolicyType(item.raw)"
-                          >{{ getIconForPolicyType(item.raw) }}
+                            >{{ getIconForPolicyType(item.raw) }}
                           </v-icon>
                           <span class="pFilterEntry pl-1">{{ item.raw }}</span>
                         </div>

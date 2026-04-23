@@ -22,7 +22,7 @@
         </template>
       </v-checkbox>
       <div class="mt-n5 mb-4 ml-1" v-if="!inWizard && projectSettings.supplierExtraData.external">
-        <v-icon size="x-small" class="mx-2 ml-8" color="mbti">mdi-alert</v-icon>
+        <v-icon size="x-small" class="mx-2 ml-8" color="brand">mdi-alert</v-icon>
         <span class="text-body-2">{{ t('EXTERNAL_REMARK') }}</span>
       </div>
     </Stack>

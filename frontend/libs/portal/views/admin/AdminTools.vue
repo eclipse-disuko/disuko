@@ -68,7 +68,7 @@ defineExpose({
     <v-row>
       <v-col cols="12">
         <v-card>
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab v-if="rights.hasToolsAccess()" value="analytics" :to="tabUrl.analytics">
               {{ t('ANALYTICS') }}
             </v-tab>
