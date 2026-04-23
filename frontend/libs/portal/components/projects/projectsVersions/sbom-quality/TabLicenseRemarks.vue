@@ -145,7 +145,7 @@ const filteredList = computed(() => {
   });
 });
 
-const classificationsCustomFilterTable = (value: string, searchTerm: string, item: IObligation ) => {
+const classificationsCustomFilterTable = (value: string, searchTerm: string, item: IObligation) => {
   if (value != null && value) {
     const dateTime = formatDateAndTime(value);
     if (dateTime && dateTime !== 'Invalid date') {
@@ -273,10 +273,10 @@ watch(() => spdx.value, reload);
         <template #item="{item, props}">
           <v-list-item v-bind="props" :title="undefined">
             <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
-            >{{ getIconOfLevel('alarm') }}
+              >{{ getIconOfLevel('alarm') }}
             </v-icon>
             <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
-            >{{ getIconOfLevel('warning') }}
+              >{{ getIconOfLevel('warning') }}
             </v-icon>
             <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
           </v-list-item>
@@ -284,10 +284,10 @@ watch(() => spdx.value, reload);
         <template #selection="{item}">
           <div class="d-inline">
             <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
-            >{{ getIconOfLevel('alarm') }}
+              >{{ getIconOfLevel('alarm') }}
             </v-icon>
             <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
-            >{{ getIconOfLevel('warning') }}
+              >{{ getIconOfLevel('warning') }}
             </v-icon>
             <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
           </div>
@@ -369,8 +369,8 @@ watch(() => spdx.value, reload);
           <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom>
             <template #activator="{props, targetRef}">
               <v-icon v-bind="props" v-on="targetRef" :color="getIconColorOfLevel(item.warnLevel)" dense>{{
-                  getIconOfLevel(item.warnLevel)
-                }}</v-icon>
+                getIconOfLevel(item.warnLevel)
+              }}</v-icon>
             </template>
             <span>{{ getTextOfLevel(item.warnLevel) }}</span>
           </v-tooltip>

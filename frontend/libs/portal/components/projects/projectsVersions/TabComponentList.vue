@@ -697,10 +697,10 @@ onUnmounted(async () => {
               </v-icon>
               <Tooltip>
                 <span class="text-subtitle-1">{{
-                    item.licenseRuleApplied.previewMode
-                      ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
-                      : t('TT_LICENSE_RULE_APPLIED')
-                  }}</span>
+                  item.licenseRuleApplied.previewMode
+                    ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
+                    : t('TT_LICENSE_RULE_APPLIED')
+                }}</span>
                 <br />
                 <span class="d-text d-secondary-text">{{ t('TT_LICENSE_RULE_EXPRESSION') }}</span>
                 <br />
@@ -709,18 +709,18 @@ onUnmounted(async () => {
                   v-html="formatText(item.licenseRuleApplied.licenseExpression)"></span>
                 <br />
                 <span class="d-text d-secondary-text">{{
-                    t('TT_LICENSE_RULE_DECISION', {
-                      decision: item.licenseRuleApplied.licenseDecisionName,
-                      decisionId: item.licenseRuleApplied.licenseDecisionId,
-                    })
-                  }}</span>
+                  t('TT_LICENSE_RULE_DECISION', {
+                    decision: item.licenseRuleApplied.licenseDecisionName,
+                    decisionId: item.licenseRuleApplied.licenseDecisionId,
+                  })
+                }}</span>
                 <br />
                 <span class="d-text d-secondary-text">{{
-                    t('TT_LICENSE_RULE_BY_AT', {
-                      creator: item.licenseRuleApplied.creator,
-                      created: formatDateAndTime(item.licenseRuleApplied.created),
-                    })
-                  }}</span>
+                  t('TT_LICENSE_RULE_BY_AT', {
+                    creator: item.licenseRuleApplied.creator,
+                    created: formatDateAndTime(item.licenseRuleApplied.created),
+                  })
+                }}</span>
               </Tooltip>
             </span>
             <span

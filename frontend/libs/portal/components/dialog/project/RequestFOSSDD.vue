@@ -533,7 +533,7 @@ defineExpose({open});
               <DIconButton icon="mdi-information-outline" :hint="t('FOSSDD_VERSION_TOOLTIP')" />
             </Stack>
 
-            <v-tabs v-model="tab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+            <v-tabs v-model="tab" slider-color="brand" show-arrows bg-color="tabsHeader">
               <v-tab value="general">{{ t('TAB_TITLE_GENERAL') }}</v-tab>
               <v-tab value="approvable" v-if="projectModel.isGroup">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
             </v-tabs>

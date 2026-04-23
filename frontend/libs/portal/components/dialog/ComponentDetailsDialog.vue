@@ -474,7 +474,7 @@ defineExpose({
       </template>
 
       <v-card class="card-border" min-height="394">
-        <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="rules">
             {{ t('TAB_TITLE_POLICY_RULES') }}
           </v-tab>
@@ -489,7 +489,7 @@ defineExpose({
           </v-tab>
           <v-tab value="additional_info">
             {{ t('TAB_TITLE_REMARKS') }}
-            <v-badge v-if="reviewRemarks.length > 0" :content="reviewRemarks.length" color="mbti" inline></v-badge>
+            <v-badge v-if="reviewRemarks.length > 0" :content="reviewRemarks.length" color="brand" inline></v-badge>
           </v-tab>
           <v-tab value="raw">
             {{ t('TAB_TITLE_RAW') }}

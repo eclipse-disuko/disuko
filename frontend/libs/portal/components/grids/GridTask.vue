@@ -280,7 +280,7 @@ onMounted(async () => {
           </template>
           <template v-slot:[`item.creatorDepartment`]="{item}">
             <span v-if="item.creatorDepartmentDescription && item.creatorDepartment"
-            >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
+              >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
             >
             <span v-else>-</span>
           </template>

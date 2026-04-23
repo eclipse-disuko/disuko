@@ -9,7 +9,7 @@ import {black, blue, green, grey, neutral, orange, red, white, yellow} from './C
 const dark: ThemeDefinition = {
   dark: true,
   colors: {
-    mbti: yellow[50],
+    brand: yellow[50],
     primary: blue[50],
     secondary: white,
     error: red[50],

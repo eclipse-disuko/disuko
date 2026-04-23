@@ -654,8 +654,8 @@ onMounted(() => {
           {{
             item.licenses
               ? item.licenses
-                .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
-                .join(';\n')
+                  .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
+                  .join(';\n')
               : ''
           }}
         </Truncated>
