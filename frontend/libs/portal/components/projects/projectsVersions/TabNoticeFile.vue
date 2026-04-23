@@ -58,7 +58,7 @@ const loadContent = async (format: NoticeFileFormat) => {
     format,
     currentProjectId.value,
     currentVersionId.value,
-    spdx.value._key,
+    spdx.value!._key,
   );
 
   updateContentsByType(response.data);

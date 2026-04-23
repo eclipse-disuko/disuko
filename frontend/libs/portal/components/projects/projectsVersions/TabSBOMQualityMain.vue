@@ -3,9 +3,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
-import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import Stack from '@shared/layouts/Stack.vue';
+import DialogLayout, {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, defineAsyncComponent, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -64,6 +63,7 @@ const tabs = ref<QualityTab[]>([
     expandText: '',
   },
 ]);
+const dialog = ref<'disclaimer' | 'info' | null>(null);
 const selectedTabId = ref<string>('scanRemarks');
 
 const selectedTab = computed(() => {
@@ -72,6 +72,20 @@ const selectedTab = computed(() => {
 
 const currentComponent = computed(() => {
   return selectedTab.value ? componentMap[selectedTab.value.id] : null;
+});
+
+const showExpansionPanel = computed(() => {
+  return selectedTab.value && selectedTab.value.expandText && selectedTab.value.id !== 'generalRemarks';
+});
+
+const expansionPanelTitle = computed(() => {
+  if (!selectedTab.value) return '';
+  return `${t('HEADER_OBLIGATIONS_AND_CONFIDENTIALITY')} ${t(selectedTab.value.buttonText)}`;
+});
+
+const expansionPanelText = computed(() => {
+  if (!selectedTab.value || !selectedTab.value.expandText) return '';
+  return t(selectedTab.value.expandText);
 });
 
 const reload = () => {
@@ -105,6 +119,14 @@ const changeTab = (currentTab: QualityTab, query = '') => {
   router.push(url);
 };
 
+const getDialogConfig = (): DialogLayoutConfig => ({
+  title: dialog.value === 'info' ? expansionPanelTitle.value : t('BTN_DISCLAIMER'),
+});
+
+const dialogContent = computed(() => {
+  return dialog.value === 'info' ? expansionPanelText.value : t('QT_SCAN_REMARKS_DISCLAIMER');
+});
+
 watch(
   () => route.name,
   async () => {
@@ -129,11 +151,27 @@ watch(
         {{ t(tab.buttonText) }}
       </v-btn>
       <v-spacer></v-spacer>
+      <v-btn variant="text" size="small" class="text-none" v-if="showExpansionPanel" @click="dialog = 'info'">
+        <v-icon color="primary" icon="mdi-chevron-right" class="mr-2" />
+        <span class="text-caption">{{ expansionPanelTitle }}</span>
+      </v-btn>
     </template>
     <template #table>
-      <div class="h-full pt-3">
+      <div class="relative h-[calc(100%-12px)] pt-3">
         <component v-if="currentComponent" :is="currentComponent" />
+        <div id="bottom-quality-remarks" class="absolute bottom-5 left-4">
+          <v-btn variant="text" size="small" class="text-none" @click="dialog = 'disclaimer'">
+            <v-icon color="primary">mdi mdi-chevron-right</v-icon>
+            {{ t('BTN_DISCLAIMER') }}
+          </v-btn>
+        </div>
       </div>
     </template>
   </TableLayout>
+
+  <v-dialog persistent :model-value="Boolean(dialog)" width="700" scrollable>
+    <DialogLayout :config="getDialogConfig()" @close="dialog = null">
+      <span class="text-caption" v-html="dialogContent"></span>
+    </DialogLayout>
+  </v-dialog>
 </template>

@@ -10,7 +10,7 @@ import adminService from '@disclosure-portal/services/admin';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {SortItem} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -34,7 +34,7 @@ const reload = async () => {
   });
 };
 
-const headers = computed(() => [
+const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
     align: 'center',
@@ -151,13 +151,13 @@ onMounted(async () => {
         fixed-header
         :sort-by="sortBy"
         sort-desc>
-        <template v-slot:[`item.created`]="{item}">
+        <template #[`item.created`]="{item}">
           <DDateCellWithTooltip :value="item.created" />
         </template>
-        <template v-slot:[`item.updated`]="{item}">
+        <template #[`item.updated`]="{item}">
           <DDateCellWithTooltip :value="item.updated" />
         </template>
-        <template v-slot:[`item.actions`]="{item}">
+        <template #[`item.actions`]="{item}">
           <TableActionButtons
             :buttons="[
               {icon: 'mdi-pencil', event: 'edit'},

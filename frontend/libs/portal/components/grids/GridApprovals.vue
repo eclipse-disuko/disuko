@@ -14,7 +14,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {SortItem} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
@@ -38,11 +38,10 @@ const confirmationDialogConfig = ref<IConfirmationDialogConfig>({} as IConfirmat
 const sortBy: SortItem[] = [{key: 'created', order: 'desc'}];
 const tableApprovals = ref<HTMLElement | null>(null);
 
-const headers = computed(() => {
+const headers = computed((): DataTableHeader[] => {
   return [
     {
       title: '',
-      class: 'tableHeaderCell',
       value: 'data-table-expand',
       width: 25,
     },
@@ -50,14 +49,12 @@ const headers = computed(() => {
       title: t('COL_ACTIONS'),
       align: 'center',
       width: 80,
-      class: 'tableHeaderCell',
       value: 'actions',
       sortable: false,
     },
     {
       title: t('COL_TITLE'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'title',
       sortable: true,
       width: 300,
@@ -67,7 +64,6 @@ const headers = computed(() => {
       title: t('COL_CREATED'),
       width: 150,
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'created',
       sortable: true,
     },
@@ -75,7 +71,6 @@ const headers = computed(() => {
       title: t('COL_UPDATED'),
       width: 150,
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'updated',
       sortable: true,
     },
@@ -84,7 +79,6 @@ const headers = computed(() => {
       width: 160,
       sortable: true,
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'creator',
     },
   ];
@@ -319,12 +313,12 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
           :expanded.sync="expanded"
           @update:expanded="onRowExpand"
           :items-per-page="100">
-          <template v-slot:item.data-table-expand="{item}">
+          <template #[`item.data-table-expand`]="{item}">
             <v-icon color="primary" @click.stop="toggleExpand(item)">
               {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </v-icon>
           </template>
-          <template v-slot:expanded-row="{columns, item}">
+          <template #expanded-row="{columns, item}">
             <td :colspan="columns.length">
               <ApprovalInfoTabs
                 v-if="item.type == ApprovalType.Internal"
@@ -344,7 +338,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
                 task-description=""></ApprovalInfoTabs>
             </td>
           </template>
-          <template v-slot:item.title="{item}">
+          <template #[`item.title`]="{item}">
             {{ t('COL_APPROVAL_TITLE_TYPE_' + item.type) }} -
             <span
               v-if="item.type == ApprovalType.Internal || item.type == ApprovalType.Plausibility"
@@ -355,13 +349,13 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
               {{ t('COL_APPROVAL_STATUS_EXTERNAL_' + item.external.state) }}
             </span>
           </template>
-          <template v-slot:item.created="{item}">
+          <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />
           </template>
-          <template v-slot:item.updated="{item}">
+          <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated" />
           </template>
-          <template v-slot:item.actions="{item}">
+          <template #[`item.actions`]="{item}">
             <Stack direction="row" class="gap-0">
               <TableActionButtons
                 variant="compact"
@@ -371,7 +365,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
             </Stack>
           </template>
         </v-data-table></div
-    ></template>
+      ></template>
   </TableLayout>
 
   <ConfirmationDialog
@@ -382,8 +376,8 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
     <FillCustomerApprover
       :title="t('UM_DIALOG_TITLE_FILL_OWNER')"
       :confirm-text="t('NP_DIALOG_BTN_CREATE')"
-      :customer1User="customer1User"
-      :customer2User="customer2User"
+      :customer1User="customer1User!"
+      :customer2User="customer2User!"
       :projectKey="projectModel._key"
       @confirm="onSaveApprover"
       @close="fillCustomerDialogOpen = false" />
