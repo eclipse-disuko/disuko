@@ -5,6 +5,7 @@
 package policy
 
 import (
+	"slices"
 	"sort"
 
 	"github.com/eclipse-disuko/disuko/domain/license"
@@ -149,66 +150,21 @@ func (policyRulesHandler *Service) CalculatePolicyRuleComponents(requestSession 
 
 func matchesCalculatedScopeFilters(currentLicense *license.License, config license.CalculatedPolicyConfig) bool {
 	scope := config.LicenseScope
-	if len(scope.IsLicenseChart) > 0 && !matchesBoolFilter(currentLicense.Meta.IsLicenseChart, scope.IsLicenseChart) {
+	if len(scope.IsLicenseChart) > 0 && !slices.Contains(scope.IsLicenseChart, currentLicense.Meta.IsLicenseChart) {
 		return false
 	}
-	if len(scope.ApprovalState) > 0 && !matchesApprovalStateFilter(currentLicense.Meta.ApprovalState, scope.ApprovalState) {
+	if len(scope.ApprovalState) > 0 && !slices.Contains(scope.ApprovalState, currentLicense.Meta.ApprovalState) {
 		return false
 	}
-	if len(scope.Family) > 0 && !matchesFamilyFilter(currentLicense.Meta.Family, scope.Family) {
+	if len(scope.Family) > 0 && !slices.Contains(scope.Family, currentLicense.Meta.Family) {
 		return false
 	}
-	if len(scope.LicenseType) > 0 && !matchesLicenseTypeFilter(currentLicense.Meta.LicenseType, scope.LicenseType) {
+	if len(scope.LicenseType) > 0 && !slices.Contains(scope.LicenseType, currentLicense.Meta.LicenseType) {
 		return false
 	}
-	if len(scope.Source) > 0 && !matchesSourceFilter(currentLicense.Source, scope.Source) {
+	if len(scope.Source) > 0 && !slices.Contains(scope.Source, currentLicense.Source) {
 		return false
 	}
 	return true
-}
-
-func matchesBoolFilter(actualValue bool, filterValues []bool) bool {
-	for _, filterValue := range filterValues {
-		if actualValue == filterValue {
-			return true
-		}
-	}
-	return false
-}
-
-func matchesApprovalStateFilter(actualValue license.ApprovalStatus, filterValues []license.ApprovalStatus) bool {
-	for _, filterValue := range filterValues {
-		if actualValue == filterValue {
-			return true
-		}
-	}
-	return false
-}
-
-func matchesFamilyFilter(actualValue license.FamilyOfLicense, filterValues []license.FamilyOfLicense) bool {
-	for _, filterValue := range filterValues {
-		if actualValue == filterValue {
-			return true
-		}
-	}
-	return false
-}
-
-func matchesLicenseTypeFilter(actualValue license.TypeOfLicenses, filterValues []license.TypeOfLicenses) bool {
-	for _, filterValue := range filterValues {
-		if actualValue == filterValue {
-			return true
-		}
-	}
-	return false
-}
-
-func matchesSourceFilter(actualValue license.Source, filterValues []license.Source) bool {
-	for _, filterValue := range filterValues {
-		if actualValue == filterValue {
-			return true
-		}
-	}
-	return false
 }
 
