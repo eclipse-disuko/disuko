@@ -364,8 +364,9 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
                 @abort="abort(item)" />
             </Stack>
           </template>
-        </v-data-table></div
-      ></template>
+        </v-data-table>
+      </div>
+    </template>
   </TableLayout>
 
   <ConfirmationDialog
