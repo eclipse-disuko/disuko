@@ -7,9 +7,8 @@ import Icons from '@disclosure-portal/constants/icons';
 import type {Project} from '@disclosure-portal/model/Project';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {formatDate, getStrWithMaxLength} from '@disclosure-portal/utils/View';
+import {formatDate, getStrWithMaxLength, formatDateTimeShort} from '@disclosure-portal/utils/View';
 import {createReusableTemplate} from '@vueuse/core';
-import dayjs from 'dayjs';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import ProjectLabel from '../ProjectLabel.vue';
@@ -22,16 +21,9 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate();
 
 const currentProject = computed((): Project => projectStore.currentProject!);
 
-const createdDate = computed(() => convertToShort(currentProject.value?.created || ''));
-const updatedDate = computed(() => convertToShort(currentProject.value?.updated || ''));
+const createdDate = computed(() => formatDateTimeShort(currentProject.value?.created || ''));
+const updatedDate = computed(() => formatDateTimeShort(currentProject.value?.updated || ''));
 const deleteDate = computed(() => formatDate(currentProject.value?.dummyDeletionDate || ''));
-
-const convertToShort = (str: string) => {
-  if (!str) {
-    return '';
-  }
-  return dayjs(str).format(t('DATETIME_FORMAT_SHORT'));
-};
 
 const uuidLabel = computed(() => {
   return currentProject.value.isGroup ? t('GROUP_IDENTIFIER_UUID') : t('APPLICATION_UUID');

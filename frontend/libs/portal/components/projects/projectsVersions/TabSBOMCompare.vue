@@ -18,6 +18,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
+  formatDateTimeShort,
   getIconColorForPolicyType,
   getIconForDiffType,
   getIconForPolicyType,
@@ -25,7 +26,6 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
-import dayjs from 'dayjs';
 import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -121,7 +121,7 @@ const groupedSpdxs = computed(() => {
     const newHeader = new SpdxIdentifier('header', '', '', '', vs.VersionName, '');
     res.push(newHeader);
     for (const spdx of vs.SpdxFileHistory) {
-      const uploaded = dayjs(spdx.Uploaded.toString()).format(t('DATETIME_FORMAT_SHORT'));
+      const uploaded = formatDateTimeShort(spdx.Uploaded);
       const ident = new SpdxIdentifier(spdx._key, spdx.MetaInfo.Name, uploaded, vs.VersionKey, '', spdx.Tag);
       res.push(ident);
       ident.versionName = vs.VersionName;
