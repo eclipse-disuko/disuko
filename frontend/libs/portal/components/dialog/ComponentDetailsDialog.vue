@@ -29,6 +29,7 @@ import _l from 'lodash';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import JsonViewer3 from 'vue-json-viewer';
+import {openUrlInNewTab} from '@disclosure-portal/utils/url';
 
 interface LocalDetails extends Details {
   url?: boolean;
@@ -458,6 +459,10 @@ const filteredAndSortedNotDeniedPolicyStatus = computed(() => {
     });
 });
 
+const openProjectDecisions = () => {
+  openUrlInNewTab(`/dashboard/projects/${encodeURIComponent(project.value._key)}/decisions`);
+};
+
 defineExpose({
   open,
 });
@@ -475,6 +480,10 @@ defineExpose({
           :text="t('TT_add_review_remark')"
           @click="openReviewRemarkDialog()"
           v-if="!isDeprecated" />
+      </template>
+
+      <template #left>
+        <DCActionButton size="small" is-dialog-button @click="openProjectDecisions" :text="t('TAB_DECISIONS')" />
       </template>
 
       <v-card class="card-border" min-height="394">
