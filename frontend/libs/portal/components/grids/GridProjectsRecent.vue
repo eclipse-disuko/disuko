@@ -18,7 +18,7 @@
               :loading-text="t('PROJECTS_LOADING')"
               hide-default-footer
               @click:row="(event, dataItem) => onClickRow(dataItem.item)">
-              <template v-slot:body.append>
+              <template #[`body.append`]>
                 <tr>
                   <td></td>
                   <td></td>
@@ -30,12 +30,12 @@
                   </td>
                 </tr>
               </template>
-              <template #item.status="{item}">
+              <template #[`item.status`]="{item}">
                 <span :class="getItemClass(item)">
                   {{ !item.status ? 'new' : item.status }}
                 </span>
               </template>
-              <template v-slot:[`item.name`]="{item}">
+              <template #[`item.name`]="{item}">
                 <v-tooltip
                   :text="`${itemTooltip(item)}`"
                   :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
@@ -46,7 +46,7 @@
                   </template>
                 </v-tooltip>
               </template>
-              <template #item.updated="{item}">
+              <template #[`item.updated`]="{item}">
                 <DDateCellWithTooltip :value="item.updated" />
               </template>
             </v-data-table>
@@ -79,7 +79,7 @@ const loaded = ref(false);
 const headers: any[] = [
   {
     title: t('COL_STATUS'),
-    text: '' + 'COL_STATUS',
+    text: 'COL_STATUS',
     sortable: true,
     filterable: true,
     value: 'status',
@@ -87,7 +87,7 @@ const headers: any[] = [
   },
   {
     title: t('COL_NAME'),
-    text: '' + 'COL_NAME',
+    text: 'COL_NAME',
     align: 'start',
     sortable: true,
     value: 'name',
@@ -95,7 +95,7 @@ const headers: any[] = [
   },
   {
     title: t('COL_UPDATED'),
-    text: '' + 'COL_UPDATED',
+    text: 'COL_UPDATED',
     align: 'start',
     sortable: true,
     width: 160,

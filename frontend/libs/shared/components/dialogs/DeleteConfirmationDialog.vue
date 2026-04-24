@@ -9,10 +9,11 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 defineProps<{
-  title: string;
+  title?: string;
   message?: string;
   buttonText?: string;
 }>();
+
 const emit = defineEmits(['confirmed']);
 
 const {t} = useI18n();
@@ -25,11 +26,12 @@ const confirmDialog = () => {
   emit('confirmed');
   isDialogVisible.value = false;
 };
+defineExpose({
+  showDialog,
+});
 </script>
 <template>
-  <slot name="default" :showDialog="showDialog">
-    <v-btn text="Replace me" size="small" color="primary" @click.stop="showDialog"></v-btn>
-  </slot>
+  <slot name="default" :showDialog="showDialog"> </slot>
   <v-dialog v-model="isDialogVisible" content-class="small" width="800">
     <v-card class="pa-8 dDialog" flat>
       <v-card-title>

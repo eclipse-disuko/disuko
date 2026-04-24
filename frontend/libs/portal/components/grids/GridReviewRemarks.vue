@@ -579,11 +579,11 @@ onMounted(() => {
       items-per-page="100"
       @click:row="rowClick"
       @update:modelValue="(val) => (selected = val || [])">
-      <template v-slot:[`header.actions`]="{column}">
+      <template #[`header.actions`]="{column}">
         <HeaderSettings :column="column" :grid-name="tableName" :show-borders="false" />
         <span>{{ column.title }}</span>
       </template>
-      <template v-slot:[`header.level`]="{column, getSortIcon, toggleSort}">
+      <template #[`header.level`]="{column, getSortIcon, toggleSort}">
         <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
           <template #filter>
             <GridHeaderFilterIcon
@@ -595,7 +595,7 @@ onMounted(() => {
           </template>
         </GridFilterHeader>
       </template>
-      <template v-slot:[`header.status`]="{column, getSortIcon, toggleSort}">
+      <template #[`header.status`]="{column, getSortIcon, toggleSort}">
         <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
           <template #filter>
             <GridHeaderFilterIcon
@@ -607,7 +607,7 @@ onMounted(() => {
           </template>
         </GridFilterHeader>
       </template>
-      <template v-slot:[`header.sbomName`]="{column, getSortIcon, toggleSort}">
+      <template #[`header.sbomName`]="{column, getSortIcon, toggleSort}">
         <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
           <template #filter>
             <GridHeaderFilterIcon
@@ -619,9 +619,9 @@ onMounted(() => {
           </template>
         </GridFilterHeader>
       </template>
-      <template v-slot:[`item.level`]="{item}">
+      <template #[`item.level`]="{item}">
         <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom content-class="dpTooltip">
-          <template v-slot:activator="{}">
+          <template #activator="{}">
             <v-icon v-on="on" :color="getIconColorReviewRemarkLevel(item.level)">
               {{ getIconReviewRemarkLevel(item.level) }}
             </v-icon>
@@ -629,27 +629,27 @@ onMounted(() => {
           <span>{{ t('REMARK_LEVEL_' + item.level) }}</span>
         </v-tooltip>
       </template>
-      <template v-slot:[`item.status`]="{item}">
+      <template #[`item.status`]="{item}">
         <span>{{ t('REMARK_STATUS_' + item.status) }}</span>
       </template>
-      <template v-slot:[`item.title`]="{item}">
+      <template #[`item.title`]="{item}">
         <span>{{ item.title }}</span>
       </template>
-      <template v-slot:[`item.components`]="{item}">
+      <template #[`item.components`]="{item}">
         <Truncated>
           {{
             item.components ? item.components.map((c) => `${c.componentName} (${c.componentVersion})`).join(';\n') : ''
           }}
         </Truncated>
       </template>
-      <template v-slot:[`item.sbomName`]="{item}">
+      <template #[`item.sbomName`]="{item}">
         <div class="d-flex flex-column">
           <span>{{ item.sbomName }}</span>
           <DDateCellWithTooltip v-if="item.sbomName && item.sbomUploaded" :value="item.sbomUploaded.toString()">
           </DDateCellWithTooltip>
         </div>
       </template>
-      <template v-slot:[`item.licenses`]="{item}">
+      <template #[`item.licenses`]="{item}">
         <Truncated>
           {{
             item.licenses
@@ -660,16 +660,16 @@ onMounted(() => {
           }}
         </Truncated>
       </template>
-      <template v-slot:[`item.created`]="{item}">
+      <template #[`item.created`]="{item}">
         <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
       </template>
-      <template v-slot:[`item.updated`]="{item}">
+      <template #[`item.updated`]="{item}">
         <DDateCellWithTooltip :value="item.updated"></DDateCellWithTooltip>
       </template>
-      <template v-slot:[`item.closed`]="{item}">
+      <template #[`item.closed`]="{item}">
         <DDateCellWithTooltip :value="item.closed" v-if="item.closed"></DDateCellWithTooltip>
       </template>
-      <template v-slot:[`item.actions`]="{item}">
+      <template #[`item.actions`]="{item}">
         <Stack direction="row" justify="center" align="center" class="gap-0">
           <TableActionButtons
             variant="compact"
