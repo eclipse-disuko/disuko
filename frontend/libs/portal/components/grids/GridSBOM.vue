@@ -262,7 +262,7 @@ const downloadFile = (item: VersionSbomsFlat) => {
     .then((res) => {
       const spdxFiles = items.value.filter((sbomFile) => sbomFile._key === item._key);
       if (spdxFiles && spdxFiles.length > 0) {
-        const updated = dayjs(spdxFiles[0].Updated.toString()).format(t('DATETIME_FORMAT_SHORT'));
+        const updated = formatDateTimeShort(spdxFiles[0].Updated);
         link.download = item.versionName + '_' + updated + '.json';
         link.href = URL.createObjectURL(new Blob([res.data as unknown as BlobPart]));
         link.click();

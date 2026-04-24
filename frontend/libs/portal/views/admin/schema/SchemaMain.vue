@@ -10,10 +10,9 @@ import SchemaModel from '@disclosure-portal/model/Schema';
 import StatusDialogConfig from '@disclosure-portal/model/StatusDialogConfig';
 import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@disclosure-portal/stores/user';
-import {IMap} from '@disclosure-portal/utils/View';
+import {formatDateTimeShort, IMap} from '@disclosure-portal/utils/View';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
-import dayjs from 'dayjs';
 import {onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import JsonViewer from 'vue-json-viewer';
@@ -38,8 +37,8 @@ const readOnly = ref<boolean>(true);
 onMounted(async () => {
   rights.value = userStore.getRights;
   item.value = (await AdminService.getSchema(itemId.value)).data;
-  updated.value = dayjs(item.value.updated.toString()).format(t('DATETIME_FORMAT_SHORT'));
-  created.value = dayjs(item.value.created.toString()).format(t('DATETIME_FORMAT_SHORT'));
+  updated.value = formatDateTimeShort(item.value.updated);
+  created.value = formatDateTimeShort(item.value.created);
   if (route.path.includes('admin')) {
     readOnly.value = false;
   }

@@ -7,6 +7,7 @@ import {Token} from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@disclosure-portal/utils/Rules';
+import {formatDateTimeShort} from '@disclosure-portal/utils/View';
 import ReactiveDialogLayout, {type ReactiveDialogLayoutConfig} from '@shared/layouts/ReactiveDialogLayout.vue';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
@@ -83,7 +84,7 @@ const selectedDate = computed({
 
 const selectedDurationAsString = computed(() =>
   selectedMoment.value
-    ? t('TKN_duration_' + selectedDuration.value) + ' - ' + selectedMoment.value.format(t('DATETIME_FORMAT_SHORT'))
+    ? t('TKN_duration_' + selectedDuration.value) + ' - ' + formatDateTimeShort(selectedMoment.value.toDate())
     : t('TKN_duration_' + selectedDuration.value),
 );
 
