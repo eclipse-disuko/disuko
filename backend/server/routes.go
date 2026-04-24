@@ -448,16 +448,16 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 		})
 	})
 
-	//	@title			FOSS Disclosure Portal
-	//	@version		1.0.0
-	//	@description	FOSS Disclosure Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
+	//	@title			DISUKO
+	//	@version		1.0.6
+	//	@description	DISUKO Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
 	//	@description
-	//	@description	SPDX-FileCopyrightText: 2023 Mercedes-Benz Tech Innovation GmbH
-	//	@description	SPDX-License-Identifier: MIT
-	//	@termsOfService	https://mb4.me/FOSS_Disclosure_Portal_ToU
+	//	@description	SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+	//	@description	SPDX-License-Identifier: Apache-2.0
 
 	//	@schemes	https
-	//	@basePath	/disco
+	//	@basePath	/api/public
+	//  @host		localhost:3009
 
 	//	@securityDefinitions.apiKey	Bearer
 	//	@in							header

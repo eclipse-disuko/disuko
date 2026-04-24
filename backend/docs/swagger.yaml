@@ -1,4 +1,1010 @@
-basePath: /disco
+swagger: "2.0"
+host: localhost:3009
+basePath: /api/public
+info:
+  contact: {}
+  description: |-
+    DISUKO Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
+
+    SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+    SPDX-License-Identifier: Apache-2.0
+  title: DISUKO
+  version: 1.0.6
+schemes:
+- https
+securityDefinitions:
+  Bearer:
+    description: API key to authorize requests. DISCO xxxx.xxxx.xxxx.xxx
+    in: header
+    name: Authorization
+    type: apiKey
+paths:
+  /v1/groups/{uuid}/children:
+    get:
+      operationId: getChildrenProjects
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project
+          schema:
+            items:
+              $ref: "#/definitions/Project"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get children of a group project
+  /v1/projects/{uuid}:
+    get:
+      operationId: getProjectDetails
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project
+          schema:
+            $ref: "#/definitions/Project"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get project details
+  /v1/projects/{uuid}/policyrules:
+    get:
+      operationId: getProjectPolicyRules
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Policy Rules
+          schema:
+            items:
+              $ref: "#/definitions/PolicyRule"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get policy rules of project
+  /v1/projects/{uuid}/sbomcheck:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: getSBOMStatusInformation
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: SBOM file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SPDX Status Information
+          schema:
+            $ref: "#/definitions/SpdxStatusInformation"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/SpdxUploadResponse"
+      security:
+      - Bearer: []
+      summary: Get status information of uploaded SBOM file
+  /v1/projects/{uuid}/schema:
+    get:
+      description: some description
+      operationId: getProjectSchema
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Schema Details
+          schema:
+            type: string
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get project schema
+  /v1/projects/{uuid}/search:
+    post:
+      consumes:
+      - application/json
+      operationId: searchProjectSbom
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Tag to be searched
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: "#/definitions/ProjectSearch"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Result list
+          schema:
+            items:
+              $ref: "#/definitions/ProjectSearchRes"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Search SBOM by tag
+  /v1/projects/{uuid}/status:
+    get:
+      operationId: getProjectStatus
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project Status
+          schema:
+            $ref: "#/definitions/ProjectStatus"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get project status
+  /v1/projects/{uuid}/versions:
+    get:
+      operationId: getProjectVersions
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Versions (also known as Channels)
+          schema:
+            items:
+              type: string
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get project versions (also known as channels)
+    post:
+      consumes:
+      - application/json
+      operationId: createProjectVersion
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Version (also known as Channel) Details
+        in: body
+        name: version
+        required: true
+        schema:
+          $ref: "#/definitions/VersionRequest"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: The channel already exist
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Create project version (also known as channel)
+  /v1/projects/{uuid}/versions/{version}:
+    delete:
+      operationId: deleteProjectVersion
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+        "417":
+          description: Can not be deleted, it is in use
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Delete version (also known as channel) of project
+    get:
+      operationId: getProjectVersionDetails
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Version (also known as Channel) Details
+          schema:
+            $ref: "#/definitions/VersionDetails"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get version (also known as channel) details of project
+  /v1/projects/{uuid}/versions/{version}/ccs:
+    get:
+      operationId: getProjectVersionExternalSourceCodeReferences
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: External Source
+          schema:
+            items:
+              $ref: "#/definitions/ExternalSource"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get external references to source code resources
+    post:
+      operationId: createProjectVersionExternalSourceCodeReferences
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: Source
+        in: body
+        name: source
+        required: true
+        schema:
+          $ref: "#/definitions/SourceExternal"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Create external reference to source code resources
+  /v1/projects/{uuid}/versions/{version}/reviewremarks:
+    get:
+      operationId: getProjectVersionReviewRemarks
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review remarks
+          schema:
+            items:
+              $ref: "#/definitions/RemarkDto"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get review remarks for version (also known as channel)
+  /v1/projects/{uuid}/versions/{version}/reviewremarks/{reviewRemarkUuid}:
+    post:
+      operationId: projectVersionReviewRemarkcomment
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "Review remark UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: reviewRemarkUuid
+        required: true
+        type: string
+      - description: Comment
+        in: body
+        name: source
+        required: true
+        schema:
+          $ref: "#/definitions/RRCommentExternDTO"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "500":
+          description: Reivew remark not found
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Comment on a review remark
+  /v1/projects/{uuid}/versions/{version}/sboms:
+    get:
+      operationId: getProjectVersionSPDXList
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Version (also known as Channel) History
+          schema:
+            items:
+              $ref: "#/definitions/VersionHistory"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get SPDX list of project version (also known as channel)
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: uploadSBOMAsSPDX
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: SPDX File
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: SPDX Tag
+        in: formData
+        name: sbomTag
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SPDX Upload Response
+          schema:
+            $ref: "#/definitions/SpdxUploadResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/SpdxUploadResponse"
+      security:
+      - Bearer: []
+      summary: Upload SBOM as SPDX
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}:
+    get:
+      operationId: getSBOMMetaForDelivery
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SPDX Meta Data
+          schema:
+            $ref: "#/definitions/SpdxMetaData"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get SBOM meta data for a specific delivery
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/check:
+    get:
+      operationId: getProjectVersionSBOMStatus
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SPDX Status Information
+          schema:
+            $ref: "#/definitions/SpdxStatusInformation"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get SBOM status information of project version (also known as channel)
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/lock:
+    put:
+      consumes:
+      - application/json
+      operationId: lockSpdx
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "500":
+          description: SPDX not found in history
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Lock SPDX
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/html:
+    get:
+      operationId: getSBOMNoticeFileHTML
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: Notice File
+          schema:
+            type: string
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get notice file for specified SBOM formatted as HTML
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/json:
+    get:
+      operationId: getSBOMNoticeFileJSON
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Notice File
+          schema:
+            $ref: "#/definitions/NoticeFile"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get notice file for specified SBOM formatted as JSON
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/text:
+    get:
+      operationId: getSBOMNoticeFileText
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Notice File
+          schema:
+            type: string
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get notice file for specified SBOM formatted as text
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/status:
+    get:
+      consumes:
+      - application/json
+      operationId: getSpdxStatus
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Overall Policy Status Response for SBOM
+          schema:
+            $ref: "#/definitions/project.SbomStatusPublicResponseDto"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "500":
+          description: SPDX not found in history
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Update SPDX Tag
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/tag:
+    put:
+      consumes:
+      - application/json
+      operationId: updateSpdxTag
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      - description: Tag
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: "#/definitions/project.SPDXSetTagRequestDto"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "500":
+          description: SPDX not found in history
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+      summary: Update SPDX Tag
+  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/unlock:
+    put:
+      consumes:
+      - application/json
+      operationId: unlockSpdx
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      - description: "UUID of the SBOM delivery or 'latest' for the latest SBOM delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: sbomUuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Response
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "417":
+          description: Validation Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "500":
+          description: SPDX not found in history
+          schema:
+            $ref: "#/definitions/HttpError"
+      security:
+      - Bearer: []
+  /v2/projects/{uuid}/versions:
+    get:
+      operationId: getProjectVersionsV2
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Versions (also known as Channels) with UUID and Name
+          schema:
+            items:
+              $ref: "#/definitions/VersionPublicResponseMin"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get project versions (also known as channels) with details
+  /v2/projects/{uuid}/versions/{version}/reviewremarks:
+    get:
+      operationId: getProjectVersionReviewRemarksV2
+      parameters:
+      - description: "Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: "Project Version Name (also known as Channel Name) e.g.: main"
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review remarks
+          schema:
+            items:
+              $ref: "#/definitions/RemarkDtoExternV2"
+            type: array
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get review remarks for version (also known as channel)
 definitions:
   ExternalSource:
     properties:
@@ -88,14 +1094,14 @@ definitions:
     properties:
       components:
         items:
-          $ref: '#/definitions/NoticeComponent'
+          $ref: "#/definitions/NoticeComponent"
         type: array
       licenses:
         items:
-          $ref: '#/definitions/NoticeLicence'
+          $ref: "#/definitions/NoticeLicence"
         type: array
       meta:
-        $ref: '#/definitions/NoticeMetaData'
+        $ref: "#/definitions/NoticeMetaData"
     type: object
   NoticeLicence:
     properties:
@@ -149,14 +1155,14 @@ definitions:
         type: string
       licenses:
         items:
-          $ref: '#/definitions/PolicyRuleLicense'
+          $ref: "#/definitions/PolicyRuleLicense"
         type: array
       name:
         example: Policy rule name
         type: string
       type:
         allOf:
-        - $ref: '#/definitions/ListType'
+        - $ref: "#/definitions/ListType"
         example: deny
       updated:
         example: "2023-07-11T11:26:07.440978865Z"
@@ -166,7 +1172,7 @@ definitions:
     properties:
       alias:
         items:
-          $ref: '#/definitions/license.Alias'
+          $ref: "#/definitions/license.Alias"
         type: array
       identifier:
         example: AGPL-3.0-or-later
@@ -228,7 +1234,7 @@ definitions:
         type: string
       versionStatus:
         items:
-          $ref: '#/definitions/VersionStatusPublicResponse'
+          $ref: "#/definitions/VersionStatusPublicResponse"
         type: array
     type: object
   RRCommentExternDTO:
@@ -259,7 +1265,7 @@ definitions:
         type: string
       events:
         items:
-          $ref: '#/definitions/reviewremarks.EventDtoExternV1'
+          $ref: "#/definitions/reviewremarks.EventDtoExternV1"
         type: array
       key:
         type: string
@@ -292,7 +1298,7 @@ definitions:
         type: string
       components:
         items:
-          $ref: '#/definitions/reviewremarks.ComponentMetaDto'
+          $ref: "#/definitions/reviewremarks.ComponentMetaDto"
         type: array
       created:
         type: string
@@ -300,7 +1306,7 @@ definitions:
         type: string
       events:
         items:
-          $ref: '#/definitions/reviewremarks.EventDtoExternV2'
+          $ref: "#/definitions/reviewremarks.EventDtoExternV2"
         type: array
       key:
         type: string
@@ -308,7 +1314,7 @@ definitions:
         type: string
       licenses:
         items:
-          $ref: '#/definitions/reviewremarks.LicenseMetaDto'
+          $ref: "#/definitions/reviewremarks.LicenseMetaDto"
         type: array
       origin:
         type: string
@@ -348,7 +1354,7 @@ definitions:
         type: string
       sourceType:
         allOf:
-        - $ref: '#/definitions/SourceType'
+        - $ref: "#/definitions/SourceType"
         maxLength: 20
       uploader:
         example: Uploader
@@ -402,28 +1408,28 @@ definitions:
         type: string
       licenseRemarks:
         items:
-          $ref: '#/definitions/SpdxStatusLicenceRemarks'
+          $ref: "#/definitions/SpdxStatusLicenceRemarks"
         type: array
       name:
         example: '@some/component'
         type: string
       policyRuleStatus:
         items:
-          $ref: '#/definitions/SpdxStatusPolicy'
+          $ref: "#/definitions/SpdxStatusPolicy"
         type: array
       scanRemarks:
         items:
-          $ref: '#/definitions/SpdxStatusScanRemarks'
+          $ref: "#/definitions/SpdxStatusScanRemarks"
         type: array
       spdxId:
         example: dummy-spdx-id----component23456
         type: string
       usedAliases:
         items:
-          $ref: '#/definitions/UsedAlias'
+          $ref: "#/definitions/UsedAlias"
         type: array
       usedDecision:
-        $ref: '#/definitions/UsedDecision'
+        $ref: "#/definitions/UsedDecision"
       version:
         example: 7.19.6
         type: string
@@ -432,7 +1438,7 @@ definitions:
     properties:
       components:
         items:
-          $ref: '#/definitions/SpdxStatusComponent'
+          $ref: "#/definitions/SpdxStatusComponent"
         type: array
       disclaimer:
         example: Disclaimer
@@ -478,7 +1484,7 @@ definitions:
         type: string
       type:
         allOf:
-        - $ref: '#/definitions/ListType'
+        - $ref: "#/definitions/ListType"
         example: allow
       used:
         type: boolean
@@ -555,7 +1561,7 @@ definitions:
         example: "1.0"
         type: string
       overallReview:
-        $ref: '#/definitions/OverallReviewPublicResponse'
+        $ref: "#/definitions/OverallReviewPublicResponse"
       status:
         example: unreviewed
         type: string
@@ -610,7 +1616,7 @@ definitions:
         example: "1.0"
         type: string
       overallReview:
-        $ref: '#/definitions/OverallReviewPublicResponse'
+        $ref: "#/definitions/OverallReviewPublicResponse"
       status:
         example: unreviewed
         type: string
@@ -687,7 +1693,7 @@ definitions:
       authorFullName:
         type: string
       content:
-        $ref: '#/definitions/reviewremarks.EventContentDtoExternV2'
+        $ref: "#/definitions/reviewremarks.EventContentDtoExternV2"
       created:
         type: string
       key:
@@ -707,1018 +1713,3 @@ definitions:
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
-info:
-  contact: {}
-  description: |-
-    FOSS Disclosure Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
-
-    SPDX-FileCopyrightText: 2023 Mercedes-Benz Tech Innovation GmbH
-    SPDX-License-Identifier: MIT
-  termsOfService: https://mb4.me/FOSS_Disclosure_Portal_ToU
-  title: FOSS Disclosure Portal
-  version: 1.0.0
-paths:
-  /v1/groups/{uuid}/children:
-    get:
-      operationId: getChildrenProjects
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Project
-          schema:
-            items:
-              $ref: '#/definitions/Project'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get children of a group project
-  /v1/projects/{uuid}:
-    get:
-      operationId: getProjectDetails
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Project
-          schema:
-            $ref: '#/definitions/Project'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get project details
-  /v1/projects/{uuid}/policyrules:
-    get:
-      operationId: getProjectPolicyRules
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Policy Rules
-          schema:
-            items:
-              $ref: '#/definitions/PolicyRule'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get policy rules of project
-  /v1/projects/{uuid}/sbomcheck:
-    post:
-      consumes:
-      - multipart/form-data
-      operationId: getSBOMStatusInformation
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: SBOM file
-        in: formData
-        name: file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: SPDX Status Information
-          schema:
-            $ref: '#/definitions/SpdxStatusInformation'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/SpdxUploadResponse'
-      security:
-      - Bearer: []
-      summary: Get status information of uploaded SBOM file
-  /v1/projects/{uuid}/schema:
-    get:
-      description: some description
-      operationId: getProjectSchema
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Schema Details
-          schema:
-            type: string
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get project schema
-  /v1/projects/{uuid}/search:
-    post:
-      consumes:
-      - application/json
-      operationId: searchProjectSbom
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: Tag to be searched
-        in: body
-        name: tag
-        required: true
-        schema:
-          $ref: '#/definitions/ProjectSearch'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Result list
-          schema:
-            items:
-              $ref: '#/definitions/ProjectSearchRes'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Search SBOM by tag
-  /v1/projects/{uuid}/status:
-    get:
-      operationId: getProjectStatus
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Project Status
-          schema:
-            $ref: '#/definitions/ProjectStatus'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get project status
-  /v1/projects/{uuid}/versions:
-    get:
-      operationId: getProjectVersions
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Versions (also known as Channels)
-          schema:
-            items:
-              type: string
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get project versions (also known as channels)
-    post:
-      consumes:
-      - application/json
-      operationId: createProjectVersion
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: Version (also known as Channel) Details
-        in: body
-        name: version
-        required: true
-        schema:
-          $ref: '#/definitions/VersionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: The channel already exist
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Create project version (also known as channel)
-  /v1/projects/{uuid}/versions/{version}:
-    delete:
-      operationId: deleteProjectVersion
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-        "417":
-          description: Can not be deleted, it is in use
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Delete version (also known as channel) of project
-    get:
-      operationId: getProjectVersionDetails
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Version (also known as Channel) Details
-          schema:
-            $ref: '#/definitions/VersionDetails'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get version (also known as channel) details of project
-  /v1/projects/{uuid}/versions/{version}/ccs:
-    get:
-      operationId: getProjectVersionExternalSourceCodeReferences
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: External Source
-          schema:
-            items:
-              $ref: '#/definitions/ExternalSource'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get external references to source code resources
-    post:
-      operationId: createProjectVersionExternalSourceCodeReferences
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: Source
-        in: body
-        name: source
-        required: true
-        schema:
-          $ref: '#/definitions/SourceExternal'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Create external reference to source code resources
-  /v1/projects/{uuid}/versions/{version}/reviewremarks:
-    get:
-      operationId: getProjectVersionReviewRemarks
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Review remarks
-          schema:
-            items:
-              $ref: '#/definitions/RemarkDto'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get review remarks for version (also known as channel)
-  /v1/projects/{uuid}/versions/{version}/reviewremarks/{reviewRemarkUuid}:
-    post:
-      operationId: projectVersionReviewRemarkcomment
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'Review remark UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: reviewRemarkUuid
-        required: true
-        type: string
-      - description: Comment
-        in: body
-        name: source
-        required: true
-        schema:
-          $ref: '#/definitions/RRCommentExternDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "500":
-          description: Reivew remark not found
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Comment on a review remark
-  /v1/projects/{uuid}/versions/{version}/sboms:
-    get:
-      operationId: getProjectVersionSPDXList
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Version (also known as Channel) History
-          schema:
-            items:
-              $ref: '#/definitions/VersionHistory'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get SPDX list of project version (also known as channel)
-    post:
-      consumes:
-      - multipart/form-data
-      operationId: uploadSBOMAsSPDX
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: SPDX File
-        in: formData
-        name: file
-        required: true
-        type: file
-      - description: SPDX Tag
-        in: formData
-        name: sbomTag
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: SPDX Upload Response
-          schema:
-            $ref: '#/definitions/SpdxUploadResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/SpdxUploadResponse'
-      security:
-      - Bearer: []
-      summary: Upload SBOM as SPDX
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}:
-    get:
-      operationId: getSBOMMetaForDelivery
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: SPDX Meta Data
-          schema:
-            $ref: '#/definitions/SpdxMetaData'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get SBOM meta data for a specific delivery
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/check:
-    get:
-      operationId: getProjectVersionSBOMStatus
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: SPDX Status Information
-          schema:
-            $ref: '#/definitions/SpdxStatusInformation'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get SBOM status information of project version (also known as channel)
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/lock:
-    put:
-      consumes:
-      - application/json
-      operationId: lockSpdx
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "500":
-          description: SPDX not found in history
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Lock SPDX
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/html:
-    get:
-      operationId: getSBOMNoticeFileHTML
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - text/html
-      responses:
-        "200":
-          description: Notice File
-          schema:
-            type: string
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get notice file for specified SBOM formatted as HTML
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/json:
-    get:
-      operationId: getSBOMNoticeFileJSON
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Notice File
-          schema:
-            $ref: '#/definitions/NoticeFile'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get notice file for specified SBOM formatted as JSON
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/text:
-    get:
-      operationId: getSBOMNoticeFileText
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - text/plain
-      responses:
-        "200":
-          description: Notice File
-          schema:
-            type: string
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get notice file for specified SBOM formatted as text
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/status:
-    get:
-      consumes:
-      - application/json
-      operationId: getSpdxStatus
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Overall Policy Status Response for SBOM
-          schema:
-            $ref: '#/definitions/project.SbomStatusPublicResponseDto'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "500":
-          description: SPDX not found in history
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Update SPDX Tag
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/tag:
-    put:
-      consumes:
-      - application/json
-      operationId: updateSpdxTag
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      - description: Tag
-        in: body
-        name: tag
-        required: true
-        schema:
-          $ref: '#/definitions/project.SPDXSetTagRequestDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "500":
-          description: SPDX not found in history
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-      summary: Update SPDX Tag
-  /v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/unlock:
-    put:
-      consumes:
-      - application/json
-      operationId: unlockSpdx
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      - description: 'UUID of the SBOM delivery or ''latest'' for the latest SBOM
-          delivery e.g.: dummy-sbom-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: sbomUuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success Response
-          schema:
-            $ref: '#/definitions/SuccessResponse'
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "417":
-          description: Validation Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "500":
-          description: SPDX not found in history
-          schema:
-            $ref: '#/definitions/HttpError'
-      security:
-      - Bearer: []
-  /v2/projects/{uuid}/versions:
-    get:
-      operationId: getProjectVersionsV2
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Versions (also known as Channels) with UUID and Name
-          schema:
-            items:
-              $ref: '#/definitions/VersionPublicResponseMin'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get project versions (also known as channels) with details
-  /v2/projects/{uuid}/versions/{version}/reviewremarks:
-    get:
-      operationId: getProjectVersionReviewRemarksV2
-      parameters:
-      - description: 'Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111'
-        in: path
-        name: uuid
-        required: true
-        type: string
-      - description: 'Project Version Name (also known as Channel Name) e.g.: main'
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Review remarks
-          schema:
-            items:
-              $ref: '#/definitions/RemarkDtoExternV2'
-            type: array
-        "401":
-          description: Unauthorized Error
-          schema:
-            $ref: '#/definitions/HttpError'
-        "404":
-          description: NotFound Error
-          schema:
-            $ref: '#/definitions/HttpError404'
-      security:
-      - Bearer: []
-      summary: Get review remarks for version (also known as channel)
-schemes:
-- https
-securityDefinitions:
-  Bearer:
-    description: API key to authorize requests. DISCO xxxx.xxxx.xxxx.xxx
-    in: header
-    name: Authorization
-    type: apiKey
-swagger: "2.0"
