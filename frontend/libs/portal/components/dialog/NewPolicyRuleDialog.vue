@@ -123,7 +123,9 @@ defineExpose({
             <v-col cols="12" xs="12" class="pb-2">
               <v-select
                 variant="outlined"
-                :class="{'pb-2': item.LabelSets.length > 1 && index !== item.LabelSets.length - 1}"
+                :class="{
+                  'pb-2': item.LabelSets.length > 1 && index !== item.LabelSets.length - 1,
+                }"
                 hide-details="auto"
                 v-model="item.LabelSets[index]"
                 item-title="name"
@@ -176,6 +178,13 @@ defineExpose({
                 hide-details
                 color="primary"
                 :label="t('AUXILIARY_FLAG')"
+                class="mt-0 shrink pt-0" />
+
+              <v-checkbox
+                v-model="item.Calculated"
+                hide-details
+                color="primary"
+                :label="t('CALCULATED_POLICY_RULE_ENABLED')"
                 class="mt-0 shrink pt-0" />
             </v-col>
           </v-row>

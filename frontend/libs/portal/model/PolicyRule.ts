@@ -3,6 +3,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {BaseDto} from '@disclosure-portal/model/BaseClass';
+import type {
+  BucketDefinition,
+  CalculatedPolicyConfig,
+  CalculatedPolicyScope,
+} from '@disclosure-portal/model/CalculatedPolicyRules';
+
+export type {
+  BucketDefinition,
+  CalculatedPolicyConfig,
+  CalculatedPolicyScope,
+} from '@disclosure-portal/model/CalculatedPolicyRules';
+
+const getStringArray = (value: unknown): string[] => (Array.isArray(value) ? (value as string[]) : []);
+
+const getBoolArray = (value: unknown): boolean[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .filter((entry) => typeof entry === 'boolean' || entry === 'true' || entry === 'false')
+    .map((entry) => (typeof entry === 'boolean' ? entry : entry === 'true'));
+};
 
 export default class PolicyRule extends BaseDto {
   public Status = '';
@@ -17,6 +39,21 @@ export default class PolicyRule extends BaseDto {
   public DeprecatedDate = '';
   public Active: boolean = true;
   public ApplyToAll: boolean = false;
+  public Calculated: boolean = false;
+  public CalculatedConfig: CalculatedPolicyConfig = {
+    bucketDefinition: {
+      deniedClassifications: [],
+      warnedClassifications: [],
+      allowedClassifications: [],
+    },
+    licenseScope: {
+      isLicenseChart: [],
+      approvalState: [],
+      family: [],
+      licenseType: [],
+      source: [],
+    },
+  };
 
   public constructor(dto: PolicyRule | null | undefined = null) {
     super(dto);
@@ -38,6 +75,32 @@ export default class PolicyRule extends BaseDto {
     if (this.LabelSets.length < 1) {
       this.LabelSets[0] = [];
     }
+    const config = (this.CalculatedConfig ?? {}) as unknown as Record<string, unknown>;
+
+    const getLicenseScope = (camelKey: string, pascalKey: string): CalculatedPolicyScope => {
+      const scope = (config[camelKey] ?? config[pascalKey] ?? {}) as Record<string, unknown>;
+      return {
+        isLicenseChart: getBoolArray(scope.isLicenseChart ?? scope.IsLicenseChart),
+        approvalState: getStringArray(scope.approvalState ?? scope.ApprovalState),
+        family: getStringArray(scope.family ?? scope.Family),
+        licenseType: getStringArray(scope.licenseType ?? scope.LicenseType),
+        source: getStringArray(scope.source ?? scope.Source),
+      };
+    };
+
+    const getBucketDefinition = (camelKey: string, pascalKey: string): BucketDefinition => {
+      const bucket = (config[camelKey] ?? config[pascalKey] ?? {}) as Record<string, unknown>;
+      return {
+        deniedClassifications: getStringArray(bucket.deniedClassifications ?? bucket.DeniedClassifications),
+        warnedClassifications: getStringArray(bucket.warnedClassifications ?? bucket.WarnedClassifications),
+        allowedClassifications: getStringArray(bucket.allowedClassifications ?? bucket.AllowedClassifications),
+      };
+    };
+
+    this.CalculatedConfig = {
+      bucketDefinition: getBucketDefinition('bucketDefinition', 'BucketDefinition'),
+      licenseScope: getLicenseScope('licenseScope', 'LicenseScope'),
+    };
   }
 }
 

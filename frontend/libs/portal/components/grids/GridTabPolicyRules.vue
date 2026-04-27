@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import ClassificationsPerLicenseDialog from '@disclosure-portal/components/dialog/ClassificationsPerLicenseDialog.vue';
+import CalculatedRuleConfig from '@disclosure-portal/components/grids/CalculatedRuleConfig.vue';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import Label from '@disclosure-portal/model/Label';
@@ -36,7 +37,8 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 
 const {t} = useI18n();
-const {getI18NTextOfPrefixKey} = useLicense();
+const {getI18NTextOfPrefixKey, getLicenseApprovalTypes, getLicenseFamily, getLicenseTypes} = useLicense();
+const {getNameForLanguage} = useViewTools();
 const router = useRouter();
 const rule = ref(new PolicyRule());
 const isPolicyManager = ref(false);
@@ -74,6 +76,7 @@ const possibleApprovalNotSelected = ref<IDefaultSelectItem[]>([]);
 const possibleTypeNotSelected = ref<IDefaultSelectItem[]>([]);
 const possibleClassificationsNotSelected = ref<IDefaultSelectItem[]>([]);
 const classifications = ref<IObligation[]>([]);
+const classificationsLoaded = ref(false);
 const labelsMap = ref<IMap<Label>>({});
 const policyLabels = ref<Label[]>([]);
 const menu6 = ref(false);
@@ -87,14 +90,38 @@ const menuClassificationNot = ref(false);
 const menuIsLicenseChartNotSelected = ref(false);
 const {info} = useSnackbar();
 const classificationsDialogRef = ref<InstanceType<typeof ClassificationsPerLicenseDialog> | null>(null);
+const calculatedIsLicenseChartOptions = computed<IDefaultSelectItem[]>(() => [
+  {text: t('TABLE_LICENSE_CHART_STATUS_IS'), value: 'true'},
+  {text: t('TABLE_LICENSE_CHART_STATUS_IS_NOT'), value: 'false'},
+]);
+const calculatedApprovalOptions = computed<IDefaultSelectItem[]>(() =>
+  getLicenseApprovalTypes().map((approval) => ({text: approval.text, value: approval.value || 'not set'})),
+);
+const calculatedFamilyOptions = computed<IDefaultSelectItem[]>(() =>
+  getLicenseFamily()
+    .map((family) => ({text: family.text, value: family.value || 'not declared'}))
+    .sort((a, b) => compareFamily(a.value, b.value)),
+);
+const calculatedTypeOptions = computed<IDefaultSelectItem[]>(() =>
+  getLicenseTypes().map((type) => ({text: type.text, value: type.value || 'not declared'})),
+);
+const calculatedSourceOptions = computed<IDefaultSelectItem[]>(() => [
+  {text: 'spdx', value: 'spdx'},
+  {text: 'custom', value: 'custom'},
+]);
 
-const retrieveRule = async (ruleId: string) => {
+const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
+const classificationOptions = computed(() =>
+  classifications.value.filter((c) => c?._key).map((c) => ({text: getNameForLanguage(c), value: c._key})),
+);
+
+const retrieveRule = async (policyRuleId: string) => {
   if (router.currentRoute.value.params.uuid) {
     rule.value = new PolicyRule(
-      (await ProjectService.getProjectPolicyRule(<string>router.currentRoute.value.params.uuid, ruleId)).data,
+      (await ProjectService.getProjectPolicyRule(<string>router.currentRoute.value.params.uuid, policyRuleId)).data,
     );
   } else {
-    rule.value = new PolicyRule((await policyRuleService.getPolicyRule(ruleId)).data);
+    rule.value = new PolicyRule((await policyRuleService.getPolicyRule(policyRuleId)).data);
   }
 };
 
@@ -130,7 +157,7 @@ const getActiveClassForPolicyFilterBtn = (policy: PolicyState): string => {
   }
 };
 
-const getCssClass = () => (isPolicyManager.value ? 'force-border' : 'force-border tableNoHandCursor');
+const getCssClass = () => (canEditManual.value ? 'force-border' : 'force-border tableNoHandCursor');
 
 const onACFocus = (a: FocusEvent) => {
   const clickEvent = new Event('click', {bubbles: true});
@@ -239,8 +266,8 @@ const getPossibleClassifications = (items: LicenseSlim[], selected = true): IDef
         item.meta.classifications,
         (c: IObligation) =>
           ({
-            text: useViewTools().getNameForLanguage(c),
-            value: useViewTools().getNameForLanguage(c),
+            text: getNameForLanguage(c),
+            value: getNameForLanguage(c),
           }) as IDefaultSelectItem,
       );
     })
@@ -248,10 +275,10 @@ const getPossibleClassifications = (items: LicenseSlim[], selected = true): IDef
     .union(
       _.map(
         alreadySelected,
-        (selected: string) =>
+        (selectedValue: string) =>
           ({
-            text: selected,
-            value: selected,
+            text: selectedValue,
+            value: selectedValue,
           }) as IDefaultSelectItem,
       ),
     )
@@ -277,10 +304,10 @@ const getPossibleType = (items: LicenseSlim[], selected = true): IDefaultSelectI
     .union(
       _.map(
         alreadySelected,
-        (selected: string) =>
+        (selectedValue: string) =>
           ({
-            text: getI18NTextOfPrefixKey('LT_', selected),
-            value: selected,
+            text: getI18NTextOfPrefixKey('LT_', selectedValue),
+            value: selectedValue,
           }) as IDefaultSelectItem,
       ),
     )
@@ -305,10 +332,10 @@ const getPossibleApproval = (items: LicenseSlim[], selected = true): IDefaultSel
     .union(
       _.map(
         alreadySelected,
-        (selected: string) =>
+        (selectedValue: string) =>
           ({
-            text: getI18NTextOfPrefixKey('LT_APP_', selected),
-            value: selected,
+            text: getI18NTextOfPrefixKey('LT_APP_', selectedValue),
+            value: selectedValue,
           }) as IDefaultSelectItem,
       ),
     )
@@ -333,10 +360,10 @@ const getPossibleFamily = (items: LicenseSlim[], selected = true): IDefaultSelec
     .union(
       _.map(
         alreadySelected,
-        (selected: string) =>
+        (selectedValue: string) =>
           ({
-            text: getI18NTextOfPrefixKey('LIC_FAMILY_', selected),
-            value: selected,
+            text: getI18NTextOfPrefixKey('LIC_FAMILY_', selectedValue),
+            value: selectedValue,
           }) as IDefaultSelectItem,
       ),
     )
@@ -361,10 +388,10 @@ const getPossibleIsLicenseChart = (items: LicenseSlim[], selected = true): IDefa
     .union(
       _.map(
         alreadySelected,
-        (selected: string) =>
+        (selectedValue: string) =>
           ({
-            text: t(selected === 'true' ? 'TABLE_LICENSE_CHART_STATUS_IS' : 'TABLE_LICENSE_CHART_STATUS_IS_NOT'),
-            value: selected,
+            text: t(selectedValue === 'true' ? 'TABLE_LICENSE_CHART_STATUS_IS' : 'TABLE_LICENSE_CHART_STATUS_IS_NOT'),
+            value: selectedValue,
           }) as IDefaultSelectItem,
       ),
     )
@@ -384,8 +411,10 @@ const fillLicenseTbl = (policyState: PolicyState, license: LicenseSlim): boolean
 };
 
 const retrieveClassifications = async () => {
+  classificationsLoaded.value = false;
   const response = (await AdminService.getAllObligations()).data;
   classifications.value = response.items;
+  classificationsLoaded.value = true;
 };
 
 const reloadLabels = async () => {
@@ -433,7 +462,7 @@ const moveAllFilteredToSelectedList = () => {
 };
 
 const unselectLicense = (license: LicenseSlim) => {
-  if (!isPolicyManager.value) {
+  if (!canEditManual.value) {
     return;
   }
   removeFromList(selectedLicenses.value, license);
@@ -489,7 +518,7 @@ const openLicense = (item: LicenseSlim) => {
 };
 
 const selectLicense = (license: LicenseSlim) => {
-  if (!isPolicyManager.value) {
+  if (!canEditManual.value) {
     return;
   }
   const index = notSelectedLicenses.value.indexOf(license, 0);
@@ -504,9 +533,9 @@ const selectLicense = (license: LicenseSlim) => {
   refreshPossible(notSelectedLicenses.value, false);
 };
 
-const openClassifications = (classifications: IObligation[], licenseName: string, licenseId: string) => {
+const openClassifications = (licenseClassifications: IObligation[], licenseName: string, licenseId: string) => {
   if (classificationsDialogRef.value) {
-    classificationsDialogRef.value?.open(classifications, licenseName, licenseId);
+    classificationsDialogRef.value?.open(licenseClassifications, licenseName, licenseId);
   }
 };
 
@@ -517,10 +546,10 @@ const saveChanges = async () => {
   hasChanges.value = false;
 };
 
-const policies = ref(PolicyRules); // Initialisiere dies mit deinen tatsächlichen Daten
+const policies = ref(PolicyRules);
 
 const ruleCallback: IRuleBtnCallbacks = {
-  getUrlToComponents: (_) => {
+  getUrlToComponents: (policy) => {
     return '';
   },
   handlePolicySelect: (policy, selectedFilterPolicyTypes) => {
@@ -568,9 +597,7 @@ const ruleCallback: IRuleBtnCallbacks = {
         return '';
     }
   },
-  setRuleButtons: (ruleButtons: any) => {
-    ruleButtons.value = ruleButtons;
-  },
+  setRuleButtons: () => {},
 };
 
 const componentHeaders = computed<DataTableHeader[]>(() => {
@@ -663,7 +690,7 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
     },
   ];
 
-  if (isPolicyManager.value) {
+  if (canEditManual.value) {
     headers.push({
       title: '',
       align: 'start',
@@ -675,7 +702,7 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
     });
   }
 
-  if (!isPolicyManager.value) {
+  if (!canEditManual.value) {
     headers.push({
       title: t('COL_ACTIONS'),
       sortable: false,
@@ -715,70 +742,144 @@ onMounted(async () => {
   await retrieveClassifications();
   await reloadLabels();
 });
+
+const setCalculatedEnabled = (value: boolean) => {
+  rule.value.Calculated = value;
+  hasChanges.value = true;
+};
+
+type CalculatedBucketName = 'deniedClassifications' | 'warnedClassifications' | 'allowedClassifications';
+
+const setCalculatedBucketClassifications = (bucketName: CalculatedBucketName, value: string[]) => {
+  rule.value.CalculatedConfig.bucketDefinition[bucketName] = value;
+  hasChanges.value = true;
+};
+
+const toBoolArray = (values: Array<string | boolean>): boolean[] => values.map((v) => v === true || v === 'true');
+
+const getCalculatedScopeFilterValues = (filterName: string): Array<string | boolean> => {
+  const scope = rule.value.CalculatedConfig.licenseScope;
+  switch (filterName) {
+    case 'isLicenseChart':
+      return scope.isLicenseChart.map(String);
+    case 'approvalState':
+      return scope.approvalState;
+    case 'family':
+      return scope.family;
+    case 'licenseType':
+      return scope.licenseType;
+    case 'source':
+      return scope.source;
+    default:
+      return [];
+  }
+};
+
+const setCalculatedScopeFilterValues = (filterName: string, values: Array<string | boolean>) => {
+  const scope = rule.value.CalculatedConfig.licenseScope;
+  switch (filterName) {
+    case 'isLicenseChart':
+      scope.isLicenseChart = toBoolArray(values);
+      break;
+    case 'approvalState':
+      scope.approvalState = values as string[];
+      break;
+    case 'family':
+      scope.family = values as string[];
+      break;
+    case 'licenseType':
+      scope.licenseType = values as string[];
+      break;
+    case 'source':
+      scope.source = values as string[];
+      break;
+  }
+  hasChanges.value = true;
+};
 </script>
 
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid w-full grid-cols-2 gap-6">
-        <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 flex-row" style="height: 36px">
-          <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_LICENSES') }}</h3>
-          <DCActionButton
-            :text="t('BTN_SAVE')"
-            icon="mdi-content-save"
-            :hint="t('BTN_SAVE')"
-            @click="saveChanges"
-            v-if="hasChanges && rule.Deprecated === false" />
-        </div>
-        <div v-if="isPolicyManager" class="d-flex align-center mt-2 flex-row">
-          <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}</h3>
-        </div>
-        <div :class="{'col-span-2': !isPolicyManager}">
-          <div class="d-flex ga-1 label-filter flex-row">
-            <div class="overflow-auto">
-              <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
-            </div>
-            <v-spacer />
-            <v-text-field
-              autocomplete="off"
-              :max-width="500"
-              v-model="filterSelected"
-              :label="t('labelSearch')"
-              append-inner-icon="mdi-magnify"
-              variant="outlined"
-              clearable
-              density="compact"
-              hide-details />
-          </div>
-        </div>
-        <div v-if="isPolicyManager && !rule.Deprecated">
-          <div class="d-flex ga-1 label-filter flex-row">
+      <div class="flex w-full flex-col gap-4">
+        <div class="grid w-full basis-full grid-cols-2 gap-6">
+          <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 h-9 flex-row">
+            <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_LICENSES') }}</h3>
             <DCActionButton
-              large
+              :text="t('BTN_SAVE')"
+              icon="mdi-content-save"
+              :hint="t('BTN_SAVE')"
+              @click="saveChanges"
+              v-if="hasChanges && rule.Deprecated === false && !rule.Calculated" />
+          </div>
+          <div v-if="isPolicyManager" class="d-flex align-center justify-space-between mt-2 h-9 flex-row">
+            <h3 v-if="!rule.Calculated" class="d-subtitle-2">{{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}</h3>
+            <div v-else></div>
+            <DCActionButton
+              v-if="!rule.Calculated"
               variant="outlined"
-              :text="`${t('MOVE_TO_SELECTED')} (${filteredListNotSelected.length})`"
-              icon="mdi-chevron-left"
-              :hint="t('TT_MOVE_TO_SELECTED')"
-              @click="moveAllFilteredToSelectedList"
-              v-if="filteredListNotSelected.length > 0" />
-            <v-spacer />
-            <v-text-field
-              autocomplete="off"
-              :max-width="500"
-              v-model="filterUnSelected"
-              :label="t('labelSearch')"
-              append-inner-icon="mdi-magnify"
+              :text="t('CALCULATED_POLICY_RULE_ENABLED')"
+              icon="mdi-calculator-variant"
+              :hint="t('CALCULATED_POLICY_RULE_ENABLED')"
+              @click="setCalculatedEnabled(true)" />
+            <DCActionButton
+              v-else
               variant="outlined"
-              clearable
-              density="compact"
-              hide-details />
+              :text="t('MANUAL_RULES')"
+              icon="mdi-cog-outline"
+              :hint="t('MANUAL_RULES')"
+              @click="setCalculatedEnabled(false)" />
+          </div>
+
+          <div :class="{'col-span-2': !canEditManual && !rule.Calculated, 'col-start-1': rule.Calculated}">
+            <div class="d-flex ga-1 label-filter flex-row">
+              <div class="overflow-auto">
+                <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
+              </div>
+              <v-spacer />
+              <v-text-field
+                autocomplete="off"
+                :max-width="500"
+                v-model="filterSelected"
+                :label="t('labelSearch')"
+                append-inner-icon="mdi-magnify"
+                variant="outlined"
+                clearable
+                density="compact"
+                hide-details />
+            </div>
+          </div>
+          <div v-if="isPolicyManager && !rule.Deprecated && canEditManual && !rule.Calculated">
+            <div class="d-flex ga-1 label-filter flex-row">
+              <DCActionButton
+                large
+                variant="outlined"
+                :text="`${t('MOVE_TO_SELECTED')} (${filteredListNotSelected.length})`"
+                icon="mdi-chevron-left"
+                :hint="t('TT_MOVE_TO_SELECTED')"
+                @click="moveAllFilteredToSelectedList"
+                v-if="filteredListNotSelected.length > 0" />
+              <v-spacer />
+              <v-text-field
+                autocomplete="off"
+                :max-width="500"
+                v-model="filterUnSelected"
+                :label="t('labelSearch')"
+                append-inner-icon="mdi-magnify"
+                variant="outlined"
+                clearable
+                density="compact"
+                hide-details />
+            </div>
           </div>
         </div>
       </div>
     </template>
     <template #table>
       <v-row class="fill-height">
-        <v-col :cols="isPolicyManager ? 6 : 12" class="fill-height">
+        <v-col
+          :cols="(canEditManual && !rule.Calculated) || (isPolicyManager && rule.Calculated) ? 6 : 12"
+          class="fill-height">
           <div class="fill-height" :class="getActiveClassForPolicyFilterBtn(mode)">
             <v-data-table
               :loading="licensesLoading"
@@ -788,7 +889,7 @@ onMounted(async () => {
               :search="filterSelected"
               :items-per-page="25"
               :items="filteredListSelected"
-              @[isPolicyManager&&`click:row`]="
+              @[canEditManual&&`click:row`]="
                 (event: Event, dataItem: DataTableItem<LicenseSlim>) => unselectLicense(dataItem.item)
               "
               density="compact">
@@ -1143,7 +1244,7 @@ onMounted(async () => {
             </v-data-table>
           </div>
         </v-col>
-        <v-col cols="6" v-if="isPolicyManager" class="fill-height">
+        <v-col cols="6" v-if="canEditManual && !rule.Calculated" class="fill-height">
           <v-data-table
             :loading="licensesLoading"
             fixed-header
@@ -1457,7 +1558,7 @@ onMounted(async () => {
               </div>
             </template>
             <template v-slot:item.add>
-              <span style="float: left" v-if="isPolicyManager">
+              <span style="float: left" v-if="canEditManual">
                 <v-icon color="primary" icon="mdi-chevron-left"></v-icon>
               </span>
             </template>
@@ -1496,6 +1597,36 @@ onMounted(async () => {
               </span>
             </template>
           </v-data-table>
+        </v-col>
+        <v-col cols="6" v-if="isPolicyManager && rule.Calculated" class="fill-height">
+          <div class="flex h-full flex-col">
+            <div class="flex-1 overflow-auto">
+              <CalculatedRuleConfig
+                :calculated="rule.Calculated"
+                :classification-options="classificationOptions"
+                :classification-options-loaded="classificationsLoaded"
+                :denied-classifications="rule.CalculatedConfig.bucketDefinition.deniedClassifications"
+                :warned-classifications="rule.CalculatedConfig.bucketDefinition.warnedClassifications"
+                :allowed-classifications="rule.CalculatedConfig.bucketDefinition.allowedClassifications"
+                :calculated-is-license-chart-options="calculatedIsLicenseChartOptions"
+                :calculated-approval-options="calculatedApprovalOptions"
+                :calculated-family-options="calculatedFamilyOptions"
+                :calculated-type-options="calculatedTypeOptions"
+                :calculated-source-options="calculatedSourceOptions"
+                :get-scope-filter-values="getCalculatedScopeFilterValues"
+                @update-calculated="setCalculatedEnabled"
+                @update-bucket="setCalculatedBucketClassifications($event.bucketName, $event.values)"
+                @update-scope="setCalculatedScopeFilterValues($event.filterName, $event.values)" />
+              <div class="d-flex mt-8 justify-end">
+                <DCActionButton
+                  :text="t('BTN_SAVE')"
+                  icon="mdi-content-save"
+                  :hint="t('BTN_SAVE')"
+                  @click="saveChanges"
+                  v-if="hasChanges && rule.Deprecated === false" />
+              </div>
+            </div>
+          </div>
         </v-col>
       </v-row>
     </template>
