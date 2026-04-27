@@ -18,6 +18,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
+  formatDateTimeShort,
   getIconColorForPolicyType,
   getIconForDiffType,
   getIconForPolicyType,
@@ -25,7 +26,6 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
-import dayjs from 'dayjs';
 import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -121,7 +121,7 @@ const groupedSpdxs = computed(() => {
     const newHeader = new SpdxIdentifier('header', '', '', '', vs.VersionName, '');
     res.push(newHeader);
     for (const spdx of vs.SpdxFileHistory) {
-      const uploaded = dayjs(spdx.Uploaded.toString()).format(t('DATETIME_FORMAT_SHORT'));
+      const uploaded = formatDateTimeShort(spdx.Uploaded);
       const ident = new SpdxIdentifier(spdx._key, spdx.MetaInfo.Name, uploaded, vs.VersionKey, '', spdx.Tag);
       res.push(ident);
       ident.versionName = vs.VersionName;
@@ -135,7 +135,6 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
       title: t('COL_COMPARE_STATUS'),
       align: 'start',
       width: 80,
-      class: 'tableHeaderCell',
       value: 'DiffType',
       sortable: true,
       sortRaw: compareDiffType,
@@ -143,7 +142,6 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
     {
       title: t('COL_SPDX_STATUS'),
       align: 'center',
-      class: 'tableHeaderCell',
       value: 'prStatus',
       width: '130',
       sortable: true,
@@ -152,14 +150,12 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
     {
       title: t('COL_NAME'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'Name',
       sortable: true,
     },
     {
       title: t('COL_SPDX_VERSION'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'Version',
       sortable: true,
       sortRaw: compareVersions,
@@ -167,7 +163,6 @@ const componentHeaders = computed<DataTableHeader[]>(() => {
     {
       title: t('COL_SPDX_TYPE'),
       align: 'center',
-      class: 'tableHeaderCell',
       value: 'Type',
       width: '150',
       sortable: true,
@@ -294,18 +289,19 @@ const filterOnLicenseMulti = (info: ComponentMultiDiff): boolean => {
   }
 };
 
-const hasMultipleLicense = (info: ComponentMultiDiff): boolean => {
-  const checkMultipleLicenses = (comp: ComponentInfo): boolean =>
-    comp.licenseEffective.indexOf(' AND ') > 0 || comp.license.indexOf(' OR ') > 0;
-  return _.some(info.ComponentsNew, checkMultipleLicenses) || _.some(info.ComponentsOld, checkMultipleLicenses);
-};
+const checkMultipleLicenses = (comp: ComponentInfo): boolean =>
+  comp.licenseEffective.indexOf(' AND ') > 0 || comp.license.indexOf(' OR ') > 0;
+
+const hasMultipleLicense = (info: ComponentMultiDiff): boolean =>
+  _.some(info.ComponentsNew, checkMultipleLicenses) || _.some(info.ComponentsOld, checkMultipleLicenses);
+
+const multipleLicensesToArray = (comp: ComponentInfo): string[] =>
+  comp.licenseEffective
+    .replace('(', '')
+    .replace(')', '')
+    .split(/ OR | AND /);
 
 const separateMultipleLicenses = (info: ComponentMultiDiff): string[] => {
-  const multipleLicensesToArray = (comp: ComponentInfo): string[] =>
-    comp.licenseEffective
-      .replace('(', '')
-      .replace(')', '')
-      .split(/ OR | AND /);
   const licensesNew = info.ComponentsNew.flatMap(multipleLicensesToArray);
   const licensesOld = info.ComponentsOld.flatMap(multipleLicensesToArray);
   return _.union(licensesNew, licensesOld);
@@ -685,7 +681,7 @@ onBeforeMount(async () => {
                 @click:clear="resetErrors"
                 v-on:change="resetErrors"
                 @change="onSelectionChanged()">
-                <template v-slot:item="{item, props}">
+                <template #item="{item, props}">
                   <v-list-item v-if="item.raw.spdxFileId === 'header'" title="">
                     <span class="d-subtitle-2">{{ item.raw.header }}</span>
                   </v-list-item>
@@ -702,7 +698,7 @@ onBeforeMount(async () => {
                     <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                   </v-list-item>
                 </template>
-                <template v-slot:selection="{item}">
+                <template #selection="{item}">
                   <div class="d-inline">
                     <v-icon
                       color="primary"
@@ -735,7 +731,7 @@ onBeforeMount(async () => {
                 @click:clear="resetErrors"
                 v-on:change="resetErrors"
                 @change="onSelectionChanged()">
-                <template v-slot:item="{item, props}">
+                <template #item="{item, props}">
                   <v-list-item v-if="item.raw.spdxFileId === 'header'" title="">
                     <span class="d-subtitle-2">{{ item.raw.header }}</span>
                   </v-list-item>
@@ -752,7 +748,7 @@ onBeforeMount(async () => {
                     <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                   </v-list-item>
                 </template>
-                <template v-slot:selection="{item}">
+                <template #selection="{item}">
                   <div class="d-inline">
                     <v-icon
                       color="primary"
@@ -796,11 +792,11 @@ onBeforeMount(async () => {
             :search="search"
             @click:row="showDetails"
             :sort-by="sortBy">
-            <template v-slot:header.LicenseEffective="{column, getSortIcon, toggleSort}">
+            <template #[`header.LicenseEffective`]="{column, getSortIcon, toggleSort}">
               <div class="v-data-table-header__content">
                 <span>{{ column.title }}</span>
                 <v-menu :close-on-content-click="false" v-model="licenseFilterOpened">
-                  <template v-slot:activator="{props}">
+                  <template #activator="{props}">
                     <DIconButton
                       :parentProps="props"
                       icon="mdi-filter-variant"
@@ -825,9 +821,9 @@ onBeforeMount(async () => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:item="{props, item}">
+                      <template #item="{props, item}">
                         <v-list-item v-bind="props" class="px-2 py-0" title="">
-                          <template v-slot:prepend="{isSelected}">
+                          <template #prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
                           <span class="pFilterEntry">
@@ -835,7 +831,7 @@ onBeforeMount(async () => {
                           </span>
                         </v-list-item>
                       </template>
-                      <template v-slot:selection="{item, index}">
+                      <template #selection="{item, index}">
                         <div v-if="index === 0" class="pFilterEntry">
                           {{ item.raw }}
                         </div>
@@ -852,11 +848,11 @@ onBeforeMount(async () => {
                   @click="toggleSort(column)" />
               </div>
             </template>
-            <template v-slot:header.prStatus="{column, getSortIcon, toggleSort}">
+            <template #[`header.prStatus`]="{column, getSortIcon, toggleSort}">
               <div class="v-data-table-header__content">
                 <span>{{ column.title }}</span>
                 <v-menu :close-on-content-click="false" v-model="prStatusFilterOpened">
-                  <template v-slot:activator="{props}">
+                  <template #activator="{props}">
                     <DIconButton
                       :parentProps="props"
                       icon="mdi-filter-variant"
@@ -883,12 +879,12 @@ onBeforeMount(async () => {
                       transition="scale-transition"
                       persistent-clea
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:item="{item, props}">
+                      <template #item="{item, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
-                          <template v-slot:prepend="{isSelected}">
+                          <template #prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
-                          <template v-slot:title>
+                          <template #title>
                             <v-icon small :color="getIconColorForPolicyType(item.raw)"
                               >{{ getIconForPolicyType(item.raw) }}
                             </v-icon>
@@ -896,7 +892,7 @@ onBeforeMount(async () => {
                           </template>
                         </v-list-item>
                       </template>
-                      <template v-slot:selection="{item, index}">
+                      <template #selection="{item, index}">
                         <div v-if="index === 0" class="d-flex align-center">
                           <v-icon small :color="getIconColorForPolicyType(item.raw)"
                             >{{ getIconForPolicyType(item.raw) }}
@@ -916,7 +912,7 @@ onBeforeMount(async () => {
                   @click="toggleSort(column)" />
               </div>
             </template>
-            <template v-slot:item.DiffType="{item}">
+            <template #[`item.DiffType`]="{item}">
               <span>
                 <v-icon small>{{ getIconDiffType(item.DiffType) }}</v-icon>
                 <Tooltip>
@@ -924,7 +920,7 @@ onBeforeMount(async () => {
                 </Tooltip>
               </span>
             </template>
-            <template v-slot:item.Version="{item}">
+            <template #[`item.Version`]="{item}">
               <div class="flex flex-col" style="gap: 5px">
                 <div v-for="(entry, i) in getTableViewDataForVersion(item)" :key="i">
                   <v-icon style="width: 16px; height: 16px" class="mr-2" small>{{ entry.icon }}</v-icon>
@@ -932,7 +928,7 @@ onBeforeMount(async () => {
                 </div>
               </div>
             </template>
-            <template v-slot:item.Type="{item}">
+            <template #[`item.Type`]="{item}">
               <div class="flex flex-col" style="gap: 5px">
                 <div v-for="(entry, i) in getTableViewDataForType(item)" :key="i">
                   <v-icon style="width: 16px; height: 16px" class="mr-2" small>{{ entry.icon }}</v-icon>
@@ -940,7 +936,7 @@ onBeforeMount(async () => {
                 </div>
               </div>
             </template>
-            <template v-slot:item.LicenseEffective="{item}">
+            <template #[`item.LicenseEffective`]="{item}">
               <div class="flex flex-col gap-2">
                 <div v-for="(entry, i) in getTableViewDataForLicenseEffective(item)" :key="i">
                   <span>
@@ -962,7 +958,7 @@ onBeforeMount(async () => {
                 </div>
               </div>
             </template>
-            <template v-slot:item.prStatus="{item}">
+            <template #[`item.prStatus`]="{item}">
               <div class="flex flex-col gap-2">
                 <div v-for="(entry, i) in getTableViewDataForPrStatus(item)" :key="i">
                   <span>

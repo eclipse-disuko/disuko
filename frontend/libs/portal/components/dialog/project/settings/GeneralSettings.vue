@@ -73,7 +73,7 @@ defineExpose({validate});
           :label="t('NO_FOSS_MARKER')"
           hide-details />
         <div v-if="settingsModel?.noFossProject">
-          <v-icon size="small" class="m-2 mb-3 ml-5" color="mbti"> mdi-alert </v-icon>
+          <v-icon size="small" class="m-2 mb-3 ml-5" color="brand"> mdi-alert </v-icon>
           <span>{{ t('NO_FOSS_WARNING') }}</span>
         </div>
       </div>

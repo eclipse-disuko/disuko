@@ -29,6 +29,7 @@ import _l from 'lodash';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import JsonViewer3 from 'vue-json-viewer';
+import {openUrlInNewTab} from '@disclosure-portal/utils/url';
 
 interface LocalDetails extends Details {
   url?: boolean;
@@ -107,6 +108,7 @@ const viewRemarkDialog = ref();
 const reviewRemarks = ref<ReviewRemark[]>([]);
 const loadingRemarks = ref(false);
 const licenseRecommended = ref('');
+const licenseRecommendedMsg = ref('');
 
 const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
 
@@ -126,6 +128,7 @@ const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUu
 const open = async (
   data: ComponentDetails,
   licenseRecommendedValue: string,
+  licenseRecommendedMsgValue: string,
   policyStatus?: PolicyRuleStatus[],
   unmatched?: UnmatchedLicense[],
   policyDecisionsApplied?: PolicyDecisionSlim[],
@@ -159,6 +162,7 @@ const open = async (
     details.value.PolicyDecisionDeniedReason = policyDecisionDeniedReason;
   }
   licenseRecommended.value = licenseRecommendedValue;
+  licenseRecommendedMsg.value = licenseRecommendedMsgValue;
 
   project.value = projectData;
   projectVersionId.value = versionKey;
@@ -272,6 +276,7 @@ const openLicenseRuleDialog = (licenseId: string) => {
     component,
     policyStatus: details.value.PolicyStatus,
     licenseRecommended: licenseRecommended.value,
+    licenseRecommendedMsg: licenseRecommendedMsg.value,
   });
 };
 
@@ -454,6 +459,10 @@ const filteredAndSortedNotDeniedPolicyStatus = computed(() => {
     });
 });
 
+const openProjectDecisions = () => {
+  openUrlInNewTab(`/dashboard/projects/${encodeURIComponent(project.value._key)}/decisions`);
+};
+
 defineExpose({
   open,
 });
@@ -473,8 +482,12 @@ defineExpose({
           v-if="!isDeprecated" />
       </template>
 
+      <template #left>
+        <DCActionButton size="small" is-dialog-button @click="openProjectDecisions" :text="t('TAB_DECISIONS')" />
+      </template>
+
       <v-card class="card-border" min-height="394">
-        <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="rules">
             {{ t('TAB_TITLE_POLICY_RULES') }}
           </v-tab>
@@ -489,7 +502,7 @@ defineExpose({
           </v-tab>
           <v-tab value="additional_info">
             {{ t('TAB_TITLE_REMARKS') }}
-            <v-badge v-if="reviewRemarks.length > 0" :content="reviewRemarks.length" color="mbti" inline></v-badge>
+            <v-badge v-if="reviewRemarks.length > 0" :content="reviewRemarks.length" color="brand" inline></v-badge>
           </v-tab>
           <v-tab value="raw">
             {{ t('TAB_TITLE_RAW') }}
@@ -503,13 +516,13 @@ defineExpose({
                 <template v-slot:default>
                   <thead>
                     <tr>
-                      <th class="text-center">
+                      <th class="w-24 text-center">
                         {{ t('COL_ACTIONS') }}
                       </th>
-                      <th>
+                      <th class="w-20">
                         {{ t('COL_STATUS') }}
                       </th>
-                      <th class="text-left">
+                      <th class="w-72 text-left">
                         {{ t('COL_LICENSE') }}
                       </th>
                       <th class="text-left">
@@ -562,6 +575,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -578,6 +592,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="true"
                       :isRecommended="false"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"
@@ -595,6 +610,7 @@ defineExpose({
                       :is-deprecated="isDeprecated"
                       :is-unmatched="false"
                       :isRecommended="isRecommended(item)"
+                      :isRecommendationPlaceholderShown="!!licenseRecommended"
                       @close="close"
                       @openReviewRemarkDialog="openReviewRemarkDialog"
                       @sendReviewMail="sendReviewMail"

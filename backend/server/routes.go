@@ -48,7 +48,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 				r.Get("/recent", s.handlers.project.ProjectRecentHandler)
 				r.Get("/{uuid}/checklists", s.handlers.project.ProjectFindApplicableChecklists)
 				r.Get("/{uuid}/possibleChildren", s.handlers.project.ProjectGetPossibleChildrenHandler)
-				r.Get("/{uuid}/allSbomLists", s.handlers.project.ProjectGetAllSbomlists)
 				r.Get("/{uuid}/allSBOM", s.handlers.project.ProjectGetAllSbom)
 				r.Put("/{uuid}", s.handlers.project.ProjectUpdateHandler)
 				r.Put("/{uuid}/deprecate", s.handlers.project.ProjectDeprecateHandler)
@@ -183,7 +182,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 								r.Put("/{remarkId}/status", s.handlers.project.SetReviewRemarkStatus)
 							})
 						})
-						r.Get("/sbomhistory", s.handlers.project.ProjectVersionSPDXHistory) // test missing
 						r.Route("/spdx", func(r chi.Router) {
 							r.Post("/", s.handlers.spdx.SPDXUploadFileHandler)
 							r.Route("/{spdxFileKey}", func(r chi.Router) {
@@ -448,16 +446,16 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 		})
 	})
 
-	//	@title			FOSS Disclosure Portal
-	//	@version		1.0.0
-	//	@description	FOSS Disclosure Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
+	//	@title			DISUKO
+	//	@version		1.0.6
+	//	@description	DISUKO Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
 	//	@description
-	//	@description	SPDX-FileCopyrightText: 2023 Mercedes-Benz Tech Innovation GmbH
-	//	@description	SPDX-License-Identifier: MIT
-	//	@termsOfService	https://mb4.me/FOSS_Disclosure_Portal_ToU
+	//	@description	SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+	//	@description	SPDX-License-Identifier: Apache-2.0
 
 	//	@schemes	https
-	//	@BasePath	/disco/v1
+	//	@basePath	/api/public
+	//  @host		localhost:3009
 
 	//	@securityDefinitions.apiKey	Bearer
 	//	@in							header

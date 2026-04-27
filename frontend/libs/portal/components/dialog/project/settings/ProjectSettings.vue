@@ -124,7 +124,7 @@ defineExpose({
           </Stack>
         </v-card-title>
         <v-card-text class="pt-2">
-          <v-tabs v-model="activeTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="activeTab" slider-color="brand" show-arrows bg-color="tabsHeader">
             <v-tab value="general">{{ t('TAB_GENERAL') }}</v-tab>
             <v-tab value="owner">{{ t('TAB_OWNER') }}</v-tab>
             <v-tab value="developer">{{ t('TAB_DEVELOPER') }}</v-tab>

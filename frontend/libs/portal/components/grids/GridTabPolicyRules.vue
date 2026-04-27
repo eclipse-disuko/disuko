@@ -21,6 +21,7 @@ import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap, openUrlInNewTab} from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
+import DSearchField from '@shared/components/disco/DSearchField.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
 import DLicenseChartIcon from '@shared/components/disco/DLicenseChartIcon.vue';
@@ -837,16 +838,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
                 <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
               </div>
               <v-spacer />
-              <v-text-field
-                autocomplete="off"
-                :max-width="500"
-                v-model="filterSelected"
-                :label="t('labelSearch')"
-                append-inner-icon="mdi-magnify"
-                variant="outlined"
-                clearable
-                density="compact"
-                hide-details />
+              <DSearchField v-model="filterSelected" />
             </div>
           </div>
           <div v-if="isPolicyManager && !rule.Deprecated && canEditManual && !rule.Calculated">
@@ -860,16 +852,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
                 @click="moveAllFilteredToSelectedList"
                 v-if="filteredListNotSelected.length > 0" />
               <v-spacer />
-              <v-text-field
-                autocomplete="off"
-                :max-width="500"
-                v-model="filterUnSelected"
-                :label="t('labelSearch')"
-                append-inner-icon="mdi-magnify"
-                variant="outlined"
-                clearable
-                density="compact"
-                hide-details />
+              <DSearchField v-model="filterUnSelected" />
             </div>
           </div>
         </div>

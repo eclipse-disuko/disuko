@@ -419,7 +419,7 @@ onUnmounted(() => {
     </div>
     <div v-if="dataAreLoaded && versionDetails">
       <v-card>
-        <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="overview" :to="`${tabUrlPart}/overview/${encodedSbomKey}`">
             {{ t('TAB_OVERVIEW') }}
           </v-tab>

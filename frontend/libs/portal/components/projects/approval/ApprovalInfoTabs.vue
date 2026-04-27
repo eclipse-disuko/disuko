@@ -61,7 +61,7 @@ const reviewUpdated = computed(() => formatDateAndTime(props.item.plausibility.s
 
 <template>
   <div class="pt-0">
-    <v-tabs v-model="currentTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+    <v-tabs v-model="currentTab" slider-color="brand" show-arrows bg-color="tabsHeader">
       <v-tab v-for="(tab, tabIndex) in tabsList" :key="tabIndex">
         <span>{{ t(`TAB_TITLE_${tab.toUpperCase().replace('REVIEW', '').replace('EXTERNAL', '')}`) }}</span>
       </v-tab>

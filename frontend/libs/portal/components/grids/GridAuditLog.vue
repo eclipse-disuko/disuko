@@ -104,19 +104,19 @@ const isExpanded = (item: AuditLog) => {
           expand-on-click
           :expanded.sync="expanded"
           @update:expanded="onRowExpand">
-          <template v-slot:item.data-table-expand="{item}">
+          <template #[`item.data-table-expand`]="{item}">
             <v-icon color="primary" @click.stop="toggleExpand(item)">
               {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </v-icon>
           </template>
-          <template v-slot:expanded-row="{columns, item}">
+          <template #expanded-row="{columns, item}">
             <tr>
               <td :colspan="columns.length">
                 <pre v-html="escapeHtml(item.meta)" class="auditPre"></pre>
               </td>
             </tr>
           </template>
-          <template v-slot:item.created="{item}">
+          <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created.toString()" />
           </template>
         </v-data-table>

@@ -30,12 +30,11 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
-import {storeToRefs} from 'pinia';
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 type TabelItem = ComponentInfo & {
   showPolicyDecision: boolean;
@@ -48,10 +47,6 @@ const {getI18NTextOfPrefixKey} = useLicense();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const idle = useIdleStore();
-
-const gridName = 'ComponentList';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
@@ -168,7 +163,9 @@ const headers: DataTableHeader[] = [
   },
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'ComponentList';
+const headerSettingsStore = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettingsStore;
 
 const filteredList = computed(() => {
   return componentList.value.filter((info: TabelItem) => {
@@ -249,7 +246,7 @@ const showDetails = async (item: TabelItem) => {
   const response = await ProjectService.getComponentDetailsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? '',
     item.spdxId,
   );
 
@@ -257,6 +254,7 @@ const showDetails = async (item: TabelItem) => {
     newComponentDetailsDlg.value?.open(
       response.data,
       item.licenseRecommended,
+      item.licenseRecommendedMsg,
       item.policyRuleStatus,
       item.unmatchedLicenses,
       item.policyDecisionsApplied,
@@ -279,6 +277,7 @@ const openLicenseRuleDialog = (item: TabelItem) => {
     component: component,
     policyStatus: item.policyRuleStatus,
     licenseRecommended: item.licenseRecommended,
+    licenseRecommendedMsg: item.licenseRecommendedMsg,
   });
 };
 
@@ -289,20 +288,12 @@ const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => 
   component.version = item.version;
   component.licenseExpression = item.licenseEffective;
 
-  let policies: PolicyRuleStatus[];
-  switch (type) {
-    case 'warn':
-      policies = item.policyRuleStatus.filter((pr) => pr.canMakeWarnedDecision);
-      break;
-    case 'deny':
-      policies = item.policyRuleStatus.filter(
-        (pr) => pr.canMakeDeniedDecision && !pr.deniedDecisionDeniedReason?.trim(),
-      );
-  }
-
   policyDecisionDialog.value?.open({
     component,
-    policies,
+    policies: item.policyRuleStatus.filter(
+      (policyRule: PolicyRuleStatus) =>
+        policyRule.canMakeDeniedDecision && (type === 'deny' ? !policyRule.deniedDecisionDeniedReason?.trim() : true),
+    ),
     type,
   });
 };
@@ -440,7 +431,7 @@ const load = async () => {
   } = await VersionService.getVersionComponentsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? null,
   );
 
   componentList.value = componentInfo ? getTableItems(componentInfo) : [];
@@ -614,45 +605,55 @@ onUnmounted(async () => {
           v-model:sort-by="sortBy"
           @click:row="(_: Event, dataItem: DataTableItem<TabelItem>) => showDetails(dataItem.item)">
           <template v-slot:[`header.type`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterTypes"
-              :column="column"
-              :label="t('TYPE')"
-              :allItems="allTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterTypes"
+                  :column="column"
+                  :label="t('TYPE')"
+                  :allItems="allTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.licenseEffective`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterLicenses"
-              :column="column"
-              :label="t('LICENSE')"
-              :allItems="allLicenses">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterLicenses"
+                  :column="column"
+                  :label="t('LICENSE')"
+                  :allItems="allLicenses">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
-            <HeaderSettings :column="column" :grid-name="gridName" />
-            <span class="mr-1 ml-6">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterPolicyTypes"
-              :column="column"
-              :label="t('POLICY_STATE')"
-              :allItems="allPolicyTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #settings>
+                <HeaderSettings :column="column" :grid-name="tableName" />
+              </template>
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterPolicyTypes"
+                  :column="column"
+                  :label="t('POLICY_STATE')"
+                  :allItems="allPolicyTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.worstFamily`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterFamily"
-              :column="column"
-              :label="t('LICENSE_FAMILY')"
-              :allItems="allFamilies">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterFamily"
+                  :column="column"
+                  :label="t('LICENSE_FAMILY')"
+                  :allItems="allFamilies">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`item.prStatus`]="{item}">
             <span v-if="item.unasserted">

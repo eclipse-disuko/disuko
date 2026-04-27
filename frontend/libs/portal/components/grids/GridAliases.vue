@@ -2,60 +2,6 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <div class="pa-4">
-    <v-row class="header d-flex align-center ga-4 flex-row" v-if="mode === 'edit'">
-      <h2 class="d-headline">Alias</h2>
-      <DCActionButton large :text="t('BTN_ADD')" icon="mdi-plus" :hint="t('TT_add_alias')" @click="createEmptyAlias" />
-    </v-row>
-    <v-row v-if="props.license?.aliases">
-      <v-col cols="12" xs="12">
-        <v-data-table
-          :items="props.license?.aliases"
-          :headers="headers"
-          density="compact"
-          class="striped-table"
-          fixed-header
-          item-key="_key"
-          :hide-default-footer="true">
-          <template v-slot:item.licenseId="{item}">
-            <v-text-field
-              autocomplete="off"
-              class="my-1 pt-5"
-              v-if="item._key === ''"
-              density="compact"
-              solo
-              variant="outlined"
-              :rules="licenseIdRules"
-              v-model="item.licenseId"></v-text-field>
-            <span v-else>{{ item.licenseId }}</span>
-          </template>
-          <template v-slot:item.description="{item}">
-            <v-text-field
-              autocomplete="off"
-              class="my-1 pt-5"
-              v-if="item._key === ''"
-              density="compact"
-              variant="outlined"
-              v-model="item.description"></v-text-field>
-            <span v-else>{{ item.description }}</span>
-          </template>
-          <template v-slot:item.actions="{_, index}" v-if="mode === 'edit'">
-            <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" content-class="dpTooltip">
-              <template v-slot:activator="{props}">
-                <DeleteConfirmationDialog v-slot="{showDialog}" @confirmed="() => deleteAliasByIndex(index)">
-                  <DCActionButton icon="mdi-close" @click="showDialog" v-bind="props" variant="plain"></DCActionButton>
-                </DeleteConfirmationDialog>
-              </template>
-              <span>{{ t('TT_delete_alias') }}</span>
-            </v-tooltip>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import License, {AliasDTO} from '@disclosure-portal/model/License';
 import LicenseService from '@disclosure-portal/services/license';
@@ -79,7 +25,7 @@ const computedLicense = computed({
 });
 const isAliasAdded = ref(false);
 
-const headers = computed<DataTableHeader[]>(() => {
+const headers = computed((): DataTableHeader[] => {
   const res: DataTableHeader[] = [
     {
       title: t('COL_NAME'),
@@ -98,7 +44,6 @@ const headers = computed<DataTableHeader[]>(() => {
       title: t('COL_ACTIONS'),
       align: 'end',
       width: 140,
-      class: 'tableHeaderCell',
       value: 'actions',
       sortable: false,
     });
@@ -138,3 +83,57 @@ const licenseIdRules = [
   },
 ];
 </script>
+
+<template>
+  <div class="pa-4">
+    <v-row class="header d-flex align-center ga-4 flex-row" v-if="mode === 'edit'">
+      <h2 class="d-headline">Alias</h2>
+      <DCActionButton large :text="t('BTN_ADD')" icon="mdi-plus" :hint="t('TT_add_alias')" @click="createEmptyAlias" />
+    </v-row>
+    <v-row v-if="props.license?.aliases">
+      <v-col cols="12" xs="12">
+        <v-data-table
+          :items="props.license?.aliases"
+          :headers="headers"
+          density="compact"
+          class="striped-table"
+          fixed-header
+          item-key="_key"
+          :hide-default-footer="true">
+          <template v-slot:item.licenseId="{item}">
+            <v-text-field
+              autocomplete="off"
+              class="my-1 pt-5"
+              v-if="item._key === ''"
+              density="compact"
+              solo
+              variant="outlined"
+              :rules="licenseIdRules"
+              v-model="item.licenseId"></v-text-field>
+            <span v-else>{{ item.licenseId }}</span>
+          </template>
+          <template #[`item.description`]="{item}">
+            <v-text-field
+              autocomplete="off"
+              class="my-1 pt-5"
+              v-if="item._key === ''"
+              density="compact"
+              variant="outlined"
+              v-model="item.description"></v-text-field>
+            <span v-else>{{ item.description }}</span>
+          </template>
+          <template #[`item.actions`]="{index}" v-if="mode === 'edit'">
+            <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" content-class="dpTooltip">
+              <template #activator="{props}">
+                <DeleteConfirmationDialog v-slot="{showDialog}" @confirmed="deleteAliasByIndex(index)">
+                  <DCActionButton icon="mdi-close" @click="showDialog" v-bind="props" variant="plain"></DCActionButton>
+                </DeleteConfirmationDialog>
+              </template>
+              <span>{{ t('TT_delete_alias') }}</span>
+            </v-tooltip>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+  </div>
+</template>

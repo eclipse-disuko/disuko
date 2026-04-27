@@ -221,7 +221,7 @@ const updateTableHeight = () => {
     <v-row expand class="align-center">
       <v-col>
         <v-card>
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab value="schema" :to="tabUrl.schema">
               {{ t('TAB_SCHEMA_LABELS') }}
             </v-tab>

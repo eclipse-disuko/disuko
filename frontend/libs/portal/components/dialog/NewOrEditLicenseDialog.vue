@@ -332,7 +332,12 @@ defineExpose({
           </v-card-title>
           <v-card-text class="expanding-container">
             <Stack v-if="item && item.meta && item.meta.obligationsList">
-              <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+              <v-tabs
+                v-model="selectedTab"
+                slider-color="brand"
+                active-class="active"
+                show-arrows
+                bg-color="tabsHeader">
                 <v-tab :value="0" id="general">
                   {{ t('TAB_TITLE_GENERAL') }}
                 </v-tab>
