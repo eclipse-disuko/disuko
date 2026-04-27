@@ -240,6 +240,13 @@ const customKeySort = {
   },
 };
 
+const findComponentAndShowDetails = (spdxId: string) => {
+  const component = componentList.value.find((item) => item.spdxId === spdxId);
+  if (component) {
+    showDetails(component);
+  }
+};
+
 const showDetails = async (item: TabelItem) => {
   idle.show();
 
@@ -272,13 +279,16 @@ const openLicenseRuleDialog = (item: TabelItem) => {
   component.version = item.version;
   component.licenseExpression = item.licenseEffective;
 
-  licenseRuleDialog.value?.open({
-    licenseId: '',
-    component: component,
-    policyStatus: item.policyRuleStatus,
-    licenseRecommended: item.licenseRecommended,
-    licenseRecommendedMsg: item.licenseRecommendedMsg,
-  });
+  licenseRuleDialog.value?.open(
+    {
+      licenseId: '',
+      component: component,
+      policyStatus: item.policyRuleStatus,
+      licenseRecommended: item.licenseRecommended,
+      licenseRecommendedMsg: item.licenseRecommendedMsg,
+    },
+    true,
+  );
 };
 
 const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => {
@@ -774,7 +784,7 @@ onUnmounted(async () => {
     ref="newComponentDetailsDlg"
     @reloadAfterCreation="reload"
     @triggerBulk="openBulkPolicyDecisionsDialog" />
-  <LicenseRuleDialog ref="licenseRuleDialog" @reload="reload" />
+  <LicenseRuleDialog ref="licenseRuleDialog" @reload="reload" @triggerComponentDetails="findComponentAndShowDetails" />
   <PolicyDecisionDialog ref="policyDecisionDialog" @reload="reload" @triggerBulk="openBulkPolicyDecisionsDialog" />
   <BulkPolicyDecisionsDialog ref="bulkPolicyDecisionsDialog" @reload="reload" />
 </template>
