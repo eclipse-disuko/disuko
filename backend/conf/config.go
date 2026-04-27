@@ -268,6 +268,7 @@ func checkEnvironmentVariables() {
 	Config.Database.Port = getEnvVariableInt("DATABASE_PORT", Config.Database.Port)
 	Config.Database.User = getEnvVariable("DATABASE_USER", Config.Database.User)
 	Config.Database.Password = getEnvVariable("DATABASE_PASSWORD", Config.Database.Password)
+	Config.Database.InsecureSkipVerify = getEnvVariableBoolean("DATABASE_SKIP_VERIFY", Config.Database.InsecureSkipVerify)
 	Config.Database.CAFile = getEnvVariable("DATABASE_CA_FILE", Config.Database.CAFile)
 	Config.Database.ShardReplica = getEnvVariableInt("DATABASE_SHARD_REPLICA", Config.Database.ShardReplica)
 	Config.Database.AdditionalArgs = getEnvVariable("DATABASE_ADDITIONAL_ARGS", Config.Database.AdditionalArgs)
