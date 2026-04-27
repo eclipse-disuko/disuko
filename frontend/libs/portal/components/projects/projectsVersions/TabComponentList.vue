@@ -292,7 +292,8 @@ const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => 
     component,
     policies: item.policyRuleStatus.filter(
       (policyRule: PolicyRuleStatus) =>
-        policyRule.canMakeDeniedDecision && (type === 'deny' ? !policyRule.deniedDecisionDeniedReason?.trim() : true),
+        (type === 'deny' && policyRule.canMakeDeniedDecision && !policyRule.deniedDecisionDeniedReason?.trim()) ||
+        (type === 'warn' && policyRule.canMakeWarnedDecision),
     ),
     type,
   });
