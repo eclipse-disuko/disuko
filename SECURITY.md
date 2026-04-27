@@ -16,12 +16,7 @@ privately using one of the following methods:
 
 ### Preferred Reporting Channels
 
-- **Eclipse Foundation Security Team**
-  - Email: security@eclipse.org
-
-- **Private vulnerability reporting on GitHub**
-  - Use the repository’s **Security → Report a vulnerability** feature
-  - This creates a confidential advisory visible only to the security team
+The preferred reporting channel is the **Eclipse Foundation Security Team** that can be reached by e-mail **security@eclipse-foundation.org**.
 
 More information about the Eclipse security process:
 https://www.eclipse.org/security/
@@ -54,7 +49,7 @@ This information helps us triage and resolve the issue more efficiently.
 5. Public disclosure occurs after a fix is available
 
 This project follows **coordinated and responsible disclosure** in
-accordance with Eclipse Foundation policy [1](https://www.eclipse.org/security/policy/).
+accordance with [Eclipse Foundation Security Policy](https://www.eclipse.org/security/policy/).
 
 ---
 
