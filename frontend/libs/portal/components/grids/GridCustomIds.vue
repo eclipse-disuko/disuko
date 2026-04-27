@@ -7,16 +7,18 @@ import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/co
 import CustomIdDialog from '@disclosure-portal/components/dialog/CustomIdDialog.vue';
 import {CustomId} from '@disclosure-portal/model/CustomId';
 import adminService from '@disclosure-portal/services/admin';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
-const appStore = useAppStore();
 const customIdStore = useCustomIdStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const {info: snack} = useSnackbar();
 
 const dialog = ref<InstanceType<typeof CustomIdDialog>>();
@@ -45,14 +47,12 @@ const headers = computed((): DataTableHeader[] => [
     title: t('COL_TID'),
     width: 140,
     align: 'start',
-    class: 'tableHeaderCell',
     value: '_key',
     sortable: true,
   },
   {
     title: t('AL_DIALOG_TF_NAME_EN'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'name',
     width: 140,
     sortable: true,
@@ -60,7 +60,6 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('AL_DIALOG_TF_NAME_DE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'nameDE',
     width: 150,
     sortable: true,
@@ -68,7 +67,6 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('AL_DIALOG_TF_DESCRIPTION_EN'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'description',
     width: 180,
     sortable: true,
@@ -76,7 +74,6 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('AL_DIALOG_TF_DESCRIPTION_DE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'descriptionDE',
     width: 180,
     sortable: true,
@@ -84,7 +81,6 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('LINK_TEMPLATE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'linkTemplate',
     sortable: true,
   },
@@ -114,7 +110,7 @@ const showConfirm = async (item: CustomId) => {
   confirmConfig.value = {
     type: ConfirmationType.DELETE,
     key: item._key!,
-    name: appStore.getAppLanguage == 'en' ? item.name : item.nameDE,
+    name: appLanguage.value == 'en' ? item.name : item.nameDE,
     description: 'DLG_CONFIRMATION_DESCRIPTION',
     okButton: 'Btn_delete',
     emphasiseText: t('CUSTOM_ID_USAGE', {count: amount}),

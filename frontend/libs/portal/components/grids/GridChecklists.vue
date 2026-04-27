@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {Checklist} from '@disclosure-portal/model/Checklist';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useChecklistsStore} from '@disclosure-portal/stores/checklists.store';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -14,11 +13,14 @@ import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
 const router = useRouter();
-const appStore = useAppStore();
 const checklistsStore = useChecklistsStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const {info: snack} = useSnackbar();
 
 const dialog = ref();
@@ -36,7 +38,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('AL_DIALOG_TF_NAME_EN'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'name',
     width: 140,
     sortable: true,
@@ -44,7 +45,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('AL_DIALOG_TF_NAME_DE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'nameDE',
     width: 150,
     sortable: true,
@@ -52,7 +52,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('ACTIVE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'active',
     width: 80,
     sortable: true,
@@ -60,7 +59,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('AL_DIALOG_TF_DESCRIPTION_EN'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'description',
     width: 180,
     sortable: true,
@@ -68,7 +66,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('AL_DIALOG_TF_DESCRIPTION_DE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'descriptionDE',
     width: 180,
     sortable: true,
@@ -101,7 +98,7 @@ const showConfirm = async (item: Checklist) => {
   confirmConfig.value = {
     type: ConfirmationType.DELETE,
     key: item._key!,
-    name: appStore.getAppLanguage == 'en' ? item.name : item.nameDE,
+    name: appLanguage.value == 'en' ? item.name : item.nameDE,
     description: 'DLG_CONFIRMATION_DESCRIPTION',
     okButton: 'Btn_delete',
   };

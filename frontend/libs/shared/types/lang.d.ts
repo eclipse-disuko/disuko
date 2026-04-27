@@ -1,0 +1,1 @@
+type Lang = 'en' | 'de';
