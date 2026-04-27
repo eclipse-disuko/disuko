@@ -5,6 +5,9 @@
 package policy
 
 import (
+	"slices"
+	"sort"
+
 	"github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
@@ -67,3 +70,101 @@ func (policyRulesHandler *Service) handlePolicyRulesGetForPublicAddRule(requestS
 	}
 	return append(responseData, newItem)
 }
+
+func (policyRulesHandler *Service) CalculatePolicyRuleComponents(requestSession *logy.RequestSession, config license.CalculatedPolicyConfig) ([]string, []string, []string) {
+	allLicenses := policyRulesHandler.LicenseRepository.FindAll(requestSession, false)
+
+	if config.BucketDefinition == nil {
+		return []string{}, []string{}, []string{}
+	}
+
+	deniedClassifications := make(map[string]bool)
+	for _, key := range config.BucketDefinition.DeniedClassifications {
+		deniedClassifications[key] = true
+	}
+	warnedClassifications := make(map[string]bool)
+	for _, key := range config.BucketDefinition.WarnedClassifications {
+		warnedClassifications[key] = true
+	}
+	allowedClassifications := make(map[string]bool)
+	for _, key := range config.BucketDefinition.AllowedClassifications {
+		allowedClassifications[key] = true
+	}
+
+	allowMap := make(map[string]bool)
+	warnMap := make(map[string]bool)
+	denyMap := make(map[string]bool)
+
+	for _, currentLicense := range allLicenses {
+		if currentLicense == nil || currentLicense.LicenseId == "" {
+			continue
+		}
+		if !matchesCalculatedScopeFilters(currentLicense, config) {
+			continue
+		}
+
+		hasDenied := false
+		hasWarned := false
+		hasAllowed := false
+		for _, classificationKey := range currentLicense.Meta.ObligationsKeyList {
+			if deniedClassifications[classificationKey] {
+				hasDenied = true
+				break
+			}
+			if warnedClassifications[classificationKey] {
+				hasWarned = true
+			}
+			if allowedClassifications[classificationKey] {
+				hasAllowed = true
+			}
+		}
+
+		if hasDenied {
+			denyMap[currentLicense.LicenseId] = true
+		} else if hasWarned {
+			warnMap[currentLicense.LicenseId] = true
+		} else if hasAllowed {
+			allowMap[currentLicense.LicenseId] = true
+		}
+	}
+
+	componentsAllow := make([]string, 0, len(allowMap))
+	for licenseID := range allowMap {
+		componentsAllow = append(componentsAllow, licenseID)
+	}
+	componentsWarn := make([]string, 0, len(warnMap))
+	for licenseID := range warnMap {
+		componentsWarn = append(componentsWarn, licenseID)
+	}
+	componentsDeny := make([]string, 0, len(denyMap))
+	for licenseID := range denyMap {
+		componentsDeny = append(componentsDeny, licenseID)
+	}
+
+	sort.Strings(componentsAllow)
+	sort.Strings(componentsWarn)
+	sort.Strings(componentsDeny)
+
+	return componentsAllow, componentsWarn, componentsDeny
+}
+
+func matchesCalculatedScopeFilters(currentLicense *license.License, config license.CalculatedPolicyConfig) bool {
+	scope := config.LicenseScope
+	if len(scope.IsLicenseChart) > 0 && !slices.Contains(scope.IsLicenseChart, currentLicense.Meta.IsLicenseChart) {
+		return false
+	}
+	if len(scope.ApprovalState) > 0 && !slices.Contains(scope.ApprovalState, currentLicense.Meta.ApprovalState) {
+		return false
+	}
+	if len(scope.Family) > 0 && !slices.Contains(scope.Family, currentLicense.Meta.Family) {
+		return false
+	}
+	if len(scope.LicenseType) > 0 && !slices.Contains(scope.LicenseType, currentLicense.Meta.LicenseType) {
+		return false
+	}
+	if len(scope.Source) > 0 && !slices.Contains(scope.Source, currentLicense.Source) {
+		return false
+	}
+	return true
+}
+

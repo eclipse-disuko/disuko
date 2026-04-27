@@ -163,24 +163,30 @@ func (policyRulesHandler *PolicyRulesHandler) PolicyRulesUpdateOrCreateHandler(w
 	}
 	var ruleRequestDto license.PolicyRuleRequestDto
 	validation.DecodeAndValidate(r, &ruleRequestDto, false)
+	if ruleRequestDto.Calculated {
+		componentsAllow, componentsWarn, componentsDeny := policyRulesHandler.PolicyRulesService.CalculatePolicyRuleComponents(requestSession, ruleRequestDto.CalculatedConfig)
+		ruleRequestDto.ComponentsAllow = componentsAllow
+		ruleRequestDto.ComponentsWarn = componentsWarn
+		ruleRequestDto.ComponentsDeny = componentsDeny
+	} else {
+		qc := database.New().SetMatcher(
+			database.AttributeMatcher(
+				"Deleted",
+				database.EQ,
+				false,
+			),
+		).SetKeep([]string{"licenseId"})
+		allLics := policyRulesHandler.LicenseRepository.Query(requestSession, qc)
 
-	qc := database.New().SetMatcher(
-		database.AttributeMatcher(
-			"Deleted",
-			database.EQ,
-			false,
-		),
-	).SetKeep([]string{"licenseId"})
-	allLics := policyRulesHandler.LicenseRepository.Query(requestSession, qc)
+		known := make(map[string]bool)
+		for _, k := range allLics {
+			known[k.LicenseId] = true
+		}
 
-	known := make(map[string]bool)
-	for _, k := range allLics {
-		known[k.LicenseId] = true
+		ruleRequestDto.ComponentsAllow = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsAllow, known)
+		ruleRequestDto.ComponentsWarn = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsWarn, known)
+		ruleRequestDto.ComponentsDeny = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsDeny, known)
 	}
-
-	ruleRequestDto.ComponentsAllow = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsAllow, known)
-	ruleRequestDto.ComponentsWarn = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsWarn, known)
-	ruleRequestDto.ComponentsDeny = policyRulesHandler.removeUnknownLicenses(requestSession, ruleRequestDto.ComponentsDeny, known)
 
 	policyRulesLoadedByName := policyRulesHandler.PolicyRulesRepository.FindByName(requestSession, ruleRequestDto.Name)
 	var policyRuleEntity *license.PolicyRules
@@ -217,6 +223,8 @@ func (policyRulesHandler *PolicyRulesHandler) PolicyRulesUpdateOrCreateHandler(w
 	policyRuleEntity.Auxiliary = ruleRequestDto.Auxiliary
 	policyRuleEntity.Active = ruleRequestDto.Active
 	policyRuleEntity.ApplyToAll = ruleRequestDto.ApplyToAll
+	policyRuleEntity.Calculated = ruleRequestDto.Calculated
+	policyRuleEntity.CalculatedConfig = ruleRequestDto.CalculatedConfig
 
 	policyRulesAudit := policyRuleEntity.ToAudit(requestSession, policyRulesHandler.LabelRepository)
 	if isNew {
