@@ -21,6 +21,7 @@ import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {escapeHtml} from '@disclosure-portal/utils/Validation';
 
 interface LicenseItemWithPolicyStatus {
   id: string;
@@ -237,6 +238,17 @@ const close = () => {
   form.value?.reset();
   isVisible.value = false;
 };
+
+const formatText = (text: string): string => {
+  text = escapeHtml(text);
+  if (text.includes(' AND ') || text.includes(' OR ')) {
+    return text
+      .replace(/ AND /g, ' <strong class="db-highlight">AND</strong> ')
+      .replace(/ OR /g, ' <strong class="db-highlight">OR</strong> ');
+  }
+  return text;
+};
+
 defineExpose({open});
 </script>
 
@@ -247,23 +259,14 @@ defineExpose({open});
         <Stack class="gap-4">
           <Stack direction="row" class="items-start gap-4">
             <Stack class="flex-1 gap-4 self-start">
-              <v-text-field
-                autocomplete="off"
-                :model-value="selectedComponentStr"
-                disabled
-                variant="outlined"
-                density="compact"
-                hide-details
-                :label="t('RELATED_COMPONENT')" />
-              <v-textarea
-                auto-grow
-                rows="1"
-                variant="outlined"
-                density="compact"
-                disabled
-                :label="t('LICENSE_EXPRESSION')"
-                :model-value="selectedComponent?.licenseExpression"
-                hide-details />
+              <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
+                <div class="v-field__input text-title-1 py-2" v-html="formatText(selectedComponentStr)" />
+              </v-field>
+              <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
+                <div
+                  class="v-field__input text-title-1 py-2"
+                  v-html="formatText(selectedComponent?.licenseExpression ?? '')" />
+              </v-field>
               <v-select
                 v-model="selectedLicense"
                 clearable
