@@ -804,7 +804,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
   <TableLayout has-tab has-title>
     <template #buttons>
       <div class="flex w-full flex-col gap-4">
-        <div class="grid w-full basis-full grid-cols-2 gap-6">
+        <div class="grid w-full basis-full gap-6" :class="{'grid-cols-2': canEditManual || canEditCalculated}">
           <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 h-9 flex-row">
             <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_LICENSES') }}</h3>
             <DCActionButton
