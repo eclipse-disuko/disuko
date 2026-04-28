@@ -112,6 +112,7 @@ const calculatedSourceOptions = computed<IDefaultSelectItem[]>(() => [
 ]);
 
 const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
+const canEditCalculated = computed(() => isPolicyManager.value && rule.value.Calculated);
 const classificationOptions = computed(() =>
   classifications.value.filter((c) => c?._key).map((c) => ({text: getNameForLanguage(c), value: c._key})),
 );
@@ -841,7 +842,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
               <DSearchField v-model="filterSelected" />
             </div>
           </div>
-          <div v-if="isPolicyManager && !rule.Deprecated && canEditManual && !rule.Calculated">
+          <div v-if="canEditManual">
             <div class="d-flex ga-1 label-filter flex-row">
               <DCActionButton
                 large
@@ -860,9 +861,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
     </template>
     <template #table>
       <v-row class="fill-height">
-        <v-col
-          :cols="(canEditManual && !rule.Calculated) || (isPolicyManager && rule.Calculated) ? 6 : 12"
-          class="fill-height">
+        <v-col :cols="canEditManual || canEditCalculated ? 6 : 12" class="fill-height">
           <div class="fill-height" :class="getActiveClassForPolicyFilterBtn(mode)">
             <v-data-table
               :loading="licensesLoading"
@@ -1227,7 +1226,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
             </v-data-table>
           </div>
         </v-col>
-        <v-col cols="6" v-if="canEditManual && !rule.Calculated" class="fill-height">
+        <v-col cols="6" v-if="canEditManual" class="fill-height">
           <v-data-table
             :loading="licensesLoading"
             fixed-header
@@ -1581,7 +1580,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
             </template>
           </v-data-table>
         </v-col>
-        <v-col cols="6" v-if="isPolicyManager && rule.Calculated" class="fill-height">
+        <v-col cols="6" v-if="canEditCalculated" class="fill-height">
           <div class="flex h-full flex-col">
             <div class="flex-1 overflow-auto">
               <CalculatedRuleConfig
