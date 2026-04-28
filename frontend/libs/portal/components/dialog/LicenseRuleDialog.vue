@@ -22,6 +22,7 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
+import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 
 interface LicenseItemWithPolicyStatus {
   id: string;
@@ -38,11 +39,15 @@ const {info} = useSnackbar();
 const rules = useRules();
 const sbomStore = useSbomStore();
 const userStore = useUserStore();
-const emit = defineEmits(['reload']);
+const emit = defineEmits<{
+  reload: [];
+  triggerComponentDetails: [spdxId: string];
+}>();
 const projectStore = useProjectStore();
 
 const form = ref<VForm | null>(null);
 const isVisible = ref(false);
+const isDirectOpen = ref(false);
 
 const selectedComponent = ref<ComponentInfoSlim | undefined>(undefined);
 
@@ -148,8 +153,10 @@ const open = async (
     licenseRecommended: '',
     licenseRecommendedMsg: '',
   },
+  directOpen: boolean = false,
 ) => {
   config.value = newConfig;
+  isDirectOpen.value = directOpen;
   await loadAndPrefillData();
   isVisible.value = true;
 };
@@ -249,12 +256,26 @@ const formatText = (text: string): string => {
   return text;
 };
 
+const closeAndTriggerComponentDetails = () => {
+  close();
+  emit('triggerComponentDetails', selectedComponent.value?.spdxId ?? '');
+};
+
 defineExpose({open});
 </script>
 
 <template>
   <v-dialog v-model="isVisible" width="1200" persistent>
     <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
+      <template #left>
+        <DCActionButton
+          v-if="isDirectOpen"
+          size="small"
+          is-dialog-button
+          @click="closeAndTriggerComponentDetails"
+          :text="t('BTN_COMPONENT_DETAILS')" />
+      </template>
+
       <v-form ref="form" @submit.prevent="doDialogAction">
         <Stack class="gap-4">
           <Stack direction="row" class="items-start gap-4">
