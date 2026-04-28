@@ -97,7 +97,7 @@ func (s OverallReviewService) fullname(rs *logy.RequestSession, userid string) s
 	if user != nil {
 		return fmt.Sprintf("%s %s", user.Forename, user.Lastname)
 	}
-	return ""
+	return userid
 }
 
 func versionStatus(state overallreview.State) project.ProjectVersionStatusType {

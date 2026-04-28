@@ -242,15 +242,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Put("/", s.handlers.user.UpdateHandlerForAdmin) // test missing
 					r.Get("/termsOfUseCurrentVersion", s.handlers.user.GetTermsOfUseCurrentVersionHandler)
 					r.Post("/search", s.handlers.user.SearchHandlerForAdmin) // test missing
-					r.Get("/delete-personal-data", s.handlers.user.DeletePersonalDataDryRunHandler)
-					r.Get("/get-personal-details/{username}", s.handlers.user.GetPersonalDetailsHandler)
-					r.Delete("/delete-personal-data/{entity}/{id}", s.handlers.user.DeletePersonalDataByEntityIdHandler)
-					r.Delete("/delete-personal-data/{entity}", s.handlers.user.DeletePersonalDataByEntityHandler)
-					r.Route("/deletion-audit", func(r chi.Router) {
-						r.Get("/operation/{operationId}", s.handlers.user.GetDeletionAuditByOperationHandler)
-						r.Get("/admin/{adminUser}", s.handlers.user.GetDeletionAuditByAdminHandler)
-						r.Get("/user/{username}", s.handlers.user.GetDeletionAuditTrailHandler)
-					})
 					r.Route("/{uuid}", func(r chi.Router) {
 						r.Get("/", s.handlers.user.GetByUuidHandler)                                           // test missing
 						r.Get("/audit", s.handlers.user.GetAuditTrailHandler)                                  // test missing

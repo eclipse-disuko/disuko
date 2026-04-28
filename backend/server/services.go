@@ -135,11 +135,13 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 			UserRepo:     s.repos.user,
 		},
 		projectLabelService: plS,
-		deletionService: userService.NewDeletionService(
-			rs,
-			s.repos.user,
-			s.repos.project,
-		),
+		deletionService: &userService.DeletionService{
+			UserRepository:         s.repos.user,
+			ProjectRepository:      s.repos.project,
+			ApprovalListRepository: s.repos.approvalList,
+			SbomListRepository:     s.repos.sbomList,
+			AuditLogListRepository: s.repos.auditLogList,
+		},
 		userService: userServ,
 	}
 }

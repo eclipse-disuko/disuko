@@ -399,6 +399,7 @@ const (
 	LicenseRecommendedMsg                     = "LICENSE_RECOMMENDED_MSG"
 	DeniedLicensesMsg                         = "DENIED_LICENSES_MSG"
 	EqualWeightLicensesMsg                    = "EQUAL_WEIGHT_LICENSES_MSG"
+	TransferOwnershipBlocked                  = "TRANSFER_OWNERSHIP_BLOCKED"
 )
 
 func InitI18N() {

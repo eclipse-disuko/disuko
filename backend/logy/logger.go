@@ -94,20 +94,30 @@ func init() {
 	defer logger.Sync()
 }
 
-func (rs *RequestSession) Infof(format string, keysAndValues ...any) {
+func (rs *RequestSession) Infof(template string, args ...interface{}) {
 	if rs == nil {
-		logger.Infow(format, keysAndValues...)
-		return
+		logger.Infof(template, args...)
+	} else {
+		logger.Infof("["+rs.ReqID+"] "+template, args...)
 	}
-	logger.Infow(fmt.Sprintf("[%s] %s", rs.ReqID, format), append(keysAndValues, ReqID, rs.ReqID)...)
 }
 
-func (rs *RequestSession) Warnf(format string, keysAndValues ...any) {
+func (rs *RequestSession) Warnf(template string, args ...interface{}) {
 	if rs == nil {
-		logger.Warnf(format, keysAndValues...)
-		return
+		logger.Warnf(template, args...)
+	} else {
+		logger.Warnf("["+rs.ReqID+"] "+template, args...)
 	}
-	logger.Warnw(fmt.Sprintf("[%s] %s", rs.ReqID, format), append(keysAndValues, ReqID, rs.ReqID)...)
+}
+
+func (rs *RequestSession) Infow(msg string, keysAndValues ...interface{}) {
+	if rs == nil {
+		logger.Infow(msg, keysAndValues...)
+	} else {
+		keysAndValues = append(keysAndValues, ReqID)
+		keysAndValues = append(keysAndValues, rs.ReqID)
+		logger.Infow(fmt.Sprintf("[%s] %s", rs.ReqID, msg), keysAndValues...)
+	}
 }
 
 func Infow(requestSession *RequestSession, msg string, keysAndValues ...interface{}) {
