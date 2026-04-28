@@ -185,7 +185,7 @@ const loadAndPrefillData = async () => {
 
   const licenseIdToSelect = config.value.licenseId || config.value.licenseRecommended;
 
-  const candidate = licenseIdToSelect ? licenses.value.find((license) => license.id === licenseIdToSelect) : undefined;
+  const candidate = licenses.value.find((license) => license.id === licenseIdToSelect);
 
   selectedLicense.value = candidate && isLicenseDisabled(candidate.policyType) ? undefined : candidate;
 };
