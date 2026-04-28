@@ -97,6 +97,17 @@ function getLicenseRecommendationWeight(id: string): number | null {
   return licenseRecommendationWeightMap.value.get(id) ?? null;
 }
 
+const hasSelectableLicenses = computed(() =>
+  licenses.value.some((l) => l.policyType === 'allow' || l.policyType === 'warn'),
+);
+
+const isLicenseDisabled = (policyType: string) =>
+  hasSelectableLicenses.value && policyType !== 'allow' && policyType !== 'warn';
+
+const licenseItemProps = (item: LicenseItemWithPolicyStatus) => ({
+  disabled: isLicenseDisabled(item.policyType),
+});
+
 const licenses = computed((): LicenseItemWithPolicyStatus[] => {
   if (!componentLicenses.value) {
     return [];
@@ -174,9 +185,9 @@ const loadAndPrefillData = async () => {
 
   const licenseIdToSelect = config.value.licenseId || config.value.licenseRecommended;
 
-  selectedLicense.value = licenseIdToSelect
-    ? licenses.value.find((license) => license.id === licenseIdToSelect)
-    : undefined;
+  const candidate = licenses.value.find((license) => license.id === licenseIdToSelect);
+
+  selectedLicense.value = candidate && isLicenseDisabled(candidate.policyType) ? undefined : candidate;
 };
 
 const loadLicenses = async () => {
@@ -294,6 +305,7 @@ defineExpose({open});
                 :label="t('LICENSE_DECISION')"
                 :disabled="!selectedComponent"
                 :items="licenses"
+                :item-props="licenseItemProps"
                 return-object
                 item-title="name"
                 :loading="licensesLoading"
