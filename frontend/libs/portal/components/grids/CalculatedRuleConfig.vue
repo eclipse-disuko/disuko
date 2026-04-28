@@ -35,6 +35,10 @@ const emit = defineEmits<{
 }>();
 
 const {t} = useI18n();
+
+const emitScope = (filterName: ScopeFilterName, values: unknown) => {
+  emit('update-scope', {filterName, values: values as Array<string | boolean>});
+};
 </script>
 
 <template>
@@ -80,45 +84,35 @@ const {t} = useI18n();
             :label="t('CALCULATED_SCOPE_LICENSE_CHART_INCLUDE')"
             :items="calculatedIsLicenseChartOptions"
             :model-value="getScopeFilterValues('isLicenseChart')"
-            @update:modelValue="
-              emit('update-scope', {filterName: 'isLicenseChart', values: $event as Array<string | boolean>})
-            " />
+            @update:modelValue="emitScope('isLicenseChart', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_APPROVAL_INCLUDE')"
             :items="calculatedApprovalOptions"
             :model-value="getScopeFilterValues('approvalState')"
-            @update:modelValue="
-              emit('update-scope', {filterName: 'approvalState', values: $event as Array<string | boolean>})
-            " />
+            @update:modelValue="emitScope('approvalState', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_FAMILY_INCLUDE')"
             :items="calculatedFamilyOptions"
             :model-value="getScopeFilterValues('family')"
-            @update:modelValue="
-              emit('update-scope', {filterName: 'family', values: $event as Array<string | boolean>})
-            " />
+            @update:modelValue="emitScope('family', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_TYPE_INCLUDE')"
             :items="calculatedTypeOptions"
             :model-value="getScopeFilterValues('licenseType')"
-            @update:modelValue="
-              emit('update-scope', {filterName: 'licenseType', values: $event as Array<string | boolean>})
-            " />
+            @update:modelValue="emitScope('licenseType', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_SOURCE_INCLUDE')"
             :items="calculatedSourceOptions"
             :model-value="getScopeFilterValues('source')"
-            @update:modelValue="
-              emit('update-scope', {filterName: 'source', values: $event as Array<string | boolean>})
-            " />
+            @update:modelValue="emitScope('source', $event)" />
         </div>
       </v-card>
     </Stack>
