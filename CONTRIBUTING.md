@@ -13,13 +13,7 @@ for contributing to this project.
 
 ## 1. Code of Conduct
 
-This project adheres to the **Eclipse Foundation Community Code of Conduct**.
-
-All participants are expected to interact respectfully and professionally
-in all project spaces, including repositories, issue trackers, discussions,
-mailing lists, and chats.
-
-➡ https://www.eclipse.org/org/documents/Community_Code_of_Conduct.php
+Please observe our [Community Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ---
 
@@ -42,9 +36,7 @@ Eclipse Contributor Agreement (ECA) and the project’s declared license(s).
 
 All project communication is conducted in an open and transparent manner.
 
-The **primary communication channels** for this project are:
-
-- Issues and pull requests in this repository
+The **primary communication channels** for this project are issues and pull requests in this repository.
 
 Project-related discussions and decisions are made publicly through these
 channels.
@@ -99,7 +91,7 @@ All contributions are evaluated on technical merit and project fit.
 2. Create a feature branch
 3. Make your changes
 4. Ensure commits are clean and focused
-5. Open a pull request against the main development branch
+5. Open a pull request against the repository's `main` branch
 
 ---
 

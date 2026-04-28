@@ -55,13 +55,9 @@ accordance with [Eclipse Foundation Security Policy](https://www.eclipse.org/sec
 
 ## Supported Versions
 
-Security fixes are provided for:
+There is currently no official release version of Eclipse Disuko.
 
-- The **latest released version**
-- Other versions as explicitly documented by the project
-
-Users are encouraged to upgrade to a supported version to receive
-security updates.
+Security updates are applied to the HEAD of the `main` branch.
 
 ---
 
