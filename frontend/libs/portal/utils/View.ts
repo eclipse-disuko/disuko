@@ -28,7 +28,7 @@ export function getIconColorScanRemarkLevel(level: ScanRemarkLevel) {
 
 export function getIconColorReviewRemarkLevel(level: ReviewRemarkLevel) {
   if (level.toLowerCase() === 'yellow') {
-    return 'mbti'; // more subtle color
+    return 'brand'; // more subtle color
   }
   return level.toLowerCase();
 }
