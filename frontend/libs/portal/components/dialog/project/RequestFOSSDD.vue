@@ -9,7 +9,7 @@ import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {ComponentStats, OverallReviewState, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
