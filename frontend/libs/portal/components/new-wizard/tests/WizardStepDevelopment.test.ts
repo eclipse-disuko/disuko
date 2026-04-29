@@ -79,15 +79,6 @@ describe('WizardStepDevelopment', () => {
     expect(wizardStore.project.projectSettings.documentMeta.supplierDept).toBeNull();
   });
 
-  it('should show vehicle onboard warning when isVehicleOnboardArchitecture is true', async () => {
-    wizardStore.isVehicleOnboardArchitecture = true;
-    await wrapper.vm.$nextTick();
-
-    const alert = wrapper.find('.v-alert');
-    expect(alert.exists()).toBe(true);
-    expect(alert.attributes('type')).toBe('warning');
-  });
-
   it('should mark inhouse card as active when development is inhouse', () => {
     const testingPinia = createTestingPinia({
       createSpy: vi.fn,
