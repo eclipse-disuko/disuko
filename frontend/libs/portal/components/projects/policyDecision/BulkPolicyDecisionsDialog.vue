@@ -48,7 +48,7 @@ const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
 
 const tableItems = ref<TableItem[]>([]);
-const selected = ref<TableItem[]>([]);
+const selected = ref<string[]>([]);
 
 const commentRules = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
 
@@ -119,7 +119,7 @@ const open = async (
   config.value = newConfig;
 
   tableItems.value = (config.value.items ?? []).map((item) => ({...item, key: crypto.randomUUID()}));
-  selected.value = tableItems.value.slice();
+  selected.value = tableItems.value.map((item) => item.key);
 
   isVisible.value = true;
 };
@@ -136,7 +136,7 @@ const doDialogAction = async (decision: 'allow' | 'deny') => {
   }
   try {
     const requestItems: PolicyDecisionRequest[] = [];
-    for (const item of selected.value) {
+    for (const item of tableItems.value.filter((item) => selected.value.includes(item.key))) {
       const policyDecisionRequest: PolicyDecisionRequest = {
         sbomId: currentSbomId.value,
         sbomName: currentSbomName.value,
@@ -226,18 +226,15 @@ defineExpose({open});
       </template>
       <v-form ref="form">
         <Stack>
-          <v-data-table
+          <v-data-table-virtual
             :headers="headers"
             fixed-header
             density="compact"
-            hide-default-footer
-            :items-per-page="-1"
             :items="tableItems"
             class="striped-table custom-data-table"
             height="380"
             show-select
             v-model="selected"
-            return-object
             item-value="key">
             <template v-slot:[`item.policy.type`]="{item}">
               <v-icon :color="getIconColorForPolicyType(item.policy.type)">
@@ -248,7 +245,7 @@ defineExpose({open});
             <template v-slot:[`item.component.licenseExpression`]="{item}">
               <span v-html="formatText(item.component.licenseExpression)"></span>
             </template>
-          </v-data-table>
+          </v-data-table-virtual>
           <v-textarea
             v-model="comment"
             variant="outlined"
