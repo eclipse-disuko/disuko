@@ -3,6 +3,11 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
+/**
+ * Multi-select dropdown component with custom selection display.
+ * Shows first selected item title and "+X others" for additional selections.
+ * Supports Vuetify v-select with truncation and internationalization.
+ */
 import {useAttrs} from 'vue';
 import {useI18n} from 'vue-i18n';
 
