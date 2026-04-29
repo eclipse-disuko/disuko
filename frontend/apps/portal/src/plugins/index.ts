@@ -16,12 +16,8 @@ import router from '../router';
 import {ConfigSymbol} from '../types/symbols';
 import vuetify from './vuetify';
 
-export function createDiscoPinia() {
-  return createPinia();
-}
-
 export function registerPlugins(app: App) {
-  app.use(createDiscoPinia());
+  app.use(createPinia());
   app.provide(ConfigSymbol, config);
   app.config.globalProperties.$config = config;
   app.use(vuetify);

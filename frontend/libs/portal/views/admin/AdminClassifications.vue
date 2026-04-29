@@ -10,7 +10,6 @@ import {compareLevel} from '@disclosure-portal/model/Quality';
 import {Rights} from '@disclosure-portal/model/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
@@ -24,6 +23,8 @@ import dayjs from 'dayjs';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
 const viewTools = useViewTools();
@@ -31,7 +32,8 @@ const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const userStore = useUserStore();
 const snackbar = useSnackbar();
 const {getTextOfLevel, getTextOfType} = useView();
-const appStore = useAppStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 
 const items = ref<IObligation[]>([]);
 const search = ref('');
@@ -291,11 +293,11 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
           </template>
 
           <template #[`item.name`]="{item}">
-            {{ appStore.appLanguage === 'en' ? item.name : item.nameDe }}
+            {{ appLanguage === 'en' ? item.name : item.nameDe }}
           </template>
 
           <template #[`item.description`]="{item}">
-            <Truncated>{{ appStore.appLanguage === 'en' ? item.description : item.descriptionDe }}</Truncated>
+            <Truncated>{{ appLanguage === 'en' ? item.description : item.descriptionDe }}</Truncated>
           </template>
 
           <template #[`item.created`]="{item}">

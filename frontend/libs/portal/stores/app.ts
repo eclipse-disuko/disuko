@@ -10,26 +10,11 @@ import {LabelsTools} from '@disclosure-portal/utils/Labels';
 import {useStorage} from '@vueuse/core';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
-
-function resolveInitialAppLanguage(): 'de' | 'en' {
-  const stored = localStorage.getItem('appLanguage');
-  if (stored === 'de' || stored === 'en') {
-    return stored;
-  }
-  const locale = useI18n().locale.value;
-  if (locale !== 'de' && locale !== 'en') {
-    localStorage.setItem('appLanguage', 'en');
-    return 'en';
-  }
-  return locale;
-}
 
 export const useAppStore = defineStore('app', () => {
   // State as reactive object with type
   const state = reactive({
-    appLanguage: resolveInitialAppLanguage(),
     LabelsTools: new LabelsTools(),
     tiles: [] as ITile[],
     alternateRender: false,
@@ -133,15 +118,6 @@ export const useAppStore = defineStore('app', () => {
     });
   };
 
-  const setLanguage = (language: 'en' | 'de') => {
-    state.appLanguage = language;
-    localStorage.setItem('appLanguage', state.appLanguage);
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(state.appLanguage === 'en' ? 'de' : 'en');
-  };
-
   const setDummyDesignMode = (isDummy: boolean) => {
     state.dummyDesignMode = isDummy;
   };
@@ -172,7 +148,6 @@ export const useAppStore = defineStore('app', () => {
 
   // Getters
   const getLabelsTools = computed(() => state.LabelsTools);
-  const getAppLanguage = computed(() => state.appLanguage);
 
   return {
     // State
@@ -187,14 +162,11 @@ export const useAppStore = defineStore('app', () => {
     setNavItemGroup,
     setTiles,
     startTokenRefresher,
-    toggleLanguage,
-    setLanguage,
     setDummyDesignMode,
     unsetDummyDesignMode,
     setShouldReloadApprovals,
 
     // Getters
     getLabelsTools,
-    getAppLanguage,
   };
 });

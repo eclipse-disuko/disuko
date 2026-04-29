@@ -7,7 +7,6 @@ import {IObligation, ObligationDTO} from '@disclosure-portal/model/IObligation';
 import {compareLevel, LicenseRemarks} from '@disclosure-portal/model/Quality';
 import ProjectService, {RemarkTypes} from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
@@ -18,12 +17,15 @@ import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
-const appStore = useAppStore();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const viewTools = useViewTools();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const {getTextOfLevel, getTextOfType} = useView();
 
 const selectedLicenseRemarks = ref<LicenseRemarks>({
@@ -156,10 +158,10 @@ const classificationsCustomFilterTable = (value: string, searchTerm: string, ite
     if (!found && value === item.type) {
       found = ('' + getTextOfType(value)).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
     }
-    if (!found && value === item.name && appStore.getAppLanguage === 'de') {
+    if (!found && value === item.name && appLanguage.value === 'de') {
       found = ('' + item.nameDe).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
     }
-    if (!found && value === item.description && appStore.getAppLanguage === 'de') {
+    if (!found && value === item.description && appLanguage.value === 'de') {
       found = ('' + item.descriptionDe).toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
     }
     return found;

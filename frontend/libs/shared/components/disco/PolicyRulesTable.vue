@@ -2,6 +2,111 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+<script setup lang="ts">
+import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
+import {PolicyRules, PolicyRulesAssignmentsDto, PolicyState} from '@disclosure-portal/model/PolicyRule';
+import useViewTools, {
+  getIconColorForPolicyType,
+  getIconForPolicyType,
+  getStrWithMaxLength,
+  policyStateToTranslationKey,
+} from '@disclosure-portal/utils/View';
+import {DataTableHeader, SortItem} from '@shared/types/table';
+import {computed, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
+
+interface Props {
+  loading?: boolean;
+  edit?: boolean;
+  isDialog?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+  edit: false,
+  isDialog: false,
+});
+
+const item = defineModel<PolicyRulesAssignmentsDto[]>({required: true});
+
+const {t} = useI18n();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
+const viewTools = useViewTools();
+
+const search = ref('');
+const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
+const rules = ref(PolicyRules);
+const menu = ref(false);
+const selectedFilterStatus = ref<string[]>(['active', 'inactive']);
+const possibleStatus = ref<IDefaultSelectItem[]>([
+  {
+    text: t('PR_STATUS_ACTIVE'),
+    value: 'active',
+  },
+  {
+    text: t('PR_STATUS_INACTIVE'),
+    value: 'inactive',
+  },
+  {
+    text: t('PR_STATUS_DEPRECATED'),
+    value: 'deprecated',
+  },
+]);
+
+const headers = computed<DataTableHeader[]>(() => {
+  return [
+    {
+      title: t('COL_STATUS'),
+      align: 'start',
+      sortable: true,
+      value: 'status',
+      width: '120',
+    },
+    {
+      title: t('COL_NAME'),
+      align: 'start',
+      sortable: true,
+      value: 'name',
+      width: '120',
+    },
+    {
+      title: t('COL_DESCRIPTION'),
+      align: 'start',
+      filterable: false,
+      value: 'description',
+      sortable: false,
+      width: '400',
+    },
+    {
+      title: '',
+      align: 'center',
+      filterable: false,
+      value: 'type',
+      width: typeWidth.value,
+      sortable: false,
+    },
+  ];
+});
+
+const filteredHeaders = computed(() => {
+  return props.isDialog
+    ? headers.value.filter((header: DataTableHeader) => header.value !== 'description')
+    : headers.value;
+});
+
+const filteredList = computed<PolicyRulesAssignmentsDto[]>(() => {
+  if (!Array.isArray(item.value)) {
+    return [];
+  }
+  return item.value.filter((pr) => selectedFilterStatus.value.some((s) => s == pr.status));
+});
+
+const typeWidth = computed(() => (appLanguage.value === 'en' ? 450 : 470));
+</script>
+
 <template>
   <v-data-table-virtual
     :loading="loading"
@@ -108,109 +213,6 @@
     </template>
   </v-data-table-virtual>
 </template>
-
-<script setup lang="ts">
-import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
-import {PolicyRules, PolicyRulesAssignmentsDto, PolicyState} from '@disclosure-portal/model/PolicyRule';
-import {useAppStore} from '@disclosure-portal/stores/app';
-import useViewTools, {
-  getIconColorForPolicyType,
-  getIconForPolicyType,
-  getStrWithMaxLength,
-  policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
-import {DataTableHeader, SortItem} from '@shared/types/table';
-import {computed, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
-
-interface Props {
-  loading?: boolean;
-  edit?: boolean;
-  isDialog?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  loading: false,
-  edit: false,
-  isDialog: false,
-});
-
-const item = defineModel<PolicyRulesAssignmentsDto[]>({required: true});
-
-const {t} = useI18n();
-const appStore = useAppStore();
-const viewTools = useViewTools();
-
-const search = ref('');
-const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
-const rules = ref(PolicyRules);
-const menu = ref(false);
-const selectedFilterStatus = ref<string[]>(['active', 'inactive']);
-const possibleStatus = ref<IDefaultSelectItem[]>([
-  {
-    text: t('PR_STATUS_ACTIVE'),
-    value: 'active',
-  },
-  {
-    text: t('PR_STATUS_INACTIVE'),
-    value: 'inactive',
-  },
-  {
-    text: t('PR_STATUS_DEPRECATED'),
-    value: 'deprecated',
-  },
-]);
-
-const headers = computed<DataTableHeader[]>(() => {
-  return [
-    {
-      title: t('COL_STATUS'),
-      align: 'start',
-      sortable: true,
-      value: 'status',
-      width: '120',
-    },
-    {
-      title: t('COL_NAME'),
-      align: 'start',
-      sortable: true,
-      value: 'name',
-      width: '120',
-    },
-    {
-      title: t('COL_DESCRIPTION'),
-      align: 'start',
-      filterable: false,
-      value: 'description',
-      sortable: false,
-      width: '400',
-    },
-    {
-      title: '',
-      align: 'center',
-      filterable: false,
-      value: 'type',
-      width: typeWidth.value,
-      sortable: false,
-    },
-  ];
-});
-
-const filteredHeaders = computed(() => {
-  return props.isDialog
-    ? headers.value.filter((header: DataTableHeader) => header.value !== 'description')
-    : headers.value;
-});
-
-const filteredList = computed<PolicyRulesAssignmentsDto[]>(() => {
-  if (!Array.isArray(item.value)) {
-    return [];
-  }
-  return item.value.filter((pr) => selectedFilterStatus.value.some((s) => s == pr.status));
-});
-
-const typeWidth = computed(() => (appStore.getAppLanguage === 'en' ? 450 : 470));
-</script>
 
 <style scoped>
 .v-radio-group {

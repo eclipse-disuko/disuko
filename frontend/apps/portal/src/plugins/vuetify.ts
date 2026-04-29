@@ -16,16 +16,17 @@ import {createVuetify} from 'vuetify';
 import {mdi} from 'vuetify/iconsets/mdi';
 import dark from './dark';
 import light from './light';
+import {de, en} from 'vuetify/locale';
+import {getDefaultTheme} from '@shared/utils/theme';
+import {getStoreLanguage} from '@shared/utils/language';
 
-function getDefaultTheme(): string {
-  const theme = localStorage.getItem('disco-theme');
-  if (theme === 'dark' || theme === 'light') {
-    return theme;
-  }
-  return 'dark'; // Default theme
-}
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  locale: {
+    locale: getStoreLanguage() || 'en',
+    fallback: 'en',
+    messages: {en, de},
+  },
   theme: {
     defaultTheme: getDefaultTheme(),
     themes: {
