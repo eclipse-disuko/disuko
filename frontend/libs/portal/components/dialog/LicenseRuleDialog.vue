@@ -291,8 +291,8 @@ defineExpose({open});
         <Stack class="gap-4">
           <Stack direction="row" class="items-start gap-4">
             <Stack class="flex-1 gap-4 self-start">
-              <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
-                <span class="v-field__input text-title-1 py-2" v-html="formatText(selectedComponentStr)" />
+              <v-field variant="outlined" density="compact" active :label="t('RELATED_COMPONENT')" hide-details>
+                <span class="v-field__input text-title-1 py-2">{{ selectedComponentStr }}</span>
               </v-field>
               <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
                 <span
