@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
+
 export interface BucketDefinition {
   deniedClassifications: string[];
   warnedClassifications: string[];
@@ -19,4 +21,19 @@ export interface CalculatedPolicyScope {
 export interface CalculatedPolicyConfig {
   bucketDefinition: BucketDefinition;
   licenseScope: CalculatedPolicyScope;
+}
+
+export interface ScopeFilterConfig {
+  isLicenseChart: {options: IDefaultSelectItem[]; values: Array<string | boolean>};
+  approvalState: {options: IDefaultSelectItem[]; values: Array<string | boolean>};
+  family: {options: IDefaultSelectItem[]; values: Array<string | boolean>};
+  licenseType: {options: IDefaultSelectItem[]; values: Array<string | boolean>};
+  source: {options: IDefaultSelectItem[]; values: Array<string | boolean>};
+}
+
+export interface CalculatedRuleConfigType {
+  calculated: boolean;
+  buckets: BucketDefinition;
+  classificationOptions: IDefaultSelectItem[];
+  scopeConfig: ScopeFilterConfig;
 }

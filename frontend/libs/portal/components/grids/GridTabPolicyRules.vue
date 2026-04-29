@@ -51,6 +51,7 @@ const hasChanges = ref(false);
 const filterUnSelected = ref('');
 const filterSelected = ref('');
 const licensesLoading = ref(true);
+const ruleLoaded = ref(false);
 const mode = ref(PolicyState.ALLOW);
 const menuIsLicenseChartSelected = ref(false);
 const notSelectedLicenses = ref(<LicenseSlim[]>[]);
@@ -111,6 +112,34 @@ const calculatedSourceOptions = computed<IDefaultSelectItem[]>(() => [
   {text: 'custom', value: 'custom'},
 ]);
 
+const calculatedRuleConfig = computed(() => ({
+  calculated: rule.value.Calculated,
+  buckets: rule.value.CalculatedConfig.bucketDefinition,
+  classificationOptions: classificationOptions.value,
+  scopeConfig: {
+    isLicenseChart: {
+      options: calculatedIsLicenseChartOptions.value,
+      values: getCalculatedScopeFilterValues('isLicenseChart'),
+    },
+    approvalState: {
+      options: calculatedApprovalOptions.value,
+      values: getCalculatedScopeFilterValues('approvalState'),
+    },
+    family: {
+      options: calculatedFamilyOptions.value,
+      values: getCalculatedScopeFilterValues('family'),
+    },
+    licenseType: {
+      options: calculatedTypeOptions.value,
+      values: getCalculatedScopeFilterValues('licenseType'),
+    },
+    source: {
+      options: calculatedSourceOptions.value,
+      values: getCalculatedScopeFilterValues('source'),
+    },
+  },
+}));
+
 const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
 const canEditCalculated = computed(() => isPolicyManager.value && rule.value.Calculated);
 const classificationOptions = computed(() =>
@@ -125,6 +154,7 @@ const retrieveRule = async (policyRuleId: string) => {
   } else {
     rule.value = new PolicyRule((await policyRuleService.getPolicyRule(policyRuleId)).data);
   }
+  ruleLoaded.value = true;
 };
 
 const initBreadcrumbs = () => {
@@ -815,22 +845,26 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
               v-if="hasChanges && rule.Deprecated === false && !rule.Calculated" />
           </div>
           <div v-if="isPolicyManager" class="d-flex align-center justify-space-between mt-2 h-9 flex-row">
-            <h3 v-if="!rule.Calculated" class="d-subtitle-2">{{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}</h3>
+            <h3 v-if="!rule.Calculated && ruleLoaded" class="d-subtitle-2">
+              {{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}
+            </h3>
             <div v-else></div>
-            <DCActionButton
-              v-if="!rule.Calculated"
-              variant="outlined"
-              :text="t('CALCULATED_POLICY_RULE_ENABLED')"
-              icon="mdi-calculator-variant"
-              :hint="t('CALCULATED_POLICY_RULE_ENABLED')"
-              @click="setCalculatedEnabled(true)" />
-            <DCActionButton
-              v-else
-              variant="outlined"
-              :text="t('MANUAL_RULES')"
-              icon="mdi-cog-outline"
-              :hint="t('MANUAL_RULES')"
-              @click="setCalculatedEnabled(false)" />
+            <template v-if="ruleLoaded">
+              <DCActionButton
+                v-if="!rule.Calculated"
+                variant="outlined"
+                :text="t('CALCULATED_POLICY_RULE_ENABLED')"
+                icon="mdi-calculator-variant"
+                :hint="t('CALCULATED_POLICY_RULE_ENABLED')"
+                @click="setCalculatedEnabled(true)" />
+              <DCActionButton
+                v-else
+                variant="outlined"
+                :text="t('MANUAL_RULES')"
+                icon="mdi-cog-outline"
+                :hint="t('MANUAL_RULES')"
+                @click="setCalculatedEnabled(false)" />
+            </template>
           </div>
 
           <div :class="{'col-span-2': !canEditManual && !rule.Calculated, 'col-start-1': rule.Calculated}">
@@ -842,7 +876,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
               <DSearchField v-model="filterSelected" />
             </div>
           </div>
-          <div v-if="canEditManual">
+          <div v-if="canEditManual && ruleLoaded">
             <div class="d-flex ga-1 label-filter flex-row">
               <DCActionButton
                 large
@@ -1226,7 +1260,7 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
             </v-data-table>
           </div>
         </v-col>
-        <v-col cols="6" v-if="canEditManual" class="fill-height">
+        <v-col cols="6" v-if="ruleLoaded && canEditManual" class="fill-height">
           <v-data-table
             :loading="licensesLoading"
             fixed-header
@@ -1582,20 +1616,9 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
         </v-col>
         <v-col cols="6" v-if="canEditCalculated" class="fill-height">
           <div class="flex h-full flex-col">
-            <div class="flex-1 overflow-auto">
+            <div v-show="classificationsLoaded" class="flex-1 overflow-auto">
               <CalculatedRuleConfig
-                :calculated="rule.Calculated"
-                :classification-options="classificationOptions"
-                :classification-options-loaded="classificationsLoaded"
-                :denied-classifications="rule.CalculatedConfig.bucketDefinition.deniedClassifications"
-                :warned-classifications="rule.CalculatedConfig.bucketDefinition.warnedClassifications"
-                :allowed-classifications="rule.CalculatedConfig.bucketDefinition.allowedClassifications"
-                :calculated-is-license-chart-options="calculatedIsLicenseChartOptions"
-                :calculated-approval-options="calculatedApprovalOptions"
-                :calculated-family-options="calculatedFamilyOptions"
-                :calculated-type-options="calculatedTypeOptions"
-                :calculated-source-options="calculatedSourceOptions"
-                :get-scope-filter-values="getCalculatedScopeFilterValues"
+                :config="calculatedRuleConfig"
                 @update-calculated="setCalculatedEnabled"
                 @update-bucket="setCalculatedBucketClassifications($event.bucketName, $event.values)"
                 @update-scope="setCalculatedScopeFilterValues($event.filterName, $event.values)" />
