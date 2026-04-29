@@ -20,6 +20,7 @@ import {useUserStore} from '@disclosure-portal/stores/user';
 import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap, openUrlInNewTab} from '@disclosure-portal/utils/View';
+import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculatedPolicyRule.store';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DSearchField from '@shared/components/disco/DSearchField.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
@@ -36,12 +37,14 @@ import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
-const {getI18NTextOfPrefixKey, getLicenseApprovalTypes, getLicenseFamily, getLicenseTypes} = useLicense();
+const {getI18NTextOfPrefixKey} = useLicense();
 const {getNameForLanguage} = useViewTools();
 const router = useRouter();
-const rule = ref(new PolicyRule());
+const calculatedPolicyRuleStore = useCalculatedPolicyRuleStore();
+const {rule, classifications, classificationsLoaded, calculatedRuleConfig} = storeToRefs(calculatedPolicyRuleStore);
 const isPolicyManager = ref(false);
 const rights = ref(new Rights());
 const userStore = useUserStore();
@@ -77,8 +80,6 @@ const possibleFamilyNotSelected = ref<IDefaultSelectItem[]>([]);
 const possibleApprovalNotSelected = ref<IDefaultSelectItem[]>([]);
 const possibleTypeNotSelected = ref<IDefaultSelectItem[]>([]);
 const possibleClassificationsNotSelected = ref<IDefaultSelectItem[]>([]);
-const classifications = ref<IObligation[]>([]);
-const classificationsLoaded = ref(false);
 const labelsMap = ref<IMap<Label>>({});
 const policyLabels = ref<Label[]>([]);
 const menu6 = ref(false);
@@ -92,59 +93,9 @@ const menuClassificationNot = ref(false);
 const menuIsLicenseChartNotSelected = ref(false);
 const {info} = useSnackbar();
 const classificationsDialogRef = ref<InstanceType<typeof ClassificationsPerLicenseDialog> | null>(null);
-const calculatedIsLicenseChartOptions = computed<IDefaultSelectItem[]>(() => [
-  {text: t('TABLE_LICENSE_CHART_STATUS_IS'), value: 'true'},
-  {text: t('TABLE_LICENSE_CHART_STATUS_IS_NOT'), value: 'false'},
-]);
-const calculatedApprovalOptions = computed<IDefaultSelectItem[]>(() =>
-  getLicenseApprovalTypes().map((approval) => ({text: approval.text, value: approval.value || 'not set'})),
-);
-const calculatedFamilyOptions = computed<IDefaultSelectItem[]>(() =>
-  getLicenseFamily()
-    .map((family) => ({text: family.text, value: family.value || 'not declared'}))
-    .sort((a, b) => compareFamily(a.value, b.value)),
-);
-const calculatedTypeOptions = computed<IDefaultSelectItem[]>(() =>
-  getLicenseTypes().map((type) => ({text: type.text, value: type.value || 'not declared'})),
-);
-const calculatedSourceOptions = computed<IDefaultSelectItem[]>(() => [
-  {text: 'spdx', value: 'spdx'},
-  {text: 'custom', value: 'custom'},
-]);
-
-const calculatedRuleConfig = computed(() => ({
-  calculated: rule.value.Calculated,
-  buckets: rule.value.CalculatedConfig.bucketDefinition,
-  classificationOptions: classificationOptions.value,
-  scopeConfig: {
-    isLicenseChart: {
-      options: calculatedIsLicenseChartOptions.value,
-      values: getCalculatedScopeFilterValues('isLicenseChart'),
-    },
-    approvalState: {
-      options: calculatedApprovalOptions.value,
-      values: getCalculatedScopeFilterValues('approvalState'),
-    },
-    family: {
-      options: calculatedFamilyOptions.value,
-      values: getCalculatedScopeFilterValues('family'),
-    },
-    licenseType: {
-      options: calculatedTypeOptions.value,
-      values: getCalculatedScopeFilterValues('licenseType'),
-    },
-    source: {
-      options: calculatedSourceOptions.value,
-      values: getCalculatedScopeFilterValues('source'),
-    },
-  },
-}));
 
 const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
 const canEditCalculated = computed(() => isPolicyManager.value && rule.value.Calculated);
-const classificationOptions = computed(() =>
-  classifications.value.filter((c) => c?._key).map((c) => ({text: getNameForLanguage(c), value: c._key})),
-);
 
 const retrieveRule = async (policyRuleId: string) => {
   if (router.currentRoute.value.params.uuid) {
@@ -154,6 +105,7 @@ const retrieveRule = async (policyRuleId: string) => {
   } else {
     rule.value = new PolicyRule((await policyRuleService.getPolicyRule(policyRuleId)).data);
   }
+  calculatedPolicyRuleStore.setRule(rule.value);
   ruleLoaded.value = true;
 };
 
@@ -440,13 +392,6 @@ const fillLicenseTbl = (policyState: PolicyState, license: LicenseSlim): boolean
     }
   }
   return false;
-};
-
-const retrieveClassifications = async () => {
-  classificationsLoaded.value = false;
-  const response = (await AdminService.getAllObligations()).data;
-  classifications.value = response.items;
-  classificationsLoaded.value = true;
 };
 
 const reloadLabels = async () => {
@@ -771,61 +716,24 @@ onMounted(async () => {
   initBreadcrumbs();
 
   await retrieveSpdxLicenses();
-  await retrieveClassifications();
+  await calculatedPolicyRuleStore.retrieveClassifications();
   await reloadLabels();
 });
 
-const setCalculatedEnabled = (value: boolean) => {
-  rule.value.Calculated = value;
+const handleSetCalculatedEnabled = (value: boolean) => {
+  calculatedPolicyRuleStore.setCalculated(value);
   hasChanges.value = true;
 };
 
 type CalculatedBucketName = 'deniedClassifications' | 'warnedClassifications' | 'allowedClassifications';
 
-const setCalculatedBucketClassifications = (bucketName: CalculatedBucketName, value: string[]) => {
-  rule.value.CalculatedConfig.bucketDefinition[bucketName] = value;
+const handleSetCalculatedBucketClassifications = (bucketName: CalculatedBucketName, value: string[]) => {
+  calculatedPolicyRuleStore.setBucketClassifications(bucketName, value);
   hasChanges.value = true;
 };
 
-const toBoolArray = (values: Array<string | boolean>): boolean[] => values.map((v) => v === true || v === 'true');
-
-const getCalculatedScopeFilterValues = (filterName: string): Array<string | boolean> => {
-  const scope = rule.value.CalculatedConfig.licenseScope;
-  switch (filterName) {
-    case 'isLicenseChart':
-      return scope.isLicenseChart.map(String);
-    case 'approvalState':
-      return scope.approvalState;
-    case 'family':
-      return scope.family;
-    case 'licenseType':
-      return scope.licenseType;
-    case 'source':
-      return scope.source;
-    default:
-      return [];
-  }
-};
-
-const setCalculatedScopeFilterValues = (filterName: string, values: Array<string | boolean>) => {
-  const scope = rule.value.CalculatedConfig.licenseScope;
-  switch (filterName) {
-    case 'isLicenseChart':
-      scope.isLicenseChart = toBoolArray(values);
-      break;
-    case 'approvalState':
-      scope.approvalState = values as string[];
-      break;
-    case 'family':
-      scope.family = values as string[];
-      break;
-    case 'licenseType':
-      scope.licenseType = values as string[];
-      break;
-    case 'source':
-      scope.source = values as string[];
-      break;
-  }
+const handleSetCalculatedScopeFilterValues = (filterName: string, values: Array<string | boolean>) => {
+  calculatedPolicyRuleStore.setScopeFilterValues(filterName as 'isLicenseChart' | 'approvalState' | 'family' | 'licenseType' | 'source', values);
   hasChanges.value = true;
 };
 </script>
@@ -856,14 +764,14 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
                 :text="t('CALCULATED_POLICY_RULE_ENABLED')"
                 icon="mdi-calculator-variant"
                 :hint="t('CALCULATED_POLICY_RULE_ENABLED')"
-                @click="setCalculatedEnabled(true)" />
+                @click="handleSetCalculatedEnabled(true)" />
               <DCActionButton
                 v-else
                 variant="outlined"
                 :text="t('MANUAL_RULES')"
                 icon="mdi-cog-outline"
                 :hint="t('MANUAL_RULES')"
-                @click="setCalculatedEnabled(false)" />
+                @click="handleSetCalculatedEnabled(false)" />
             </template>
           </div>
 
@@ -1619,9 +1527,9 @@ const setCalculatedScopeFilterValues = (filterName: string, values: Array<string
             <div v-show="classificationsLoaded" class="flex-1 overflow-auto">
               <CalculatedRuleConfig
                 :config="calculatedRuleConfig"
-                @update-calculated="setCalculatedEnabled"
-                @update-bucket="setCalculatedBucketClassifications($event.bucketName, $event.values)"
-                @update-scope="setCalculatedScopeFilterValues($event.filterName, $event.values)" />
+                @update-calculated="handleSetCalculatedEnabled"
+                @update-bucket="handleSetCalculatedBucketClassifications($event.bucketName, $event.values)"
+                @update-scope="handleSetCalculatedScopeFilterValues($event.filterName, $event.values)" />
               <div class="d-flex mt-8 justify-end">
                 <DCActionButton
                   :text="t('BTN_SAVE')"
