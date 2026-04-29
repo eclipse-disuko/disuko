@@ -55,6 +55,8 @@ const commentRules = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
 const config = ref<DialogBulkPolicyDecisionsConfig>({
   items: [],
 });
+const savingAllow = ref(false);
+const savingDeny = ref(false);
 
 const headers: DataTableHeader[] = [
   {
@@ -127,41 +129,51 @@ const doDialogAction = async (decision: 'allow' | 'deny') => {
     return;
   }
 
-  const requestItems: PolicyDecisionRequest[] = [];
-  for (const item of selected.value) {
-    const policyDecisionRequest: PolicyDecisionRequest = {
-      sbomId: currentSbomId.value,
-      sbomName: currentSbomName.value,
-      sbomUploaded: currentSbomUploaded.value,
-      componentSpdxId: item.component.spdxId,
-      componentName: item.component.name,
-      componentVersion: item.component.version,
-      licenseExpression: item.component.licenseExpression,
-      licenseId: item.policy.licenseMatched,
-      policyId: item.policy.key,
-      policyEvaluated: item.policy.type,
-      policyDecision: decision,
-      comment: comment.value ?? '',
-      creator: userStore.getProfile.user,
-    };
-    requestItems.push(policyDecisionRequest);
+  if (decision === 'allow') {
+    savingAllow.value = true;
+  } else {
+    savingDeny.value = true;
   }
+  try {
+    const requestItems: PolicyDecisionRequest[] = [];
+    for (const item of selected.value) {
+      const policyDecisionRequest: PolicyDecisionRequest = {
+        sbomId: currentSbomId.value,
+        sbomName: currentSbomName.value,
+        sbomUploaded: currentSbomUploaded.value,
+        componentSpdxId: item.component.spdxId,
+        componentName: item.component.name,
+        componentVersion: item.component.version,
+        licenseExpression: item.component.licenseExpression,
+        licenseId: item.policy.licenseMatched,
+        policyId: item.policy.key,
+        policyEvaluated: item.policy.type,
+        policyDecision: decision,
+        comment: comment.value ?? '',
+        creator: userStore.getProfile.user,
+      };
+      requestItems.push(policyDecisionRequest);
+    }
 
-  const response = (
-    await projectService.createBulkPolicyDecision(projectKey.value, currentVersionKey.value, requestItems)
-  ).data;
-  if (!response.success) {
-    const dialog = new ErrorDialogConfig();
-    dialog.title = t('policy_decision_create_error_title');
-    dialog.description = t(response.message);
-    errorDialog.value?.open(dialog);
-    return;
+    const response = (
+      await projectService.createBulkPolicyDecision(projectKey.value, currentVersionKey.value, requestItems)
+    ).data;
+    if (!response.success) {
+      const dialog = new ErrorDialogConfig();
+      dialog.title = t('policy_decision_create_error_title');
+      dialog.description = t(response.message);
+      errorDialog.value?.open(dialog);
+      return;
+    }
+
+    form.value?.reset();
+    emit('reload');
+    close();
+    info(t('POLICY_DECISION_CREATED'));
+  } finally {
+    savingAllow.value = false;
+    savingDeny.value = false;
   }
-
-  form.value?.reset();
-  emit('reload');
-  close();
-  info(t('POLICY_DECISION_CREATED'));
 };
 
 const dialogConfig = computed(() => ({
@@ -187,28 +199,30 @@ defineExpose({open});
 </script>
 
 <template>
-  <v-dialog v-model="isVisible" width="1300" persistent>
+  <v-dialog v-model="isVisible" width="1260" persistent>
     <DialogLayout :config="dialogConfig" @close="close">
       <template #right>
         <DCActionButton
           is-dialog-button
           size="small"
-          :variant="buttonsDisabled ? 'flat' : 'tonal'"
+          :variant="buttonsDisabled || savingAllow ? 'flat' : 'tonal'"
           @click="doDialogAction('deny')"
-          :disabled="buttonsDisabled"
-          :color="buttonsDisabled ? 'gray' : 'error'"
+          :disabled="buttonsDisabled || savingAllow"
+          :color="buttonsDisabled || savingAllow ? 'gray' : 'error'"
           icon="mdi-minus-circle"
-          :text="t('DENY')" />
+          :text="t('DENY')"
+          :loading="savingDeny" />
 
         <DCActionButton
           is-dialog-button
           size="small"
-          :variant="buttonsDisabled ? 'flat' : 'tonal'"
+          :variant="buttonsDisabled || savingDeny ? 'flat' : 'tonal'"
           @click="doDialogAction('allow')"
-          :disabled="buttonsDisabled"
-          :color="buttonsDisabled ? 'gray' : 'success'"
+          :disabled="buttonsDisabled || savingDeny"
+          :color="buttonsDisabled || savingDeny ? 'gray' : 'success'"
           icon="mdi-check-circle"
-          :text="t('ALLOW')" />
+          :text="t('ALLOW')"
+          :loading="savingAllow" />
       </template>
       <v-form ref="form">
         <Stack>

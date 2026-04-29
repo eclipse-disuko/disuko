@@ -329,7 +329,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
   if (canMakeWarnedDecisionComponents.value.length === 0) return;
 
   const items: DialogBulkPolicyDecisionEntry[] = [];
-  for (const cmp of canMakeWarnedDecisionComponents.value) {
+  canMakeWarnedDecisionComponents.value.forEach((cmp) => {
     const component = new ComponentInfoSlim();
     component.spdxId = cmp.spdxId;
     component.name = cmp.name;
@@ -343,7 +343,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
       };
       items.push(item);
     }
-  }
+  });
 
   bulkPolicyDecisionsDialog.value?.open({items});
 };
