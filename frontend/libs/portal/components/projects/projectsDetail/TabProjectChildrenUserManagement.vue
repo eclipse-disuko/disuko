@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
-import DHTTPError from '@disclosure-portal/model/DHTTPError';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import DHTTPError from '@shared/types/DHTTPError';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {
   IProjectChildrenMembers,
   ProjectChildMemberCombi,
@@ -17,7 +17,7 @@ import {
 } from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';

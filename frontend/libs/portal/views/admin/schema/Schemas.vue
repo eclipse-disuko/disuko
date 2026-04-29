@@ -10,7 +10,7 @@ import {Rights} from '@disclosure-portal/model/Rights';
 import SchemaModel from '@disclosure-portal/model/Schema';
 import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@disclosure-portal/stores/user';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {openUrl} from '@disclosure-portal/utils/url';
 import {IMap} from '@disclosure-portal/utils/View';

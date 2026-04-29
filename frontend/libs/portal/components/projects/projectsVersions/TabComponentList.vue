@@ -16,10 +16,10 @@ import {
 } from '@disclosure-portal/model/VersionDetails';
 import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {

@@ -5,10 +5,10 @@
 <script setup lang="ts">
 import * as help from '@disclosure-portal/assets/documents/help';
 import releaseNotes from '@disclosure-portal/assets/documents/release_notes/ReleaseNotes.md?raw';
-import {INotificationMeta} from '@disclosure-portal/model/IdleInfo';
+import {INotificationMeta} from '@shared/types/IdleInfo';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
-import eventbus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {logout} from '@disclosure-portal/utils/logout';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {ThemeColor, useThemeStore} from '@shared/stores/theme.store';
@@ -116,7 +116,7 @@ const startHelpAnimation = () => {
 
 onMounted(() => {
   // initially set context help
-  eventbus.on('set-notification', onSetNotification);
+  eventBus.on('set-notification', onSetNotification);
   window.addEventListener('keydown', escapeListener);
 
   username.value = userStore.getProfile.user;

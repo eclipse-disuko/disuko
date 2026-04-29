@@ -12,7 +12,7 @@ import {Rights} from '@disclosure-portal/model/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';

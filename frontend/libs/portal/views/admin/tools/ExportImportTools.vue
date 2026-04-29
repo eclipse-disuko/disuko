@@ -4,8 +4,8 @@
 
 <script lang="ts" setup>
 import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
-import IdleInfo from '@disclosure-portal/model/IdleInfo';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
+import IdleInfo from '@shared/types/IdleInfo';
 import {
   JOB_STATUS_FAILURE,
   JOB_STATUS_IN_PROGRESS,
@@ -17,7 +17,7 @@ import {
 } from '@disclosure-portal/model/Job';
 import AdminService from '@disclosure-portal/services/admin';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import useSnackbar from '@shared/composables/useSnackbar';
 import config from '@shared/utils/config';
 import dayjs from 'dayjs';

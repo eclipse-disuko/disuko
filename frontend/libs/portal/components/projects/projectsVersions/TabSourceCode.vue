@@ -10,7 +10,7 @@ import VersionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTimeShort, getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';

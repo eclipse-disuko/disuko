@@ -4,17 +4,17 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {NameKeyIdentifier, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
 import {Group} from '@disclosure-portal/model/Rights';
 import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';

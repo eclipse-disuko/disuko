@@ -9,7 +9,7 @@ import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {Group} from '@disclosure-portal/model/Rights';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';

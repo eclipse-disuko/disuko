@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {Approval} from '@disclosure-portal/model/Approval';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import Label from '@disclosure-portal/model/Label';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';

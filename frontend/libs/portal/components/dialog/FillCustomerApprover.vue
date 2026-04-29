@@ -4,10 +4,10 @@
 
 <script setup lang="ts">
 import {ApproverRoles} from '@disclosure-portal/model/Approval';
-import DHTTPError from '@disclosure-portal/model/DHTTPError';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import DHTTPError from '@shared/types/DHTTPError';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {UserDto} from '@disclosure-portal/model/Users';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

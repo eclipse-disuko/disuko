@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import Stepper from '@disclosure-portal/components/new-wizard/Stepper.vue';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
 import useSnackbar from '@shared/composables/useSnackbar';
