@@ -22,7 +22,6 @@ declare module 'vue' {
     ApprovalInfoTabs: typeof import('./../../libs/portal/components/projects/approval/ApprovalInfoTabs.vue')['default']
     AuditDialog: typeof import('./../../libs/portal/components/dialog/AuditDialog.vue')['default']
     BulkPolicyDecisionsDialog: typeof import('./../../libs/portal/components/projects/policyDecision/BulkPolicyDecisionsDialog.vue')['default']
-    CalculatedRuleConfig: typeof import('./../../libs/portal/components/grids/CalculatedRuleConfig.vue')['default']
     ChartHeader: typeof import('./../../libs/portal/components/projects/projectsVersions/charts/ChartHeader.vue')['default']
     Checklist: typeof import('./../../libs/portal/views/admin/checklist/Checklist.vue')['default']
     ChecklistDialog: typeof import('./../../libs/portal/components/dialog/checklist/ChecklistDialog.vue')['default']

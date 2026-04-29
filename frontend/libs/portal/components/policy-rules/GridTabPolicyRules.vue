@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import ClassificationsPerLicenseDialog from '@disclosure-portal/components/dialog/ClassificationsPerLicenseDialog.vue';
-import CalculatedRuleConfig from '@disclosure-portal/components/grids/CalculatedRuleConfig.vue';
+import CalculatedRuleConfig from '@disclosure-portal/components/policy-rules/CalculatedRuleConfig.vue';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import Label from '@disclosure-portal/model/Label';
@@ -733,7 +733,10 @@ const handleSetCalculatedBucketClassifications = (bucketName: CalculatedBucketNa
 };
 
 const handleSetCalculatedScopeFilterValues = (filterName: string, values: Array<string | boolean>) => {
-  calculatedPolicyRuleStore.setScopeFilterValues(filterName as 'isLicenseChart' | 'approvalState' | 'family' | 'licenseType' | 'source', values);
+  calculatedPolicyRuleStore.setScopeFilterValues(
+    filterName as 'isLicenseChart' | 'approvalState' | 'family' | 'licenseType' | 'source',
+    values,
+  );
   hasChanges.value = true;
 };
 </script>
