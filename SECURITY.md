@@ -14,9 +14,8 @@ pull requests, or discussions.**
 If you believe you have found a security vulnerability, report it
 privately using one of the following methods:
 
-### Preferred Reporting Channels
-
-The preferred reporting channel is the **Eclipse Foundation Security Team** that can be reached by e-mail **security@eclipse-foundation.org**.
+* Contact the [Eclipse Foundation Security Team](mailto:security@eclipse-foundation.org) via email
+* Create a [confidential issue](https://gitlab.eclipse.org/security/vulnerability-reports/-/issues/new?issuable_template=new_vulnerability) in the Eclipse Foundation Vulnerability Reporting Tracker
 
 More information about the Eclipse security process:
 https://www.eclipse.org/security/
