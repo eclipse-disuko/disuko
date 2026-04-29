@@ -14,7 +14,7 @@ import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {ThemeColor, useThemeStore} from '@shared/stores/theme.store';
 import config from '@shared/utils/config';
 import {storeToRefs} from 'pinia';
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
@@ -122,6 +122,15 @@ onMounted(() => {
   username.value = userStore.getProfile.user;
   startHelpAnimation();
 });
+
+onUnmounted(() => {
+  eventBus.off('set-notification', onSetNotification);
+  window.removeEventListener('keydown', escapeListener);
+  if (animationTimeout) {
+    clearTimeout(animationTimeout);
+  }
+});
+
 watch(
   () => route.path,
   () => {
