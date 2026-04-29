@@ -62,7 +62,7 @@ func (d *deletion) transferOwnership(prKey string) {
 	m := pr.GetMember(d.user.User)
 	if m.UserType == project.OWNER {
 		if !pr.OtherOwnersExists(m.UserId) {
-			exception.ThrowExceptionServerMessage(message.GetI18N(message.ResourceInUse), "")
+			exception.ThrowExceptionServerMessage(message.GetI18N(message.TransferOwnershipBlocked), "")
 		}
 		if m.IsResponsible {
 			o := pr.OtherOwner(m.UserId)
@@ -77,6 +77,9 @@ func (d *deletion) transferOwnership(prKey string) {
 func (d *deletion) abortApprovals() {
 	approvals := make(map[string]string)
 	for _, t := range d.user.Tasks {
+		if t.Status == user.TaskDone {
+			continue
+		}
 		approvals[t.TargetGuid] = t.ProjectGuid
 	}
 	for appUuid, prKey := range approvals {
@@ -88,15 +91,15 @@ func (d *deletion) abortApprovals() {
 func (d *deletion) abortApproval(appUuid, prKey string) {
 	pr := d.service.ProjectRepository.FindByKey(d.rs, prKey, false)
 	if pr == nil {
-		exception.ThrowExceptionBadRequestResponse()
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 	list := d.service.ApprovalListRepository.FindByKey(d.rs, prKey, false)
 	if list == nil {
-		exception.ThrowExceptionBadRequestResponse()
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 	a := list.GetApproval(appUuid)
 	if a == nil {
-		exception.ThrowExceptionBadRequestResponse()
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 	s := approvalService.ApprovalService{
 		RequestSession:   d.rs,

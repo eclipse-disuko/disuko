@@ -187,7 +187,7 @@ func (s *ApprovalService) processPlausibilityCheckUpdate(pr *project.Project, ta
 
 func (s *ApprovalService) adminAbortPlausibility(pr *project.Project, targetApproval *approval.Approval) {
 	if !targetApproval.Plausibility.IsActive() {
-		exception.ThrowExceptionBadRequestResponse()
+		return
 	}
 	before := targetApproval.ToAudit()
 	delegationUser := s.delegationUser(targetApproval.Key, targetApproval.Plausibility)

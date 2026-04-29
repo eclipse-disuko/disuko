@@ -353,7 +353,7 @@ func (s *ApprovalService) setApprovalSpdxStatus(targetApproval *approval.Approva
 
 func (s *ApprovalService) adminAbortInternal(pr *project.Project, targetApproval *approval.Approval) {
 	if !targetApproval.Internal.IsActive() {
-		exception.ThrowExceptionBadRequestResponse()
+		return
 	}
 	before := targetApproval.ToAudit()
 	s.deletePending(targetApproval)
