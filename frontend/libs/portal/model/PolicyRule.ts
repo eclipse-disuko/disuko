@@ -8,23 +8,13 @@ import type {
   CalculatedPolicyConfig,
   CalculatedPolicyScope,
 } from '@disclosure-portal/model/CalculatedPolicyRules';
+import {getBoolArray, getStringArray} from '@disclosure-portal/utils/policyRules';
 
 export type {
   BucketDefinition,
   CalculatedPolicyConfig,
   CalculatedPolicyScope,
 } from '@disclosure-portal/model/CalculatedPolicyRules';
-
-const getStringArray = (value: unknown): string[] => (Array.isArray(value) ? (value as string[]) : []);
-
-const getBoolArray = (value: unknown): boolean[] => {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value
-    .filter((entry) => typeof entry === 'boolean' || entry === 'true' || entry === 'false')
-    .map((entry) => (typeof entry === 'boolean' ? entry : entry === 'true'));
-};
 
 export default class PolicyRule extends BaseDto {
   public Status = '';
