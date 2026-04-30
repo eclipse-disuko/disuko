@@ -6,11 +6,8 @@ import {Router} from 'vue-router';
 import {ICallback} from '@shared/types/Callback';
 import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 import {storeToRefs} from 'pinia';
-import {createProjectURL} from '@disclosure-portal/utils/url';
-
-const openUrlInNewTab = (url: string, features?: string) => {
-  window.open('#' + url, '_blank', features);
-};
+import {openUrlInNewTab} from '@shared/utils/url';
+import {createProjectURL} from '@shared/utils/apiUrls';
 
 export const useUrls = () => {
   const eventKeysStore = useEventKeysStore();
