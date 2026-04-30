@@ -10,7 +10,6 @@ import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {chain} from 'lodash';
 import {storeToRefs} from 'pinia';
@@ -18,6 +17,7 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const router = useRouter();
@@ -27,6 +27,7 @@ const customIdsStore = useCustomIdStore();
 const projectStore = useProjectStore();
 const wizardStore = useWizardStore();
 const projectsUtils = useProjectUtils();
+const {openProjectUrlByKey} = useUrls();
 
 const {projects, projectsCount, loading, projectPossibleStatuses} = storeToRefs(projectStore);
 

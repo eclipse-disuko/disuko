@@ -9,7 +9,6 @@ import {
   getIconColorForPolicyType,
   getIconColorForPolicyTypeHighlighted,
   getIconForPolicyType,
-  openUrl,
   policyStateToTranslationKey,
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
@@ -17,6 +16,7 @@ import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {getCurrentInstance, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface Props {
   policies: PolicyState[];
@@ -30,6 +30,7 @@ const props = defineProps<Props>();
 
 const {t} = useI18n();
 const router = useRouter();
+const {openUrl} = useUrls();
 
 const selectedFilterPolicyTypes = ref<PolicyState[]>([]);
 

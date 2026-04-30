@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Icons from '@disclosure-portal/constants/icons';
-import {CONTROL_IS_PRESSED, releaseKeys, SHIFT_IS_PRESSED} from '@disclosure-portal/keyState';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import {PolicyState} from '@disclosure-portal/model/PolicyRule';
 import {ReviewRemarkLevel, ScanRemarkLevel} from '@disclosure-portal/model/Quality';
@@ -11,7 +10,6 @@ import {ComponentDiffType} from '@disclosure-portal/model/VersionDetails';
 import {BlobPart} from '@disclosure-portal/types/discobasics';
 import {DATE_FORMAT, DATE_FORMAT_SHORT, DATETIME_FORMAT, DATETIME_FORMAT_FILE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
-import {Router} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
 
@@ -143,28 +141,6 @@ export function getIconForDiffType(type: ComponentDiffType): string {
     default:
       return '';
   }
-}
-
-export type ICallback = () => void;
-
-export function openUrl(url: string, router: Router, callbackOnSameSite: ICallback | null = null) {
-  if (CONTROL_IS_PRESSED) {
-    window.open('#' + url, '_blank');
-    return;
-  }
-  if (SHIFT_IS_PRESSED) {
-    releaseKeys();
-    window.open('#' + url, '_blank', 'height=500,width=1024');
-    return;
-  }
-  router.push(url);
-  if (callbackOnSameSite) {
-    callbackOnSameSite();
-  }
-}
-
-export function openUrlInNewTab(url: string) {
-  window.open('#' + url, '_blank');
 }
 
 export function formatDate(dateStr: string | Date) {

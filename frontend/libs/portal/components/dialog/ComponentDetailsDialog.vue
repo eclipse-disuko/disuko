@@ -29,7 +29,7 @@ import _l from 'lodash';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import JsonViewer3 from 'vue-json-viewer';
-import {openUrlInNewTab} from '@disclosure-portal/utils/url';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface LocalDetails extends Details {
   url?: boolean;
@@ -46,6 +46,7 @@ const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const snack = useSnackbar();
 const {t} = useI18n();
+const {openUrlInNewTab} = useUrls();
 
 const {
   confirmCloseConfig,
@@ -644,10 +645,9 @@ defineExpose({
                     :key="`known-${i}-${item.License.licenseId}`">
                     <v-expansion-panel-title>
                       <DInternalLink
+                        v-if="project && project.accessRights && project.accessRights.isInternal"
                         :text="item.License.name + ' (' + item.ReferencedName + ')'"
-                        :url="'/#/dashboard/licenses/' + item.ReferencedName"
-                        class=""
-                        v-if="project && project.accessRights && project.accessRights.isInternal"></DInternalLink>
+                        :url="'/#/dashboard/licenses/' + item.ReferencedName" />
                       <span v-else> {{ item.License.name }}</span>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="mt-2">
@@ -722,10 +722,9 @@ defineExpose({
                     :key="`extracted-on-sbom-${i}-${item.License.LicenseId}`">
                     <v-expansion-panel-title>
                       <DInternalLink
+                        v-if="project && project.accessRights && project.accessRights.isInternal"
                         :text="`${item.License.LicenseId} (${item.AliasTargetId})`"
-                        :url="'/#/dashboard/licenses/' + item.AliasTargetId"
-                        class=""
-                        v-if="project && project.accessRights && project.accessRights.isInternal"></DInternalLink>
+                        :url="'/#/dashboard/licenses/' + item.AliasTargetId" />
                       <span v-else>{{ `${item.License.LicenseId} (${item.AliasTargetId})` }}</span>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text class="mt-2">

@@ -6,7 +6,6 @@
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import useDimensions from '@disclosure-portal/composables/useDimensions';
 import Icons from '@disclosure-portal/constants/icons';
-import {releaseKeys} from '@disclosure-portal/keyState';
 import Label from '@disclosure-portal/model/Label';
 import {Rights} from '@disclosure-portal/model/Rights';
 import AdminService from '@disclosure-portal/services/admin';
@@ -233,7 +232,7 @@ const updateTableHeight = () => {
             </v-tab>
           </v-tabs>
           <v-tabs-window v-model="selectedTab">
-            <v-tabs-window-item value="schema" @click="releaseKeys()">
+            <v-tabs-window-item value="schema">
               <TableLayout has-title has-tab>
                 <template #buttons>
                   <span class="text-h6">{{ t('TITLE_SCHEMA_LABELS') }}</span>
@@ -282,7 +281,7 @@ const updateTableHeight = () => {
                 </template>
               </TableLayout>
             </v-tabs-window-item>
-            <v-tabs-window-item value="policy" @click="releaseKeys()">
+            <v-tabs-window-item value="policy">
               <TableLayout has-title has-tab>
                 <template #buttons>
                   <span class="text-h6">{{ t('TITLE_POLICY_LABELS') }}</span>
@@ -339,7 +338,7 @@ const updateTableHeight = () => {
                 </template>
               </TableLayout>
             </v-tabs-window-item>
-            <v-tabs-window-item value="project" @click="releaseKeys()">
+            <v-tabs-window-item value="project">
               <TableLayout has-title has-tab>
                 <template #buttons>
                   <span class="text-h6">{{ t('TITLE_PROJECT_LABELS') }}</span>
