@@ -42,7 +42,7 @@ func Logging(next http.Handler) http.Handler {
 		)
 
 		rs := logy.GetRequestSession(r)
-		rs.Infof(fmt.Sprintf("%s %s", logy.MsgStageStartRequest, beforeHandling), keysAndValues...)
+		rs.Infow(fmt.Sprintf("%s %s", logy.MsgStageStartRequest, beforeHandling), keysAndValues...)
 
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 		startServe := time.Now()
@@ -69,7 +69,7 @@ func Logging(next http.Handler) http.Handler {
 				argsMap["bytesWritten"],
 				argsMap["duration"],
 			)
-			rs.Infof(fmt.Sprintf("%s %s", logy.MsgStageFinishRequest, afterHandling), keysAndValues...)
+			rs.Infow(fmt.Sprintf("%s %s", logy.MsgStageFinishRequest, afterHandling), keysAndValues...)
 		}()
 		next.ServeHTTP(ww, logy.RequestWithSession(r, rs))
 	}

@@ -1279,6 +1279,8 @@ func (projectHandler *ProjectHandler) fullNameForUserSafe(requestSession *logy.R
 	user := projectHandler.UserRepository.FindByUserId(requestSession, userId)
 	if user != nil {
 		res = fmt.Sprintf("%s %s", user.Forename, user.Lastname)
+	} else {
+		res = userId
 	}
 	if cache != nil {
 		cache[userId] = res

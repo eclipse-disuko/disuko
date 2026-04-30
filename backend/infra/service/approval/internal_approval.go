@@ -351,6 +351,22 @@ func (s *ApprovalService) setApprovalSpdxStatus(targetApproval *approval.Approva
 	}
 }
 
+func (s *ApprovalService) adminAbortInternal(pr *project.Project, targetApproval *approval.Approval) {
+	if !targetApproval.Internal.IsActive() {
+		return
+	}
+	before := targetApproval.ToAudit()
+	s.deletePending(targetApproval)
+	s.setTaskDone(targetApproval.Creator, targetApproval, user.ApprovalInfo, user.TaskPending)
+	targetApproval.Internal.Aborted = true
+	s.setApprovalSpdxStatus(targetApproval, approval.Aborted)
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, "SYSTEM", message.InternalApprovalAborted, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+	observermngmt.FireEvent(observermngmt.ApprovalFinalized, observermngmt.ApprovalData{
+		RequestSession: s.RequestSession,
+		Approval:       targetApproval,
+	})
+}
+
 func (s *ApprovalService) FillRemainingCustomer(pr *project.Project, appId, username string, req *approval.FillCustomerDto) {
 	approvalList := s.ApprovalListRepo.FindByKey(s.RequestSession, pr.Key, false)
 	if approvalList == nil {

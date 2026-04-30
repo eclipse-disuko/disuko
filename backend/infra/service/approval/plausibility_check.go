@@ -185,6 +185,23 @@ func (s *ApprovalService) processPlausibilityCheckUpdate(pr *project.Project, ta
 	// auditHelper.CreateAndAddAuditEntry(&targetApproval.Container, username, message.ReviewUpdated, audit.DiffWithReporter, targetApproval.ToAudit(), before)
 }
 
+func (s *ApprovalService) adminAbortPlausibility(pr *project.Project, targetApproval *approval.Approval) {
+	if !targetApproval.Plausibility.IsActive() {
+		return
+	}
+	before := targetApproval.ToAudit()
+	delegationUser := s.delegationUser(targetApproval.Key, targetApproval.Plausibility)
+	s.deletePending(targetApproval)
+	s.setTaskDone(targetApproval.Creator, targetApproval, user.ApprovalInfo, user.TaskPending)
+	targetApproval.Plausibility.Aborted = true
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, "SYSTEM", message.ReviewAborted, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+	observermngmt.FireEvent(observermngmt.ApprovalFinalized, observermngmt.ApprovalData{
+		RequestSession: s.RequestSession,
+		Approval:       targetApproval,
+		DelegatedTo:    delegationUser,
+	})
+}
+
 func (s *ApprovalService) delegationUser(appKey string, plausi approval.PlausibilityCheck) string {
 	targetUser := s.UserRepo.FindByUserId(s.RequestSession, plausi.Approver)
 	task := targetUser.GetTask(appKey, user.Approval, user.TaskActive)
