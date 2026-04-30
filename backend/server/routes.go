@@ -240,6 +240,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Get("/", s.handlers.user.GetAllHandler) // test missing
 					// for later use
 					r.Put("/", s.handlers.user.UpdateHandlerForAdmin) // test missing
+					r.Get("/upcomingDeletions", s.handlers.user.GetUpcomingDeletionsHandler)
 					r.Get("/termsOfUseCurrentVersion", s.handlers.user.GetTermsOfUseCurrentVersionHandler)
 					r.Post("/search", s.handlers.user.SearchHandlerForAdmin) // test missing
 					r.Route("/{uuid}", func(r chi.Router) {

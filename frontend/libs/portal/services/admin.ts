@@ -21,6 +21,7 @@ import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import SampleDataCreationState from '@disclosure-portal/model/SampleData';
 import SchemaModel from '@disclosure-portal/model/Schema';
 import SystemStatsResponse from '@disclosure-portal/model/Statistic';
+import {UpcomingDeletion} from '@disclosure-portal/model/UpcomingDeletion';
 import {DeletePersonalDataResponse} from '@disclosure-portal/model/UserDeletion';
 import {
   ProjectRoleDto,
@@ -437,6 +438,10 @@ class AdminService {
 
   public deletePersonalDataByEntityId(entity: string, id: string) {
     return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/users/delete-personal-data/${entity}/${id}`);
+  }
+
+  public getUpcomingDeletions() {
+    return api.get<UpcomingDeletion[]>(`/api/v1/${modelName}/users/upcomingDeletions`);
   }
 }
 

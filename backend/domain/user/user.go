@@ -68,6 +68,14 @@ func (entity *User) UpdateNewsboxLastSeenData(data UserLastSeenDto) {
 	entity.NewsboxLastSeenId = data.NewsboxLastSeenId
 }
 
+func (entity *User) DeletionDate() time.Time {
+	return entity.Deprovisioned.AddDate(0, 3, 0)
+}
+
+func (entity *User) DeletionOverdue() bool {
+	return !entity.Deprovisioned.IsZero() && time.Now().UTC().After(entity.DeletionDate())
+}
+
 func CreateUser(forename string, lastname string, username string, email string, roles []string, metaData *MetaData, isInternal bool) *User {
 	return &User{
 		RootEntity:        domain.NewRootEntity(),
