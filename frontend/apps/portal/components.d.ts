@@ -146,7 +146,7 @@ declare module 'vue' {
     NewGroupDialog: typeof import('./../../libs/portal/components/dialog/NewGroupDialog.vue')['default']
     NewLabelDialog: typeof import('./../../libs/portal/components/dialog/NewLabelDialog.vue')['default']
     NewOrEditLicenseDialog: typeof import('./../../libs/portal/components/dialog/NewOrEditLicenseDialog.vue')['default']
-    NewPolicyRuleDialog: typeof import('./../../libs/portal/components/dialog/NewPolicyRuleDialog.vue')['default']
+    NewPolicyRuleDialog: typeof import('./../../libs/portal/components/policy-rules/NewPolicyRuleDialog.vue')['default']
     Newsbox: typeof import('./../../libs/portal/views/admin/Newsbox.vue')['default']
     NewsboxDialog: typeof import('./../../libs/portal/components/dialog/NewsboxDialog.vue')['default']
     NewSchemaDialog: typeof import('./../../libs/portal/components/dialog/NewSchemaDialog.vue')['default']
