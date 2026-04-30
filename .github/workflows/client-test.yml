@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v6
         continue-on-error: true
         with:
-          node-version-file: 'frontend/.nvmrc'
+          node-version-file: 'frontend/package.json'
           registry-url: https://registry.npmjs.org/
       - run: npm install
       - run: npm run format:check
