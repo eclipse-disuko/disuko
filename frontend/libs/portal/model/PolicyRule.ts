@@ -8,13 +8,6 @@ import type {
   CalculatedPolicyConfig,
   CalculatedPolicyScope,
 } from '@disclosure-portal/model/CalculatedPolicyRules';
-import {getBoolArray, getStringArray} from '@disclosure-portal/utils/policyRules';
-
-export type {
-  BucketDefinition,
-  CalculatedPolicyConfig,
-  CalculatedPolicyScope,
-} from '@disclosure-portal/model/CalculatedPolicyRules';
 
 export default class PolicyRule extends BaseDto {
   public Status = '';
@@ -65,31 +58,30 @@ export default class PolicyRule extends BaseDto {
     if (this.LabelSets.length < 1) {
       this.LabelSets[0] = [];
     }
-    const config = (this.CalculatedConfig ?? {}) as unknown as Record<string, unknown>;
 
-    const getLicenseScope = (camelKey: string, pascalKey: string): CalculatedPolicyScope => {
-      const scope = (config[camelKey] ?? config[pascalKey] ?? {}) as Record<string, unknown>;
+    const config = this.CalculatedConfig ?? ({} as CalculatedPolicyConfig);
+
+    const getLicenseScope = (): CalculatedPolicyScope => {
       return {
-        isLicenseChart: getBoolArray(scope.isLicenseChart ?? scope.IsLicenseChart),
-        approvalState: getStringArray(scope.approvalState ?? scope.ApprovalState),
-        family: getStringArray(scope.family ?? scope.Family),
-        licenseType: getStringArray(scope.licenseType ?? scope.LicenseType),
-        source: getStringArray(scope.source ?? scope.Source),
+        isLicenseChart: config.licenseScope?.isLicenseChart ?? [],
+        approvalState: config.licenseScope?.approvalState ?? [],
+        family: config.licenseScope?.family ?? [],
+        licenseType: config.licenseScope?.licenseType ?? [],
+        source: config.licenseScope?.source ?? [],
       };
     };
 
-    const getBucketDefinition = (camelKey: string, pascalKey: string): BucketDefinition => {
-      const bucket = (config[camelKey] ?? config[pascalKey] ?? {}) as Record<string, unknown>;
+    const getBucketDefinition = (): BucketDefinition => {
       return {
-        deniedClassifications: getStringArray(bucket.deniedClassifications ?? bucket.DeniedClassifications),
-        warnedClassifications: getStringArray(bucket.warnedClassifications ?? bucket.WarnedClassifications),
-        allowedClassifications: getStringArray(bucket.allowedClassifications ?? bucket.AllowedClassifications),
+        deniedClassifications: config.bucketDefinition?.deniedClassifications ?? [],
+        warnedClassifications: config.bucketDefinition?.warnedClassifications ?? [],
+        allowedClassifications: config.bucketDefinition?.allowedClassifications ?? [],
       };
     };
 
     this.CalculatedConfig = {
-      bucketDefinition: getBucketDefinition('bucketDefinition', 'BucketDefinition'),
-      licenseScope: getLicenseScope('licenseScope', 'LicenseScope'),
+      bucketDefinition: getBucketDefinition(),
+      licenseScope: getLicenseScope(),
     };
   }
 }

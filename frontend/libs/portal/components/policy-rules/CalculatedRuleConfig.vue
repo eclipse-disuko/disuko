@@ -3,33 +3,29 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {CalculatedRuleConfigType} from '@disclosure-portal/model/CalculatedPolicyRules';
 import DMultiSelect from '@shared/components/disco/DMultiSelect.vue';
 import Stack from '@shared/layouts/Stack.vue';
+import {storeToRefs} from 'pinia';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculatedPolicyRule.store';
 
 type CalculatedBucketName = 'deniedClassifications' | 'warnedClassifications' | 'allowedClassifications';
 type ScopeFilterName = 'isLicenseChart' | 'approvalState' | 'family' | 'licenseType' | 'source';
 
-interface Props {
-  config: CalculatedRuleConfigType;
-}
-
-const props = defineProps<Props>();
-
-const emit = defineEmits<{
-  'update-calculated': [value: boolean];
-  'update-bucket': [payload: {bucketName: CalculatedBucketName; values: string[]}];
-  'update-scope': [payload: {filterName: ScopeFilterName; values: Array<string | boolean>}];
-}>();
-
 const {t} = useI18n();
+const calculatedPolicyRuleStore = useCalculatedPolicyRuleStore();
+const {calculatedRuleConfig} = storeToRefs(calculatedPolicyRuleStore);
 
-const classificationOptions = computed(() => props.config.classificationOptions);
+const config = computed(() => calculatedRuleConfig.value);
+const classificationOptions = computed(() => config.value.classificationOptions);
 
-const emitScope = (filterName: ScopeFilterName, values: unknown) => {
-  emit('update-scope', {filterName, values: values as Array<string | boolean>});
+const handleBucketUpdate = (bucketName: CalculatedBucketName, values: string[]) => {
+  calculatedPolicyRuleStore.setBucketClassifications(bucketName, values);
+};
+
+const handleScopeUpdate = (filterName: ScopeFilterName, values: Array<string | boolean>) => {
+  calculatedPolicyRuleStore.setScopeFilterValues(filterName, values);
 };
 </script>
 
@@ -44,25 +40,19 @@ const emitScope = (filterName: ScopeFilterName, values: unknown) => {
             :label="t('CALCULATED_DENIED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.deniedClassifications"
-            @update:modelValue="
-              emit('update-bucket', {bucketName: 'deniedClassifications', values: $event as string[]})
-            " />
+            @update:modelValue="handleBucketUpdate('deniedClassifications', $event as string[])" />
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_WARNED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.warnedClassifications"
-            @update:modelValue="
-              emit('update-bucket', {bucketName: 'warnedClassifications', values: $event as string[]})
-            " />
+            @update:modelValue="handleBucketUpdate('warnedClassifications', $event as string[])" />
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_ALLOWED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.allowedClassifications"
-            @update:modelValue="
-              emit('update-bucket', {bucketName: 'allowedClassifications', values: $event as string[]})
-            " />
+            @update:modelValue="handleBucketUpdate('allowedClassifications', $event as string[])" />
         </div>
       </v-card>
 
@@ -76,35 +66,35 @@ const emitScope = (filterName: ScopeFilterName, values: unknown) => {
             :label="t('CALCULATED_SCOPE_LICENSE_CHART_INCLUDE')"
             :items="config.scopeConfig.isLicenseChart.options"
             :model-value="config.scopeConfig.isLicenseChart.values"
-            @update:modelValue="emitScope('isLicenseChart', $event)" />
+            @update:modelValue="handleScopeUpdate('isLicenseChart', $event as Array<string | boolean>)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_APPROVAL_INCLUDE')"
             :items="config.scopeConfig.approvalState.options"
             :model-value="config.scopeConfig.approvalState.values"
-            @update:modelValue="emitScope('approvalState', $event)" />
+            @update:modelValue="handleScopeUpdate('approvalState', $event as Array<string | boolean>)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_FAMILY_INCLUDE')"
             :items="config.scopeConfig.family.options"
             :model-value="config.scopeConfig.family.values"
-            @update:modelValue="emitScope('family', $event)" />
+            @update:modelValue="handleScopeUpdate('family', $event as Array<string | boolean>)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_TYPE_INCLUDE')"
             :items="config.scopeConfig.licenseType.options"
             :model-value="config.scopeConfig.licenseType.values"
-            @update:modelValue="emitScope('licenseType', $event)" />
+            @update:modelValue="handleScopeUpdate('licenseType', $event as Array<string | boolean>)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_SOURCE_INCLUDE')"
             :items="config.scopeConfig.source.options"
             :model-value="config.scopeConfig.source.values"
-            @update:modelValue="emitScope('source', $event)" />
+            @update:modelValue="handleScopeUpdate('source', $event as Array<string | boolean>)" />
         </div>
       </v-card>
     </Stack>

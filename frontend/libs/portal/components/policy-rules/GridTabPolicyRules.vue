@@ -44,7 +44,7 @@ const {getI18NTextOfPrefixKey} = useLicense();
 const {getNameForLanguage} = useViewTools();
 const router = useRouter();
 const calculatedPolicyRuleStore = useCalculatedPolicyRuleStore();
-const {rule, classifications, classificationsLoaded, calculatedRuleConfig} = storeToRefs(calculatedPolicyRuleStore);
+const {rule, classifications, classificationsLoaded} = storeToRefs(calculatedPolicyRuleStore);
 const isPolicyManager = ref(false);
 const rights = ref(new Rights());
 const userStore = useUserStore();
@@ -127,6 +127,15 @@ const reload = async () => {
   hasChanges.value = false;
 };
 watch(selectedFilterClassificationsSelected, reload);
+
+// Track changes to calculated policy rule state for UI dirty flag
+watch(
+  () => calculatedPolicyRuleStore.rule,
+  () => {
+    hasChanges.value = true;
+  },
+  {deep: true},
+);
 
 const getActiveClassForPolicyFilterBtn = (policy: PolicyState): string => {
   switch (policy) {
@@ -722,21 +731,6 @@ onMounted(async () => {
 
 const handleSetCalculatedEnabled = (value: boolean) => {
   calculatedPolicyRuleStore.setCalculated(value);
-  hasChanges.value = true;
-};
-
-type CalculatedBucketName = 'deniedClassifications' | 'warnedClassifications' | 'allowedClassifications';
-
-const handleSetCalculatedBucketClassifications = (bucketName: CalculatedBucketName, value: string[]) => {
-  calculatedPolicyRuleStore.setBucketClassifications(bucketName, value);
-  hasChanges.value = true;
-};
-
-const handleSetCalculatedScopeFilterValues = (filterName: string, values: Array<string | boolean>) => {
-  calculatedPolicyRuleStore.setScopeFilterValues(
-    filterName as 'isLicenseChart' | 'approvalState' | 'family' | 'licenseType' | 'source',
-    values,
-  );
   hasChanges.value = true;
 };
 </script>
@@ -1528,11 +1522,7 @@ const handleSetCalculatedScopeFilterValues = (filterName: string, values: Array<
         <v-col cols="6" v-if="canEditCalculated" class="fill-height">
           <div class="flex h-full flex-col">
             <div v-show="classificationsLoaded" class="flex-1 overflow-auto">
-              <CalculatedRuleConfig
-                :config="calculatedRuleConfig"
-                @update-calculated="handleSetCalculatedEnabled"
-                @update-bucket="handleSetCalculatedBucketClassifications($event.bucketName, $event.values)"
-                @update-scope="handleSetCalculatedScopeFilterValues($event.filterName, $event.values)" />
+              <CalculatedRuleConfig />
               <div class="d-flex mt-8 justify-end">
                 <DCActionButton
                   :text="t('BTN_SAVE')"
