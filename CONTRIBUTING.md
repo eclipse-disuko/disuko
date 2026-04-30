@@ -25,7 +25,7 @@ By interacting with this project — including participating in discussions,
 reporting issues, or submitting contributions — you agree to comply with
 these terms.
 
-➡ https://www.eclipse.org/legal/termsofuse.php
+➡ [Eclipse.org Terms of Use](https://www.eclipse.org/legal/termsofuse.php)
 
 Contributions of code or documentation are additionally subject to the
 Eclipse Contributor Agreement (ECA) and the project’s declared license(s).
@@ -56,7 +56,7 @@ Before any contribution can be accepted, you **must**:
 The ECA ensures that contributions can be legally distributed under the
 project’s license.
 
-➡ Sign the ECA: https://www.eclipse.org/legal/ECA.php
+➡ Sign the [Eclipse Contributor Agreement](https://www.eclipse.org/legal/ECA.php)
 
 **Note:** Pull requests from contributors without a signed ECA cannot be merged.
 
