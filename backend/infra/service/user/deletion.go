@@ -143,3 +143,34 @@ func (s *DeletionService) AffectedUsers(rs *logy.RequestSession) []*user.User {
 	)
 	return s.UserRepository.Query(rs, qc)
 }
+
+func (s *DeletionService) BlockingProjects(rs *logy.RequestSession, u *user.User) []user.BlockingProjectDto {
+	var blocking []user.BlockingProjectDto
+	prs := s.ProjectRepository.FindAllForUser(rs, u.User)
+	for _, pr := range prs {
+		m := pr.GetMember(u.User)
+		if m.UserType != project.OWNER {
+			continue
+		}
+		if !pr.OtherOwnersExists(m.UserId) {
+			blocking = append(blocking, user.BlockingProjectDto{Key: pr.Key, Name: pr.Name})
+		}
+	}
+	return blocking
+}
+
+func (s *DeletionService) UpcomingDeletions(rs *logy.RequestSession) []*user.User {
+	qc := database.New().SetMatcher(
+		database.AttributeMatcher(
+			"Deprovisioned",
+			database.NE,
+			time.Time{},
+		),
+	).SetSort(database.SortConfig{
+		database.SortAttribute{
+			Name:  "Deprovisioned",
+			Order: database.ASC,
+		},
+	})
+	return s.UserRepository.Query(rs, qc)
+}

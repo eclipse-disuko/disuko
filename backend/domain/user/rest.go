@@ -176,3 +176,30 @@ type RoleDeletionResult struct {
 	Skipped       bool   `json:"skipped"`
 	SkipReason    string `json:"skipReason,omitempty"`
 }
+
+type BlockingProjectDto struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+}
+
+type UpcomingDeletionDto struct {
+	User             string              `json:"user"`
+	Forename         string              `json:"forename"`
+	Lastname         string              `json:"lastname"`
+	Deprovisioned    time.Time           `json:"deprovisioned"`
+	DeletionDate     time.Time           `json:"deletionDate"`
+	Overdue          bool                `json:"overdue"`
+	BlockingProjects []BlockingProjectDto `json:"blockingProjects"`
+}
+
+func (entity *User) ToUpcomingDeletionDto(blockingProjects []BlockingProjectDto) *UpcomingDeletionDto {
+	return &UpcomingDeletionDto{
+		User:             entity.User,
+		Forename:         entity.Forename,
+		Lastname:         entity.Lastname,
+		Deprovisioned:    entity.Deprovisioned,
+		DeletionDate:     entity.DeletionDate(),
+		Overdue:          entity.DeletionOverdue(),
+		BlockingProjects: blockingProjects,
+	}
+}
