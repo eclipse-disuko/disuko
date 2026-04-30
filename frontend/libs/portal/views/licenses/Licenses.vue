@@ -21,7 +21,7 @@ import licenseService from '@disclosure-portal/services/license';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel, openUrl} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
@@ -32,6 +32,7 @@ import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface FilterCondition {
   field: string;
@@ -46,6 +47,7 @@ const snackbar = useSnackbar();
 const route = useRoute();
 const userStore = useUserStore();
 const viewTools = useViewTools();
+const {openUrl} = useUrls();
 
 const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);

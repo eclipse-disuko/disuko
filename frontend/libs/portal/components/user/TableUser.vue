@@ -8,15 +8,16 @@ import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {UserDto} from '@disclosure-portal/model/Users';
 import adminService from '@disclosure-portal/services/admin';
 import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
-import {openUrl} from '@disclosure-portal/utils/url';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import _ from 'lodash';
 import {computed, nextTick, onBeforeMount, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const router = useRouter();
+const {openUrl} = useUrls();
 
 const search = ref('');
 const icons = Icons;
@@ -27,7 +28,7 @@ const users = ref<UserDto[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'user', order: 'asc'}]);
 const abort = ref<AbortController | null>(null);
 const tableAllUsers = ref<HTMLElement | null>(null);
-const searchField = ref<InstanceType<typeof DSearchField> | null>(null);
+const searchField = ref();
 const selectedFilterStatus = ref<string[]>([]);
 const selectedFilterScopes = ref<string[]>([]);
 

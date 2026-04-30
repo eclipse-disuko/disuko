@@ -18,7 +18,7 @@ import ProjectService from '@disclosure-portal/services/projects';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap, openUrlInNewTab} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap} from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
@@ -34,10 +34,13 @@ import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const {getI18NTextOfPrefixKey} = useLicense();
 const router = useRouter();
+const {openUrlInNewTab} = useUrls();
+
 const rule = ref(new PolicyRule());
 const isPolicyManager = ref(false);
 const rights = ref(new Rights());
