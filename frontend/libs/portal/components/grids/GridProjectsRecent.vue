@@ -63,15 +63,16 @@
 <script setup lang="ts">
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import ProjectService from '@disclosure-portal/services/projects';
-import {openUrl} from '@disclosure-portal/utils/url';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {onMounted, reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 const router = useRouter();
 const {t} = useI18n();
+const {openUrl} = useUrls();
 
 const items = reactive<ProjectSlim[]>([]);
 const loading = ref(false);

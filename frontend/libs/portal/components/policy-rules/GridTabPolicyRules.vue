@@ -19,7 +19,7 @@ import ProjectService from '@disclosure-portal/services/projects';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap, openUrlInNewTab} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap} from '@disclosure-portal/utils/View';
 import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculatedPolicyRule.store';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DSearchField from '@shared/components/disco/DSearchField.vue';
@@ -38,6 +38,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {storeToRefs} from 'pinia';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 const {t} = useI18n();
 const {getI18NTextOfPrefixKey} = useLicense();

@@ -7,7 +7,6 @@ import DiffDialog from '@disclosure-portal/components/dialog/DiffDialog.vue';
 import {LicenseWithSimilarity} from '@disclosure-portal/model/License';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import {openUrlInNewTab} from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DLicenseChartIcon from '@shared/components/disco/DLicenseChartIcon.vue';
@@ -15,6 +14,7 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import {CodeDiff} from 'v-code-diff';
 import {defineComponent, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useUrls} from '@shared/composables/useUrls';
 
 class DiffDetails {
   public oldValue = '';
@@ -44,6 +44,8 @@ export default defineComponent({
   },
   setup() {
     const {t} = useI18n();
+    const {openUrlInNewTab} = useUrls();
+
     const isDialogVisible = ref(false);
     const title = ref('LIC_DIALOG_SEARCH_TEXT_TITLE');
     const form = ref<DiscoForm | null>(null);
@@ -59,8 +61,6 @@ export default defineComponent({
         align: 'center',
         key: 'similarity',
         width: 110,
-        class: 'tableHeaderCell',
-        filterable: false,
         sortable: true,
       },
       {
@@ -68,48 +68,36 @@ export default defineComponent({
         align: 'center',
         value: 'license.meta.isLicenseChart',
         width: 100,
-        class: 'licenseChartHeader tableHeaderCell',
-        filterable: false,
       },
       {
         title: t('COL_LICENSE_NAME'),
         align: 'start',
         value: 'license.name',
         width: 300,
-        class: 'tableHeaderCell',
-        filterable: false,
       },
       {
         title: t('COL_LICENSE_ID'),
         align: 'start',
         value: 'license.licenseId',
         width: 200,
-        class: 'tableHeaderCell',
-        filterable: false,
       },
       {
         title: t('COL_APPROVAL_STATUS'),
         align: 'start',
         value: 'license.meta.approvalState',
         width: 150,
-        class: 'tableHeaderCell',
-        filterable: false,
       },
       {
         title: t('COL_LICENSE_SOURCE'),
         align: 'start',
         value: 'license.source',
         width: 100,
-        class: 'tableHeaderCell',
-        filterable: false,
       },
       {
         title: t('COL_ACTIONS'),
         align: 'start',
         value: 'actions',
         width: 120,
-        class: 'tableHeaderCell',
-        filterable: false,
         sortable: false,
       },
     ]);

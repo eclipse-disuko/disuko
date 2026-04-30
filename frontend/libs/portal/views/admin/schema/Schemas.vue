@@ -12,7 +12,6 @@ import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import {openUrl} from '@disclosure-portal/utils/url';
 import {IMap} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
@@ -20,10 +19,12 @@ import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const router = useRouter();
 const breadcrumbs = useBreadcrumbsStore();
+const {openUrl} = useUrls();
 
 const items = ref<SchemaModel[]>([]);
 const headers = computed<DataTableHeader[]>(() => {
