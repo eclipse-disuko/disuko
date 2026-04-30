@@ -9,7 +9,7 @@ import {
   JOB_STATUS_SUCCESS,
 } from '@disclosure-portal/model/Job';
 import projectService from '@disclosure-portal/services/projects';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {defineStore} from 'pinia';
 import {reactive, toRefs} from 'vue';
 import {useI18n} from 'vue-i18n';

@@ -4,15 +4,15 @@
 
 <script setup lang="ts">
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
-import DHTTPError from '@disclosure-portal/model/DHTTPError';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import DHTTPError from '@shared/types/DHTTPError';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import config from '@shared/utils/config';
 import {onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

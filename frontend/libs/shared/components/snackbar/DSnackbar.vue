@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {onMounted, onUnmounted, ref} from 'vue';
 
 const visible = ref(false);

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import DHTTPError from '@disclosure-portal/model/DHTTPError';
-import {INotificationMeta} from '@disclosure-portal/model/IdleInfo';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import DHTTPError from '@shared/types/DHTTPError';
+import {INotificationMeta} from '@shared/types/IdleInfo';
+import eventBus from '@shared/utils/eventbus';
 import {AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 
 export const initInterceptors = (axiosInstance: AxiosInstance) => {

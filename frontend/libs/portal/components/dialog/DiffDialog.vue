@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import License, {LicenseDiff} from '@disclosure-portal/model/License';
 import adminService from '@disclosure-portal/services/admin';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {CodeDiff} from 'v-code-diff';

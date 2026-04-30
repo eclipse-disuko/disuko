@@ -5,16 +5,16 @@
 <script setup lang="ts">
 import * as help from '@disclosure-portal/assets/documents/help';
 import releaseNotes from '@disclosure-portal/assets/documents/release_notes/ReleaseNotes.md?raw';
-import {INotificationMeta} from '@disclosure-portal/model/IdleInfo';
+import {INotificationMeta} from '@shared/types/IdleInfo';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
-import eventbus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {logout} from '@disclosure-portal/utils/logout';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {ThemeColor, useThemeStore} from '@shared/stores/theme.store';
 import config from '@shared/utils/config';
 import {storeToRefs} from 'pinia';
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
@@ -116,12 +116,21 @@ const startHelpAnimation = () => {
 
 onMounted(() => {
   // initially set context help
-  eventbus.on('set-notification', onSetNotification);
+  eventBus.on('set-notification', onSetNotification);
   window.addEventListener('keydown', escapeListener);
 
   username.value = userStore.getProfile.user;
   startHelpAnimation();
 });
+
+onUnmounted(() => {
+  eventBus.off('set-notification', onSetNotification);
+  window.removeEventListener('keydown', escapeListener);
+  if (animationTimeout) {
+    clearTimeout(animationTimeout);
+  }
+});
+
 watch(
   () => route.path,
   () => {

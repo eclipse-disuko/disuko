@@ -6,7 +6,7 @@
 import Icons from '@disclosure-portal/constants/icons';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';

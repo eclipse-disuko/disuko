@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import IdleInfo from '@disclosure-portal/model/IdleInfo';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import IdleInfo from '@shared/types/IdleInfo';
+import eventBus from '@shared/utils/eventbus';
 import {defineStore} from 'pinia';
 import {nextTick, onMounted, onUnmounted, reactive, toRefs} from 'vue';
 

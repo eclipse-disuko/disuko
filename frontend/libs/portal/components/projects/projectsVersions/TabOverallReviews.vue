@@ -7,7 +7,7 @@ import useDimensions from '@disclosure-portal/composables/useDimensions';
 import {OverallReview, OverallReviewState} from '@disclosure-portal/model/VersionDetails';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {formatDateAndTime, getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
 import {DataTableHeader, SortItem} from '@shared/types/table';
