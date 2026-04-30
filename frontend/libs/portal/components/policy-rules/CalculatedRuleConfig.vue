@@ -20,12 +20,12 @@ const {calculatedRuleConfig} = storeToRefs(calculatedPolicyRuleStore);
 const config = computed(() => calculatedRuleConfig.value);
 const classificationOptions = computed(() => config.value.classificationOptions);
 
-const handleBucketUpdate = (bucketName: CalculatedBucketName, values: string[]) => {
-  calculatedPolicyRuleStore.setBucketClassifications(bucketName, values);
+const handleBucketUpdate = (bucketName: CalculatedBucketName, values: unknown) => {
+  calculatedPolicyRuleStore.setBucketClassifications(bucketName, values as string[]);
 };
 
-const handleScopeUpdate = (filterName: ScopeFilterName, values: Array<string | boolean>) => {
-  calculatedPolicyRuleStore.setScopeFilterValues(filterName, values);
+const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
+  calculatedPolicyRuleStore.setScopeFilterValues(filterName, values as Array<string | boolean>);
 };
 </script>
 
@@ -40,19 +40,19 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: Array<string | b
             :label="t('CALCULATED_DENIED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.deniedClassifications"
-            @update:modelValue="handleBucketUpdate('deniedClassifications', $event as string[])" />
+            @update:modelValue="handleBucketUpdate('deniedClassifications', $event)" />
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_WARNED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.warnedClassifications"
-            @update:modelValue="handleBucketUpdate('warnedClassifications', $event as string[])" />
+            @update:modelValue="handleBucketUpdate('warnedClassifications', $event)" />
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_ALLOWED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.allowedClassifications"
-            @update:modelValue="handleBucketUpdate('allowedClassifications', $event as string[])" />
+            @update:modelValue="handleBucketUpdate('allowedClassifications', $event)" />
         </div>
       </v-card>
 
@@ -66,35 +66,35 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: Array<string | b
             :label="t('CALCULATED_SCOPE_LICENSE_CHART_INCLUDE')"
             :items="config.scopeConfig.isLicenseChart.options"
             :model-value="config.scopeConfig.isLicenseChart.values"
-            @update:modelValue="handleScopeUpdate('isLicenseChart', $event as Array<string | boolean>)" />
+            @update:modelValue="handleScopeUpdate('isLicenseChart', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_APPROVAL_INCLUDE')"
             :items="config.scopeConfig.approvalState.options"
             :model-value="config.scopeConfig.approvalState.values"
-            @update:modelValue="handleScopeUpdate('approvalState', $event as Array<string | boolean>)" />
+            @update:modelValue="handleScopeUpdate('approvalState', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_FAMILY_INCLUDE')"
             :items="config.scopeConfig.family.options"
             :model-value="config.scopeConfig.family.values"
-            @update:modelValue="handleScopeUpdate('family', $event as Array<string | boolean>)" />
+            @update:modelValue="handleScopeUpdate('family', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_TYPE_INCLUDE')"
             :items="config.scopeConfig.licenseType.options"
             :model-value="config.scopeConfig.licenseType.values"
-            @update:modelValue="handleScopeUpdate('licenseType', $event as Array<string | boolean>)" />
+            @update:modelValue="handleScopeUpdate('licenseType', $event)" />
 
           <DMultiSelect
             class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_SOURCE_INCLUDE')"
             :items="config.scopeConfig.source.options"
             :model-value="config.scopeConfig.source.values"
-            @update:modelValue="handleScopeUpdate('source', $event as Array<string | boolean>)" />
+            @update:modelValue="handleScopeUpdate('source', $event)" />
         </div>
       </v-card>
     </Stack>
