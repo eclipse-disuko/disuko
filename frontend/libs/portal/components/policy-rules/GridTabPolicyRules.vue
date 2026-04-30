@@ -126,9 +126,9 @@ const reload = async () => {
   initBreadcrumbs();
   hasChanges.value = false;
 };
+
 watch(selectedFilterClassificationsSelected, reload);
 
-// Track changes to calculated policy rule state for UI dirty flag
 watch(
   () => calculatedPolicyRuleStore.rule,
   () => {
