@@ -29,7 +29,7 @@ import _l from 'lodash';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import JsonViewer3 from 'vue-json-viewer';
-import {useUrls} from '@shared/composables/useUrls';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 interface LocalDetails extends Details {
   url?: boolean;
@@ -46,7 +46,6 @@ const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const snack = useSnackbar();
 const {t} = useI18n();
-const {openUrlInNewTab} = useUrls();
 
 const {
   confirmCloseConfig,

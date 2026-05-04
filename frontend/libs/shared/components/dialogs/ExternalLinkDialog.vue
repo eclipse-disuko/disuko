@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useUrls} from '@shared/composables/useUrls';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 interface Props {
   url: string;
@@ -18,7 +18,6 @@ const emits = defineEmits(['close']);
 const isDialogVisible = defineModel<boolean>('isDialogVisible', {required: true});
 
 const {t} = useI18n();
-const {openUrlInNewTab} = useUrls();
 
 const externalLinkDialogConfig = computed(() => ({
   title: t('EXT_LINK_DIALOG_TITLE'),

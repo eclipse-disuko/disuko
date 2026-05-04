@@ -13,7 +13,7 @@ import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {PropType, computed, defineComponent, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useUrls} from '@shared/composables/useUrls';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 export default defineComponent({
   name: 'GridSPDXList',
@@ -49,7 +49,6 @@ export default defineComponent({
     const icons = Icons;
     const {t} = useI18n();
     const {isAudited} = useApprovalCheck();
-    const {openUrlInNewTab} = useUrls();
 
     const selectedItems = ref<ProjectApprovable[]>(props.selectable ? [...props.projects] : []);
 

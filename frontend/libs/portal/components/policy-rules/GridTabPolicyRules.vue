@@ -37,8 +37,8 @@ import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import {storeToRefs} from 'pinia';
 import {openUrlInNewTab} from '@shared/utils/url';
+import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
 const {getI18NTextOfPrefixKey} = useLicense();

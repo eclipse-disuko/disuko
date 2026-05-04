@@ -16,10 +16,9 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {DataTableHeader} from '@shared/types/table';
-import {useUrls} from '@shared/composables/useUrls';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 const {t} = useI18n();
-const {openUrlInNewTab} = useUrls();
 const projectStore = useProjectStore();
 const router = useRouter();
 const breadcrumbs = useBreadcrumbsStore();

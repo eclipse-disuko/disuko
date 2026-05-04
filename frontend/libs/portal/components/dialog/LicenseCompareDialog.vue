@@ -14,7 +14,7 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import {CodeDiff} from 'v-code-diff';
 import {defineComponent, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useUrls} from '@shared/composables/useUrls';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 class DiffDetails {
   public oldValue = '';
@@ -44,7 +44,6 @@ export default defineComponent({
   },
   setup() {
     const {t} = useI18n();
-    const {openUrlInNewTab} = useUrls();
 
     const isDialogVisible = ref(false);
     const title = ref('LIC_DIALOG_SEARCH_TEXT_TITLE');
