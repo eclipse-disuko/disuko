@@ -12,6 +12,7 @@ export const JOB_TYPE_NOTIFICATION = 6;
 export const JOB_TYPE_DEPROVISIONING = 7;
 export const JOB_TYPE_POLICY_RULE_CHANGE_LOGS = 8;
 export const JOB_TYPE_FOSS_DD = 10;
+export const JOB_TYPE_CALCULATED_POLICY_RULES_UPDATE = 15;
 
 export const JOB_STATUS_IDLE = 0;
 export const JOB_STATUS_IN_PROGRESS = 1;
@@ -134,6 +135,8 @@ export function jobTypeToString(jobType: number): string {
       return 'JOB_TYPE_POLICY_RULE_CHANGE_LOGS';
     case JOB_TYPE_FOSS_DD:
       return 'JOB_TYPE_FOSS_DD';
+    case JOB_TYPE_CALCULATED_POLICY_RULES_UPDATE:
+      return 'JOB_TYPE_CALCULATED_POLICY_RULES_UPDATE';
     default:
       return 'JOB_TYPE_UNKNOWN';
   }
