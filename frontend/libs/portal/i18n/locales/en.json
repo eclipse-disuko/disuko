@@ -2100,5 +2100,11 @@
   "UNASSERTED_LICENSES_MSG": "The license \"{license}\" has an unasserted status and has not been included in this comparison. Please investigate the license information and update the SBOM if you want to consider it.",
   "IMPORTANT_INFO_TEXT": "Important Information",
   "BTN_COMPONENT_DETAILS": "Component details",
-  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Please delete pending tasks/roles/traces before deleting user"
+  "USER_MANAGEMENT_CONFIRM_DELETE_NOT_ALLOWED": "Please delete pending tasks/roles/traces before deleting user",
+  "UPCOMING_DELETIONS": "Upcoming Deletions",
+  "COL_DEPROVISIONED": "Deprovisioned",
+  "COL_DELETION_DATE": "Deletion Date",
+  "COL_OVERDUE": "Overdue",
+  "COL_BLOCKING_PROJECTS": "Blocking Projects",
+  "TT_OPEN_PROJECT": "Open project"
 }

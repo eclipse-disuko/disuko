@@ -213,6 +213,27 @@ func (handler *UserHandler) GetAllHandler(w http.ResponseWriter, r *http.Request
 	render.JSON(w, r, result)
 }
 
+func (handler *UserHandler) GetUpcomingDeletionsHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	users := handler.DeletionService.UpcomingDeletions(requestSession)
+
+	result := make([]*user.UpcomingDeletionDto, 0, len(users))
+	for _, u := range users {
+		var blocking []user.BlockingProjectDto
+		if u.DeletionOverdue() {
+			blocking = handler.DeletionService.BlockingProjects(requestSession, u)
+		}
+		result = append(result, u.ToUpcomingDeletionDto(blocking))
+	}
+
+	render.JSON(w, r, result)
+}
+
 func (handler *UserHandler) GetTermsOfUseCurrentVersionHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)

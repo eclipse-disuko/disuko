@@ -40,6 +40,7 @@ const AdminProjects = () => import('@disclosure-portal/views/admin/AdminProjects
 const InternalToken = () => import('@disclosure-portal/views/admin/InternalToken.vue');
 const Newsbox = () => import('@disclosure-portal/views/admin/Newsbox.vue');
 const FeatureFlags = () => import('@disclosure-portal/views/admin/FeatureFlags.vue');
+const UpcomingDeletions = () => import('@disclosure-portal/views/admin/UpcomingDeletions.vue');
 const UserManagement = () => import('@disclosure-portal/views/admin/tools/UserManagement.vue');
 
 const baseUrl = import.meta.env.BASE_URL;
@@ -506,6 +507,17 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'admin/deletions',
+        name: 'UpcomingDeletions',
+        component: UpcomingDeletions,
+        meta: {
+          title: {
+            en: 'Upcoming Deletions',
+            de: 'Bevorstehende Löschungen',
+          },
+        },
+      },
+      {
         path: 'groups/:uuid/:tab?',
         name: 'Group',
         component: ProjectsDetail,
@@ -919,6 +931,13 @@ router.beforeEach((to, from, next) => {
     }
     if (to.path.includes('admin/featureflags')) {
       if (rights.isApplicationAdmin()) {
+        return next();
+      } else {
+        return next({path: '/dashboard/home'});
+      }
+    }
+    if (to.path.includes('admin/deletions')) {
+      if (rights.isDomainAdmin()) {
         return next();
       } else {
         return next({path: '/dashboard/home'});
