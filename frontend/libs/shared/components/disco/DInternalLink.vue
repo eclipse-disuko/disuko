@@ -2,45 +2,18 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<script lang="ts">
-import Icons from '@disclosure-portal/constants/icons';
-import {releaseKeys} from '@disclosure-portal/keyState';
-import {defineComponent} from 'vue';
+<script setup lang="ts">
+interface Props {
+  url: string;
+  text: string;
+}
 
-export default defineComponent({
-  name: 'DInternalLink',
-  props: {
-    url: {
-      type: String,
-      required: true,
-    },
-    text: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
-    const icons = Icons;
-
-    const openURL = () => {
-      if (props.url) {
-        window.open(props.url, '_blank');
-        releaseKeys();
-      }
-    };
-
-    return {
-      icons,
-      openURL,
-      releaseKeys,
-    };
-  },
-});
+defineProps<Props>();
 </script>
 
 <template>
   <span>
-    <a color="primary" class="d-subtitle-2" :href="url" target="_blank" v-if="url" @click="releaseKeys">
+    <a color="primary" class="d-subtitle-2" :href="url" target="_blank" v-if="url">
       {{ text }}
     </a>
   </span>

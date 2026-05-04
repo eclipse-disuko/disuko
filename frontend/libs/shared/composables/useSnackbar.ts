@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 
 const timeout = 3000;
 

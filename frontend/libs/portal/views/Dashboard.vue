@@ -5,18 +5,19 @@
 <script setup lang="ts">
 import * as help from '@disclosure-portal/assets/documents/help';
 import releaseNotes from '@disclosure-portal/assets/documents/release_notes/ReleaseNotes.md?raw';
-import {INotificationMeta} from '@disclosure-portal/model/IdleInfo';
+import {INotificationMeta} from '@shared/types/IdleInfo';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
-import eventbus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {logout} from '@disclosure-portal/utils/logout';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {ThemeColor, useThemeStore} from '@shared/stores/theme.store';
 import config from '@shared/utils/config';
 import {storeToRefs} from 'pinia';
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useLanguageStore} from '@shared/stores/language.store';
 
 const route = useRoute();
 const router = useRouter();
@@ -24,8 +25,10 @@ const appStore = useAppStore();
 const userStore = useUserStore();
 const theme = useThemeStore();
 const {t} = useI18n();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 
-const {notificationClosed, notificationMessage, appLanguage, dummyDesignMode} = storeToRefs(appStore);
+const {notificationClosed, notificationMessage, dummyDesignMode} = storeToRefs(appStore);
 
 const username = ref('');
 const navIsCollapsed = ref(true);
@@ -40,7 +43,7 @@ const hasCustomHelp = computed(() => {
 });
 const helpText = computed(() => {
   const specificHelp = hasCustomHelp.value && metaHelpText.value ? '\n' + metaHelpText.value[appLanguage.value] : '';
-  return help.top[appLanguage.value] + specificHelp;
+  return help.top[appLanguage.value as keyof typeof help.top] + specificHelp;
 });
 const switchLabel = computed(() => {
   return theme.current === ThemeColor.dark ? t('SWITCH_LIGHT') : t('SWITCH_DARK');
@@ -81,8 +84,8 @@ const escapeListener = (event: KeyboardEvent) => {
   }
 };
 
-const toggleLanguage = () => {
-  appStore.toggleLanguage();
+const toggleLang = () => {
+  languageStore.toggleLanguage();
   createNavItemsGroup();
 };
 
@@ -113,12 +116,21 @@ const startHelpAnimation = () => {
 
 onMounted(() => {
   // initially set context help
-  eventbus.on('set-notification', onSetNotification);
+  eventBus.on('set-notification', onSetNotification);
   window.addEventListener('keydown', escapeListener);
 
   username.value = userStore.getProfile.user;
   startHelpAnimation();
 });
+
+onUnmounted(() => {
+  eventBus.off('set-notification', onSetNotification);
+  window.removeEventListener('keydown', escapeListener);
+  if (animationTimeout) {
+    clearTimeout(animationTimeout);
+  }
+});
+
 watch(
   () => route.path,
   () => {
@@ -242,7 +254,7 @@ watch(
           {{ switchLabel }}
           <tooltip :text="switchTooltip"></tooltip>
         </v-list-item>
-        <v-list-item class="h-[56px] px-4" @click="toggleLanguage()" prepend-icon="mdi-web">
+        <v-list-item class="h-[56px] px-4" @click="toggleLang()" prepend-icon="mdi-web">
           <template v-slot:prepend>
             <v-icon color="primary"></v-icon>
           </template>

@@ -2,6 +2,98 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+<script lang="ts" setup>
+import adminService from '@disclosure-portal/services/admin';
+import ProjectService from '@disclosure-portal/services/projects';
+import {useAppStore} from '@disclosure-portal/stores/app';
+import {formatDate} from '@disclosure-portal/utils/Table';
+import {useClipboard} from '@shared/utils/clipboard';
+import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {computed, onMounted, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
+import {ProjectModel} from '@disclosure-portal/model/Project';
+import Icons from '@disclosure-portal/constants/icons';
+import {ProjectSlimDto} from '@disclosure-portal/model/ProjectsResponse';
+
+interface Props {
+  item: ProjectModel;
+  isAsync: boolean;
+}
+
+const props = defineProps<Props>();
+
+const {t} = useI18n();
+const appStore = useAppStore();
+const {copyToClipboard} = useClipboard();
+const router = useRouter();
+const {openUrl} = useUrls();
+
+const childProjects = ref<ProjectSlimDto[]>([]);
+const labelTools = computed(() => appStore.getLabelsTools);
+const childProjectAccessMap = ref(new Map<string, boolean>());
+const icons = Icons;
+
+const getAccessForProjectKey = (projectKey: string): boolean => {
+  return childProjectAccessMap.value.get(projectKey) ?? false;
+};
+
+const getReferenceInfoForClipboard = async (item) => {
+  const schemaLabelName = labelTools.value.schemaLabelsMap[item.schemaLabel]
+    ? labelTools.value.schemaLabelsMap[item.schemaLabel].name
+    : 'UNKNOWN_LABEL';
+  const policyLabelNames = item.policyLabels
+    .map((l) => (labelTools.value.policyLabelsMap[l] ? labelTools.value.policyLabelsMap[l].name : 'UNKNOWN_LABEL'))
+    .join(', ');
+  const projectLink = `${window.location.origin}/#/dashboard/projects/${encodeURIComponent(item._key)}`;
+
+  const refInfo = `Disclosure Portal Project Reference
+
+Project Name: ${item.name}
+Project Identifier: ${item._key}
+Project Schema Label: ${schemaLabelName}
+Project Policy Labels: ${policyLabelNames}
+Project Link: ${projectLink}
+Application Name: ${item.applicationMeta.name}
+Application Link: ${item.applicationMeta.externalLink}`;
+
+  if (props.isAsync) {
+    if (item.value.allowUsers.read || item.value.allowAllProjectUserManagement.read) {
+      const userMail = await adminService.getUserMailById(item.responsible);
+      return `${refInfo}
+Project Responsible with Mail: ${item.responsible} (${userMail.email})`;
+    } else {
+      return `${refInfo}
+Project Responsible: ${item.responsible}`;
+    }
+  }
+  return refInfo;
+};
+
+const copyReferenceInfoToClipboard = async (item: ProjectSlimDto) => {
+  const content = await getReferenceInfoForClipboard(item);
+  copyToClipboard(content);
+};
+
+const onClickRow = (item: ProjectSlimDto) => {
+  let url = '/dashboard/projects/';
+  if (item.isGroup) {
+    url = '/dashboard/groups/';
+  }
+  url += encodeURIComponent(item._key);
+  openUrl(url, router);
+};
+
+onMounted(async () => {
+  const response = await ProjectService.getChildren(props.item._key);
+  childProjects.value = response.projects;
+  childProjectAccessMap.value = new Map(
+    response.list.map(({projectKey, hasProjectReadAccess}) => [projectKey, hasProjectReadAccess]),
+  );
+});
+</script>
+
 <template>
   <div class="ma-5">
     <div v-if="!item.isGroup">
@@ -136,7 +228,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr class="theme-background" v-if="children.length == 0">
+            <tr class="theme-background" v-if="childProjects.length == 0">
               <td>{{ t('NO_DATA_AVAILABLE') }}</td>
               <td></td>
               <td></td>
@@ -147,7 +239,7 @@
               class="theme-background"
               @click="!child.isDeleted && getAccessForProjectKey(child._key) ? onClickRow(child) : undefined"
               :style="!child.isDeleted && getAccessForProjectKey(child._key) ? 'cursor: pointer' : 'cursor: default;'"
-              v-for="child in children"
+              v-for="child in childProjects"
               :key="child._key"
               v-else>
               <td>
@@ -182,129 +274,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import Icons from '@disclosure-portal/constants/icons';
-import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import adminService from '@disclosure-portal/services/admin';
-import ProjectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
-import {formatDate} from '@disclosure-portal/utils/Table';
-import {openUrl} from '@disclosure-portal/utils/url';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
-import DLabel from '@shared/components/disco/DLabel.vue';
-import {useClipboard} from '@shared/utils/clipboard';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
-import {computed, onMounted, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
-import {useRouter} from 'vue-router';
-
-export default {
-  components: {
-    DIconButton,
-    DLabel,
-    DCActionButton,
-  },
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
-    isAsync: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  setup(props) {
-    const {t} = useI18n();
-    const appStore = useAppStore();
-    const {copyToClipboard} = useClipboard();
-    const router = useRouter();
-
-    const childProjects = ref<ProjectSlim[]>([]);
-    const labelTools = computed(() => appStore.getLabelsTools);
-    const childProjectAccessMap = ref(new Map<string, boolean>());
-
-    onMounted(async () => {
-      const response = await ProjectService.getChildren(props.item._key);
-      childProjects.value = response.projects;
-      childProjectAccessMap.value = new Map(
-        response.list.map(({projectKey, hasProjectReadAccess}) => [projectKey, hasProjectReadAccess]),
-      );
-    });
-
-    const getAccessForProjectKey = (projectKey: string): boolean => {
-      return childProjectAccessMap.value.get(projectKey) ?? false;
-    };
-
-    const getReferenceInfoForClipboard = async (item) => {
-      const schemaLabelName = labelTools.value.schemaLabelsMap[item.schemaLabel]
-        ? labelTools.value.schemaLabelsMap[item.schemaLabel].name
-        : 'UNKNOWN_LABEL';
-      const policyLabelNames = item.policyLabels
-        .map((l) => (labelTools.value.policyLabelsMap[l] ? labelTools.value.policyLabelsMap[l].name : 'UNKNOWN_LABEL'))
-        .join(', ');
-      const projectLink = `${window.location.origin}/#/dashboard/projects/${encodeURIComponent(item._key)}`;
-
-      const refInfo = `Disclosure Portal Project Reference
-
-Project Name: ${item.name}
-Project Identifier: ${item._key}
-Project Schema Label: ${schemaLabelName}
-Project Policy Labels: ${policyLabelNames}
-Project Link: ${projectLink}
-Application Name: ${item.applicationMeta.name}
-Application Link: ${item.applicationMeta.externalLink}`;
-
-      if (props.isAsync) {
-        if (item.value.allowUsers.read || item.value.allowAllProjectUserManagement.read) {
-          const userMail = await adminService.getUserMailById(item.responsible);
-          return `${refInfo}
-Project Responsible with Mail: ${item.responsible} (${userMail.email})`;
-        } else {
-          return `${refInfo}
-Project Responsible: ${item.responsible}`;
-        }
-      }
-      return refInfo;
-    };
-
-    const copyReferenceInfoToClipboard = async (item) => {
-      const content = await getReferenceInfoForClipboard(item);
-      copyToClipboard(content);
-    };
-
-    const openProjectWithAction = (item, withActionName) => {
-      let url = '/dashboard/projects/';
-      if (item.isGroup) {
-        url = '/dashboard/groups/';
-      }
-      url += encodeURIComponent(item._key);
-      if (withActionName && withActionName.length > 0) {
-        url += '?action=' + encodeURIComponent(withActionName);
-      }
-      openUrl(url, router);
-    };
-
-    const onClickRow = (item) => {
-      openProjectWithAction(item, '');
-    };
-
-    return {
-      children: childProjects,
-      icons: Icons,
-      TOOLTIP_OPEN_DELAY_IN_MS,
-      formatDate,
-      labelTools,
-      copyReferenceInfoToClipboard,
-      onClickRow,
-      t,
-      getAccessForProjectKey,
-    };
-  },
-};
-</script>
 
 <style>
 .theme-background {

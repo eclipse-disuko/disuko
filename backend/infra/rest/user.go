@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
-	approval2 "github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/newsbox"
 	"github.com/eclipse-disuko/disuko/domain/search"
 	"go.uber.org/zap/zapcore"
@@ -67,35 +66,6 @@ type UserHandler struct {
 	DeletionService        *userService.DeletionService
 	UserService            *userService.Service
 	DeletionAuditRepo      deletionAuditRepo.IDeletionAuditRepository
-}
-
-type DeletePersonalDataEffectedEntities struct {
-	UserTasksCount  int `json:"user_tasks_count"`
-	UserRolesCount  int `json:"user_roles_count"`
-	DataTracesCount int `json:"data_traces_count"`
-}
-type DeletePersonalDataResponse struct {
-	Success          bool                               `json:"success"`
-	Message          string                             `json:"message"`
-	EntitiesEffected DeletePersonalDataEffectedEntities `json:"entities_effected"`
-	DetailedPlan     *userService.DeletionPlan          `json:"detailed_plan,omitempty"`
-}
-
-type PersonalDetailEntity struct {
-	EntityID            string `json:"entityID"`
-	EntityType          string `json:"entityType"`
-	EntitySubType       string `json:"entitySubType,omitempty"`
-	EntityStatus        string `json:"entityStatus,omitempty"`
-	EntityName          string `json:"entityName,omitempty"`
-	ProjectID           string `json:"projectID,omitempty"`
-	ProjectName         string `json:"projectName,omitempty"`
-	DisableDeleteReason string `json:"disableDeleteReason,omitempty"`
-}
-
-type PersonalDetailsResponse struct {
-	Success bool                   `json:"success"`
-	Message string                 `json:"message"`
-	Data    []PersonalDetailEntity `json:"data"`
 }
 
 func (handler *UserHandler) extractRequestBody(r *http.Request) user.UserRequestDto {
@@ -239,6 +209,27 @@ func (handler *UserHandler) GetAllHandler(w http.ResponseWriter, r *http.Request
 	var result user.AllResponse
 	result.Users = user.ToDtos(users)
 	result.Count = len(users)
+
+	render.JSON(w, r, result)
+}
+
+func (handler *UserHandler) GetUpcomingDeletionsHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.IsDomainAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	users := handler.DeletionService.UpcomingDeletions(requestSession)
+
+	result := make([]*user.UpcomingDeletionDto, 0, len(users))
+	for _, u := range users {
+		var blocking []user.BlockingProjectDto
+		if u.DeletionOverdue() {
+			blocking = handler.DeletionService.BlockingProjects(requestSession, u)
+		}
+		result = append(result, u.ToUpcomingDeletionDto(blocking))
+	}
 
 	render.JSON(w, r, result)
 }
@@ -816,306 +807,6 @@ func (handler *UserHandler) DelegateTask(w http.ResponseWriter, r *http.Request)
 	}
 
 	render.JSON(w, r, map[string]string{"status": "success"})
-}
-
-func (handler *UserHandler) DeletePersonalDataHandler(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-
-	if !rights.IsDomainAdmin() {
-		exception.ThrowExceptionSendDeniedResponse()
-	}
-
-	requestData := handler.extractDeletePersonalDataBody(r)
-
-	var resp DeletePersonalDataResponse
-	if requestData.DryRun {
-		resp = handler.userPersonalDeletionDryRun(requestSession, requestData.Username)
-	} else {
-		resp = handler.userPersonalDeletionExecute(requestSession, requestData.Username, requestData.EntityType)
-	}
-
-	render.JSON(w, r, resp)
-}
-
-func (handler *UserHandler) userPersonalDeletionDryRun(requestSession *logy.RequestSession, userName string) DeletePersonalDataResponse {
-	user := handler.UserRepository.FindByUserId(requestSession, userName)
-	if user == nil {
-		return DeletePersonalDataResponse{
-			Success: false,
-			Message: message.GetI18N(message.UserManagementUserNotFound).Code,
-		}
-	}
-
-	plan, err := handler.DeletionService.ExecuteDeletion(userName)
-	if err != nil {
-		return DeletePersonalDataResponse{
-			Success: false,
-			Message: message.GetI18N(message.Error).Code,
-		}
-	}
-
-	taskCount, roleCount, traceCount := handler.DeletionService.GetUserDeletionStats(user)
-
-	return DeletePersonalDataResponse{
-		Success: true,
-		Message: message.GetI18N(message.UserManagementDryRunSuccess).Code,
-		EntitiesEffected: DeletePersonalDataEffectedEntities{
-			UserTasksCount:  taskCount,
-			UserRolesCount:  roleCount,
-			DataTracesCount: traceCount,
-		},
-		DetailedPlan: plan,
-	}
-}
-
-func (handler *UserHandler) userPersonalDeletionExecute(requestSession *logy.RequestSession, userName string, entityType string) DeletePersonalDataResponse {
-	// Validate entity type
-	validEntityTypes := map[string]bool{
-		"all":     true,
-		"tasks":   true,
-		"roles":   true,
-		"traces":  true,
-		"profile": true,
-	}
-
-	if !validEntityTypes[entityType] {
-		logy.Warnf(requestSession, "Invalid entity type provided: %s", entityType)
-		return DeletePersonalDataResponse{
-			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "entity_type").Code,
-		}
-	}
-
-	if entityType == "all" {
-
-		logy.Infof(requestSession, "Executing full personal data deletion for user: %s", userName)
-
-		_, err := handler.DeletionService.ExecuteDeletion(userName)
-		if err != nil {
-			logy.Errorf(requestSession, "Failed to execute deletion for user %s: %v", userName, err)
-			return DeletePersonalDataResponse{
-				Success: false,
-				Message: message.GetI18N(message.Error).Code,
-			}
-		}
-
-		return DeletePersonalDataResponse{
-			Success:          true,
-			Message:          message.GetI18N(message.UserManagementDeletionSuccess).Code,
-			EntitiesEffected: DeletePersonalDataEffectedEntities{},
-		}
-	}
-
-	logy.Infof(requestSession, "Executing personal data deletion for user: %s, entity_type: %s", userName, entityType)
-
-	switch entityType {
-	case "tasks":
-
-		logy.Infof(requestSession, "Deleting all tasks for user: %s", userName)
-	case "roles":
-
-		logy.Infof(requestSession, "Deleting all roles for user: %s", userName)
-	case "traces":
-
-		logy.Infof(requestSession, "Deleting all traces for user: %s", userName)
-	case "profile":
-
-		logy.Infof(requestSession, "Deleting user profile for user: %s", userName)
-	}
-
-	return DeletePersonalDataResponse{
-		Success:          true,
-		Message:          message.GetI18N(message.UserManagementEntityDeleted).Code,
-		EntitiesEffected: DeletePersonalDataEffectedEntities{},
-	}
-}
-
-func (handler *UserHandler) DeletePersonalDataDryRunHandler(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-
-	if !rights.IsDomainAdmin() {
-		exception.ThrowExceptionSendDeniedResponse()
-	}
-
-	userName := r.URL.Query().Get("username")
-	if userName == "" {
-		render.JSON(w, r, DeletePersonalDataResponse{
-			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Code,
-		})
-		return
-	}
-
-	user := handler.UserRepository.FindByUserId(requestSession, userName)
-	if user == nil {
-		render.JSON(w, r, DeletePersonalDataResponse{
-			Success: false,
-			Message: message.GetI18N(message.UserManagementUserNotFound).Code,
-		})
-		return
-	}
-
-	taskCount, roleCount, traceCount := handler.DeletionService.GetUserDeletionStats(user)
-
-	render.JSON(w, r, DeletePersonalDataResponse{
-		Success: true,
-		Message: message.GetI18N(message.UserManagementDryRunSuccess).Code,
-		EntitiesEffected: DeletePersonalDataEffectedEntities{
-			UserTasksCount:  taskCount,
-			UserRolesCount:  roleCount,
-			DataTracesCount: traceCount,
-		},
-	})
-}
-
-func (handler *UserHandler) GetPersonalDetailsHandler(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-
-	if !rights.IsDomainAdmin() {
-		exception.ThrowExceptionSendDeniedResponse()
-	}
-
-	userName := chi.URLParam(r, "username")
-	entity := r.URL.Query().Get("entity")
-
-	if userName == "" {
-		render.JSON(w, r, PersonalDetailsResponse{
-			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "username").Code,
-			Data:    []PersonalDetailEntity{},
-		})
-		return
-	}
-
-	if entity == "" {
-		render.JSON(w, r, PersonalDetailsResponse{
-			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "entity").Code,
-			Data:    []PersonalDetailEntity{},
-		})
-		return
-	}
-
-	user := handler.UserRepository.FindByUserId(requestSession, userName)
-	if user == nil {
-		render.JSON(w, r, PersonalDetailsResponse{
-			Success: false,
-			Message: message.GetI18N(message.UserManagementUserNotFound).Code,
-			Data:    []PersonalDetailEntity{},
-		})
-		return
-	}
-
-	var entities []PersonalDetailEntity
-
-	switch entity {
-	case "tasks":
-		projectIDNameMap := map[string]string{}
-
-		projectIds := []string{}
-		for _, val := range user.Tasks {
-			projectIds = append(projectIds, val.ProjectGuid)
-		}
-		projects := handler.ProjectRepository.FindByKeys(requestSession, projectIds, false)
-
-		for _, project := range projects {
-			projectIDNameMap[project.Key] = project.Name
-		}
-
-		for _, task := range user.Tasks {
-			entities = append(entities, PersonalDetailEntity{
-				EntityID:      task.Key,
-				EntityType:    "tasks",
-				EntitySubType: string(task.Type),
-				EntityStatus:  string(task.Status),
-				ProjectID:     task.ProjectGuid,
-				ProjectName:   projectIDNameMap[task.ProjectGuid],
-			})
-		}
-	case "roles":
-		projects := handler.ProjectRepository.FindAllForUser(requestSession, userName)
-
-		projectIds := []string{}
-		for _, projectLocal := range projects {
-			projectIds = append(projectIds, projectLocal.Key)
-		}
-		approvalLists := handler.ApprovalListRepository.FindByKeys(requestSession, projectIds, false)
-
-		projectIDApprovalListMaps := map[string]*approval2.ApprovalList{}
-
-		for _, approvalList := range approvalLists {
-			if approvalList != nil && len(approvalList.Approvals) > 0 {
-				projectIDApprovalListMaps[approvalList.Approvals[0].ProjectGuid] = approvalList
-			}
-		}
-
-		for _, projectLocal := range projects {
-			var userLocal *project.ProjectMemberEntity
-			for _, member := range projectLocal.UserManagement.Users {
-				if member.UserId == userName {
-					userLocal = member
-				}
-			}
-			if userLocal == nil {
-				continue
-			}
-
-			disableDeleteReason := ""
-			if userLocal.IsResponsible {
-				disableDeleteReason = "DLG_CAN_NOT_DELETE_RESPONSIBLE"
-			}
-			if disableDeleteReason == "" {
-				if approvalList, ok := projectIDApprovalListMaps[projectLocal.Key]; ok {
-					disableDeleteReason = handler.UserService.IsProjectMemberInPendingApprovalOrRequestUser(requestSession, user, approvalList)
-				}
-			}
-			entities = append(entities, PersonalDetailEntity{
-				EntityID:            projectLocal.Key,
-				EntityType:          "roles",
-				EntityStatus:        string(userLocal.UserType),
-				EntityName:          string(userLocal.UserType),
-				ProjectName:         projectLocal.Name,
-				ProjectID:           projectLocal.Key,
-				DisableDeleteReason: disableDeleteReason,
-			})
-		}
-	case "logs":
-		logy.Infof(requestSession, "Fetching logs for user: %s", userName)
-
-		mockTraces := []struct {
-			traceID   string
-			traceType string
-		}{
-			{"trace-004", "USER_SESSION_LOG"},
-			{"trace-006", "EXPORT_HISTORY"},
-			{"trace-007", "LOGIN_ACTIVITY"},
-		}
-		for _, trace := range mockTraces {
-			entities = append(entities, PersonalDetailEntity{
-				EntityID:      trace.traceID,
-				EntityType:    "logs",
-				EntitySubType: trace.traceType,
-				EntityStatus:  "",
-				EntityName:    trace.traceType,
-			})
-		}
-	default:
-		render.JSON(w, r, PersonalDetailsResponse{
-			Success: false,
-			Message: message.GetI18N(message.ErrorKeyRequestParamNotValid, "entity").Code,
-			Data:    []PersonalDetailEntity{},
-		})
-		return
-	}
-
-	render.JSON(w, r, PersonalDetailsResponse{
-		Success: true,
-		Message: "SUCCESS",
-		Data:    entities,
-	})
 }
 
 func (handler *UserHandler) DeletePersonalDataByEntityIdHandler(w http.ResponseWriter, r *http.Request) {

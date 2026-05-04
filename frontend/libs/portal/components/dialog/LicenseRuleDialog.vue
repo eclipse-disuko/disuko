@@ -6,7 +6,7 @@
 import {DialogLicenseRuleConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {LicenseRuleRequest} from '@disclosure-portal/model/LicenseRule';
 import {ComponentLicenses} from '@disclosure-portal/model/Project';
 import {ComponentInfoSlim} from '@disclosure-portal/model/VersionDetails';
@@ -291,8 +291,8 @@ defineExpose({open});
         <Stack class="gap-4">
           <Stack direction="row" class="items-start gap-4">
             <Stack class="flex-1 gap-4 self-start">
-              <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
-                <span class="v-field__input text-title-1 py-2" v-html="formatText(selectedComponentStr)" />
+              <v-field variant="outlined" density="compact" active :label="t('RELATED_COMPONENT')" hide-details>
+                <span class="v-field__input text-title-1 py-2">{{ selectedComponentStr }}</span>
               </v-field>
               <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
                 <span

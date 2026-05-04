@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
@@ -20,6 +20,7 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 import {DialogPolicyDecisionConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
+import {escapeHtml} from '@disclosure-portal/utils/Validation';
 
 const {t} = useI18n();
 const {info} = useSnackbar();
@@ -145,6 +146,16 @@ const closeAndTriggerBulk = () => {
   emit('triggerBulk');
 };
 
+const formatText = (text: string): string => {
+  text = escapeHtml(text);
+  if (text.includes(' AND ') || text.includes(' OR ')) {
+    return text
+      .replace(/ AND /g, ' <strong class="db-highlight">AND</strong> ')
+      .replace(/ OR /g, ' <strong class="db-highlight">OR</strong> ');
+  }
+  return text;
+};
+
 defineExpose({open});
 </script>
 
@@ -183,32 +194,15 @@ defineExpose({open});
       </template>
       <v-form ref="form">
         <Stack>
-          <v-text-field
-            autocomplete="off"
-            v-model="selectedComponentStr"
-            disabled
-            variant="outlined"
-            density="compact"
-            hide-details
-            :label="t('RELATED_COMPONENT')" />
-          <v-textarea
-            auto-grow
-            rows="1"
-            variant="outlined"
-            density="compact"
-            disabled
-            :label="t('LICENSE_EXPRESSION')"
-            v-model="licenseExpression"
-            hide-details />
-          <v-textarea
-            auto-grow
-            rows="1"
-            variant="outlined"
-            density="compact"
-            disabled
-            :label="t('COL_POLICY_NAME')"
-            v-model="policyName"
-            hide-details />
+          <v-field variant="outlined" density="compact" active :label="t('RELATED_COMPONENT')" hide-details>
+            <span class="v-field__input text-title-1 py-2">{{ selectedComponentStr }}</span>
+          </v-field>
+          <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
+            <span class="v-field__input text-title-1 py-2" v-html="formatText(licenseExpression)" />
+          </v-field>
+          <v-field variant="outlined" density="compact" active :label="t('COL_POLICY_NAME')" hide-details>
+            <span class="v-field__input text-title-1 py-2">{{ policyName }}</span>
+          </v-field>
           <v-select
             class="mt-5"
             v-model="selectedPolicy"

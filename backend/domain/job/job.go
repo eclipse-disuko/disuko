@@ -60,6 +60,7 @@ const (
 	CalculateUserStats
 	LabelLoadDb
 	CalculatedPolicyRulesUpdate
+	UserDeletion
 	TypeLimit
 )
 

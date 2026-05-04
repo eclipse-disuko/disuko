@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import IdleInfo from '@disclosure-portal/model/IdleInfo';
+import IdleInfo from '@shared/types/IdleInfo';
 import {BlobPart} from '@disclosure-portal/types/discobasics';
 import {AxiosResponse} from 'axios';
-import eventBus from './eventbus';
+import eventBus from '@shared/utils/eventbus';
 
 export function downloadFile(fileName: string, downloadPromise: Promise<AxiosResponse>, withIdle: boolean = false) {
   const link = document.createElement('a');

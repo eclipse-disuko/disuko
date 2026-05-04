@@ -40,7 +40,6 @@ vi.mock('@disclosure-portal/services/projects', () => ({
 import {useSbomStore} from './sbom.store';
 
 const version = (key: string, name: string): VersionSlim => ({_key: key, name}) as VersionSlim;
-const spdx = (key: string): SpdxFile => ({_key: key}) as SpdxFile;
 const sbomStats = (allowed: number): SbomStats => ({PolicyState: {Allowed: allowed}}) as SbomStats;
 const generalStats = (acceptable: number): GeneralStats => ({ReviewRemark: {Acceptable: acceptable}}) as GeneralStats;
 const flatItem = (key: string, versionKey: string, versionName: string): VersionSbomsFlat =>
@@ -73,7 +72,7 @@ describe('useSbomStore', () => {
 
   it('reuses current sbom stats after they are loaded', async () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
     store.setSelectedSBOMKey('spdxA');
 
     versionServiceMock.getSBOMStats.mockResolvedValueOnce({data: sbomStats(3)});
@@ -91,7 +90,7 @@ describe('useSbomStore', () => {
 
   it('does not deduplicate concurrent sbom requests before stats are loaded', async () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
     store.setSelectedSBOMKey('spdxA');
 
     const firstPending = deferred<{data: SbomStats}>();
@@ -113,7 +112,7 @@ describe('useSbomStore', () => {
 
   it('clears only sbom stats when the selected SPDX changes', () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
     store.sbomStats = sbomStats(1);
     store.generalStats = generalStats(2);
 
@@ -125,11 +124,11 @@ describe('useSbomStore', () => {
 
   it('clears both stat payloads when the version changes', () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
     store.sbomStats = sbomStats(1);
     store.generalStats = generalStats(2);
 
-    store.setCurrentVersion(version('versionB', 'Version B'));
+    store.setCurrentVersion('versionB');
 
     expect(store.getSbomStats).toEqual({});
     expect(store.getGeneralStats).toEqual({});
@@ -137,7 +136,7 @@ describe('useSbomStore', () => {
 
   it('ignores stale sbom responses after the selected SPDX changes', async () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
     store.setSelectedSBOMKey('spdxA');
 
     const oldRequest = deferred<{data: SbomStats}>();
@@ -161,13 +160,13 @@ describe('useSbomStore', () => {
 
   it('ignores stale general stats responses after the version changes', async () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
 
     const oldRequest = deferred<{data: GeneralStats}>();
     versionServiceMock.getGeneralVersionStats.mockReturnValueOnce(oldRequest.promise);
     const oldPromise = store.fetchGeneralVersionStats();
 
-    store.setCurrentVersion(version('versionB', 'Version B'));
+    store.setCurrentVersion('versionB');
 
     const newRequest = deferred<{data: GeneralStats}>();
     versionServiceMock.getGeneralVersionStats.mockReturnValueOnce(newRequest.promise);
@@ -184,7 +183,7 @@ describe('useSbomStore', () => {
 
   it('reuses current general stats after they are loaded', async () => {
     const store = useSbomStore();
-    store.setCurrentVersion(version('versionA', 'Version A'));
+    store.setCurrentVersion('versionA');
 
     versionServiceMock.getGeneralVersionStats.mockResolvedValueOnce({data: generalStats(7)});
 
@@ -207,7 +206,7 @@ describe('useSbomStore', () => {
         flatItem('spdx-2', 'versionA', 'Version A'),
         flatItem('spdx-3', 'versionB', 'Version B'),
       ];
-      store.setCurrentVersion(version('versionA', 'Version A'));
+      store.setCurrentVersion('versionA');
 
       expect(store.channelSpdxs.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
     });
@@ -215,7 +214,7 @@ describe('useSbomStore', () => {
     it('sets isRecent on the first item only', () => {
       const store = useSbomStore();
       store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
-      store.setCurrentVersion(version('versionA', 'Version A'));
+      store.setCurrentVersion('versionA');
 
       expect(store.channelSpdxs[0].isRecent).toBe(true);
       expect(store.channelSpdxs[1].isRecent).toBe(false);
@@ -224,7 +223,7 @@ describe('useSbomStore', () => {
     it('returns an empty array when no items match the current version', () => {
       const store = useSbomStore();
       store.allSBOMSFlat = [flatItem('spdx-3', 'versionB', 'Version B')];
-      store.setCurrentVersion(version('versionA', 'Version A'));
+      store.setCurrentVersion('versionA');
 
       expect(store.channelSpdxs).toEqual([]);
     });

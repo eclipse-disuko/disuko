@@ -16,10 +16,10 @@ import {
 } from '@disclosure-portal/model/VersionDetails';
 import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
@@ -329,7 +329,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
   if (canMakeWarnedDecisionComponents.value.length === 0) return;
 
   const items: DialogBulkPolicyDecisionEntry[] = [];
-  for (const cmp of canMakeWarnedDecisionComponents.value) {
+  canMakeWarnedDecisionComponents.value.forEach((cmp) => {
     const component = new ComponentInfoSlim();
     component.spdxId = cmp.spdxId;
     component.name = cmp.name;
@@ -343,7 +343,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
       };
       items.push(item);
     }
-  }
+  });
 
   bulkPolicyDecisionsDialog.value?.open({items});
 };

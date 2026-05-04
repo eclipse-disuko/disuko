@@ -5,13 +5,14 @@
 <script setup lang="ts">
 import {PolicyRulesAssignmentsDto, PolicyRulesForLicenseDto} from '@disclosure-portal/model/PolicyRule';
 import licenseService from '@disclosure-portal/services/license';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader} from '@shared/types/table';
 import _lodash from 'lodash';
 import {nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const emit = defineEmits<{
   (e: 'policyRulesSaved'): void;
@@ -19,6 +20,9 @@ const emit = defineEmits<{
 
 // State variables
 const {t} = useI18n();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
+
 const show = ref(false);
 const title = 'LM_DIALOG_TITLE_CONFIGURE_POLICIES_FOR_LICENSE';
 const licenseId = ref('');
@@ -36,15 +40,11 @@ headers.value = [
   {
     title: 'Name',
     align: 'start',
-    filterable: true,
-    class: 'tableHeaderCell',
     value: 'name',
   },
   {
     title: 'Description',
     align: 'start',
-    filterable: false,
-    class: 'tableHeaderCell',
     value: 'description',
     sortable: false,
   },
@@ -85,28 +85,6 @@ const close = () => {
   show.value = false;
 };
 
-watch(show, (value) => {
-  if (!value) {
-    if (formDialog.value) {
-      formDialog.value.reset();
-    }
-  }
-});
-
-onMounted(() => {
-  const appStore = useAppStore();
-  typeWidth.value = appStore.getAppLanguage === 'en' ? 420 : 470;
-  headers.value.push({
-    title: 'Type',
-    align: 'center',
-    filterable: false,
-    class: 'tableHeaderCell',
-    value: 'type',
-    width: typeWidth.value,
-    sortable: false,
-  });
-});
-
 const open = (id: string, name: string) => {
   show.value = true;
   licenseId.value = id;
@@ -118,6 +96,25 @@ const open = (id: string, name: string) => {
   });
   load();
 };
+
+watch(show, (value) => {
+  if (!value) {
+    if (formDialog.value) {
+      formDialog.value.reset();
+    }
+  }
+});
+
+onMounted(() => {
+  typeWidth.value = appLanguage.value === 'en' ? 420 : 470;
+  headers.value.push({
+    title: 'Type',
+    align: 'center',
+    value: 'type',
+    width: typeWidth.value,
+    sortable: false,
+  });
+});
 
 defineExpose({open});
 </script>

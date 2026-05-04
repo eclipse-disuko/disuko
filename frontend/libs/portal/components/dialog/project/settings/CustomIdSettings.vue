@@ -4,13 +4,13 @@
 
 <script lang="ts" setup>
 import {CustomId} from '@disclosure-portal/model/CustomId';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {DataTableHeader} from '@shared/types/table';
 import {storeToRefs} from 'pinia';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
 
 const props = defineProps({
   readonly: {
@@ -24,12 +24,11 @@ const currentCustomIds = defineModel<CustomId[]>({required: true});
 
 const {t} = useI18n();
 const {minMax} = useRules();
-const appStore = useAppStore();
 const customIdsStore = useCustomIdStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 
 const {customIds} = storeToRefs(customIdsStore);
-
-const lang = computed(() => appStore.getAppLanguage);
 
 const headers = computed<DataTableHeader[]>(() => {
   const res: DataTableHeader[] = [
@@ -37,14 +36,12 @@ const headers = computed<DataTableHeader[]>(() => {
       title: t('COL_NAME'),
       width: 220,
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'technicalId',
       sortable: true,
     },
     {
       title: t('COL_VALUES'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'value',
       sortable: true,
     },
@@ -54,7 +51,6 @@ const headers = computed<DataTableHeader[]>(() => {
       title: t('COL_ACTIONS'),
       align: 'center',
       width: 150,
-      class: 'tableHeaderCell',
       value: 'actions',
       sortable: false,
     });
@@ -111,7 +107,7 @@ const activeRules = ref({
               density="compact"
               variant="outlined"
               :items="customIds.ids"
-              :item-title="lang === 'en' ? 'name' : 'nameDE'"
+              :item-title="appLanguage === 'en' ? 'name' : 'nameDE'"
               item-value="_key"
               :rules="activeRules.required"
               v-bind:menu-props="{location: 'bottom'}"
@@ -121,10 +117,12 @@ const activeRules = ref({
                   <template v-slot:title>
                     <v-tooltip
                       :text="
-                        lang === 'en' ? customIds.map[item.value].description : customIds.map[item.value].descriptionDE
+                        appLanguage === 'en'
+                          ? customIds.map[item.value].description
+                          : customIds.map[item.value].descriptionDE
                       "
                       :disabled="
-                        lang === 'en'
+                        appLanguage === 'en'
                           ? !customIds.map[item.value].description
                           : !customIds.map[item.value].descriptionDE
                       "
@@ -133,7 +131,9 @@ const activeRules = ref({
                       <template v-slot:activator="{props}">
                         <div v-bind="props">
                           <div>
-                            {{ lang === 'en' ? customIds.map[item.value].name : customIds.map[item.value].nameDE }}
+                            {{
+                              appLanguage === 'en' ? customIds.map[item.value].name : customIds.map[item.value].nameDE
+                            }}
                           </div>
                           <div class="d-text d-secondary-text">
                             {{ item.value }}
@@ -147,7 +147,9 @@ const activeRules = ref({
             </v-select>
             <template v-else>
               <div>
-                {{ lang === 'en' ? customIds.map[item.technicalId].name : customIds.map[item.technicalId].nameDE }}
+                {{
+                  appLanguage === 'en' ? customIds.map[item.technicalId].name : customIds.map[item.technicalId].nameDE
+                }}
               </div>
               <div class="d-text d-secondary-text">
                 {{ item.technicalId }}

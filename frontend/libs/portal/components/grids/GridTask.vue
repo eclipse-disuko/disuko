@@ -5,7 +5,6 @@ import {TaskDto} from '@disclosure-portal/model/Users';
 import Profile from '@disclosure-portal/services/profile';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
-import {openUrlInNewTab} from '@disclosure-portal/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
@@ -15,6 +14,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 const router = useRouter();
 const route = useRoute();

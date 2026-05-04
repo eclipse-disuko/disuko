@@ -4,17 +4,17 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {NameKeyIdentifier, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
 import {Group} from '@disclosure-portal/model/Rights';
 import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
@@ -33,6 +33,8 @@ import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 type DataTableItems = DataTabelIndex & VersionSbomsFlat;
 
@@ -51,6 +53,8 @@ const sbomStore = useSbomStore();
 const route = useRoute();
 const router = useRouter();
 const idle = useIdleStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const {copyToClipboard} = useClipboard();
 
 const projectModel = computed(() => projectStore.currentProject!);
@@ -253,6 +257,7 @@ const setApprovable = async (item: VersionSbomsFlat) => {
     .then(() => (projectModel.value.approvablespdx = approvableSpdx));
   await sbomStore.fetchAllSBOMsFlat(true);
 };
+
 const downloadFile = (item: VersionSbomsFlat) => {
   const link = document.createElement('a');
   link.click();
@@ -272,27 +277,6 @@ const downloadFile = (item: VersionSbomsFlat) => {
       console.error('cannot find spdxFile ' + e);
     });
 };
-
-onMounted(async () => {
-  if (!props.channelView) {
-    sbomStore.fetchAllSBOMsFlat().then(() => {
-      selectedBranch.value = branches.value[0];
-      if (versionDetails.value) {
-        const branchFromVersion = branches.value.find((g) => g.key == versionDetails.value._key);
-        if (branchFromVersion) {
-          selectedBranch.value = branchFromVersion;
-          isBranchSelectionEnabled.value = false;
-        }
-      }
-    });
-  } else {
-    selectedBranch.value = {
-      name: versionDetails.value.name,
-      key: versionDetails.value._key,
-    };
-    isBranchSelectionEnabled.value = false;
-  }
-});
 
 const uploadProgress = (file: File, progress: number) => {
   idle.show(t('PROGRESS_UPLOADING') + ' (' + file.name + ')', progress);
@@ -322,22 +306,10 @@ const fileUploadFailed = () => {
   idle.hide();
 };
 
-watch(
-  () => appStore.getAppLanguage,
-  () => {
-    updateContextHelp();
-  },
-);
-
-onMounted(() => {
-  updateContextHelp();
-});
-
 const updateContextHelp = () => {
-  const lang = appStore.getAppLanguage as 'de' | 'en';
-  const ht = route.meta?.helpText as {de: string; en: string};
-  if (ht?.[lang]) {
-    helpText.value = ht?.[lang];
+  const ht = route.meta?.helpText as Record<string, string>;
+  if (ht?.[appLanguage.value]) {
+    helpText.value = ht?.[appLanguage.value];
   } else {
     helpText.value = '';
   }
@@ -451,6 +423,32 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
     },
   ];
 };
+
+watch(appLanguage, () => {
+  updateContextHelp();
+});
+
+onMounted(async () => {
+  updateContextHelp();
+  if (!props.channelView) {
+    sbomStore.fetchAllSBOMsFlat().then(() => {
+      selectedBranch.value = branches.value[0];
+      if (versionDetails.value) {
+        const branchFromVersion = branches.value.find((g) => g.key == versionDetails.value._key);
+        if (branchFromVersion) {
+          selectedBranch.value = branchFromVersion;
+          isBranchSelectionEnabled.value = false;
+        }
+      }
+    });
+  } else {
+    selectedBranch.value = {
+      name: versionDetails.value.name,
+      key: versionDetails.value._key,
+    };
+    isBranchSelectionEnabled.value = false;
+  }
+});
 </script>
 
 <template>

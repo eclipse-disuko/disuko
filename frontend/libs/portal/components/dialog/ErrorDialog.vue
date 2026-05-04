@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

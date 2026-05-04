@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {CONTROL_IS_PRESSED, SHIFT_IS_PRESSED} from '@disclosure-portal/keyState';
 import {MaybeRef} from '@vueuse/core';
 import {computed, isRef, onMounted, ref, toRef, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
+import {useEventKeysStore} from '@shared/stores/eventKeys.store';
+import {storeToRefs} from 'pinia';
 
 export const useTabsWindows = (
   baseUrlUnknown: MaybeRef<string>,
@@ -15,12 +16,14 @@ export const useTabsWindows = (
 ) => {
   const router = useRouter();
   const route = useRoute();
+  const eventKeysStore = useEventKeysStore();
+  const {controlIsPressed, shiftIsPressed} = storeToRefs(eventKeysStore);
 
   const baseUrl = isRef(baseUrlUnknown) ? baseUrlUnknown : toRef(baseUrlUnknown);
   const suffix = urlSuffix ? (isRef(urlSuffix) ? urlSuffix : toRef(urlSuffix)) : toRef('');
 
   const changeUrlForTab = async (tabUrl: string) => {
-    if (CONTROL_IS_PRESSED || SHIFT_IS_PRESSED) {
+    if (controlIsPressed.value || shiftIsPressed.value) {
       // open in new browser tab or window
       return;
     }

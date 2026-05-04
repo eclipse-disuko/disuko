@@ -8,9 +8,10 @@
  * Accepts props to display and emit index on click.
  * */
 import {StepType} from '@disclosure-portal/model/NewWizard';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 export interface StepProps {
   step: StepType;
@@ -20,7 +21,8 @@ export interface StepProps {
 const props = defineProps<StepProps>();
 const emit = defineEmits(['click']);
 
-const {appLanguage} = useAppStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const {t} = useI18n();
 
 const isActive = computed(() => props.currentIndex === props.step.index);
@@ -61,21 +63,21 @@ const isClickable = computed(() => {
       :disabled="!isClickable"
       flat
       @click="emit('click')">
-      <template v-if="props.step.isCompleted"><v-icon size="18">mdi-check</v-icon></template>
+      <template v-if="step.isCompleted"><v-icon size="18">mdi-check</v-icon></template>
       <template v-else>
-        <span v-if="isActive" class="font-bold text-white">{{ props.step.index + 1 }}</span>
-        <span v-else>{{ props.step.index + 1 }}</span>
+        <span v-if="isActive" class="font-bold text-white">{{ step.index + 1 }}</span>
+        <span v-else>{{ step.index + 1 }}</span>
       </template>
     </v-btn>
     <div
       class="text-body-2 w-full px-1 text-center break-words hyphens-auto"
       :class="{'opacity-50': !isActive}"
       :lang="appLanguage">
-      {{ t(props.step.i18nKey) }}
+      {{ t(step.i18nKey) }}
     </div>
     <small
       class="block min-h-[14px] w-full text-center text-[11px] leading-[1.1] break-words text-yellow-700 dark:text-yellow-500">
-      {{ props.step.errorText || ' ' }}
+      {{ step.errorText || ' ' }}
     </small>
   </div>
 </template>
