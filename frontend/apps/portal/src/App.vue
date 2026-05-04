@@ -19,6 +19,7 @@ import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
+import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 
 const {t} = useI18n();
 const route = useRoute();
@@ -31,6 +32,7 @@ const router = useRouter();
 const wizardStore = useWizardStore();
 const labelStore = useLabelStore();
 const {useReactiveTitle} = usePageTitle();
+const eventKeyStore = useEventKeysStore();
 
 const hasAuthentication = ref(false);
 const profileActive = ref(false);
@@ -139,6 +141,7 @@ onMounted(async () => {
   window.addEventListener('resize', onResizeWindow);
 
   languageStore.initializeLanguage();
+  eventKeyStore.initEventKeyStore();
 
   const simpleProfileData = await profileService.getProfileData();
 

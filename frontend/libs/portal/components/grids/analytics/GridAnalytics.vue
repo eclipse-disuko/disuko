@@ -6,7 +6,7 @@
 import {CombinedSearchOptions, IAnalyticsSearchRequest, SearchResponseItem} from '@disclosure-portal/model/Analytics';
 import AnalyticsService from '@disclosure-portal/services/analytics';
 import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
-import {createProjectURL, createSBOMURL, createVersionURL} from '@disclosure-portal/utils/url';
+import {createProjectURL, createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader} from '@shared/types/table';
 import {debounce} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';

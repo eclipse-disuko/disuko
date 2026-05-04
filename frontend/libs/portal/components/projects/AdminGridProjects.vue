@@ -6,7 +6,6 @@
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import type {SearchOptions} from '@disclosure-portal/utils/Table';
-import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {storeToRefs} from 'pinia';
@@ -15,10 +14,12 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {debounce} from 'lodash';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const router = useRouter();
 const projectsUtils = useProjectUtils();
+const {openProjectUrlByKey} = useUrls();
 const projectStore = useProjectStore();
 const {projects, projectsCount, loading, projectPossibleStatuses} = storeToRefs(projectStore);
 

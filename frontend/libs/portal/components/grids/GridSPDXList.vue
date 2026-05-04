@@ -9,11 +9,11 @@ import {ProjectApprovable} from '@disclosure-portal/model/Approval';
 import {ApprovableDto} from '@disclosure-portal/model/Project';
 import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@disclosure-portal/utils/Table';
-import {createSBOMURL, createVersionURL} from '@disclosure-portal/utils/url';
-import {openUrlInNewTab} from '@disclosure-portal/utils/View';
+import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {PropType, computed, defineComponent, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 export default defineComponent({
   name: 'GridSPDXList',

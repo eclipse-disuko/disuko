@@ -4,12 +4,12 @@
 
 <script setup lang="ts">
 import projectService from '@disclosure-portal/services/projects';
-import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {VForm} from 'vuetify/components';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface CloneProjectConfig {
   projectKey: string;
@@ -37,6 +37,7 @@ const {t} = useI18n();
 const {info: infoSnackbar} = useSnackbar();
 const showDialog = defineModel<boolean>('showDialog', {required: false});
 const router = useRouter();
+const {openProjectUrlByKey} = useUrls();
 
 const projectName = ref('');
 const projectKey = ref('');

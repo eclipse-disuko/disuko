@@ -6,7 +6,7 @@
 import {UpcomingDeletion} from '@disclosure-portal/model/UpcomingDeletion';
 import {BlockingProject} from '@disclosure-portal/model/UpcomingDeletion';
 import adminService from '@disclosure-portal/services/admin';
-import {openUrlInNewTab} from '@disclosure-portal/utils/url';
+import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';

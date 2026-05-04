@@ -337,8 +337,7 @@ const getActionButtons = computed((): TableActionButtonsProps['buttons'] => {
         <DInternalLink
           v-if="shouldShowInternalLink()"
           :text="getInternalLinkText()"
-          :url="'/#/dashboard/licenses/' + getInternalLinkText()"
-          class="" />
+          :url="'/#/dashboard/licenses/' + getInternalLinkText()" />
         <span v-else>{{ getLicenseDisplayText() }}</span>
       </div>
     </td>
