@@ -3,6 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {BaseDto} from '@disclosure-portal/model/BaseClass';
+import type {
+  BucketDefinition,
+  CalculatedPolicyConfig,
+  CalculatedPolicyScope,
+} from '@disclosure-portal/model/CalculatedPolicyRules';
 
 export default class PolicyRule extends BaseDto {
   public Status = '';
@@ -17,6 +22,21 @@ export default class PolicyRule extends BaseDto {
   public DeprecatedDate = '';
   public Active: boolean = true;
   public ApplyToAll: boolean = false;
+  public Calculated: boolean = false;
+  public CalculatedConfig: CalculatedPolicyConfig = {
+    bucketDefinition: {
+      deniedClassifications: [],
+      warnedClassifications: [],
+      allowedClassifications: [],
+    },
+    licenseScope: {
+      isLicenseChart: [],
+      approvalState: [],
+      family: [],
+      licenseType: [],
+      source: [],
+    },
+  };
 
   public constructor(dto: PolicyRule | null | undefined = null) {
     super(dto);
@@ -38,6 +58,31 @@ export default class PolicyRule extends BaseDto {
     if (this.LabelSets.length < 1) {
       this.LabelSets[0] = [];
     }
+
+    const config = this.CalculatedConfig ?? ({} as CalculatedPolicyConfig);
+
+    const getLicenseScope = (): CalculatedPolicyScope => {
+      return {
+        isLicenseChart: config.licenseScope?.isLicenseChart ?? [],
+        approvalState: config.licenseScope?.approvalState ?? [],
+        family: config.licenseScope?.family ?? [],
+        licenseType: config.licenseScope?.licenseType ?? [],
+        source: config.licenseScope?.source ?? [],
+      };
+    };
+
+    const getBucketDefinition = (): BucketDefinition => {
+      return {
+        deniedClassifications: config.bucketDefinition?.deniedClassifications ?? [],
+        warnedClassifications: config.bucketDefinition?.warnedClassifications ?? [],
+        allowedClassifications: config.bucketDefinition?.allowedClassifications ?? [],
+      };
+    };
+
+    this.CalculatedConfig = {
+      bucketDefinition: getBucketDefinition(),
+      licenseScope: getLicenseScope(),
+    };
   }
 }
 
