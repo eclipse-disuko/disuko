@@ -14,11 +14,11 @@ import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLabelStore} from '@disclosure-portal/stores/label.store';
 
 const {t} = useI18n();
 
-const appStore = useAppStore();
-const labelTools = computed(() => appStore.getLabelsTools);
+const labelStore = useLabelStore();
 const icons = Icons;
 
 const items = ref<UpcomingDeletion[]>([]);
@@ -217,14 +217,12 @@ onMounted(async () => {
                       content-class="dpTooltip">
                       <template v-slot:activator="{props}">
                         <DLabel
-                          :labelName="
-                            labelTools.policyLabelsMap[l] ? labelTools.policyLabelsMap[l].name : 'UNKNOWN_LABEL'
-                          "
+                          :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
                           :iconName="icons.POLICY"
                           v-bind="props" />
                       </template>
                       <span>{{ t('TT_policy_label_with_description') }}</span>
-                      <span>{{ labelTools.policyLabelsMap[l] ? labelTools.policyLabelsMap[l].description : '' }}</span>
+                      <span>{{ labelStore.getLabelByKey(l).description }}</span>
                     </v-tooltip>
                     <v-tooltip
                       :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
@@ -234,16 +232,12 @@ onMounted(async () => {
                       content-class="dpTooltip">
                       <template v-slot:activator="{props}">
                         <DLabel
-                          :labelName="
-                            labelTools.projectLabelsMap[l] ? labelTools.projectLabelsMap[l].name : 'UNKNOWN_LABEL'
-                          "
+                          :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
                           :iconName="icons.PROJECT_LABEL"
                           v-bind="props" />
                       </template>
                       <span>{{ t('TT_project_label_with_description') }}</span>
-                      <span>{{
-                        labelTools.projectLabelsMap[l] ? labelTools.projectLabelsMap[l].description : ''
-                      }}</span>
+                      <span>{{ labelStore.getLabelByKey(l).description }}</span>
                     </v-tooltip>
                   </div>
                 </template>
