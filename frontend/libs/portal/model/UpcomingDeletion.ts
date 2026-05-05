@@ -5,12 +5,17 @@
 export interface BlockingProject {
   key: string;
   name: string;
+  projectLabels: string[];
+  policyLabels: string[];
+  freeLabels: string[];
 }
 
 export interface UpcomingDeletion {
   user: string;
   forename: string;
   lastname: string;
+  department: string;
+  departmentDescription: string;
   deprovisioned: string;
   deletionDate: string;
   overdue: boolean;

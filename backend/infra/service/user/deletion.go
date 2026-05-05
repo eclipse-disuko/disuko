@@ -153,7 +153,13 @@ func (s *DeletionService) BlockingProjects(rs *logy.RequestSession, u *user.User
 			continue
 		}
 		if !pr.OtherOwnersExists(m.UserId) {
-			blocking = append(blocking, user.BlockingProjectDto{Key: pr.Key, Name: pr.Name})
+			blocking = append(blocking, user.BlockingProjectDto{
+				Key:           pr.Key,
+				Name:          pr.Name,
+				ProjectLabels: pr.ProjectLabels,
+				PolicyLabels:  pr.PolicyLabels,
+				FreeLabels:    pr.FreeLabels,
+			})
 		}
 	}
 	return blocking

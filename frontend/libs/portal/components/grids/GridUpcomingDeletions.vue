@@ -6,13 +6,20 @@
 import {UpcomingDeletion} from '@disclosure-portal/model/UpcomingDeletion';
 import {BlockingProject} from '@disclosure-portal/model/UpcomingDeletion';
 import adminService from '@disclosure-portal/services/admin';
+import {useAppStore} from '@disclosure-portal/stores/app';
+import Icons from '@disclosure-portal/constants/icons';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
+import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
+
+const appStore = useAppStore();
+const labelTools = computed(() => appStore.getLabelsTools);
+const icons = Icons;
 
 const items = ref<UpcomingDeletion[]>([]);
 const loaded = ref(false);
@@ -32,6 +39,12 @@ const blockingProjectHeaders = computed((): DataTableHeader[] => [
     align: 'start',
     value: 'name',
     sortable: true,
+  },
+  {
+    title: t('COL_LABELS'),
+    align: 'start',
+    value: 'labels',
+    sortable: false,
   },
 ]);
 
@@ -64,6 +77,12 @@ const headers = computed((): DataTableHeader[] => [
     title: t('COL_LASTNAME'),
     align: 'start',
     value: 'lastname',
+    sortable: true,
+  },
+  {
+    title: t('COL_DEPARTMENT'),
+    align: 'start',
+    value: 'department',
     sortable: true,
   },
   {
@@ -145,6 +164,12 @@ onMounted(async () => {
             {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
           </v-icon>
         </template>
+        <template #[`item.department`]="{item}">
+          <span v-if="item.departmentDescription && item.department"
+            >{{ item.departmentDescription }} ({{ item.department }})</span
+          >
+          <span v-else>-</span>
+        </template>
         <template #[`item.deprovisioned`]="{item}">
           <DDateCellWithTooltip :value="item.deprovisioned" />
         </template>
@@ -170,6 +195,57 @@ onMounted(async () => {
                     variant="compact"
                     :buttons="blockingProjectActionButtons"
                     @open="openProject(project)" />
+                </template>
+                <template #[`item.labels`]="{item: project}">
+                  <div class="flex flex-wrap gap-1 py-1">
+                    <v-tooltip
+                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
+                      bottom
+                      v-for="(l, i) in project.freeLabels"
+                      :key="'free' + i"
+                      content-class="dpTooltip">
+                      <template v-slot:activator="{props}">
+                        <DLabel :labelName="l" :iconName="icons.TAG" v-bind="props" />
+                      </template>
+                      <span>{{ t('TT_free_label') }}</span>
+                    </v-tooltip>
+                    <v-tooltip
+                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
+                      bottom
+                      v-for="(l, i) in project.policyLabels"
+                      :key="'policy' + i"
+                      content-class="dpTooltip">
+                      <template v-slot:activator="{props}">
+                        <DLabel
+                          :labelName="
+                            labelTools.policyLabelsMap[l] ? labelTools.policyLabelsMap[l].name : 'UNKNOWN_LABEL'
+                          "
+                          :iconName="icons.POLICY"
+                          v-bind="props" />
+                      </template>
+                      <span>{{ t('TT_policy_label_with_description') }}</span>
+                      <span>{{ labelTools.policyLabelsMap[l] ? labelTools.policyLabelsMap[l].description : '' }}</span>
+                    </v-tooltip>
+                    <v-tooltip
+                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
+                      bottom
+                      v-for="(l, i) in project.projectLabels"
+                      :key="'proj' + i"
+                      content-class="dpTooltip">
+                      <template v-slot:activator="{props}">
+                        <DLabel
+                          :labelName="
+                            labelTools.projectLabelsMap[l] ? labelTools.projectLabelsMap[l].name : 'UNKNOWN_LABEL'
+                          "
+                          :iconName="icons.PROJECT_LABEL"
+                          v-bind="props" />
+                      </template>
+                      <span>{{ t('TT_project_label_with_description') }}</span>
+                      <span>{{
+                        labelTools.projectLabelsMap[l] ? labelTools.projectLabelsMap[l].description : ''
+                      }}</span>
+                    </v-tooltip>
+                  </div>
                 </template>
               </v-data-table>
             </td>
