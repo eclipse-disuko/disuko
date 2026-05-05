@@ -359,8 +359,10 @@ onUnmounted(() => {
               </v-icon>
               <span v-else class="placeholder-icon"></span>
             </div>
-            <span class="text-caption">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
-            <span class="text-caption d-secondary-text" v-if="item.raw.MetaInfo">
+            <span class="text-caption">
+              <DDateCellWithTooltip :value="item.raw.Uploaded"></DDateCellWithTooltip>
+            </span>
+            <span class="text-caption d-secondary-text ml-1" v-if="item.raw.MetaInfo">
               - {{ getStrWithMaxLength(39, item.raw.MetaInfo.Name) }}
             </span>
             <span class="text-caption d-secondary-text" v-if="item.raw.Tag"
@@ -474,7 +476,7 @@ onUnmounted(() => {
           <v-tabs-window-item value="source">
             <TabSourceCode ref="source"></TabSourceCode>
           </v-tabs-window-item>
-          <v-tabs-window-item value="overallReviews" class="pa-3">
+          <v-tabs-window-item value="overallReviews">
             <TabOverallReviews ref="overallReviews" @reloadParent="reload"></TabOverallReviews>
           </v-tabs-window-item>
           <v-tabs-window-item value="notice">
