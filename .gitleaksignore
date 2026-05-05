@@ -3,4 +3,5 @@ backend/conf/dbseeds/disuko/jobs.jsonl:generic-api-key:112
 backend/conf/dbseeds/disuko/jobs.jsonl:generic-api-key:125
 backend/conf/dbseeds/disuko/jobs.jsonl:generic-api-key:139
 backend/conf/dbseeds/disuko/jobs.jsonl:generic-api-key:153
+backend/conf/dbseeds/defaultdb/jobs.jsonl:generic-api-key:73
 backend/conf/dbseeds/disuko/jobs.jsonl:generic-api-key:166

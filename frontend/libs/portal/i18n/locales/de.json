@@ -1524,6 +1524,7 @@
   "JOB_TYPE_ANALYZE": "Analyse",
   "JOB_TYPE_NOTIFICATION": "Benachrichtigung aktualisieren",
   "JOB_TYPE_POLICY_RULE_CHANGE_LOGS": "Generierung Policy-Regeln Änderungsprotokolle",
+  "JOB_TYPE_CALCULATED_POLICY_RULES_UPDATE": "Berechnete Policy-Regeln aktualisieren",
   "JOB_TYPE_UNKNOWN": "Unbekannt",
   "JOB_EXECUTION": "Ausführung",
   "JOB_EXECUTION_MANUAL": "Manuell",

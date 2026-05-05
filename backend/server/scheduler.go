@@ -7,6 +7,7 @@ package server
 import (
 	"context"
 
+	"github.com/eclipse-disuko/disuko/jobs/calculatedpolicyrules"
 	"github.com/eclipse-disuko/disuko/jobs/labels"
 	"github.com/eclipse-disuko/disuko/jobs/userdeletion"
 	"github.com/eclipse-disuko/disuko/jobs/userstats"
@@ -119,6 +120,8 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 	)
 	s.scheduler.AddJobCb(job.LabelLoadDb, label)
 
+	calculatedPolicyRules := calculatedpolicyrules.Init(s.repos.policyRules, &s.services.policyRules)
+	s.scheduler.AddJobCb(job.CalculatedPolicyRulesUpdate, calculatedPolicyRules)
 	userDel := userdeletion.Init(s.services.deletionService)
 	s.scheduler.AddJobCb(job.UserDeletion, userDel)
 

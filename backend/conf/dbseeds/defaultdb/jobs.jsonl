@@ -68,3 +68,17 @@
   "Status": 0,
   "Updated": "2025-09-17T11:13:56.231556676Z"
 }
+{
+  "_id": "jobs/b8e3d9f4-5c2f-58b0-9d3e-2f6g0c0d4e8f",
+  "_key": "b8e3d9f4-5c2f-58b0-9d3e-2f6g0c0d4e8f",
+  "_rev": "1-initial",
+  "Config": "",
+  "Created": "2026-05-04T00:00:00.000000000Z",
+  "Execution": 1,
+  "JobType": 15,
+  "MultiExec": false,
+  "Name": "Update Calculated Policy Rules (Nightly)",
+  "Schedule": "0 1 * * *",
+  "Status": 0,
+  "Updated": "2026-05-04T00:00:00.000000000Z"
+}
