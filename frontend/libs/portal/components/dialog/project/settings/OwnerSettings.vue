@@ -56,19 +56,31 @@ const noticeMeta = defineModel<NoticeContactMetaDTO>('noticeMeta', {required: tr
       :readonly="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"
       :disabled="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))" />
 
-    <v-textarea
-      v-if="!vehicleOnboard"
-      id="thirdparty-address"
-      rows="5"
-      autocomplete="off"
-      :placeholder="t('PLACEHOLDER_NOTICE_CONTACT_ADDRESS')"
-      persistent-placeholder
-      variant="outlined"
-      v-model="noticeMeta.address"
-      :label="t('NOTICE_CONTACT_ADDRESS')"
-      hide-details="auto"
-      :rules="activeRules.address"
-      :readonly="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"
-      :disabled="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))" />
+    <Stack direction="row" class="items-start gap-4" v-if="!vehicleOnboard">
+      <v-textarea
+        id="thirdparty-address"
+        class="w-1/2"
+        rows="5"
+        autocomplete="off"
+        variant="outlined"
+        v-model="noticeMeta.address"
+        :label="t('NOTICE_CONTACT_ADDRESS')"
+        hide-details="auto"
+        :rules="activeRules.address"
+        :readonly="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"
+        :disabled="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))" />
+      <Stack class="bg-cardBorder h-full w-1/2 gap-2 rounded-md p-2 px-4">
+        <Stack direction="row" class="items-center gap-1">
+          <span class="text-caption text-medium-emphasis">{{ t('EXAMPLE') }}</span>
+          <span class="h-7 cursor-help">
+            <v-icon size="small" color="primary">mdi-help-circle-outline</v-icon>
+            <Tooltip :text="t('NOTICE_CONTACT_ADDRESS_TAB_HINT') + t('NOTICE_CONTACT_ADDRESS_INFO')" />
+          </span>
+        </Stack>
+        <pre class="text-caption text-medium-emphasis whitespace-pre-wrap text-[rgba(var(--v-theme-font))]">{{
+          t('PLACEHOLDER_NOTICE_CONTACT_ADDRESS')
+        }}</pre>
+      </Stack>
+    </Stack>
   </Stack>
 </template>
