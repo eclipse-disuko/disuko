@@ -28,10 +28,11 @@ const search = ref('');
 const selectedFilterStatus = ref<string[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'updated', order: 'desc'}]);
 const itemsPerPage = ref(100);
+const page = ref(1);
 
 const options = computed(
   (): SearchOptions => ({
-    page: 1,
+    page: page.value,
     itemsPerPage: itemsPerPage.value,
     sortBy: sortBy.value,
     groupBy: [],
@@ -85,8 +86,6 @@ const searchChanged = async () => {
   if (search.value && search.value.length > 80) {
     return;
   }
-
-  options.value.page = 1;
 
   await reload();
 };
@@ -146,6 +145,7 @@ onMounted(() => {
           :options="options"
           v-model:items-per-page="itemsPerPage"
           v-model:sort-by="sortBy"
+          v-model:page="page"
           v-model:expanded="expanded"
           @click:row="onRowClick">
           <template #[`header.status`]="{column, getSortIcon, toggleSort}">
