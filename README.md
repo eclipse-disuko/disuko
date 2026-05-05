@@ -79,7 +79,7 @@ The official SPDX schema can be downloaded here:
 
 ## Contributing
 
-Before starting to contribute, please read our [contributing guide](./CONTRIBUTING.md).
+Before starting to contribute, please read our [contributing guide](https://github.com/eclipse-disuko/.github/blob/main/CONTRIBUTING.md).
 
 ### Security
 
@@ -92,7 +92,7 @@ locally or in CI environments.
 This project follows the Eclipse Foundation Code of Conduct to ensure a respectful,
 inclusive, and harassment free environment for everyone involved.
 
-All participants are expected to adhere to the rules defined in our [Community Code of Conduct](./CODE_OF_CONDUCT.md).
+All participants are expected to adhere to the rules defined in our [Community Code of Conduct](https://github.com/eclipse-disuko/.github/blob/main/CODE_OF_CONDUCT.md).
 
 By participating in this project, you agree to uphold this Code of Conduct in all project related spaces.
 
