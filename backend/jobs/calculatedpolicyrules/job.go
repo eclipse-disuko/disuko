@@ -33,7 +33,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	updatedCount := 0
 
 	for _, rule := range allRules {
-		if !rule.Calculated || rule.Deleted {
+		if !rule.Calculated {
 			continue
 		}
 
