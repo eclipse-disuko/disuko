@@ -6,7 +6,6 @@
 import {UpcomingDeletion} from '@disclosure-portal/model/UpcomingDeletion';
 import {BlockingProject} from '@disclosure-portal/model/UpcomingDeletion';
 import adminService from '@disclosure-portal/services/admin';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import Icons from '@disclosure-portal/constants/icons';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
