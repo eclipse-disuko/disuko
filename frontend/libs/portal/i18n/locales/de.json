@@ -152,6 +152,7 @@
   "FOSSDP.classifications_admin": "Classifications Administrator",
   "FOSSDP.application_admin": "Application Administrator",
   "FOSSDP.project_analyst": "Projects Analyst",
+  "FOSSDP.foss_office_rd": "FOSS Office",
   "NO_ROLES": "N/A",
   "USER_ROLE_ProjectResponsible": "Projektverantwortlicher",
   "USER_ROLE_Owner": "Besitzer",

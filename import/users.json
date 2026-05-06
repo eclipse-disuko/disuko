@@ -1,0 +1,26 @@
+{
+  "_comment": "Customer to entitlement group mapping. All groups are automatically created in Keycloak and mapped into the entitlement_group claim. Add users on demand. The groups will be created in Keycloak and assigned to the users. The groups will be mapped into the entitlement_group claim and can be used for authorization in the application.",
+  "users": [
+    {
+      "username": "customer1",
+      "groups": [
+        "FOSSDP.policy_admin",
+        "FOSSDP.domain_admin",
+        "FOSSDP.application_admin",
+        "FOSSDP.license_admin",
+        "FOSSDP.project_analyst"
+      ]
+    },
+    {
+      "username": "customer2",
+      "groups": [
+        "FOSSDP.policy_admin",
+        "FOSSDP.domain_admin",
+        "FOSSDP.application_admin",
+        "FOSSDP.license_admin",
+        "FOSSDP.project_analyst",
+        "FOSSDP.foss_office_rd"
+      ]
+    }
+  ]
+}

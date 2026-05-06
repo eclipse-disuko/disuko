@@ -3,10 +3,42 @@
 #####################################################################
 # Keycloak Configuration Script
 #
-# This script uses Keycloak Admin REST API to configure
-# - the users
-# - the Disuko OIDC client
-# - custom client scopes
+# This script uses the Keycloak Admin REST API to configure a local
+# Keycloak instance for Disuko development.
+#
+# Steps:
+#   1. Obtain an admin access token via the admin-cli client
+#   2. Derive all unique FOSSDP group names from users.json
+#      and create them as Keycloak groups. Groups are used instead of
+#      realm roles so that the oidc-group-membership-mapper emits only
+#      FOSSDP.* values in the entitlement_group claim, without any
+#      Keycloak built-in roles (e.g. default-roles-master, offline_access).
+#   3. Create test users defined in users.json and assign
+#      the configured FOSSDP groups to each user. The mapping drives
+#      both user creation and group assignment — to add or change a
+#      user's entitlement groups, only users.json needs
+#      to be updated.
+#   4. Create custom OpenID Connect client scopes that simulate the
+#      claims provided by the production IAM system:
+#        - sub               (username as subject)
+#        - first_name        (given name)
+#        - last_name         (family name)
+#        - group_type        (hardcoded: "0" = employee)
+#        - object_class      (hardcoded LDAP object classes including
+#                             dcxInternalEmployee)
+#        - company_identifier (hardcoded: "0001")
+#        - department        (hardcoded: "AG")
+#        - department_description (empty string)
+#        - authorization_group    (empty scope, reserved for future use)
+#        - personal_data          (empty scope, reserved for future use)
+#        - organizational_data    (empty scope, reserved for future use)
+#        - entitlement_group (group membership mapper → emits only
+#                             the user's FOSSDP.* groups as a JSON
+#                             array)
+#   5. Create the Disuko OIDC client with the required redirect URI,
+#      client secret, and service account configuration.
+#   6. Assign all custom scopes as default scopes and offline_access
+#      as optional scope to the Disuko client.
 #####################################################################
 
 set -e  # Exit on error
@@ -20,13 +52,16 @@ DISUKO_CLIENT_ID="${DISUKO_CLIENT_ID:-243e5c8-9b1a-4c3d-9f0e-7b2a1c8e5f6ac}"
 DISUKO_HOST="${DISUKO_HOST:-https://localhost:3009}"
 DISUKO_CLIENT_SECRET="${DISUKO_CLIENT_SECRET:-RST845JLOP8x9Z2n1QFDA25A1B2C3D4k}"
 
+# Customer to entitlement group mapping — loaded from external config
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+USERS_JSON="${USERS_JSON:-${SCRIPT_DIR}/users.json}"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Function to print colored messages
 print_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
@@ -38,6 +73,11 @@ print_error() {
 print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
+
+if [ ! -f "$USERS_JSON" ]; then
+    print_error "Users config file not found: ${USERS_JSON}"
+    exit 1
+fi
 
 #####################################################################
 # Step 1: Obtain Admin Access Token
@@ -62,14 +102,36 @@ fi
 print_info "Access token obtained successfully"
 
 #####################################################################
-# Step 2: Create/Update Users
+# Step 2: Create Groups for entitlement_group
+#####################################################################
+print_info "Creating groups..."
+
+# Collect all unique group names from the JSON config
+UNIQUE_GROUPS=$(jq -r '.users[].groups[]' "$USERS_JSON" | sort -u)
+
+for GROUP in $UNIQUE_GROUPS; do
+    curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/groups" \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"${GROUP}\"
+      }" 2>/dev/null || print_warning "Group ${GROUP} may already exist"
+done
+
+print_info "Groups created"
+
+#####################################################################
+# Step 3: Create/Update Users
 #####################################################################
 print_info "Creating users..."
 
-# Create customer users in a loop
-for i in 1 2; do
-    USERNAME="customer${i}"
-    PASSWORD="CUSTOMER${i}"
+USER_COUNT=$(jq '.users | length' "$USERS_JSON")
+i=0
+while [ "$i" -lt "$USER_COUNT" ]; do
+    USERNAME=$(jq -r ".users[$i].username" "$USERS_JSON")
+    GROUPS_CSV=$(jq -r ".users[$i].groups | join(\",\")" "$USERS_JSON")
+    INDEX=$(echo "$USERNAME" | sed 's/[^0-9]//g')
+    PASSWORD=$(echo "$USERNAME" | tr '[:lower:]' '[:upper:]')
 
     # Create user
     curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" \
@@ -77,12 +139,11 @@ for i in 1 2; do
       -H "Content-Type: application/json" \
       -d "{
         \"username\": \"${USERNAME}\",
-        \"firstName\": \"Customer ${i} Forename\",
-        \"lastName\": \"Customer ${i} Lastname\",
+        \"firstName\": \"Customer ${INDEX} Forename\",
+        \"lastName\": \"Customer ${INDEX} Lastname\",
         \"email\": \"${USERNAME}@company.com\",
         \"emailVerified\": false,
-        \"enabled\": true,
-        \"realmRoles\": [\"default-roles-master\"]
+        \"enabled\": true
       }" 2>/dev/null || print_warning "User ${USERNAME} may already exist"
 
     # Get user ID and set password
@@ -99,13 +160,32 @@ for i in 1 2; do
             \"temporary\": false
           }"
         print_info "Password set for ${USERNAME}"
+
+        # Get all groups once
+        ALL_GROUPS=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/groups" \
+          -H "Authorization: Bearer ${ACCESS_TOKEN}")
+
+        GROUP_COUNT=0
+        for GROUP_NAME in $(echo "$GROUPS_CSV" | tr ',' ' '); do
+            GROUP_ID=$(echo "$ALL_GROUPS" | jq -r ".[] | select(.name==\"${GROUP_NAME}\") | .id")
+            if [ -n "$GROUP_ID" ] && [ "$GROUP_ID" != "null" ]; then
+                curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users/${USER_ID}/groups/${GROUP_ID}" \
+                  -H "Authorization: Bearer ${ACCESS_TOKEN}"
+                GROUP_COUNT=$((GROUP_COUNT + 1))
+            else
+                print_warning "Group not found: ${GROUP_NAME}"
+            fi
+        done
+
+        print_info "Assigned ${GROUP_COUNT} groups to ${USERNAME}"
     fi
+    i=$((i + 1))
 done
 
 print_info "Users created"
 
 #####################################################################
-# Step 3: Create Custom Client Scopes
+# Step 4: Create Custom Client Scopes
 #####################################################################
 print_info "Creating custom client scopes..."
 
@@ -321,17 +401,16 @@ curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/client-scopes" \
     "protocolMappers": [{
       "name": "entitlement_group",
       "protocol": "openid-connect",
-      "protocolMapper": "oidc-hardcoded-claim-mapper",
+      "protocolMapper": "oidc-group-membership-mapper",
       "consentRequired": false,
       "config": {
+        "full.path": "false",
         "introspection.token.claim": "true",
-        "claim.value": "[ \"FOSSDP.policy_admin\", \"FOSSDP.domain_admin\", \"FOSSDP.application_admin\", \"FOSSDP.license_admin\", \"FOSSDP.project_analyst\" ]",
         "userinfo.token.claim": "true",
         "id.token.claim": "true",
         "lightweight.claim": "true",
         "access.token.claim": "true",
         "claim.name": "entitlement_group",
-        "jsonType.label": "JSON",
         "access.tokenResponse.claim": "true"
       }
     }]
@@ -433,7 +512,7 @@ curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/client-scopes" \
 print_info "Custom client scopes created"
 
 #####################################################################
-# Step 4: Create Disuko Client
+# Step 5: Create Disuko Client
 #####################################################################
 print_info "Creating Disuko client..."
 
@@ -538,7 +617,7 @@ curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/clients" \
 print_info "Disuko client created"
 
 #####################################################################
-# Step 5: Assign Client Scopes to Disuko Client
+# Step 6: Assign Client Scopes to Disuko Client
 #####################################################################
 print_info "Assigning client scopes..."
 
