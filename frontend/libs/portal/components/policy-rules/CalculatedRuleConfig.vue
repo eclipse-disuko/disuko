@@ -31,24 +31,21 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
 
 <template>
   <v-card class="mb-2 w-full basis-full" variant="flat">
-    <Stack v-if="config.calculated" class="gap-4">
-      <v-card variant="flat" class="pa-3">
-        <div class="d-subtitle-2 mb-4">{{ t('CALCULATED_BUCKETS_TITLE') }}</div>
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+    <Stack v-if="config.calculated" class="gap-6">
+      <v-card variant="flat" class="pa-4">
+        <div class="d-subtitle-2 mb-5">{{ t('CALCULATED_BUCKETS_TITLE') }}</div>
+        <div class="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_DENIED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.deniedClassifications"
             @update:modelValue="handleBucketUpdate('deniedClassifications', $event)" />
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_WARNED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.warnedClassifications"
             @update:modelValue="handleBucketUpdate('warnedClassifications', $event)" />
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_ALLOWED_CLASSIFICATIONS')"
             :items="classificationOptions"
             :model-value="config.buckets.allowedClassifications"
@@ -56,41 +53,34 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
         </div>
       </v-card>
 
-      <v-card variant="flat" class="pa-3">
-        <Stack direction="row" align="center" class="mb-4">
-          <div class="d-subtitle-2">{{ t('CALCULATED_SCOPE_FILTERS_TITLE') }}</div>
-        </Stack>
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <v-card variant="flat" class="pa-4">
+        <div class="d-subtitle-2 mb-5">{{ t('CALCULATED_SCOPE_FILTERS_TITLE') }}</div>
+        <div class="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2">
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_LICENSE_CHART_INCLUDE')"
             :items="config.scopeConfig.isLicenseChart.options"
             :model-value="config.scopeConfig.isLicenseChart.values"
             @update:modelValue="handleScopeUpdate('isLicenseChart', $event)" />
 
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_APPROVAL_INCLUDE')"
             :items="config.scopeConfig.approvalState.options"
             :model-value="config.scopeConfig.approvalState.values"
             @update:modelValue="handleScopeUpdate('approvalState', $event)" />
 
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_FAMILY_INCLUDE')"
             :items="config.scopeConfig.family.options"
             :model-value="config.scopeConfig.family.values"
             @update:modelValue="handleScopeUpdate('family', $event)" />
 
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_TYPE_INCLUDE')"
             :items="config.scopeConfig.licenseType.options"
             :model-value="config.scopeConfig.licenseType.values"
             @update:modelValue="handleScopeUpdate('licenseType', $event)" />
 
           <DMultiSelect
-            class="pa-2 mx-2"
             :label="t('CALCULATED_SCOPE_SOURCE_INCLUDE')"
             :items="config.scopeConfig.source.options"
             :model-value="config.scopeConfig.source.values"

@@ -719,6 +719,7 @@
   "TT_free_label": "Eigenes Label",
   "TABLE_HEADER_AVAILABLE_LICENSES": "Verfügbare Lizenzen",
   "TABLE_HEADER_LICENSES": "Ausgewählte Lizenzen",
+  "TABLE_HEADER_CALCULATED_LICENSES": "Berechnete Lizenzen",
   "ERROR_LABEL_USED": "Label in Verwendung",
   "INFO_NO_LICENSES_FOUND": "Keine anwendbaren Lizenzen gefunden",
   "INFO_NO_RULES_FOUND": "Keine anwendbaren Policy-Regeln gefunden",

@@ -50,16 +50,6 @@ const multiSelectClass =
   '[&_.v-field]:min-w-0 [&_.v-field__input]:flex-nowrap [&_.v-field__input]:overflow-hidden ' +
   '[&_.v-select__selection]:overflow-hidden ' +
   '[&_.v-select__selection-text]:overflow-hidden [&_.v-select__selection-text]:text-ellipsis [&_.v-select__selection-text]:whitespace-nowrap';
-
-const maxSelectionTitleLength = 12;
-
-const getSelectionTitle = (title: unknown): string => {
-  const text = String(title ?? '');
-  if (text.length <= maxSelectionTitleLength) {
-    return text;
-  }
-  return `${text.slice(0, maxSelectionTitleLength)}...`;
-};
 </script>
 
 <template>
@@ -82,11 +72,11 @@ const getSelectionTitle = (title: unknown): string => {
     v-bind="attrs"
     @update:modelValue="emit('update:modelValue', $event as SelectValue[])">
     <template v-slot:selection="{item, index}">
-      <span v-if="index === 0" class="pFilterEntry inline-block max-w-full truncate align-middle">
-        {{ getSelectionTitle(item.title) }}
-      </span>
-      <span v-if="index === 1" class="pAdditionalFilter whitespace-nowrap">
-        (+{{ modelValue.length - 1 }} {{ t(othersLabel, modelValue.length) }})
+      <span v-if="index === 0" class="inline-flex max-w-full min-w-0 items-center gap-1">
+        <span class="pFilterEntry min-w-0 truncate">{{ item.title }}</span>
+        <span v-if="modelValue.length > 1" class="pAdditionalFilter shrink-0 whitespace-nowrap opacity-70">
+          +{{ modelValue.length - 1 }}
+        </span>
       </span>
     </template>
   </v-select>

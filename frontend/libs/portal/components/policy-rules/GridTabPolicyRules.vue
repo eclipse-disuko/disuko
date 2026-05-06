@@ -742,7 +742,9 @@ const handleSetCalculatedEnabled = (value: boolean) => {
       <div class="flex w-full flex-col gap-4">
         <div class="grid w-full basis-full gap-6" :class="{'grid-cols-2': canEditManual || canEditCalculated}">
           <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 h-9 flex-row">
-            <h3 class="d-subtitle-2">{{ t('TABLE_HEADER_LICENSES') }}</h3>
+            <h3 class="d-subtitle-2">
+              {{ t(rule.Calculated ? 'TABLE_HEADER_CALCULATED_LICENSES' : 'TABLE_HEADER_LICENSES') }}
+            </h3>
             <DCActionButton
               :text="t('BTN_SAVE')"
               icon="mdi-content-save"
@@ -1522,9 +1524,9 @@ const handleSetCalculatedEnabled = (value: boolean) => {
         </v-col>
         <v-col cols="6" v-if="canEditCalculated" class="fill-height">
           <div class="flex h-full flex-col">
-            <div v-show="classificationsLoaded" class="flex-1 overflow-auto">
+            <div v-show="classificationsLoaded" class="overflow-auto">
               <CalculatedRuleConfig />
-              <div class="d-flex mt-8 justify-end">
+              <div class="d-flex mt-6 justify-end pr-4">
                 <DCActionButton
                   :text="t('BTN_SAVE')"
                   icon="mdi-content-save"

@@ -693,6 +693,7 @@
   "TT_free_label": "free label",
   "TABLE_HEADER_AVAILABLE_LICENSES": "Available Licenses",
   "TABLE_HEADER_LICENSES": "Selected Licenses",
+  "TABLE_HEADER_CALCULATED_LICENSES": "Calculated Licenses",
   "ERROR_LABEL_USED": "Label in use",
   "INFO_NO_LICENSES_FOUND": "No applicable licenses found",
   "INFO_NO_RULES_FOUND": "No applicable policy rules found",
