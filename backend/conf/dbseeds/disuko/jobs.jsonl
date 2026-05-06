@@ -169,7 +169,7 @@
   "Config": "",
   "Created": "2025-09-17T11:13:56.231556676Z",
   "Execution": 0,
-  "JobType": 15,
+  "JobType": 16,
   "MultiExec": false,
   "Name": "User deletion",
   "Schedule": "",

@@ -123,7 +123,6 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_SBOM_RETENTION_FOR_DECISIONS", Do: startUpHandler.migrateSbomRetentionForDecisions},
 		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
 		{Name: "MIGRATE_SYNC_PROJECT_AND_SBOM_RETENTION_FLAGS", Do: startUpHandler.migrateSyncProjectAndSbomRetentionFlags},
-		{Name: "MIGRATE_USER_DELETION_JOB_TYPE", Do: startUpHandler.migrateUserDeletionJobType},
 	}
 
 	steps = append(steps, ext...)
@@ -688,19 +687,4 @@ func (startUpHandler *StartUpHandler) migrateSyncProjectAndSbomRetentionFlags(re
 	})
 
 	logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - END")
-}
-
-func (startUpHandler *StartUpHandler) migrateUserDeletionJobType(requestSession *logy.RequestSession) {
-	logy.Infof(requestSession, "migrateUserDeletionJobType - START")
-
-	allJobs := startUpHandler.JobRepository.FindAll(requestSession, false)
-	for _, j := range allJobs {
-		if j.Name == "User deletion" && j.JobType == job.CalculatedPolicyRulesUpdate {
-			j.JobType = job.UserDeletion
-			startUpHandler.JobRepository.UpdateWithoutTimestamp(requestSession, j)
-			logy.Infof(requestSession, "migrateUserDeletionJobType - Updated job %s from CalculatedPolicyRulesUpdate to UserDeletion", j.Key)
-		}
-	}
-
-	logy.Infof(requestSession, "migrateUserDeletionJobType - END")
 }
