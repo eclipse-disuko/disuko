@@ -190,8 +190,8 @@ const open = async (isVehicleProject: boolean) => {
 const loadSBOMHist = async () => {
   selectedSbom.value = null;
   if (!selectedChannel.value?._key) return;
-  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
-  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.spdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }

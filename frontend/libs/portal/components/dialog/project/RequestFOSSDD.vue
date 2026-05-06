@@ -242,8 +242,8 @@ const open = async (isVehicle: boolean) => {
   if (!projectModel.value.isGroup) {
     allChannelSboms.value.clear();
     for (const channel of channels.value) {
-      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === channel._key);
-      allChannelSboms.value.set(channel._key, versionEntry?.SpdxFileHistory ?? []);
+      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === channel._key);
+      allChannelSboms.value.set(channel._key, versionEntry?.spdxFileHistory ?? []);
     }
   }
 
@@ -272,8 +272,8 @@ const loadSBOMHist = async () => {
   selectedSbom.value = null;
   if (!selectedChannel.value?._key) return;
   await sbomStore.fetchAllSBOMsFlat();
-  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
-  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.spdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }

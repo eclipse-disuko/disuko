@@ -102,12 +102,9 @@ export const useSbomStore = defineStore('sbom', () => {
     const map = new Map<string, VersionSboms>();
     for (const item of state.allSBOMSFlat) {
       if (!map.has(item.versionKey)) {
-        const entry = new VersionSboms();
-        entry.VersionKey = item.versionKey;
-        entry.VersionName = item.versionName;
-        map.set(item.versionKey, entry);
+        map.set(item.versionKey, {versionKey: item.versionKey, versionName: item.versionName, spdxFileHistory: []});
       }
-      map.get(item.versionKey)!.SpdxFileHistory.push(item);
+      map.get(item.versionKey)!.spdxFileHistory.push(item);
     }
     return [...map.values()];
   });

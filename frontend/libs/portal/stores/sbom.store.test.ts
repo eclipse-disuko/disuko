@@ -241,11 +241,11 @@ describe('useSbomStore', () => {
       const result = store.getAllSBOMs;
 
       expect(result).toHaveLength(2);
-      expect(result[0].VersionKey).toBe('versionA');
-      expect(result[0].VersionName).toBe('Version A');
-      expect(result[0].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
-      expect(result[1].VersionKey).toBe('versionB');
-      expect(result[1].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-3']);
+      expect(result[0].versionKey).toBe('versionA');
+      expect(result[0].versionName).toBe('Version A');
+      expect(result[0].spdxFileHistory.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
+      expect(result[1].versionKey).toBe('versionB');
+      expect(result[1].spdxFileHistory.map((s) => s._key)).toEqual(['spdx-3']);
     });
 
     it('preserves insertion order of versions', () => {
@@ -254,8 +254,8 @@ describe('useSbomStore', () => {
 
       const result = store.getAllSBOMs;
 
-      expect(result[0].VersionKey).toBe('versionB');
-      expect(result[1].VersionKey).toBe('versionA');
+      expect(result[0].versionKey).toBe('versionB');
+      expect(result[1].versionKey).toBe('versionA');
     });
 
     it('returns an empty array when allSBOMSFlat is empty', () => {

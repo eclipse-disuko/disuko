@@ -118,13 +118,13 @@ const allSboms = computed(() => sbomStore.getAllSBOMs);
 const groupedSpdxs = computed(() => {
   const res: SpdxIdentifier[] = [];
   allSboms.value.forEach((vs) => {
-    const newHeader = new SpdxIdentifier('header', '', '', '', vs.VersionName, '');
+    const newHeader = new SpdxIdentifier('header', '', '', '', vs.versionName, '');
     res.push(newHeader);
-    for (const spdx of vs.SpdxFileHistory) {
+    for (const spdx of vs.spdxFileHistory) {
       const uploaded = formatDateTimeShort(spdx.uploaded);
-      const ident = new SpdxIdentifier(spdx._key, spdx.metaInfo.name, uploaded, vs.VersionKey, '', spdx.tag);
+      const ident = new SpdxIdentifier(spdx._key, spdx.metaInfo.name, uploaded, vs.versionKey, '', spdx.tag);
       res.push(ident);
-      ident.versionName = vs.VersionName;
+      ident.versionName = vs.versionName;
     }
   });
   return res;
