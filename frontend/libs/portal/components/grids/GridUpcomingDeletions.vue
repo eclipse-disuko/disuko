@@ -9,7 +9,6 @@ import adminService from '@disclosure-portal/services/admin';
 import Icons from '@disclosure-portal/constants/icons';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -197,47 +196,31 @@ onMounted(async () => {
                 </template>
                 <template #[`item.labels`]="{item: project}">
                   <div class="flex flex-wrap gap-1 py-1">
-                    <v-tooltip
-                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-                      bottom
+                    <Tooltip
                       v-for="(l, i) in project.freeLabels"
                       :key="'free' + i"
-                      content-class="dpTooltip">
-                      <template v-slot:activator="{props}">
-                        <DLabel :labelName="l" :iconName="icons.TAG" v-bind="props" />
-                      </template>
-                      <span>{{ t('TT_free_label') }}</span>
-                    </v-tooltip>
-                    <v-tooltip
-                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-                      bottom
+                      :text="t('TT_free_label')"
+                      as-parent>
+                      <DLabel :labelName="l" :iconName="icons.TAG" />
+                    </Tooltip>
+                    <Tooltip
                       v-for="(l, i) in project.policyLabels"
                       :key="'policy' + i"
-                      content-class="dpTooltip">
-                      <template v-slot:activator="{props}">
-                        <DLabel
-                          :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
-                          :iconName="icons.POLICY"
-                          v-bind="props" />
-                      </template>
-                      <span>{{ t('TT_policy_label_with_description') }}</span>
-                      <span>{{ labelStore.getLabelByKey(l).description }}</span>
-                    </v-tooltip>
-                    <v-tooltip
-                      :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-                      bottom
+                      :text="`${t('TT_policy_label_with_description')}${labelStore.getLabelByKey(l).description}`"
+                      as-parent>
+                      <DLabel
+                        :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
+                        :iconName="icons.POLICY" />
+                    </Tooltip>
+                    <Tooltip
                       v-for="(l, i) in project.projectLabels"
                       :key="'proj' + i"
-                      content-class="dpTooltip">
-                      <template v-slot:activator="{props}">
-                        <DLabel
-                          :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
-                          :iconName="icons.PROJECT_LABEL"
-                          v-bind="props" />
-                      </template>
-                      <span>{{ t('TT_project_label_with_description') }}</span>
-                      <span>{{ labelStore.getLabelByKey(l).description }}</span>
-                    </v-tooltip>
+                      :text="`${t('TT_project_label_with_description')}${labelStore.getLabelByKey(l).description}`"
+                      as-parent>
+                      <DLabel
+                        :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
+                        :iconName="icons.PROJECT_LABEL" />
+                    </Tooltip>
                   </div>
                 </template>
               </v-data-table>
