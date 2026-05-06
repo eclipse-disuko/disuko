@@ -76,8 +76,8 @@ const config = ref<DialogLicenseRuleConfig>({
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionId = computed(() => sbomStore.getCurrentVersion._key);
 const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.metaInfo.name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.uploaded);
 
 const policyTypeMap = computed(() => {
   const statuses = config.value.policyStatus ?? [];
@@ -196,7 +196,7 @@ const loadLicenses = async () => {
     .getVersionComponentsLicenses(
       projectKey.value,
       currentVersionId.value,
-      currentSbomId.value,
+      currentSbomId.value!,
       selectedComponent.value!.spdxId,
     )
     .then((res) => {
@@ -211,9 +211,9 @@ const doDialogAction = async () => {
   }
 
   const licenseRuleRequest: LicenseRuleRequest = {
-    sbomId: currentSbomId.value,
-    sbomName: currentSbomName.value,
-    sbomUploaded: currentSbomUploaded.value,
+    sbomId: currentSbomId.value!,
+    sbomName: currentSbomName.value!,
+    sbomUploaded: currentSbomUploaded.value!,
     componentSpdxId: selectedComponent.value!.spdxId,
     componentName: selectedComponent.value!.name,
     componentVersion: selectedComponent.value!.version,

@@ -121,8 +121,8 @@ const groupedSpdxs = computed(() => {
     const newHeader = new SpdxIdentifier('header', '', '', '', vs.VersionName, '');
     res.push(newHeader);
     for (const spdx of vs.SpdxFileHistory) {
-      const uploaded = formatDateTimeShort(spdx.Uploaded);
-      const ident = new SpdxIdentifier(spdx._key, spdx.MetaInfo.Name, uploaded, vs.VersionKey, '', spdx.Tag);
+      const uploaded = formatDateTimeShort(spdx.uploaded);
+      const ident = new SpdxIdentifier(spdx._key, spdx.metaInfo.name, uploaded, vs.VersionKey, '', spdx.tag);
       res.push(ident);
       ident.versionName = vs.VersionName;
     }

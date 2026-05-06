@@ -255,9 +255,9 @@ defineExpose({open});
                       >mdi-star</v-icon
                     >
                   </div>
-                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-                  <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+                  <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                   <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                     >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                   >
@@ -275,9 +275,9 @@ defineExpose({open});
                   >mdi-star</v-icon
                 >
               </div>
-              <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-              <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-              <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+              <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+              <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+              <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
               <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                 >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
               >

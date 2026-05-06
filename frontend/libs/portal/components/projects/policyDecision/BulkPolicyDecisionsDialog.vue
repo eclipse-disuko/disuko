@@ -106,8 +106,8 @@ const headers: DataTableHeader[] = [
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionKey = computed(() => sbomStore.getCurrentVersion._key);
 const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.metaInfo.name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.uploaded);
 
 const buttonsDisabled = computed(() => !verification.value || selected.value.length === 0);
 
@@ -138,9 +138,9 @@ const doDialogAction = async (decision: 'allow' | 'deny') => {
     const requestItems: PolicyDecisionRequest[] = [];
     for (const item of tableItems.value.filter((item) => selected.value.includes(item.key))) {
       const policyDecisionRequest: PolicyDecisionRequest = {
-        sbomId: currentSbomId.value,
-        sbomName: currentSbomName.value,
-        sbomUploaded: currentSbomUploaded.value,
+        sbomId: currentSbomId.value!,
+        sbomName: currentSbomName.value!,
+        sbomUploaded: currentSbomUploaded.value!,
         componentSpdxId: item.component.spdxId,
         componentName: item.component.name,
         componentVersion: item.component.version,
