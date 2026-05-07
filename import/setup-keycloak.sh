@@ -167,7 +167,7 @@ while [ "$i" -lt "$USER_COUNT" ]; do
 
         GROUP_COUNT=0
         for GROUP_NAME in $(echo "$GROUPS_CSV" | tr ',' ' '); do
-            GROUP_ID=$(echo "$ALL_GROUPS" | jq -r ".[] | select(.name==\"${GROUP_NAME}\") | .id")
+            GROUP_ID=$(echo "$ALL_GROUPS" | jq -r --arg GROUP_NAME "${GROUP_NAME}" '.[] | select(.name==$GROUP_NAME) | .id')
             if [ -n "$GROUP_ID" ] && [ "$GROUP_ID" != "null" ]; then
                 curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users/${USER_ID}/groups/${GROUP_ID}" \
                   -H "Authorization: Bearer ${ACCESS_TOKEN}"
@@ -635,30 +635,30 @@ else
       -H "Authorization: Bearer ${ACCESS_TOKEN}")
 
     # Default client scopes to assign
-    for scope_name in "sub" "profile" "roles" "authorization_group" "last_name" "group_type" \
+    for SCOPE_NAME in "sub" "profile" "roles" "authorization_group" "last_name" "group_type" \
                       "company_identifier" "web-origins" "acr" "personal_data" \
                       "department_description" "organizational_data" "entitlement_group" \
                       "basic" "department" "object_class" "first_name" "email"; do
 
-        SCOPE_ID=$(echo "$ALL_SCOPES" | jq -r ".[] | select(.name==\"$scope_name\") | .id")
+        SCOPE_ID=$(echo "$ALL_SCOPES" | jq -r --arg SCOPE_NAME "$SCOPE_NAME" '.[] | select(.name==$SCOPE_NAME) | .id')
 
         if [ -n "$SCOPE_ID" ] && [ "$SCOPE_ID" != "null" ]; then
             curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/clients/${DISUKO_CLIENT_UUID}/default-client-scopes/${SCOPE_ID}" \
               -H "Authorization: Bearer ${ACCESS_TOKEN}" 2>/dev/null
-            print_info "  Added default scope: $scope_name"
+            print_info "  Added default scope: $SCOPE_NAME"
         else
-            print_warning "  Scope not found: $scope_name"
+            print_warning "  Scope not found: $SCOPE_NAME"
         fi
     done
 
     # Optional client scopes to assign
-    for scope_name in "address" "phone" "offline_access" "microprofile-jwt"; do
-        SCOPE_ID=$(echo "$ALL_SCOPES" | jq -r ".[] | select(.name==\"$scope_name\") | .id")
+    for SCOPE_NAME in "address" "phone" "offline_access" "microprofile-jwt"; do
+        SCOPE_ID=$(echo "$ALL_SCOPES" | jq -r --arg SCOPE_NAME "$SCOPE_NAME" '.[] | select(.name==$SCOPE_NAME) | .id')
 
         if [ -n "$SCOPE_ID" ] && [ "$SCOPE_ID" != "null" ]; then
             curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/clients/${DISUKO_CLIENT_UUID}/optional-client-scopes/${SCOPE_ID}" \
               -H "Authorization: Bearer ${ACCESS_TOKEN}" 2>/dev/null
-            print_info "  Added optional scope: $scope_name"
+            print_info "  Added optional scope: $SCOPE_NAME"
         fi
     done
 fi
