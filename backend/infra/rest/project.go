@@ -1521,6 +1521,7 @@ func (projectHandler *ProjectHandler) activateTargetProjectOrChildren(requestSes
 	}
 }
 
+// Deprecated: or not?
 func (projectHandler *ProjectHandler) ProjectPostHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 

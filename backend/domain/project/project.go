@@ -570,8 +570,6 @@ func (project *Project) CreateNewProjectVersionIfNameNotUsed(name string, descri
 		ChildEntity: domain.NewChildEntity(),
 		Name:        name,
 		Description: description,
-		Updated:     time.Now(),
-		Created:     time.Now(),
 		Status:      PV_New,
 	}
 	project.Versions[projectVersion.Key] = &projectVersion
