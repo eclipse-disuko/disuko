@@ -2106,5 +2106,16 @@
   "ADMIN_I18N_STATUS_INCOMPLETE": "Unvollstaendig",
   "ADMIN_I18N_STATUS_EXTRA": "Zusaetzliche Schluessel",
   "ADMIN_I18N_DETAIL_PAGE_DESCRIPTION": "Alle Uebersetzungs-Schluessel und Werte fuer die ausgewaehlte Sprache anzeigen.",
-  "ADMIN_I18N_DETAIL_SECTION_TITLE": "Uebersetzungs-Eintraege"
+  "ADMIN_I18N_DETAIL_SECTION_TITLE": "Uebersetzungs-Eintraege",
+  "ADMIN_I18N_ADD_TO_ALL_LOCALES": "Diesen Schluessel zu allen Sprachen hinzufuegen",
+  "ADMIN_I18N_DELETE_FROM_ALL_LOCALES": "Aus allen Sprachen loeschen",
+  "ADMIN_I18N_IMPORT_TO_ALL_LOCALES": "In alle Sprachen importieren",
+  "ADMIN_I18N_IMPORT_RESULT_TITLE": "JSON-Import-Ergebnis",
+  "ADMIN_I18N_IMPORT_RESULT_LOCALE": "Sprache",
+  "ADMIN_I18N_IMPORT_RESULT_FILES": "Verarbeitete Dateien",
+  "ADMIN_I18N_IMPORT_RESULT_KEYS": "Geparste Schluessel gesamt",
+  "ADMIN_I18N_IMPORT_RESULT_APPENDED": "Hinzugefuegt",
+  "ADMIN_I18N_IMPORT_RESULT_UPDATED": "Aktualisiert",
+  "ADMIN_I18N_IMPORT_RESULT_UNCHANGED": "Unveraendert",
+  "ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE": "Import blockiert. Bitte zuerst die Fehler beheben."
 }

@@ -4,6 +4,7 @@ import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
+import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref, watch} from 'vue';
@@ -66,6 +67,12 @@ const newEntryKey = ref('');
 const newEntryTranslation = ref('');
 const addEntryToAllLocales = ref(false);
 const addEntryError = ref('');
+const addEntryFormRef = ref<DiscoForm | null>(null);
+
+const addEntryRules = {
+  key: [(v: string) => !!v?.trim() || t('VALIDATION_required')],
+  translation: [(v: string) => !!v?.trim() || t('VALIDATION_required')],
+};
 const showDeleteDialog = ref(false);
 const deleteEntryKey = ref<string | null>(null);
 const deleteGlobally = ref(false);
@@ -300,12 +307,18 @@ const resetAddEntryDialog = () => {
   newEntryTranslation.value = '';
   addEntryToAllLocales.value = false;
   addEntryError.value = '';
+  addEntryFormRef.value?.reset();
 };
 
 const addEntry = async () => {
   const key = newEntryKey.value.trim();
 
   if (!key) {
+    addEntryError.value = t('VALIDATION_required');
+    return;
+  }
+
+  if (!newEntryTranslation.value.trim()) {
     addEntryError.value = t('VALIDATION_required');
     return;
   }
@@ -505,9 +518,10 @@ watch(
       <p class="text-body-2 text-medium-emphasis mt-1">{{ pageDescription }}</p>
     </template>
     <template #buttons>
-      <h2 class="text-h6">{{ t('ADMIN_I18N_DETAIL_SECTION_TITLE') }}</h2>
+      <span class="text-h6">{{ t('ADMIN_I18N_DETAIL_SECTION_TITLE') }}</span>
       <DCActionButton
         large
+        class="mx-2"
         icon="mdi-plus"
         :hint="`${t('BTN_ADD')} ${t('KEY')}`"
         :text="t('BTN_ADD')"
@@ -515,27 +529,20 @@ watch(
         @click="showAddEntryDialog = true" />
       <DCActionButton
         large
+        class="mx-2"
         icon="mdi-file-export-outline"
         :text="t('BTN_EXPORT_JSON')"
         :disabled="isLoading || isExporting || isImporting"
         @click="exportAsJson" />
       <DCActionButton
         large
+        class="mx-2"
         icon="mdi-file-upload-outline"
         :text="t('BTN_UPLOAD_JSON')"
         :disabled="isLoading || isExporting || isImporting"
         @click="openImportPicker" />
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        :label="t('labelSearch')"
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
       <input
         ref="importInputRef"
         type="file"
@@ -598,65 +605,95 @@ watch(
     </template>
   </TableLayout>
 
-  <v-dialog v-model="showAddEntryDialog" max-width="640">
-    <v-card>
-      <v-card-title>{{ `${t('BTN_ADD')} ${t('KEY')}` }}</v-card-title>
-      <v-card-text>
-        <v-text-field
-          v-model="newEntryKey"
-          density="compact"
-          variant="outlined"
-          class="mb-3"
-          :label="t('KEY')"
-          placeholder="e.g. ADMIN_I18N_PAGE_TITLE" />
-        <v-textarea
-          v-model="newEntryTranslation"
-          auto-grow
-          rows="3"
-          density="compact"
-          variant="outlined"
-          :label="t('VALUE')"
-          placeholder="e.g. Internationalization" />
-        <v-checkbox
-          v-model="addEntryToAllLocales"
-          density="compact"
-          label="Add this key to all locales"
-          hide-details
-          class="mt-2" />
-        <p v-if="addEntryError" class="text-error text-caption mt-3 mb-0">{{ addEntryError }}</p>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="text" @click="resetAddEntryDialog">{{ t('BTN_CANCEL') }}</v-btn>
-        <v-btn variant="elevated" color="primary" @click="addEntry">{{ t('BTN_ADD') }}</v-btn>
-      </v-card-actions>
-    </v-card>
+  <v-dialog v-model="showAddEntryDialog" max-width="600px" persistent>
+    <v-form ref="addEntryFormRef">
+      <v-card class="pa-8">
+        <v-card-title>
+          <v-row>
+            <v-col cols="10" class="d-flex align-center">
+              <span class="text-h5">{{ `${t('BTN_ADD')} ${t('KEY')}` }}</span>
+            </v-col>
+            <v-col cols="2" class="px-0 text-right">
+              <DCloseButton @click="resetAddEntryDialog" />
+            </v-col>
+          </v-row>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" class="px-0">
+              <v-text-field
+                v-model="newEntryKey"
+                variant="outlined"
+                class="required"
+                :rules="addEntryRules.key"
+                :label="t('KEY')"
+                placeholder="e.g. ADMIN_I18N_PAGE_TITLE"
+                hide-details="auto"
+                autofocus />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" class="px-0">
+              <v-textarea
+                v-model="newEntryTranslation"
+                auto-grow
+                rows="3"
+                variant="outlined"
+                class="required"
+                :rules="addEntryRules.translation"
+                :label="t('VALUE')"
+                placeholder="e.g. Internationalization"
+                hide-details="auto" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" class="px-0">
+              <v-checkbox
+                v-model="addEntryToAllLocales"
+                density="compact"
+                :label="t('ADMIN_I18N_ADD_TO_ALL_LOCALES')"
+                hide-details
+                class="mt-2" />
+              <p v-if="addEntryError" class="text-error text-caption mt-3 mb-0">{{ addEntryError }}</p>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetAddEntryDialog">
+            {{ t('BTN_CANCEL') }}
+          </v-btn>
+          <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="addEntry">
+            {{ t('BTN_ADD') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-form>
   </v-dialog>
 
-  <v-dialog v-model="showDeleteDialog" content-class="small" width="800" max-width="500">
-    <v-card class="pa-8 dDialog" flat>
+  <v-dialog v-model="showDeleteDialog" max-width="500px">
+    <v-card class="pa-8">
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
             <span class="text-h5">{{ t('DLG_CONFIRMATION_TITLE') }}</span>
           </v-col>
-          <v-col cols="2" align="right">
+          <v-col cols="2" class="px-0 text-right">
             <DCloseButton @click="resetDeleteDialog" />
           </v-col>
         </v-row>
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="px-0">
             {{ t('DLG_CONFIRMATION_DESCRIPTION') }}<strong>{{ deleteEntryKey }}</strong>?
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="px-0">
             <v-checkbox
               v-model="deleteGlobally"
               density="compact"
-              :label="`${t('BTN_DELETE')} from all locales`"
+              :label="t('ADMIN_I18N_DELETE_FROM_ALL_LOCALES')"
               hide-details
               class="mt-2" />
           </v-col>
@@ -670,90 +707,95 @@ watch(
           </div>
         </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <DCActionButton
-          isDialogButton
-          :text="t('BTN_CANCEL')"
-          class="mr-8"
-          variant="text"
-          @click="resetDeleteDialog" />
-        <DCActionButton
-          isDialogButton
-          :text="t('BTN_DELETE')"
-          variant="elevated"
-          @click="onDeleteConfirm" />
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetDeleteDialog">
+          {{ t('BTN_CANCEL') }}
+        </v-btn>
+        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="onDeleteConfirm">
+          {{ t('BTN_DELETE') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="showImportDialog" max-width="500">
-    <v-card>
+  <v-dialog v-model="showImportDialog" max-width="500px" persistent>
+    <v-card class="pa-8">
       <v-card-title>
-        <span class="text-h6">{{ t('BTN_UPLOAD_JSON') }}</span>
+        <v-row>
+          <v-col cols="10" class="d-flex align-center">
+            <span class="text-h5">{{ t('BTN_UPLOAD_JSON') }}</span>
+          </v-col>
+          <v-col cols="2" class="px-0 text-right">
+            <DCloseButton @click="closeImportDialog" />
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="px-0">
             <v-checkbox
               v-model="importToAllLocales"
               density="compact"
-              :label="`${t('BTN_UPLOAD_JSON')} to all locales`"
+              :label="t('ADMIN_I18N_IMPORT_TO_ALL_LOCALES')"
               hide-details
               class="mt-2" />
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <DCActionButton
-          isDialogButton
-          :text="t('BTN_CANCEL')"
-          class="mr-8"
-          variant="text"
-          @click="closeImportDialog" />
-        <DCActionButton
-          isDialogButton
-          icon="mdi-file-upload-outline"
-          :text="t('BTN_UPLOAD_JSON')"
-          variant="elevated"
-          :disabled="isImporting"
-          @click="selectImportFiles" />
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="closeImportDialog">
+          {{ t('BTN_CANCEL') }}
+        </v-btn>
+        <v-btn size="small" variant="flat" color="primary" class="mr-1" :disabled="isImporting" @click="selectImportFiles">
+          {{ t('BTN_UPLOAD_JSON') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="showImportResultDialog" max-width="800">
-    <v-card>
+  <v-dialog v-model="showImportResultDialog" max-width="800px">
+    <v-card class="pa-8">
       <v-card-title>
-        <span class="text-h6">JSON Import Result</span>
+        <v-row>
+          <v-col cols="10" class="d-flex align-center">
+            <span class="text-h5">{{ t('ADMIN_I18N_IMPORT_RESULT_TITLE') }}</span>
+          </v-col>
+          <v-col cols="2" class="px-0 text-right">
+            <DCloseButton @click="resetImportResultDialog" />
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-card-text>
-        <p class="mb-2"><strong>Locale:</strong> {{ importResult?.locale }}</p>
-        <p class="mb-2"><strong>Files processed:</strong> {{ importResult?.filesProcessed ?? 0 }}</p>
-        <p class="mb-2"><strong>Total keys parsed:</strong> {{ importResult?.totalKeysParsed ?? 0 }}</p>
-        <p class="mb-2"><strong>Appended:</strong> {{ importResult?.appended ?? 0 }}</p>
-        <p class="mb-2"><strong>Updated:</strong> {{ importResult?.updated ?? 0 }}</p>
-        <p class="mb-2"><strong>Unchanged:</strong> {{ importResult?.unchanged ?? 0 }}</p>
+        <v-row>
+          <v-col cols="12" class="px-0">
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_LOCALE') }}:</strong> {{ importResult?.locale }}</p>
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_FILES') }}:</strong> {{ importResult?.filesProcessed ?? 0 }}</p>
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_KEYS') }}:</strong> {{ importResult?.totalKeysParsed ?? 0 }}</p>
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_APPENDED') }}:</strong> {{ importResult?.appended ?? 0 }}</p>
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UPDATED') }}:</strong> {{ importResult?.updated ?? 0 }}</p>
+            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UNCHANGED') }}:</strong> {{ importResult?.unchanged ?? 0 }}</p>
 
-        <v-alert
-          v-if="importResultHasErrors"
-          type="error"
-          variant="tonal"
-          class="mt-4"
-          title="Import blocked. Please fix the issues first.">
-          <ul class="mb-0 pl-4">
-            <li v-for="(issue, index) in importResult?.errors || []" :key="`${issue.fileName}-${issue.key || ''}-${index}`">
-              {{ issue.fileName }}
-              <span v-if="issue.key"> ({{ issue.key }})</span>
-              : {{ issue.message }}
-            </li>
-          </ul>
-        </v-alert>
+            <v-alert
+              v-if="importResultHasErrors"
+              type="error"
+              variant="tonal"
+              class="mt-4"
+              :title="t('ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE')">
+              <ul class="mb-0 pl-4">
+                <li v-for="(issue, index) in importResult?.errors || []" :key="`${issue.fileName}-${issue.key || ''}-${index}`">
+                  {{ issue.fileName }}
+                  <span v-if="issue.key"> ({{ issue.key }})</span>
+                  : {{ issue.message }}
+                </li>
+              </ul>
+            </v-alert>
+          </v-col>
+        </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="elevated" color="primary" @click="resetImportResultDialog">Close</v-btn>
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="resetImportResultDialog">
+          {{ t('BTN_CLOSE') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

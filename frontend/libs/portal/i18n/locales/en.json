@@ -2114,5 +2114,16 @@
   "ADMIN_I18N_STATUS_INCOMPLETE": "Incomplete",
   "ADMIN_I18N_STATUS_EXTRA": "Extra Keys",
   "ADMIN_I18N_DETAIL_PAGE_DESCRIPTION": "Browse all translation keys and values for the selected locale.",
-  "ADMIN_I18N_DETAIL_SECTION_TITLE": "Translation entries"
+  "ADMIN_I18N_DETAIL_SECTION_TITLE": "Translation entries",
+  "ADMIN_I18N_ADD_TO_ALL_LOCALES": "Add this key to all locales",
+  "ADMIN_I18N_DELETE_FROM_ALL_LOCALES": "Delete from all locales",
+  "ADMIN_I18N_IMPORT_TO_ALL_LOCALES": "Import to all locales",
+  "ADMIN_I18N_IMPORT_RESULT_TITLE": "JSON Import Result",
+  "ADMIN_I18N_IMPORT_RESULT_LOCALE": "Locale",
+  "ADMIN_I18N_IMPORT_RESULT_FILES": "Files processed",
+  "ADMIN_I18N_IMPORT_RESULT_KEYS": "Total keys parsed",
+  "ADMIN_I18N_IMPORT_RESULT_APPENDED": "Appended",
+  "ADMIN_I18N_IMPORT_RESULT_UPDATED": "Updated",
+  "ADMIN_I18N_IMPORT_RESULT_UNCHANGED": "Unchanged",
+  "ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE": "Import blocked. Please fix the issues first."
 }

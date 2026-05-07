@@ -158,18 +158,9 @@ onMounted(async () => {
       <p class="text-body-2 text-medium-emphasis mt-1">{{ pageDescription }}</p>
     </template>
     <template #buttons>
-      <h2 class="text-h6">{{ labels.sectionTitle }}</h2>
+      <span class="text-h6">{{ labels.sectionTitle }}</span>
       <v-spacer></v-spacer>
-      <v-text-field
-        autocomplete="off"
-        :max-width="500"
-        append-inner-icon="mdi-magnify"
-        variant="outlined"
-        density="compact"
-        v-model="search"
-        :label="t('labelSearch')"
-        single-line
-        hide-details></v-text-field>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <div class="fill-height">

@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	i18nDomain "github.com/eclipse-disuko/disuko/domain/i18n"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/helper/roles"
@@ -31,89 +32,14 @@ type I18nHandler struct {
 	I18nRepository i18nRepo.II18nRepository
 }
 
-type I18nLocaleResponse struct {
-	LocaleCode   string            `json:"localeCode"`
-	DisplayName  string            `json:"displayName"`
-	NativeName   string            `json:"nativeName"`
-	IsDefault    bool              `json:"isDefault"`
-	Scope        string            `json:"scope"`
-	EntryCount   int               `json:"entryCount"`
-	Entries      map[string]string `json:"entries"`
-	FallbackUsed bool              `json:"fallbackUsed"`
-}
-
-// I18nLocaleListResponse is used for list-only responses (no entries).
-type I18nLocaleListResponse struct {
-	LocaleCode  string `json:"localeCode"`
-	DisplayName string `json:"displayName"`
-	NativeName  string `json:"nativeName"`
-	IsDefault   bool   `json:"isDefault"`
-	Scope       string `json:"scope"`
-	EntryCount  int    `json:"entryCount"`
-}
-
-type I18nTranslationResponse struct {
-	LocaleCode   string `json:"localeCode"`
-	RequestedKey string `json:"requestedKey"`
-	Value        string `json:"value"`
-	FallbackUsed bool   `json:"fallbackUsed"`
-}
-
-type I18nTranslationUpsertRequest struct {
-	Value       string `json:"value"`
-	Description string `json:"description"`
-}
-
-type I18nLocaleUpsertRequest struct {
-	DisplayName string `json:"displayName"`
-	NativeName  string `json:"nativeName"`
-	IsDefault   bool   `json:"isDefault"`
-	Scope       string `json:"scope"`
-}
-
-type I18nMigrationLocaleResult struct {
-	LocaleCode  string `json:"localeCode"`
-	SourceCount int    `json:"sourceCount"`
-	TargetCount int    `json:"targetCount"`
-	Upserted    int    `json:"upserted"`
-	Verified    bool   `json:"verified"`
-}
-
-type I18nMigrationResponse struct {
-	DryRun        bool                        `json:"dryRun"`
-	Scope         string                      `json:"scope"`
-	IncludeShared bool                        `json:"includeShared"`
-	Locales       []I18nMigrationLocaleResult `json:"locales"`
-	Success       bool                        `json:"success"`
-}
-
-type I18nImportIssue struct {
-	FileName string `json:"fileName"`
-	Key      string `json:"key,omitempty"`
-	Code     string `json:"code"`
-	Message  string `json:"message"`
-}
-
-type I18nImportResponse struct {
-	Success          bool              `json:"success"`
-	ValidationPassed bool              `json:"validationPassed"`
-	Locale           string            `json:"locale"`
-	FilesProcessed   int               `json:"filesProcessed"`
-	TotalKeysParsed  int               `json:"totalKeysParsed"`
-	Appended         int               `json:"appended"`
-	Updated          int               `json:"updated"`
-	Unchanged        int               `json:"unchanged"`
-	Errors           []I18nImportIssue `json:"errors,omitempty"`
-}
-
-func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, []I18nImportIssue) {
-	issues := make([]I18nImportIssue, 0)
+func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, []i18nDomain.I18nImportIssueDto) {
+	issues := make([]i18nDomain.I18nImportIssueDto, 0)
 	result := make(map[string]string)
 
 	decoder := json.NewDecoder(bytes.NewReader(payload))
 	token, err := decoder.Token()
 	if err != nil {
-		issues = append(issues, I18nImportIssue{
+		issues = append(issues, i18nDomain.I18nImportIssueDto{
 			FileName: fileName,
 			Code:     "INVALID_JSON",
 			Message:  "File contains invalid JSON",
@@ -123,7 +49,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 	delim, ok := token.(json.Delim)
 	if !ok || delim != '{' {
-		issues = append(issues, I18nImportIssue{
+		issues = append(issues, i18nDomain.I18nImportIssueDto{
 			FileName: fileName,
 			Code:     "INVALID_ROOT",
 			Message:  "JSON root must be an object",
@@ -135,7 +61,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 	for decoder.More() {
 		keyToken, err := decoder.Token()
 		if err != nil {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileName,
 				Code:     "INVALID_JSON",
 				Message:  "Failed to parse JSON key",
@@ -145,7 +71,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 		key, ok := keyToken.(string)
 		if !ok {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileName,
 				Code:     "INVALID_KEY",
 				Message:  "JSON object keys must be strings",
@@ -154,7 +80,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 		}
 
 		if _, exists := seenKeys[key]; exists {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileName,
 				Key:      key,
 				Code:     "DUPLICATE_KEY",
@@ -165,7 +91,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 		var rawValue json.RawMessage
 		if err := decoder.Decode(&rawValue); err != nil {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileName,
 				Key:      key,
 				Code:     "INVALID_VALUE",
@@ -176,7 +102,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 		var textValue string
 		if err := json.Unmarshal(rawValue, &textValue); err != nil {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileName,
 				Key:      key,
 				Code:     "UNSUPPORTED_VALUE_TYPE",
@@ -190,7 +116,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 	endToken, err := decoder.Token()
 	if err != nil {
-		issues = append(issues, I18nImportIssue{
+		issues = append(issues, i18nDomain.I18nImportIssueDto{
 			FileName: fileName,
 			Code:     "INVALID_JSON",
 			Message:  "Failed to close JSON object",
@@ -200,7 +126,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 
 	endDelim, ok := endToken.(json.Delim)
 	if !ok || endDelim != '}' {
-		issues = append(issues, I18nImportIssue{
+		issues = append(issues, i18nDomain.I18nImportIssueDto{
 			FileName: fileName,
 			Code:     "INVALID_JSON",
 			Message:  "Invalid JSON object ending",
@@ -208,7 +134,7 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 	}
 
 	if decoder.More() {
-		issues = append(issues, I18nImportIssue{
+		issues = append(issues, i18nDomain.I18nImportIssueDto{
 			FileName: fileName,
 			Code:     "INVALID_JSON",
 			Message:  "Unexpected trailing JSON tokens",
@@ -343,7 +269,7 @@ func (handler *I18nHandler) GetLocale(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	render.JSON(w, r, I18nLocaleResponse{
+	render.JSON(w, r, i18nDomain.I18nLocaleResponseDto{
 		LocaleCode:   locale.LocaleCode,
 		DisplayName:  locale.DisplayName,
 		NativeName:   locale.NativeName,
@@ -397,11 +323,11 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, I18nImportResponse{
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          false,
 			ValidationPassed: false,
 			Locale:           localeCode,
-			Errors: []I18nImportIssue{{
+			Errors: []i18nDomain.I18nImportIssueDto{{
 				Code:    "INVALID_MULTIPART",
 				Message: "Upload must be multipart/form-data",
 			}},
@@ -421,11 +347,11 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 
 	if len(fileHeaders) == 0 {
 		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, I18nImportResponse{
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          false,
 			ValidationPassed: false,
 			Locale:           localeCode,
-			Errors: []I18nImportIssue{{
+			Errors: []i18nDomain.I18nImportIssueDto{{
 				Code:    "NO_FILES",
 				Message: "No JSON files uploaded",
 			}},
@@ -433,7 +359,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	issues := make([]I18nImportIssue, 0)
+	issues := make([]i18nDomain.I18nImportIssueDto, 0)
 	mergedEntries := make(map[string]string)
 	keyToFile := make(map[string]string)
 	totalKeysParsed := 0
@@ -441,7 +367,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 	for _, fileHeader := range fileHeaders {
 		fileReader, err := fileHeader.Open()
 		if err != nil {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileHeader.Filename,
 				Code:     "FILE_READ_ERROR",
 				Message:  "Unable to open uploaded file",
@@ -452,7 +378,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		content, readErr := io.ReadAll(fileReader)
 		_ = fileReader.Close()
 		if readErr != nil {
-			issues = append(issues, I18nImportIssue{
+			issues = append(issues, i18nDomain.I18nImportIssueDto{
 				FileName: fileHeader.Filename,
 				Code:     "FILE_READ_ERROR",
 				Message:  "Unable to read uploaded file",
@@ -469,7 +395,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		totalKeysParsed += len(parsedEntries)
 		for key, value := range parsedEntries {
 			if sourceFile, exists := keyToFile[key]; exists {
-				issues = append(issues, I18nImportIssue{
+				issues = append(issues, i18nDomain.I18nImportIssueDto{
 					FileName: fileHeader.Filename,
 					Key:      key,
 					Code:     "DUPLICATE_KEY_ACROSS_FILES",
@@ -485,7 +411,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 
 	if len(issues) > 0 {
 		render.Status(r, http.StatusBadRequest)
-		render.JSON(w, r, I18nImportResponse{
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          false,
 			ValidationPassed: false,
 			Locale:           localeCode,
@@ -497,7 +423,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 	}
 
 	if len(mergedEntries) == 0 {
-		render.JSON(w, r, I18nImportResponse{
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          true,
 			ValidationPassed: true,
 			Locale:           localeCode,
@@ -550,7 +476,7 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		handler.I18nRepository.SetTranslation(requestSession, localeCode, key, newValue, "Imported from JSON", currentUser)
 	}
 
-	render.JSON(w, r, I18nImportResponse{
+	render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 		Success:          true,
 		ValidationPassed: true,
 		Locale:           localeCode,
@@ -571,7 +497,7 @@ func (handler *I18nHandler) GetTranslationByKey(w http.ResponseWriter, r *http.R
 	}
 
 	if value, ok := handler.I18nRepository.GetTranslation(requestSession, requestedLocale, key); ok {
-		render.JSON(w, r, I18nTranslationResponse{
+		render.JSON(w, r, i18nDomain.I18nTranslationResponseDto{
 			LocaleCode:   requestedLocale,
 			RequestedKey: key,
 			Value:        value,
@@ -583,7 +509,7 @@ func (handler *I18nHandler) GetTranslationByKey(w http.ResponseWriter, r *http.R
 	defaultLocaleCode, foundDefault := handler.findDefaultLocale(requestSession)
 	if foundDefault {
 		if value, ok := handler.I18nRepository.GetTranslation(requestSession, defaultLocaleCode, key); ok {
-			render.JSON(w, r, I18nTranslationResponse{
+			render.JSON(w, r, i18nDomain.I18nTranslationResponseDto{
 				LocaleCode:   defaultLocaleCode,
 				RequestedKey: key,
 				Value:        value,
@@ -594,7 +520,7 @@ func (handler *I18nHandler) GetTranslationByKey(w http.ResponseWriter, r *http.R
 	}
 
 	// Last-resort frontend-safe fallback: return key itself.
-	render.JSON(w, r, I18nTranslationResponse{
+	render.JSON(w, r, i18nDomain.I18nTranslationResponseDto{
 		LocaleCode:   requestedLocale,
 		RequestedKey: key,
 		Value:        key,
@@ -605,7 +531,7 @@ func (handler *I18nHandler) GetTranslationByKey(w http.ResponseWriter, r *http.R
 func (handler *I18nHandler) GetLocales(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	all := handler.I18nRepository.FindAll(requestSession, false)
-	result := make([]I18nLocaleListResponse, 0, len(all))
+	result := make([]i18nDomain.I18nLocaleListResponseDto, 0, len(all))
 	for _, locale := range all {
 		if locale == nil {
 			continue
@@ -614,7 +540,7 @@ func (handler *I18nHandler) GetLocales(w http.ResponseWriter, r *http.Request) {
 		if locale.Entries != nil {
 			entryCount = len(locale.Entries)
 		}
-		result = append(result, I18nLocaleListResponse{
+		result = append(result, i18nDomain.I18nLocaleListResponseDto{
 			LocaleCode:  locale.LocaleCode,
 			DisplayName: locale.DisplayName,
 			NativeName:  locale.NativeName,
@@ -635,7 +561,7 @@ func (handler *I18nHandler) UpsertLocaleMetadata(w http.ResponseWriter, r *http.
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	var req I18nLocaleUpsertRequest
+	var req i18nDomain.I18nLocaleUpsertRequestDto
 	validation.DecodeAndValidate(r, &req, false)
 	handler.I18nRepository.SetLocaleMetadata(requestSession, localeCode, strings.TrimSpace(req.DisplayName), strings.TrimSpace(req.NativeName), req.IsDefault, strings.TrimSpace(req.Scope))
 
@@ -652,7 +578,7 @@ func (handler *I18nHandler) UpsertTranslationByKey(w http.ResponseWriter, r *htt
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	var req I18nTranslationUpsertRequest
+	var req i18nDomain.I18nTranslationUpsertRequestDto
 	validation.DecodeAndValidate(r, &req, false)
 	currentUser := roles.GetUsernameFromRequest(requestSession, r)
 	handler.I18nRepository.SetTranslation(requestSession, localeCode, key, req.Value, req.Description, currentUser)
@@ -763,7 +689,7 @@ func (handler *I18nHandler) MigrateFromJSON(w http.ResponseWriter, r *http.Reque
 		exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbNotFound), "no locale JSON files found for migration")
 	}
 
-	results := make([]I18nMigrationLocaleResult, 0, len(entriesByLocale))
+	results := make([]i18nDomain.I18nMigrationLocaleResultDto, 0, len(entriesByLocale))
 	for localeCode, entries := range entriesByLocale {
 		displayName, nativeName := localeNames(localeCode)
 		sourceCount := len(entries)
@@ -787,7 +713,7 @@ func (handler *I18nHandler) MigrateFromJSON(w http.ResponseWriter, r *http.Reque
 			verified = true
 		}
 
-		results = append(results, I18nMigrationLocaleResult{
+		results = append(results, i18nDomain.I18nMigrationLocaleResultDto{
 			LocaleCode:  localeCode,
 			SourceCount: sourceCount,
 			TargetCount: targetCount,
@@ -796,7 +722,7 @@ func (handler *I18nHandler) MigrateFromJSON(w http.ResponseWriter, r *http.Reque
 		})
 	}
 
-	response := I18nMigrationResponse{
+	response := i18nDomain.I18nMigrationResponseDto{
 		DryRun:        dryRun,
 		Scope:         scope,
 		IncludeShared: includeShared,
