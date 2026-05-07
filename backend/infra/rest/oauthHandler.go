@@ -204,6 +204,10 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 		existingUser.Roles = userInfoClaims.EntitlementGroup
 		existingUser.MetaData = metaData
 		existingUser.IsInternal = isInternalEmployee
+		if !existingUser.Deprovisioned.IsZero() {
+			existingUser.Deprovisioned = time.Time{}
+			existingUser.Active = true
+		}
 		if before.Lastname != existingUser.Lastname ||
 			before.Forename != existingUser.Forename ||
 			!helper.EqualsStringSlicesIgnoreOrder(before.Roles, existingUser.Roles) ||
