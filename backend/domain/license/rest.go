@@ -22,15 +22,17 @@ type PolicyRuleDto struct {
 }
 
 type PolicyRuleRequestDto struct {
-	Name            string     `validate:"required,gte=3,lte=80"`
-	Description     string     `validate:"lte=1500"`
-	LabelSets       [][]string `validate:"dive,dive,gte=3,lte=80"`
-	ComponentsAllow []string   `validate:"dive,gte=1,lte=80"`
-	ComponentsDeny  []string   `validate:"dive,gte=1,lte=80"`
-	ComponentsWarn  []string   `validate:"dive,gte=1,lte=80"`
-	Auxiliary       bool       `json:"auxiliary"`
-	Active          bool       `json:"active"`
-	ApplyToAll      bool       `json:"applyToAll"`
+	Name             string                 `validate:"required,gte=3,lte=80"`
+	Description      string                 `validate:"lte=1500"`
+	LabelSets        [][]string             `validate:"dive,dive,gte=3,lte=80"`
+	ComponentsAllow  []string               `validate:"dive,gte=1,lte=80"`
+	ComponentsDeny   []string               `validate:"dive,gte=1,lte=80"`
+	ComponentsWarn   []string               `validate:"dive,gte=1,lte=80"`
+	Auxiliary        bool                   `json:"auxiliary"`
+	Active           bool                   `json:"active"`
+	ApplyToAll       bool                   `json:"applyToAll"`
+	Calculated       bool                   `json:"calculated"`
+	CalculatedConfig CalculatedPolicyConfig `json:"calculatedConfig"`
 }
 
 type PolicyRuleGetForLabelRequest struct {
@@ -86,11 +88,13 @@ type PolicyRulesDto struct {
 	ComponentsDeny  []string
 	ComponentsWarn  []string
 
-	Auxiliary      bool
-	Deprecated     bool
-	DeprecatedDate time.Time
-	Active         bool
-	ApplyToAll     bool
+	Auxiliary        bool
+	Deprecated       bool
+	DeprecatedDate   time.Time
+	Active           bool
+	ApplyToAll       bool
+	Calculated       bool
+	CalculatedConfig CalculatedPolicyConfig
 }
 
 type PolicyRulesAssignmentDto struct {

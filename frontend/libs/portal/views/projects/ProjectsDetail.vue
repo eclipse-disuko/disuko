@@ -6,7 +6,7 @@
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
 import {ProjectSubscriptions} from '@disclosure-portal/model/Project';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import _ from 'lodash';
@@ -179,7 +179,7 @@ onUnmounted(() => {
     <v-row class="expand" v-if="!itemVersion">
       <v-col cols="12">
         <v-card>
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab value="overview" :to="`${tabUrl}/overview`">
               {{ t('TAB_PROJECT_OVERVIEW') }}
             </v-tab>

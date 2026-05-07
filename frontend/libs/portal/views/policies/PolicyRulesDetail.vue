@@ -129,7 +129,7 @@ watch(
     <v-row class="">
       <v-col class="pt-0">
         <v-card class="card-border">
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab :to="tabUrl.tabPolicyRuleTable" value="tabPolicyRuleTable">
               {{ t('TAB_PROJECT_SELECTED') }}
             </v-tab>

@@ -7,7 +7,9 @@ package server
 import (
 	"context"
 
+	"github.com/eclipse-disuko/disuko/jobs/calculatedpolicyrules"
 	"github.com/eclipse-disuko/disuko/jobs/labels"
+	"github.com/eclipse-disuko/disuko/jobs/userdeletion"
 	"github.com/eclipse-disuko/disuko/jobs/userstats"
 
 	"github.com/eclipse-disuko/disuko/domain/job"
@@ -117,6 +119,11 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 		s.repos.label,
 	)
 	s.scheduler.AddJobCb(job.LabelLoadDb, label)
+
+	calculatedPolicyRules := calculatedpolicyrules.Init(s.repos.policyRules, &s.services.policyRules)
+	s.scheduler.AddJobCb(job.CalculatedPolicyRulesUpdate, calculatedPolicyRules)
+	userDel := userdeletion.Init(s.services.deletionService)
+	s.scheduler.AddJobCb(job.UserDeletion, userDel)
 
 	go s.scheduler.Start(ctx)
 	s.handlers.job.Scheduler = s.scheduler // todo ensure scheduler is set also found in observer.go

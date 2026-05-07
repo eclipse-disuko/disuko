@@ -23,11 +23,32 @@ type PolicyRules struct {
 	ComponentsDeny  []string
 	ComponentsWarn  []string
 
-	Auxiliary      bool
-	Active         bool
-	ApplyToAll     bool
-	Deprecated     bool
-	DeprecatedDate time.Time
+	Auxiliary        bool
+	Active           bool
+	ApplyToAll       bool
+	Calculated       bool
+	CalculatedConfig CalculatedPolicyConfig
+	Deprecated       bool
+	DeprecatedDate   time.Time
+}
+
+type BucketDefinition struct {
+	DeniedClassifications  []string `json:"deniedClassifications" validate:"dive,gte=1,lte=80"`
+	WarnedClassifications  []string `json:"warnedClassifications" validate:"dive,gte=1,lte=80"`
+	AllowedClassifications []string `json:"allowedClassifications" validate:"dive,gte=1,lte=80"`
+}
+
+type CalculatedPolicyConfig struct {
+	BucketDefinition *BucketDefinition      `json:"bucketDefinition"`
+	LicenseScope     CalculatedPolicyScope `json:"licenseScope"`
+}
+
+type CalculatedPolicyScope struct {
+	IsLicenseChart []bool            `json:"isLicenseChart" validate:"omitempty,unique"`
+	ApprovalState  []ApprovalStatus  `json:"approvalState" validate:"omitempty,unique,dive,lte=80"`
+	Family         []FamilyOfLicense `json:"family" validate:"omitempty,unique,dive,lte=80"`
+	LicenseType    []TypeOfLicenses  `json:"licenseType" validate:"omitempty,unique,dive,lte=50"`
+	Source         []Source          `json:"source" validate:"omitempty,unique,dive,lte=80"`
 }
 
 type PolicyResult int
@@ -62,18 +83,20 @@ func ToDto(entity *PolicyRules) *PolicyRulesDto {
 		status = StatusDeprecated
 	}
 	policyRule := &PolicyRulesDto{
-		Status:          status,
-		Name:            entity.Name,
-		LabelSets:       entity.LabelSets,
-		Description:     entity.Description,
-		ComponentsAllow: entity.ComponentsAllow,
-		ComponentsDeny:  entity.ComponentsDeny,
-		ComponentsWarn:  entity.ComponentsWarn,
-		Auxiliary:       entity.Auxiliary,
-		Deprecated:      entity.Deprecated,
-		DeprecatedDate:  entity.DeprecatedDate,
-		Active:          entity.Active,
-		ApplyToAll:      entity.ApplyToAll,
+		Status:           status,
+		Name:             entity.Name,
+		LabelSets:        entity.LabelSets,
+		Description:      entity.Description,
+		ComponentsAllow:  entity.ComponentsAllow,
+		ComponentsDeny:   entity.ComponentsDeny,
+		ComponentsWarn:   entity.ComponentsWarn,
+		Auxiliary:        entity.Auxiliary,
+		Deprecated:       entity.Deprecated,
+		DeprecatedDate:   entity.DeprecatedDate,
+		Active:           entity.Active,
+		ApplyToAll:       entity.ApplyToAll,
+		Calculated:       entity.Calculated,
+		CalculatedConfig: entity.CalculatedConfig,
 	}
 	domain.SetBaseValues(entity, policyRule)
 	return policyRule

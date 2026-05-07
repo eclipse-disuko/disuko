@@ -396,6 +396,10 @@ const (
 	ParamPolicyDecisionUuidEmpty              = "PARAM_POLICY_DECISION_UUID_EMPTY"
 	DecisionDeniedComponentVersionNotSet      = "DECISION_DENIED_COMPONENT_VERSION_NOT_SET"
 	PolicyDecisionDeniedForbiddenLicense      = "POLICY_DECISION_DENIED_FORBIDDEN_LICENSE"
+	LicenseRecommendedMsg                     = "LICENSE_RECOMMENDED_MSG"
+	DeniedLicensesMsg                         = "DENIED_LICENSES_MSG"
+	EqualWeightLicensesMsg                    = "EQUAL_WEIGHT_LICENSES_MSG"
+	TransferOwnershipBlocked                  = "TRANSFER_OWNERSHIP_BLOCKED"
 )
 
 func InitI18N() {

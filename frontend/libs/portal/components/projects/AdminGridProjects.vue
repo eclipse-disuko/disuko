@@ -6,7 +6,6 @@
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import type {SearchOptions} from '@disclosure-portal/utils/Table';
-import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {storeToRefs} from 'pinia';
@@ -15,10 +14,12 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {debounce} from 'lodash';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const router = useRouter();
 const projectsUtils = useProjectUtils();
+const {openProjectUrlByKey} = useUrls();
 const projectStore = useProjectStore();
 const {projects, projectsCount, loading, projectPossibleStatuses} = storeToRefs(projectStore);
 
@@ -27,10 +28,11 @@ const search = ref('');
 const selectedFilterStatus = ref<string[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'updated', order: 'desc'}]);
 const itemsPerPage = ref(100);
+const page = ref(1);
 
 const options = computed(
   (): SearchOptions => ({
-    page: 1,
+    page: page.value,
     itemsPerPage: itemsPerPage.value,
     sortBy: sortBy.value,
     groupBy: [],
@@ -84,8 +86,6 @@ const searchChanged = async () => {
   if (search.value && search.value.length > 80) {
     return;
   }
-
-  options.value.page = 1;
 
   await reload();
 };
@@ -145,6 +145,7 @@ onMounted(() => {
           :options="options"
           v-model:items-per-page="itemsPerPage"
           v-model:sort-by="sortBy"
+          v-model:page="page"
           v-model:expanded="expanded"
           @click:row="onRowClick">
           <template #[`header.status`]="{column, getSortIcon, toggleSort}">

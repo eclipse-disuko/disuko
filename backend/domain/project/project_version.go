@@ -5,8 +5,6 @@
 package project
 
 import (
-	"time"
-
 	"github.com/eclipse-disuko/disuko/domain/overallreview"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -23,11 +21,11 @@ type ProjectVersion struct {
 	SourceExternal     SourcesExternal
 	InternalVersion    int
 	Status             ProjectVersionStatusType `json:"status"`
-	Created            time.Time
-	Updated            time.Time
-	Deleted            bool
-	OverallReviews     []overallreview.OverallReview
-	Subscriber         []string
+	// Created            time.Time
+	// Updated            time.Time
+	Deleted        bool
+	OverallReviews []overallreview.OverallReview
+	Subscriber     []string
 }
 
 func (s SourcesExternal) GetUrls() []string {

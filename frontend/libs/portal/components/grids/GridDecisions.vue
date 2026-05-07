@@ -14,20 +14,15 @@ import {useUserStore} from '@disclosure-portal/stores/user';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {formatDateTime} from '@disclosure-portal/utils/View';
-import {useHeaderSettingsStore} from '@shared//stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
-import {storeToRefs} from 'pinia';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const userStore = useUserStore();
 const labelStore = useLabelStore();
-
-const gridName = 'LicenseRules';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const search = ref('');
 const sortBy: SortItem[] = [{key: 'updated', order: 'desc'}];
@@ -182,7 +177,9 @@ const headers: DataTableHeader[] = [
   },
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'LicenseRules';
+const headerSettings = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettings;
 
 const icons = Icons;
 
@@ -279,23 +276,27 @@ onMounted(async () => {
         items-per-page="50"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}">
         <template v-slot:[`header.actions`]="{column}">
-          <HeaderSettings :column="column" :grid-name="gridName" />
-          <span class="ml-6">{{ column.title }}</span>
+          <GridFilterHeader :column="column">
+            <template #settings>
+              <HeaderSettings :column="column" :grid-name="tableName" />
+            </template>
+          </GridFilterHeader>
         </template>
         <template v-slot:[`header.active`]="{column, toggleSort, getSortIcon}">
-          <span class="mr-1">{{ column.title }}</span>
-          <GridHeaderFilterIcon
-            v-model="selectedStatus"
-            :column="column"
-            :label="t('STATUS')"
-            :allItems="possibleStatus">
-          </GridHeaderFilterIcon>
-          <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedStatus"
+                :column="column"
+                :label="t('STATUS')"
+                :allItems="possibleStatus">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
         </template>
         <template v-slot:[`header.type`]="{column, toggleSort, getSortIcon}">
           <span class="mr-1">{{ column.title }}</span>
-          <GridHeaderFilterIcon v-model="selectedType" :column="column" :label="t('TYPE')" :allItems="possibleType">
-          </GridHeaderFilterIcon>
+          <GridHeaderFilterIcon v-model="selectedType" :column="column" :label="t('TYPE')" :allItems="possibleType" />
           <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
         </template>
         <template v-slot:[`item.actions`]="{item}">

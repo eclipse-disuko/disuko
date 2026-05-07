@@ -162,3 +162,17 @@
   "Status": 0,
   "Updated": "2026-04-16T13:57:36.059961189Z"
 }
+{
+  "_key": "54b15058-5ddf-483d-a4fb-c1ce32e0a2fe",
+  "_id": "jobs/54b15058-5ddf-483d-a4fb-c1ce32e0a2fe",
+  "_rev": "27-e1a8b6e71b9d0b287d8c61baa4e6cf1b",
+  "Config": "",
+  "Created": "2025-09-17T11:13:56.231556676Z",
+  "Execution": 0,
+  "JobType": 16,
+  "MultiExec": false,
+  "Name": "User deletion",
+  "Schedule": "",
+  "Status": 0,
+  "Updated": "2025-09-17T11:13:56.231556676Z"
+}

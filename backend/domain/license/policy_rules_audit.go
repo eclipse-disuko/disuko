@@ -20,10 +20,12 @@ type PolicyRulesAudit struct {
 	ComponentsDeny  []string `json:"componentsDeny"`
 	ComponentsWarn  []string `json:"componentsWarn"`
 
-	Auxiliary  bool `json:"auxiliary"`
-	Deprecated bool `json:"deprecated"`
-	Active     bool `json:"active"`
-	ApplyToAll bool `json:"applyToAll"`
+	Auxiliary        bool                   `json:"auxiliary"`
+	Deprecated       bool                   `json:"deprecated"`
+	Active           bool                   `json:"active"`
+	ApplyToAll       bool                   `json:"applyToAll"`
+	Calculated       bool                   `json:"calculated"`
+	CalculatedConfig CalculatedPolicyConfig `json:"calculatedConfig"`
 
 	Created string `json:"created"`
 	Updated string `json:"updated"`
@@ -54,10 +56,12 @@ func (entity *PolicyRules) ToAudit(requestSession *logy.RequestSession, labelPro
 		ComponentsDeny:  entity.ComponentsDeny,
 		ComponentsWarn:  entity.ComponentsWarn,
 
-		Auxiliary:  entity.Auxiliary,
-		Deprecated: entity.Deprecated,
-		Active:     entity.Active,
-		ApplyToAll: entity.ApplyToAll,
+		Auxiliary:        entity.Auxiliary,
+		Deprecated:       entity.Deprecated,
+		Active:           entity.Active,
+		ApplyToAll:       entity.ApplyToAll,
+		Calculated:       entity.Calculated,
+		CalculatedConfig: entity.CalculatedConfig,
 
 		Created: auditHelper.ConvertDateTime(entity.Created),
 		Updated: auditHelper.ConvertDateTime(entity.Updated),

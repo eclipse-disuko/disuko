@@ -6,7 +6,7 @@
 import {DialogLicenseRuleConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {LicenseRuleRequest} from '@disclosure-portal/model/LicenseRule';
 import {ComponentLicenses} from '@disclosure-portal/model/Project';
 import {ComponentInfoSlim} from '@disclosure-portal/model/VersionDetails';
@@ -21,6 +21,8 @@ import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {escapeHtml} from '@disclosure-portal/utils/Validation';
+import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 
 interface LicenseItemWithPolicyStatus {
   id: string;
@@ -37,11 +39,15 @@ const {info} = useSnackbar();
 const rules = useRules();
 const sbomStore = useSbomStore();
 const userStore = useUserStore();
-const emit = defineEmits(['reload']);
+const emit = defineEmits<{
+  reload: [];
+  triggerComponentDetails: [spdxId: string];
+}>();
 const projectStore = useProjectStore();
 
 const form = ref<VForm | null>(null);
 const isVisible = ref(false);
+const isDirectOpen = ref(false);
 
 const selectedComponent = ref<ComponentInfoSlim | undefined>(undefined);
 
@@ -53,6 +59,7 @@ const comment = ref<string | undefined>(undefined);
 const selectedComponentStr = ref<string>('');
 const licenseExpression = ref<string>('');
 const licenseRecommended = ref<string>('');
+const licenseRecommendedMsg = ref<string>('');
 const verification = ref(false);
 const errorDialog = ref<ErrorDialogInterface | null>(null);
 
@@ -63,6 +70,7 @@ const config = ref<DialogLicenseRuleConfig>({
   licenseId: '',
   component: new ComponentInfoSlim(),
   licenseRecommended: '',
+  licenseRecommendedMsg: '',
 });
 
 const projectKey = computed(() => projectStore.currentProject!._key);
@@ -88,6 +96,17 @@ const licenseRecommendationWeightMap = computed(() => {
 function getLicenseRecommendationWeight(id: string): number | null {
   return licenseRecommendationWeightMap.value.get(id) ?? null;
 }
+
+const hasSelectableLicenses = computed(() =>
+  licenses.value.some((l) => l.policyType === 'allow' || l.policyType === 'warn'),
+);
+
+const isLicenseDisabled = (policyType: string) =>
+  hasSelectableLicenses.value && policyType !== 'allow' && policyType !== 'warn';
+
+const licenseItemProps = (item: LicenseItemWithPolicyStatus) => ({
+  disabled: isLicenseDisabled(item.policyType),
+});
 
 const licenses = computed((): LicenseItemWithPolicyStatus[] => {
   if (!componentLicenses.value) {
@@ -143,9 +162,12 @@ const open = async (
     component: new ComponentInfoSlim(),
     policyStatus: [],
     licenseRecommended: '',
+    licenseRecommendedMsg: '',
   },
+  directOpen: boolean = false,
 ) => {
   config.value = newConfig;
+  isDirectOpen.value = directOpen;
   await loadAndPrefillData();
   isVisible.value = true;
 };
@@ -157,14 +179,15 @@ const loadAndPrefillData = async () => {
   selectedComponentStr.value = `${config.value.component.name} (${config.value.component.version})`;
   licenseExpression.value = config.value.component.licenseExpression;
   licenseRecommended.value = config.value.licenseRecommended;
+  licenseRecommendedMsg.value = config.value.licenseRecommendedMsg;
 
   await loadLicenses();
 
   const licenseIdToSelect = config.value.licenseId || config.value.licenseRecommended;
 
-  selectedLicense.value = licenseIdToSelect
-    ? licenses.value.find((license) => license.id === licenseIdToSelect)
-    : undefined;
+  const candidate = licenses.value.find((license) => license.id === licenseIdToSelect);
+
+  selectedLicense.value = candidate && isLicenseDisabled(candidate.policyType) ? undefined : candidate;
 };
 
 const loadLicenses = async () => {
@@ -217,6 +240,12 @@ const doDialogAction = async () => {
   info(t('LICENSE_RULE_CREATED'));
 };
 
+const translatedLicenseRecommendedMsg = computed(() =>
+  licenseRecommendedMsg.value === 'LICENSE_RECOMMENDED_MSG'
+    ? t(licenseRecommendedMsg.value, {license: licenseRecommended.value})
+    : t(licenseRecommendedMsg.value),
+);
+
 const dialogConfig = computed(() => ({
   title: t('LICENSE_RULE_CREATE'),
   primaryButton: {text: t('BTN_CREATE'), disabled: !verification.value},
@@ -227,82 +256,131 @@ const close = () => {
   form.value?.reset();
   isVisible.value = false;
 };
+
+const formatText = (text: string): string => {
+  text = escapeHtml(text);
+  if (text.includes(' AND ') || text.includes(' OR ')) {
+    return text
+      .replace(/ AND /g, ' <strong class="db-highlight">AND</strong> ')
+      .replace(/ OR /g, ' <strong class="db-highlight">OR</strong> ');
+  }
+  return text;
+};
+
+const closeAndTriggerComponentDetails = () => {
+  close();
+  emit('triggerComponentDetails', selectedComponent.value?.spdxId ?? '');
+};
+
 defineExpose({open});
 </script>
 
 <template>
-  <v-dialog v-model="isVisible" width="650" persistent>
+  <v-dialog v-model="isVisible" width="1200" persistent>
     <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
+      <template #left>
+        <DCActionButton
+          v-if="isDirectOpen"
+          size="small"
+          is-dialog-button
+          @click="closeAndTriggerComponentDetails"
+          :text="t('BTN_COMPONENT_DETAILS')" />
+      </template>
+
       <v-form ref="form" @submit.prevent="doDialogAction">
         <Stack class="gap-4">
-          <Stack direction="row" align="center">
-            <v-icon class="mr-2">mdi-information-outline</v-icon>
-            <span>{{ t('LICENSE_RULE_APPLIED_LATER_INFO') }}</span>
+          <Stack direction="row" class="items-start gap-4">
+            <Stack class="flex-1 gap-4 self-start">
+              <v-field variant="outlined" density="compact" active :label="t('RELATED_COMPONENT')" hide-details>
+                <span class="v-field__input text-title-1 py-2">{{ selectedComponentStr }}</span>
+              </v-field>
+              <v-field variant="outlined" density="compact" active :label="t('LICENSE_EXPRESSION')" hide-details>
+                <span
+                  class="v-field__input text-title-1 py-2"
+                  v-html="formatText(selectedComponent?.licenseExpression ?? '')" />
+              </v-field>
+              <v-select
+                v-model="selectedLicense"
+                clearable
+                :label="t('LICENSE_DECISION')"
+                :disabled="!selectedComponent"
+                :items="licenses"
+                :item-props="licenseItemProps"
+                return-object
+                item-title="name"
+                :loading="licensesLoading"
+                variant="outlined"
+                density="compact"
+                hide-details
+                required
+                :rules="licenseDecisionRules">
+                <template #item="{item, props}">
+                  <v-list-item v-bind="props" title="">
+                    <v-chip
+                      v-if="item.raw.isRecommended"
+                      variant="outlined"
+                      label
+                      size="x-small"
+                      class="mr-1 font-bold">
+                      {{ t('RECOMMENDED') }}
+                    </v-chip>
+                    <v-icon size="small" :color="item.raw.iconColor">
+                      {{ item.raw.icon }}
+                    </v-icon>
+                    <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
+                  </v-list-item>
+                </template>
+                <template #selection="{item}">
+                  <div class="d-inline">
+                    <v-chip
+                      v-if="item.raw.isRecommended"
+                      variant="outlined"
+                      label
+                      size="x-small"
+                      class="mr-1 font-bold">
+                      {{ t('RECOMMENDED') }}
+                    </v-chip>
+                    <v-icon size="small" :color="item.raw.iconColor">
+                      {{ item.raw.icon }}
+                    </v-icon>
+                    <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
+                  </div>
+                </template>
+              </v-select>
+              <v-textarea
+                v-model="comment"
+                variant="outlined"
+                density="compact"
+                :label="t('LICENSE_RULE_COMMENT')"
+                hide-details="auto"
+                :rules="commentRules" />
+            </Stack>
+            <v-divider vertical class="mx-5" />
+            <Stack class="flex-1 gap-4 self-start">
+              <Stack direction="row" align="center">
+                <span class="text-h6">{{ t('IMPORTANT_INFO_TEXT') }}</span>
+              </Stack>
+              <Stack direction="row" align="center">
+                <v-icon class="mr-2" color="brand">mdi-arrow-right</v-icon>
+                <span>{{ t('LICENSE_RULE_APPLIED_LATER_INFO') }}</span>
+              </Stack>
+              <Stack v-if="licenseRecommendedMsg" direction="row" align="center">
+                <v-icon class="mr-2" color="brand">mdi-arrow-right</v-icon>
+                <span>{{ translatedLicenseRecommendedMsg }}</span>
+              </Stack>
+              <Stack v-if="selectedLicense?.policyType === 'noassertion'" direction="row" align="center">
+                <v-icon class="mr-2" color="error">mdi-arrow-right</v-icon>
+                <span>{{ t('UNASSERTED_LICENSES_MSG', {license: selectedLicense?.id}) }}</span>
+              </Stack>
+              <v-checkbox
+                v-model="verification"
+                color="primary"
+                :label="t('LICENSE_RULE_VERIFICATION_NOTE_TEXT')"
+                hide-details />
+            </Stack>
           </Stack>
-          <v-text-field
-            autocomplete="off"
-            :model-value="selectedComponentStr"
-            disabled
-            variant="outlined"
-            density="compact"
-            hide-details
-            :label="t('RELATED_COMPONENT')" />
-          <v-textarea
-            auto-grow
-            rows="1"
-            variant="outlined"
-            density="compact"
-            disabled
-            :label="t('LICENSE_EXPRESSION')"
-            :model-value="selectedComponent?.licenseExpression"
-            hide-details />
-          <v-select
-            v-model="selectedLicense"
-            clearable
-            :label="t('LICENSE_DECISION')"
-            :disabled="!selectedComponent"
-            :items="licenses"
-            return-object
-            item-title="name"
-            :loading="licensesLoading"
-            variant="outlined"
-            density="compact"
-            hide-details
-            required
-            :rules="licenseDecisionRules">
-            <template #item="{item, props}">
-              <v-list-item v-bind="props" title="">
-                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
-                  {{ t('RECOMMENDED') }}
-                </v-chip>
-                <v-icon size="small" :color="item.raw.iconColor">
-                  {{ item.raw.icon }}
-                </v-icon>
-                <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
-              </v-list-item>
-            </template>
-            <template #selection="{item}">
-              <div class="d-inline">
-                <v-chip v-if="item.raw.isRecommended" variant="outlined" label size="x-small" class="mr-1 font-bold">
-                  {{ t('RECOMMENDED') }}
-                </v-chip>
-                <v-icon size="small" :color="item.raw.iconColor">
-                  {{ item.raw.icon }}
-                </v-icon>
-                <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw.id }})</span>
-              </div>
-            </template>
-          </v-select>
-          <v-textarea
-            v-model="comment"
-            variant="outlined"
-            density="compact"
-            :label="t('LICENSE_RULE_COMMENT')"
-            hide-details="auto"
-            :rules="commentRules" />
-          <v-checkbox v-model="verification" :label="t('LICENSE_RULE_VERIFICATION_NOTE_TEXT')" hide-details />
         </Stack>
       </v-form>
     </DialogLayout>

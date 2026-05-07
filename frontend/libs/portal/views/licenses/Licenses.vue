@@ -21,18 +21,18 @@ import licenseService from '@disclosure-portal/services/license';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel, openUrl} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
 import {debounce} from 'lodash';
-import {storeToRefs} from 'pinia';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface FilterCondition {
   field: string;
@@ -47,10 +47,7 @@ const snackbar = useSnackbar();
 const route = useRoute();
 const userStore = useUserStore();
 const viewTools = useViewTools();
-
-const gridName = 'License';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
+const {openUrl} = useUrls();
 
 const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
@@ -446,23 +443,22 @@ const headers = computed((): DataTableHeader[] => [
   },
 ]);
 
-headerSettingsStore.setupStore(gridName, headers.value);
+const tableName = 'License';
+const headerSettings = useHeaderSettings({tableName, headers: headers.value});
+const {filteredHeaders} = headerSettings;
+
+const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: string[] = [], exclude: string[] = []) => {
+  return possibleItems
+    .filter((item) => {
+      const value = item.value;
+      const shouldInclude = include.includes(value);
+      const shouldExclude = exclude.includes(value) || exclude.length === 0;
+      return shouldInclude || !shouldExclude;
+    })
+    .map((item) => item.value);
+};
 
 const filterForCondition = (condition: FilterCondition) => {
-  const filterAndMap = (
-    possibleItems: DataTableHeaderFilterItems[],
-    include: string[] = [],
-    exclude: string[] = [],
-  ) => {
-    return possibleItems
-      .filter((item) => {
-        const value = item.value;
-        const shouldInclude = include.includes(value);
-        const shouldExclude = exclude.includes(value) || exclude.length === 0;
-        return shouldInclude || !shouldExclude;
-      })
-      .map((item) => item.value);
-  };
   switch (condition.field) {
     case 'isLicenseChart':
       selectedFilterIsLicenseChart.value = filterAndMap(possibleIsLicenseChart.value, condition.include);
@@ -488,7 +484,7 @@ const applyFilterSet = async (filter: FilterSetDto) => {
   selectedFilterSet.value = filter;
 
   Object.keys(options.value.filterBy).forEach((key) => {
-    const includedFilter = filter.includedFilters.find((filter) => filter.name === key);
+    const includedFilter = filter.includedFilters.find(({name}) => name === key);
     const filterValues = includedFilter ? includedFilter.values : [];
 
     filterForCondition({
@@ -531,8 +527,8 @@ const reloadFilter = async (filterKey: string | string[]) => {
 };
 
 const getSortedFilterSets = async () => {
-  const filterSets = await filterSetService.getFilterSets('licenses');
-  return filterSets.sort((a, b) => {
+  const licensesFilterSets = await filterSetService.getFilterSets('licenses');
+  return licensesFilterSets.sort((a, b) => {
     const nameA = a.name.toLowerCase();
     const nameB = b.name.toLowerCase();
     if (nameA < nameB) return -1;
@@ -559,9 +555,9 @@ const updateFilterSets = async () => {
   filterSets.value = await getSortedFilterSets();
 };
 
-const openClassifications = (classifications: IObligation[], licenseName: string, licenseId: string) => {
+const openClassifications = (classificationsList: IObligation[], licenseName: string, licenseId: string) => {
   if (classificationsDialogRef.value) {
-    classificationsDialogRef.value?.open(classifications, licenseName, licenseId);
+    classificationsDialogRef.value?.open(classificationsList, licenseName, licenseId);
   }
 };
 
@@ -577,7 +573,7 @@ const retrieveClassifications = async () => {
 };
 
 const headerExpands = () => {
-  headerSettingsStore.setupStore(gridName, headers.value);
+  headerSettings.resetHeaderSettings({tableName, headers: headers.value});
 };
 
 const reload = async () => {
@@ -746,14 +742,14 @@ onMounted(async () => {
           <template v-if="allowActions" #[`header.actions`]="{column}">
             <GridFilterHeader :column="column">
               <template #settings>
-                <HeaderSettings :grid-name="gridName" :column="column" />
+                <HeaderSettings :grid-name="tableName" :column="column" />
               </template>
             </GridFilterHeader>
           </template>
           <template #[`header.meta.isLicenseChart`]="{column, getSortIcon, toggleSort}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #settings>
-                <HeaderSettings v-if="!allowActions" :grid-name="gridName" :column="column" />
+                <HeaderSettings v-if="!allowActions" :grid-name="tableName" :column="column" />
               </template>
               <template #filter>
                 <GridHeaderFilterIcon

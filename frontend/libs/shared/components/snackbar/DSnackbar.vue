@@ -3,13 +3,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
-  <v-snackbar v-model="visible" :timeout="timeout" bottom color="mbti">
+  <v-snackbar v-model="visible" :timeout="timeout" bottom color="brand">
     <div class="text-center">{{ message }}</div>
   </v-snackbar>
 </template>
 
 <script setup lang="ts">
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {onMounted, onUnmounted, ref} from 'vue';
 
 const visible = ref(false);

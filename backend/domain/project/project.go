@@ -570,8 +570,6 @@ func (project *Project) CreateNewProjectVersionIfNameNotUsed(name string, descri
 		ChildEntity: domain.NewChildEntity(),
 		Name:        name,
 		Description: description,
-		Updated:     time.Now(),
-		Created:     time.Now(),
 		Status:      PV_New,
 	}
 	project.Versions[projectVersion.Key] = &projectVersion
@@ -684,6 +682,34 @@ func (project *Project) CheckIfUserAlreadyExistsSoft(targetUser string) bool {
 func (project *Project) GetMember(userId string) *ProjectMemberEntity {
 	for _, value := range project.UserManagement.Users {
 		if value.UserId == userId {
+			return value
+		}
+	}
+	return nil
+}
+
+func (project *Project) RemoveMember(userId string) {
+	for i, value := range project.UserManagement.Users {
+		if value.UserId == userId {
+			project.UserManagement.Users = append(project.UserManagement.Users[:i], project.UserManagement.Users[i+1:]...)
+			return
+		}
+	}
+}
+
+func (project *Project) OtherOwnersExists(userId string) bool {
+	for _, value := range project.UserManagement.Users {
+		if value.UserType != OWNER || value.UserId == userId {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+func (project *Project) OtherOwner(userId string) *ProjectMemberEntity {
+	for _, value := range project.UserManagement.Users {
+		if value.UserType == OWNER && value.UserId != userId {
 			return value
 		}
 	}

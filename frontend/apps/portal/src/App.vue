@@ -2,22 +2,11 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <v-app>
-    <Idle></Idle>
-    <router-view v-if="hasAuthentication && profileActive"></router-view>
-    <DisabledUserDialog ref="dud"></DisabledUserDialog>
-    <ErrorDialog ref="errorDialog" @close="onCloseErrorDialog"></ErrorDialog>
-    <TermsOfUseDialog v-model="showDlgTos" @success="onAcceptTOS"></TermsOfUseDialog>
-    <NewWizardDialog v-if="wizardStore.isWizardOpen"></NewWizardDialog>
-  </v-app>
-</template>
-
 <script setup lang="ts">
 import {getApi} from '@disclosure-portal/api';
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
-import DHTTPError from '@disclosure-portal/model/DHTTPError';
-import ErrorDialogConfig from '@disclosure-portal/model/ErrorDialogConfig';
+import DHTTPError from '@shared/types/DHTTPError';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import i18n from '@disclosure-portal/i18n';
 import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
@@ -25,24 +14,27 @@ import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import config from '@shared/utils/config';
-import {storeToRefs} from 'pinia';
 import {onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
+import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 
-const {t, locale} = useI18n();
+const {t} = useI18n();
 const route = useRoute();
 const userStore = useUserStore();
 const appStore = useAppStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const customIdsStore = useCustomIdStore();
 const router = useRouter();
 const wizardStore = useWizardStore();
 const labelStore = useLabelStore();
 const {useReactiveTitle} = usePageTitle();
-
-const {appLanguage} = storeToRefs(appStore);
+const eventKeyStore = useEventKeysStore();
 
 const hasAuthentication = ref(false);
 const profileActive = ref(false);
@@ -50,7 +42,7 @@ const showDlgTos = ref(false);
 const errorDialog = ref();
 const dud = ref();
 
-const backendCodesRedirectToProjectList: string[] = [
+const backendCodesRedirectToProjectList: Set<string> = new Set([
   'ERROR_REPOSITORY_READ',
   'FIND_VERSION',
   'VERSION_DELETED',
@@ -59,24 +51,9 @@ const backendCodesRedirectToProjectList: string[] = [
   'PARAM_VERSION_EMPTY',
   'AAR',
   'TASK_NOT_FOUND',
-];
+]);
 
-const backendCodesRedirectToLicenseList: string[] = ['LICENSE_DATA_MISSING'];
-
-// Set up reactive page title based on route meta.title only
-watch(
-  () => [route.meta?.title, locale.value],
-  () => {
-    if (route.meta?.title) {
-      let title: string = 'Disclosure Portal';
-      const titleObj = route.meta.title as {[key: string]: string};
-      title = titleObj[locale.value];
-
-      useReactiveTitle(title);
-    }
-  },
-  {immediate: true},
-);
+const backendCodesRedirectToLicenseList: Set<string> = new Set(['LICENSE_DATA_MISSING']);
 
 const login = () => {
   const url = config.SERVER_URL + config.OAUTH.LOGIN;
@@ -84,11 +61,11 @@ const login = () => {
 };
 
 const onCloseErrorDialog = (error: ErrorDialogConfig) => {
-  if (backendCodesRedirectToProjectList.includes(error.titleKeyOrCode)) {
+  if (backendCodesRedirectToProjectList.has(error.titleKeyOrCode)) {
     router.push('/dashboard/home');
   }
 
-  if (backendCodesRedirectToLicenseList.includes(error.titleKeyOrCode)) {
+  if (backendCodesRedirectToLicenseList.has(error.titleKeyOrCode)) {
     router.push('/dashboard/licenses');
   }
 
@@ -141,9 +118,20 @@ const onResizeWindow = () => {
   eventBus.emit('window-resize', {});
 };
 
-watch(appLanguage, (newLang) => {
-  locale.value = newLang;
-});
+// Set up reactive page title based on route meta.title only
+watch(
+  () => [route.meta?.title, appLanguage.value],
+  () => {
+    if (route.meta?.title) {
+      let title = 'Disclosure Portal';
+      const titleObj = route.meta.title as {[key: string]: string};
+      title = titleObj[appLanguage.value];
+
+      useReactiveTitle(title);
+    }
+  },
+  {immediate: true},
+);
 
 onUnmounted(() => {
   window.removeEventListener('resize', onResizeWindow);
@@ -178,7 +166,8 @@ onMounted(async () => {
   eventBus.on('on-error', showError);
   window.addEventListener('resize', onResizeWindow);
 
-  locale.value = appLanguage.value;
+  languageStore.initializeLanguage();
+  eventKeyStore.initEventKeyStore();
 
   const {api: i18nApi} = getApi();
   const [simpleProfileData, locales] = await Promise.all([
@@ -213,3 +202,14 @@ onMounted(async () => {
   createNavItemsGroup();
 });
 </script>
+
+<template>
+  <v-app>
+    <Idle></Idle>
+    <router-view v-if="hasAuthentication && profileActive"></router-view>
+    <DisabledUserDialog ref="dud"></DisabledUserDialog>
+    <ErrorDialog ref="errorDialog" @close="onCloseErrorDialog"></ErrorDialog>
+    <TermsOfUseDialog v-model="showDlgTos" @success="onAcceptTOS"></TermsOfUseDialog>
+    <NewWizardDialog v-if="wizardStore.isWizardOpen"></NewWizardDialog>
+  </v-app>
+</template>

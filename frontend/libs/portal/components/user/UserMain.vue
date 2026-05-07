@@ -103,7 +103,7 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
     <v-row class="expand" v-if="userProfile">
       <v-col>
         <v-card>
-          <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
             <v-tab value="userOverview">
               {{ t('TAB_USER_OVERVIEW') }}
             </v-tab>

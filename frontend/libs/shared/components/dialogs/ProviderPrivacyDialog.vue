@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
-import {useAppStore} from '@disclosure-portal/stores/app';
 import LegalNoticeDe from '@shared/assets/documents/legal_notice/LegalNotice_de.md?raw';
 import LegalNoticeEn from '@shared/assets/documents/legal_notice/LegalNotice_en.md?raw';
 import PrivacyStatementDe from '@shared/assets/documents/privacy_statement/PrivacyStatement_de.md?raw';
@@ -16,6 +15,8 @@ import TermsOfUseEn from '@shared/assets/documents/terms_of_use/TermsOfUseCurren
 import TermsOfUseDe from '@shared/assets/documents/terms_of_use/TermsOfUseDe.md?raw';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 interface ITabs {
   key: string;
@@ -23,37 +24,38 @@ interface ITabs {
   content: string;
 }
 
+const {t} = useI18n();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
+
 const isDialogVisible = ref(false);
 const selectedTabIndex = ref(0);
-
-const {t} = useI18n();
-const appStore = useAppStore();
 
 const tabs = computed<ITabs[]>(() => [
   {
     key: 'provider',
     name: 'TAB_PROVIDER',
-    content: appStore.getAppLanguage === 'en' ? ProviderEn : ProviderDe,
+    content: appLanguage.value === 'en' ? ProviderEn : ProviderDe,
   },
   {
     key: 'legalNotices',
     name: 'TAB_LEGAL_NOTICES',
-    content: appStore.getAppLanguage === 'en' ? LegalNoticeEn : LegalNoticeDe,
+    content: appLanguage.value === 'en' ? LegalNoticeEn : LegalNoticeDe,
   },
   {
     key: 'privacyStatement',
     name: 'TAB_PRIVACY_STATEMENT',
-    content: appStore.getAppLanguage === 'en' ? PrivacyStatementEn : PrivacyStatementDe,
+    content: appLanguage.value === 'en' ? PrivacyStatementEn : PrivacyStatementDe,
   },
   {
     key: 'termsOfUse',
     name: 'TAB_TERMS_OF_USE',
-    content: appStore.getAppLanguage === 'en' ? TermsOfUseEn : TermsOfUseDe,
+    content: appLanguage.value === 'en' ? TermsOfUseEn : TermsOfUseDe,
   },
   {
     key: 'notice',
     name: 'TAB_NOTICE',
-    content: appStore.getAppLanguage === 'en' ? NoticeEn : NoticeDe,
+    content: appLanguage.value === 'en' ? NoticeEn : NoticeDe,
   },
 ]);
 
@@ -99,7 +101,7 @@ const clipboardContent = (key: string) => {
         <v-card-text>
           <v-tabs
             v-model="selectedTabIndex"
-            slider-color="mbti"
+            slider-color="brand"
             active-class="active"
             show-arrows
             bg-color="tabsHeader">

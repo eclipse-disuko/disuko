@@ -1,32 +1,25 @@
-<!-- SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG -->
-<!---->
-<!-- SPDX-License-Identifier: Apache-2.0 -->
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG // // SPDX-License-Identifier: Apache-2.0
 
 <script setup lang="ts">
 import {TaskDto} from '@disclosure-portal/model/Users';
 import Profile from '@disclosure-portal/services/profile';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
-import {openUrlInNewTab} from '@disclosure-portal/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import dayjs from 'dayjs';
 import {indexOf} from 'lodash';
-import {storeToRefs} from 'pinia';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 const router = useRouter();
 const route = useRoute();
 const {t} = useI18n();
 const {info, error} = useSnackbar();
-
-const gridName = 'TasksGrid';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 interface Props {
   hideEditAction?: boolean;
@@ -85,7 +78,9 @@ const headers: DataTableHeader[] = [
   {title: 'COL_CREATED', sortable: true, align: 'start', width: 110, value: 'created'},
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'TasksGrid';
+const headerSettings = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettings;
 
 watch(
   () => route.params.id,
@@ -249,19 +244,24 @@ onMounted(async () => {
           item-value="_key"
           @click:row="(_: Event, dataItem: DataTableItem<TaskDto>) => showTaskApprovalDialog(dataItem.item)">
           <template v-slot:[`header.actions`]="{column}">
-            <HeaderSettings :column="column" :grid-name="gridName" />
-            <span class="ml-6">{{ column.title }}</span>
+            <GridFilterHeader :column="column">
+              <template #settings>
+                <HeaderSettings :column="column" :grid-name="tableName" />
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.status`]="{column, toggleSort, getSortIcon}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterStatus"
-              :column="column"
-              :label="t('STATUS')"
-              :allItems="possibleStatus"
-              :initialSelected="initialSelectedStatus">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterStatus"
+                  :column="column"
+                  :label="t('STATUS')"
+                  :allItems="possibleStatus"
+                  :initialSelected="initialSelectedStatus">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />

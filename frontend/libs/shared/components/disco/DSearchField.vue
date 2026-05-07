@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {nextTick, ref, watch} from 'vue';
+import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 defineOptions({inheritAttrs: false});
@@ -11,15 +11,17 @@ defineOptions({inheritAttrs: false});
 interface Props {
   disabled?: boolean;
 }
-
 defineProps<Props>();
-
 const model = defineModel<string>({default: ''});
 
 const {t} = useI18n();
 
 const isExpanded = ref(model.value !== '');
 const inputRef = ref<HTMLInputElement | null>(null);
+
+const isFieldEmpty = computed(() => {
+  return !model.value || model.value.trim() === '';
+});
 
 watch(model, (val) => {
   if (val !== '') {
@@ -30,54 +32,36 @@ watch(model, (val) => {
 async function expand() {
   isExpanded.value = true;
   await nextTick();
-  inputRef.value?.focus();
-}
-
-function collapse() {
-  if (model.value === '') {
-    isExpanded.value = false;
-  }
-}
-
-function focus() {
-  if (!isExpanded.value) {
-    expand();
-  } else {
+  setTimeout(() => {
     inputRef.value?.focus();
-  }
-}
-
-function blur() {
-  inputRef.value?.blur();
+  }, 150);
 }
 
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
-    if (model.value === '') {
+    if (isFieldEmpty.value) {
       isExpanded.value = false;
     }
   }
 }
 
 function onBlur() {
-  if (model.value === '') {
+  if (isFieldEmpty.value) {
     isExpanded.value = false;
   }
 }
-
-defineExpose({focus, blur, expand, collapse});
 </script>
 
 <template>
-  <div class="d-search-field">
-    <Transition name="d-search-expand">
+  <div class="align-center inline-flex">
+    <Transition name="d-search-expand" mode="out-in">
       <v-text-field
         v-if="isExpanded"
         ref="inputRef"
         v-model="model"
         v-bind="$attrs"
         autocomplete="off"
-        :width="500"
+        :width="400"
         append-inner-icon="mdi-magnify"
         variant="outlined"
         density="compact"
@@ -96,23 +80,24 @@ defineExpose({focus, blur, expand, collapse});
         prepend-icon="mdi-magnify"
         class="text-none h-10"
         @click="expand">
-        {{ t('labelSearch') }}
+        <span class="font-bold">{{ t('labelSearch') }}</span>
       </v-btn>
     </Transition>
   </div>
 </template>
 
 <style scoped>
-.d-search-field {
-  display: inline-flex;
-  align-items: center;
+.d-search-expand-enter-active {
+  transition:
+    opacity 0.1s ease-in,
+    max-width 0.15s ease-in;
+  overflow: hidden;
 }
 
-.d-search-expand-enter-active,
 .d-search-expand-leave-active {
   transition:
-    opacity 0.2s ease,
-    max-width 0.25s ease;
+    opacity 0.1s ease-out,
+    max-width 0.1s ease-out;
   overflow: hidden;
 }
 
@@ -125,6 +110,6 @@ defineExpose({focus, blur, expand, collapse});
 .d-search-expand-enter-to,
 .d-search-expand-leave-from {
   opacity: 1;
-  max-width: 500px;
+  max-width: 400px;
 }
 </style>

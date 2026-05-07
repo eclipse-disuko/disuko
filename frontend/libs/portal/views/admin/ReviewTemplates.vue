@@ -12,7 +12,7 @@ import adminService from '@disclosure-portal/services/admin';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';

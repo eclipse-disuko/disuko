@@ -33,7 +33,7 @@ const selectedFilterStatus = ref<string[]>([]);
 const addChildrenProjectDialog = ref();
 const errorDialog = ref();
 
-const headers = computed<DataTableHeader[]>(() => {
+const headers = computed((): DataTableHeader[] => {
   return [
     {key: 'data-table-group', title: t('COL_PROJECT_NAME'), width: 200},
     {title: t('COL_PROJECT_STATUS'), key: 'project.status', align: 'center', width: 200},
@@ -155,8 +155,8 @@ const getStatusClass = computed(() => (status?: string) => {
         :items="filteredList"
         @click:row="(_: Event, dataItem: DataTableItem<ProjectChildrenCombiDto>) => openVersion(dataItem.item)"
         :items-per-page="-1">
-        <template v-slot:[`item.data-table-expand`]="{}"> x </template>
-        <template v-slot:group-header="{item, toggleGroup, isGroupOpen}">
+        <template #[`item.data-table-expand`]="{}"> x </template>
+        <template #group-header="{item, toggleGroup, isGroupOpen}">
           <tr
             :class="{'cursor-pointer': !item.items[0].raw.project.isDeleted && item.items[0].raw.hasProjectReadAccess}"
             @click.stop="openProject(item.items[0].raw.project)">
@@ -193,14 +193,14 @@ const getStatusClass = computed(() => (status?: string) => {
             <td :colspan="headers.length - 2"></td>
           </tr>
         </template>
-        <template v-slot:[`item.projectKey`]="{}">
+        <template #[`item.projectKey`]="{}">
           <!-- blank cause in expand row-->
           <span>&nbsp;</span>
         </template>
-        <template v-slot:[`item.status`]="{item}">
+        <template #[`item.status`]="{item}">
           <DVersionStateWithTooltip v-if="item.version" :version="item.version" :isGroup="true" />
         </template>
-        <template v-slot:[`header.project.status`]="{column, getSortIcon, toggleSort}">
+        <template #[`header.project.status`]="{column, getSortIcon, toggleSort}">
           <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
             <template #filter>
               <GridHeaderFilterIcon
@@ -212,14 +212,14 @@ const getStatusClass = computed(() => (status?: string) => {
             </template>
           </GridFilterHeader>
         </template>
-        <template v-slot:[`item.project.status`]> </template>
-        <template v-slot:[`item.version.updated`]="{item}">
+        <template #[`item.project.status`]> </template>
+        <template #[`item.version.updated`]="{item}">
           <DDateCellWithTooltip :value="item.version.updated" v-if="item.version" />
         </template>
-        <template v-slot:[`item.version.created`]="{item}">
+        <template #[`item.version.created`]="{item}">
           <DDateCellWithTooltip :value="item.version.created" v-if="item.version" />
         </template>
-        <template v-slot:[`item.description`]="{item}">
+        <template #[`item.description`]="{item}">
           <v-tooltip
             :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
             bottom

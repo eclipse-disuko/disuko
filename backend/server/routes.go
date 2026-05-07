@@ -57,7 +57,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 				r.Get("/recent", s.handlers.project.ProjectRecentHandler)
 				r.Get("/{uuid}/checklists", s.handlers.project.ProjectFindApplicableChecklists)
 				r.Get("/{uuid}/possibleChildren", s.handlers.project.ProjectGetPossibleChildrenHandler)
-				r.Get("/{uuid}/allSbomLists", s.handlers.project.ProjectGetAllSbomlists)
 				r.Get("/{uuid}/allSBOM", s.handlers.project.ProjectGetAllSbom)
 				r.Put("/{uuid}", s.handlers.project.ProjectUpdateHandler)
 				r.Put("/{uuid}/deprecate", s.handlers.project.ProjectDeprecateHandler)
@@ -192,7 +191,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 								r.Put("/{remarkId}/status", s.handlers.project.SetReviewRemarkStatus)
 							})
 						})
-						r.Get("/sbomhistory", s.handlers.project.ProjectVersionSPDXHistory) // test missing
 						r.Route("/spdx", func(r chi.Router) {
 							r.Post("/", s.handlers.spdx.SPDXUploadFileHandler)
 							r.Route("/{spdxFileKey}", func(r chi.Router) {
@@ -251,17 +249,9 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Get("/", s.handlers.user.GetAllHandler) // test missing
 					// for later use
 					r.Put("/", s.handlers.user.UpdateHandlerForAdmin) // test missing
+					r.Get("/upcomingDeletions", s.handlers.user.GetUpcomingDeletionsHandler)
 					r.Get("/termsOfUseCurrentVersion", s.handlers.user.GetTermsOfUseCurrentVersionHandler)
 					r.Post("/search", s.handlers.user.SearchHandlerForAdmin) // test missing
-					r.Get("/delete-personal-data", s.handlers.user.DeletePersonalDataDryRunHandler)
-					r.Get("/get-personal-details/{username}", s.handlers.user.GetPersonalDetailsHandler)
-					r.Delete("/delete-personal-data/{entity}/{id}", s.handlers.user.DeletePersonalDataByEntityIdHandler)
-					r.Delete("/delete-personal-data/{entity}", s.handlers.user.DeletePersonalDataByEntityHandler)
-					r.Route("/deletion-audit", func(r chi.Router) {
-						r.Get("/operation/{operationId}", s.handlers.user.GetDeletionAuditByOperationHandler)
-						r.Get("/admin/{adminUser}", s.handlers.user.GetDeletionAuditByAdminHandler)
-						r.Get("/user/{username}", s.handlers.user.GetDeletionAuditTrailHandler)
-					})
 					r.Route("/{uuid}", func(r chi.Router) {
 						r.Get("/", s.handlers.user.GetByUuidHandler)                                           // test missing
 						r.Get("/audit", s.handlers.user.GetAuditTrailHandler)                                  // test missing
@@ -457,16 +447,16 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 		})
 	})
 
-	//	@title			FOSS Disclosure Portal
-	//	@version		1.0.0
-	//	@description	FOSS Disclosure Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
+	//	@title			DISUKO
+	//	@version		1.0.6
+	//	@description	DISUKO Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
 	//	@description
-	//	@description	SPDX-FileCopyrightText: 2023 Mercedes-Benz Tech Innovation GmbH
-	//	@description	SPDX-License-Identifier: MIT
-	//	@termsOfService	https://mb4.me/FOSS_Disclosure_Portal_ToU
+	//	@description	SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+	//	@description	SPDX-License-Identifier: Apache-2.0
 
 	//	@schemes	https
-	//	@BasePath	/disco/v1
+	//	@basePath	/api/public
+	//  @host		localhost:3009
 
 	//	@securityDefinitions.apiKey	Bearer
 	//	@in							header

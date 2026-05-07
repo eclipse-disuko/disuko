@@ -149,7 +149,7 @@ func (s *Service) FullName(id string) string {
 	if !cached {
 		u := s.userRepository.FindByUserId(s.rs, id)
 		if u == nil {
-			return "-"
+			return id
 		}
 		full = fmt.Sprintf("%s %s", u.Forename, u.Lastname)
 		s.fullNameLookupCache[id] = full

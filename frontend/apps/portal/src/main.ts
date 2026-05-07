@@ -18,6 +18,7 @@ import {registerPlugins} from './plugins';
 import('./styles/themes/default/markdown.scss');
 
 dayjs.extend(dayjsPluginUTC);
+
 setup().then(() => {
   const app = createApp(App);
   registerPlugins(app);

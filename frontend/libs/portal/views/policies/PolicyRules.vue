@@ -11,7 +11,6 @@ import policyRuleService from '@disclosure-portal/services/policyrules';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import {openUrl} from '@disclosure-portal/utils/url';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -22,12 +21,14 @@ import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
 const {info} = useSnackbar();
 const router = useRouter();
 const policyRulesUtils = usePolicyRulesUtils();
+const {openUrl} = useUrls();
 
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);

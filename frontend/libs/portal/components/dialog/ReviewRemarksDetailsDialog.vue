@@ -28,7 +28,7 @@
             :text="t('TT_BULK_CLOSE_REMARK')" />
         </div>
       </template>
-      <v-tabs v-model="currentTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+      <v-tabs v-model="currentTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
         <v-tab value="details">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
         <v-tab value="tabComment">{{ t('COL_COMMENTS') }}</v-tab>
       </v-tabs>

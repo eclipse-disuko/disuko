@@ -4,19 +4,18 @@
 
 <script setup lang="ts">
 import Stepper from '@disclosure-portal/components/new-wizard/Stepper.vue';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import {openProjectUrlByKey} from '@disclosure-portal/utils/url';
-import useSnackbar from '@shared/composables/useSnackbar';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {useUrls} from '@shared/composables/useUrls';
 
 const {t} = useI18n();
 const wizardStore = useWizardStore();
-const snack = useSnackbar();
 const idle = useIdleStore();
 const router = useRouter();
+const {openProjectUrlByKey} = useUrls();
 
 const lastButtonText = computed(() => {
   if (wizardStore.mode === 'edit') {

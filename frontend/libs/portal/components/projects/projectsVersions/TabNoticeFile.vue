@@ -58,7 +58,7 @@ const loadContent = async (format: NoticeFileFormat) => {
     format,
     currentProjectId.value,
     currentVersionId.value,
-    spdx.value._key,
+    spdx.value!._key,
   );
 
   updateContentsByType(response.data);
@@ -105,7 +105,7 @@ const reload = async (forceReload = false) => {
   }, 600);
 
   sbomStats.value = (
-    await VersionService.getSBOMStats(currentProjectId.value, currentVersionId.value, spdx.value._key, true)
+    await VersionService.getSBOMStats(currentProjectId.value, currentVersionId.value, spdx.value!._key, true)
   ).data;
 
   clearTimeout(delayTimeout);

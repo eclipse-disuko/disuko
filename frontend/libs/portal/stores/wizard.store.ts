@@ -18,7 +18,7 @@ import {
 import type {Project} from '@disclosure-portal/model/Project';
 import companyService from '@disclosure-portal/services/companies';
 import projectService from '@disclosure-portal/services/projects';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {deepCopy} from '@disclosure-portal/utils/Tools';

@@ -5,29 +5,26 @@
 <script setup lang="ts">
 import {UserRequestDto} from '@disclosure-portal/model/Users';
 import ProfileServer from '@disclosure-portal/services/profile';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import termsOfUseEn from '@shared/assets/documents/terms_of_use/TermsOfUseCurrent.md?raw';
 import termsOfUseDe from '@shared/assets/documents/terms_of_use/TermsOfUseDe.md?raw';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import Markdown from '@shared/components/widgets/MarkdownWidget.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useClipboard} from '@shared/utils/clipboard';
-import {storeToRefs} from 'pinia';
 import {ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 const showDialog = defineModel<boolean>({required: true, default: false});
 
 const emit = defineEmits(['success']);
 
-const {info: infoSnackbar, error: errorSnackbar} = useSnackbar();
+const {info: infoSnackbar} = useSnackbar();
 const userStore = useUserStore();
-const appStore = useAppStore();
 const {t} = useI18n();
 const {copyToClipboard} = useClipboard();
-
-const {appLanguage} = storeToRefs(appStore);
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 
 const hasAgreedToU = ref(false);
 const langTab = ref<'de' | 'en'>(appLanguage.value);
@@ -58,7 +55,7 @@ const onIntersect = (isIntersecting: boolean, entries: IntersectionObserverEntry
 };
 
 watch(langTab, (newTab) => {
-  appStore.setLanguage(newTab);
+  languageStore.setLanguage(newTab);
 });
 </script>
 
@@ -82,7 +79,7 @@ watch(langTab, (newTab) => {
         </v-row>
       </v-card-title>
       <v-card-text>
-        <v-tabs v-model="langTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="langTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="en">English</v-tab>
           <v-tab value="de">Deutsch</v-tab>
         </v-tabs>

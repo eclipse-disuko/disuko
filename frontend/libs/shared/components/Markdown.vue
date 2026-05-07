@@ -3,7 +3,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
-  <Markdown class="markdown" html :source="markdownText" />
+  <div>
+    <Markdown class="markdown" html :source="markdownText" />
+    <slot />
+  </div>
 </template>
 
 <script setup lang="ts">

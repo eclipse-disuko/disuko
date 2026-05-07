@@ -9,7 +9,7 @@ import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {ComponentStats, OverallReviewState, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
@@ -533,7 +533,7 @@ defineExpose({open});
               <DIconButton icon="mdi-information-outline" :hint="t('FOSSDD_VERSION_TOOLTIP')" />
             </Stack>
 
-            <v-tabs v-model="tab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+            <v-tabs v-model="tab" slider-color="brand" show-arrows bg-color="tabsHeader">
               <v-tab value="general">{{ t('TAB_TITLE_GENERAL') }}</v-tab>
               <v-tab value="approvable" v-if="projectModel.isGroup">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
             </v-tabs>

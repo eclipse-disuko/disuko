@@ -11,7 +11,7 @@ import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
@@ -359,8 +359,10 @@ onUnmounted(() => {
               </v-icon>
               <span v-else class="placeholder-icon"></span>
             </div>
-            <span class="text-caption">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
-            <span class="text-caption d-secondary-text" v-if="item.raw.MetaInfo">
+            <span class="text-caption">
+              <DDateCellWithTooltip :value="item.raw.Uploaded"></DDateCellWithTooltip>
+            </span>
+            <span class="text-caption d-secondary-text ml-1" v-if="item.raw.MetaInfo">
               - {{ getStrWithMaxLength(39, item.raw.MetaInfo.Name) }}
             </span>
             <span class="text-caption d-secondary-text" v-if="item.raw.Tag"
@@ -419,7 +421,7 @@ onUnmounted(() => {
     </div>
     <div v-if="dataAreLoaded && versionDetails">
       <v-card>
-        <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="overview" :to="`${tabUrlPart}/overview/${encodedSbomKey}`">
             {{ t('TAB_OVERVIEW') }}
           </v-tab>
@@ -474,7 +476,7 @@ onUnmounted(() => {
           <v-tabs-window-item value="source">
             <TabSourceCode ref="source"></TabSourceCode>
           </v-tabs-window-item>
-          <v-tabs-window-item value="overallReviews" class="pa-3">
+          <v-tabs-window-item value="overallReviews">
             <TabOverallReviews ref="overallReviews" @reloadParent="reload"></TabOverallReviews>
           </v-tabs-window-item>
           <v-tabs-window-item value="notice">

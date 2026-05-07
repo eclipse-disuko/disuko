@@ -10,7 +10,6 @@ import {LabelsTools} from '@disclosure-portal/utils/Labels';
 import {useStorage} from '@vueuse/core';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 
 const SUPPORTED_LANGUAGES = ['en', 'de'] as const;
@@ -27,8 +26,7 @@ function resolveInitialAppLanguage(): string {
     localStorage.setItem('appLanguage', normalized);
     return normalized;
   }
-  const locale = useI18n().locale.value;
-  const initial = locale && locale.trim() ? normalizeSupportedLanguage(locale) : 'en';
+  const initial = 'en';
   localStorage.setItem('appLanguage', initial);
   return initial;
 }

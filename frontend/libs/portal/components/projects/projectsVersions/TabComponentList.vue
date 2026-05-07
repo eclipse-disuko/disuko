@@ -16,10 +16,10 @@ import {
 } from '@disclosure-portal/model/VersionDetails';
 import ProjectService from '@disclosure-portal/services/projects';
 import VersionService from '@disclosure-portal/services/version';
-import {useIdleStore} from '@disclosure-portal/stores/idle.store';
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import eventBus from '@disclosure-portal/utils/eventbus';
+import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
@@ -30,12 +30,11 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
-import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
-import {storeToRefs} from 'pinia';
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 
 type TabelItem = ComponentInfo & {
   showPolicyDecision: boolean;
@@ -48,10 +47,6 @@ const {getI18NTextOfPrefixKey} = useLicense();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const idle = useIdleStore();
-
-const gridName = 'ComponentList';
-const headerSettingsStore = useHeaderSettingsStore();
-const {filteredHeaders} = storeToRefs(headerSettingsStore);
 
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
@@ -168,7 +163,9 @@ const headers: DataTableHeader[] = [
   },
 ];
 
-headerSettingsStore.setupStore(gridName, headers);
+const tableName = 'ComponentList';
+const headerSettingsStore = useHeaderSettings({tableName, headers});
+const {filteredHeaders} = headerSettingsStore;
 
 const filteredList = computed(() => {
   return componentList.value.filter((info: TabelItem) => {
@@ -243,13 +240,20 @@ const customKeySort = {
   },
 };
 
+const findComponentAndShowDetails = (spdxId: string) => {
+  const component = componentList.value.find((item) => item.spdxId === spdxId);
+  if (component) {
+    showDetails(component);
+  }
+};
+
 const showDetails = async (item: TabelItem) => {
   idle.show();
 
   const response = await ProjectService.getComponentDetailsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? '',
     item.spdxId,
   );
 
@@ -257,6 +261,7 @@ const showDetails = async (item: TabelItem) => {
     newComponentDetailsDlg.value?.open(
       response.data,
       item.licenseRecommended,
+      item.licenseRecommendedMsg,
       item.policyRuleStatus,
       item.unmatchedLicenses,
       item.policyDecisionsApplied,
@@ -274,12 +279,16 @@ const openLicenseRuleDialog = (item: TabelItem) => {
   component.version = item.version;
   component.licenseExpression = item.licenseEffective;
 
-  licenseRuleDialog.value?.open({
-    licenseId: '',
-    component: component,
-    policyStatus: item.policyRuleStatus,
-    licenseRecommended: item.licenseRecommended,
-  });
+  licenseRuleDialog.value?.open(
+    {
+      licenseId: '',
+      component: component,
+      policyStatus: item.policyRuleStatus,
+      licenseRecommended: item.licenseRecommended,
+      licenseRecommendedMsg: item.licenseRecommendedMsg,
+    },
+    true,
+  );
 };
 
 const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => {
@@ -289,20 +298,13 @@ const openPolicyDecisionDialog = (item: TabelItem, type: DecisionType): void => 
   component.version = item.version;
   component.licenseExpression = item.licenseEffective;
 
-  let policies: PolicyRuleStatus[];
-  switch (type) {
-    case 'warn':
-      policies = item.policyRuleStatus.filter((pr) => pr.canMakeWarnedDecision);
-      break;
-    case 'deny':
-      policies = item.policyRuleStatus.filter(
-        (pr) => pr.canMakeDeniedDecision && !pr.deniedDecisionDeniedReason?.trim(),
-      );
-  }
-
   policyDecisionDialog.value?.open({
     component,
-    policies,
+    policies: item.policyRuleStatus.filter(
+      (policyRule: PolicyRuleStatus) =>
+        (type === 'deny' && policyRule.canMakeDeniedDecision && !policyRule.deniedDecisionDeniedReason?.trim()) ||
+        (type === 'warn' && policyRule.canMakeWarnedDecision),
+    ),
     type,
   });
 };
@@ -327,7 +329,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
   if (canMakeWarnedDecisionComponents.value.length === 0) return;
 
   const items: DialogBulkPolicyDecisionEntry[] = [];
-  for (const cmp of canMakeWarnedDecisionComponents.value) {
+  canMakeWarnedDecisionComponents.value.forEach((cmp) => {
     const component = new ComponentInfoSlim();
     component.spdxId = cmp.spdxId;
     component.name = cmp.name;
@@ -341,7 +343,7 @@ const openBulkPolicyDecisionsDialog = (): void => {
       };
       items.push(item);
     }
-  }
+  });
 
   bulkPolicyDecisionsDialog.value?.open({items});
 };
@@ -440,7 +442,7 @@ const load = async () => {
   } = await VersionService.getVersionComponentsForSbom(
     projectModel.value._key,
     versionDetails.value._key,
-    currentSpdx.value._key,
+    currentSpdx.value?._key ?? null,
   );
 
   componentList.value = componentInfo ? getTableItems(componentInfo) : [];
@@ -614,45 +616,55 @@ onUnmounted(async () => {
           v-model:sort-by="sortBy"
           @click:row="(_: Event, dataItem: DataTableItem<TabelItem>) => showDetails(dataItem.item)">
           <template v-slot:[`header.type`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterTypes"
-              :column="column"
-              :label="t('TYPE')"
-              :allItems="allTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterTypes"
+                  :column="column"
+                  :label="t('TYPE')"
+                  :allItems="allTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.licenseEffective`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterLicenses"
-              :column="column"
-              :label="t('LICENSE')"
-              :allItems="allLicenses">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterLicenses"
+                  :column="column"
+                  :label="t('LICENSE')"
+                  :allItems="allLicenses">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.prStatus`]="{column, getSortIcon, toggleSort}">
-            <HeaderSettings :column="column" :grid-name="gridName" />
-            <span class="mr-1 ml-6">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterPolicyTypes"
-              :column="column"
-              :label="t('POLICY_STATE')"
-              :allItems="allPolicyTypes">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #settings>
+                <HeaderSettings :column="column" :grid-name="tableName" />
+              </template>
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterPolicyTypes"
+                  :column="column"
+                  :label="t('POLICY_STATE')"
+                  :allItems="allPolicyTypes">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`header.worstFamily`]="{column, getSortIcon, toggleSort}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterFamily"
-              :column="column"
-              :label="t('LICENSE_FAMILY')"
-              :allItems="allFamilies">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterFamily"
+                  :column="column"
+                  :label="t('LICENSE_FAMILY')"
+                  :allItems="allFamilies">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
           <template v-slot:[`item.prStatus`]="{item}">
             <span v-if="item.unasserted">
@@ -772,7 +784,7 @@ onUnmounted(async () => {
     ref="newComponentDetailsDlg"
     @reloadAfterCreation="reload"
     @triggerBulk="openBulkPolicyDecisionsDialog" />
-  <LicenseRuleDialog ref="licenseRuleDialog" @reload="reload" />
+  <LicenseRuleDialog ref="licenseRuleDialog" @reload="reload" @triggerComponentDetails="findComponentAndShowDetails" />
   <PolicyDecisionDialog ref="policyDecisionDialog" @reload="reload" @triggerBulk="openBulkPolicyDecisionsDialog" />
   <BulkPolicyDecisionsDialog ref="bulkPolicyDecisionsDialog" @reload="reload" />
 </template>

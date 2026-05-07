@@ -4,13 +4,13 @@
 
 <script setup lang="ts">
 import {ProjectRoleDto} from '@disclosure-portal/model/Users';
-import {openUrl} from '@disclosure-portal/utils/View';
 import TableLayout from '@shared/layouts/TableLayout.vue';
-import {SortItem} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {DataTableItem} from 'vuetify/lib/components/VDataTable/types';
+import {useUrls} from '@shared/composables/useUrls';
 
 interface Props {
   fetchMethod: () => Promise<ProjectRoleDto[]>;
@@ -20,6 +20,7 @@ const props = defineProps<Props>();
 
 const {t} = useI18n();
 const router = useRouter();
+const {openUrl} = useUrls();
 
 const sortBy = ref<SortItem[]>([]);
 const items = ref<ProjectRoleDto[]>([]);
@@ -38,12 +39,11 @@ const openProject = (item: ProjectRoleDto) => {
   openUrl(url, router);
 };
 
-const headers = computed(() => {
+const headers = computed((): DataTableHeader[] => {
   return [
     {
       title: t('COL_PROJECT_NAME'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'projectName',
       width: 180,
       sortable: true,
@@ -52,7 +52,6 @@ const headers = computed(() => {
       title: t('COL_USER_TYPE'),
       width: 180,
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'userType',
       sortable: true,
     },
@@ -60,13 +59,11 @@ const headers = computed(() => {
       width: 200,
       title: t('ROLES'),
       align: 'start',
-      class: 'tableHeaderCell',
       value: 'responsible',
       sortable: true,
     },
     {
       title: '',
-      class: 'tableHeaderCell',
       value: '',
     },
   ];

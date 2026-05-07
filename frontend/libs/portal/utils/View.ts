@@ -3,16 +3,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Icons from '@disclosure-portal/constants/icons';
-import {CONTROL_IS_PRESSED, releaseKeys, SHIFT_IS_PRESSED} from '@disclosure-portal/keyState';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import {PolicyState} from '@disclosure-portal/model/PolicyRule';
 import {ReviewRemarkLevel, ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import {ComponentDiffType} from '@disclosure-portal/model/VersionDetails';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {BlobPart} from '@disclosure-portal/types/discobasics';
 import {DATE_FORMAT, DATE_FORMAT_SHORT, DATETIME_FORMAT, DATETIME_FORMAT_FILE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
-import {Router} from 'vue-router';
+import {useLanguageStore} from '@shared/stores/language.store';
+import {storeToRefs} from 'pinia';
 
 export function getIconColorScanRemarkLevel(level: ScanRemarkLevel) {
   if (level === ScanRemarkLevel.PROBLEM) {
@@ -27,7 +26,7 @@ export function getIconColorScanRemarkLevel(level: ScanRemarkLevel) {
 
 export function getIconColorReviewRemarkLevel(level: ReviewRemarkLevel) {
   if (level.toLowerCase() === 'yellow') {
-    return 'mbti'; // more subtle color
+    return 'brand'; // more subtle color
   }
   return level.toLowerCase();
 }
@@ -142,28 +141,6 @@ export function getIconForDiffType(type: ComponentDiffType): string {
     default:
       return '';
   }
-}
-
-export type ICallback = () => void;
-
-export function openUrl(url: string, router: Router, callbackOnSameSite: ICallback | null = null) {
-  if (CONTROL_IS_PRESSED) {
-    window.open('#' + url, '_blank');
-    return;
-  }
-  if (SHIFT_IS_PRESSED) {
-    releaseKeys();
-    window.open('#' + url, '_blank', 'height=500,width=1024');
-    return;
-  }
-  router.push(url);
-  if (callbackOnSameSite) {
-    callbackOnSameSite();
-  }
-}
-
-export function openUrlInNewTab(url: string) {
-  window.open('#' + url, '_blank');
 }
 
 export function formatDate(dateStr: string | Date) {
@@ -319,12 +296,13 @@ export function originTooltip(origin: string) {
 }
 
 export default function useViewTools() {
-  const appStore = useAppStore();
+  const languageStore = useLanguageStore();
+  const {appLanguage} = storeToRefs(languageStore);
   const getNameForLanguage = (obligation: IObligation): string => {
     if (!obligation) {
       return '';
     }
-    if (appStore.getAppLanguage === 'de') {
+    if (appLanguage.value === 'de') {
       return obligation.nameDe;
     }
     return obligation.name;
@@ -332,7 +310,7 @@ export default function useViewTools() {
 
   const getDescriptionForLanguage = (obligation: IObligation, short = false): string => {
     let description;
-    if (appStore.getAppLanguage === 'de') {
+    if (appLanguage.value === 'de') {
       description = obligation.descriptionDe;
     } else {
       description = obligation.description;
@@ -344,11 +322,11 @@ export default function useViewTools() {
   };
 
   const gridPolicyRulesAssignmentsHeaderClassByLanguage = (): string => {
-    return appStore.getAppLanguage === 'en' ? 'padding-config-rules-header' : 'padding-config-rules-header-de';
+    return appLanguage.value === 'en' ? 'padding-config-rules-header' : 'padding-config-rules-header-de';
   };
 
   const gridPolicyRulesAssignmentsRowClassByLanguage = (): string => {
-    return appStore.getAppLanguage === 'en' ? 'padding-config-rules-row' : 'padding-config-rules-row-de';
+    return appLanguage.value === 'en' ? 'padding-config-rules-row' : 'padding-config-rules-row-de';
   };
 
   return {

@@ -283,13 +283,13 @@ func (s *WizardService) Create(rs *logy.RequestSession, req *project.WizardProje
 			ChildEntity: domain.NewChildEntity(),
 			Name:        message.DefaultBranchMainName,
 			Description: message.DefaultBranchMainDescription,
-			Status:      "new",
+			Status:      project.PV_New,
 		}
 		dev = project.ProjectVersion{
 			ChildEntity: domain.NewChildEntity(),
 			Name:        message.DefaultBranchDevName,
 			Description: message.DefaultBranchDevDescription,
-			Status:      "new",
+			Status:      project.PV_New,
 		}
 	)
 

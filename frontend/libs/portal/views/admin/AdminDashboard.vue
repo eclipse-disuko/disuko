@@ -215,6 +215,18 @@ const tiles = computed<ITile[]>(() => {
       expand: false,
     });
   }
+  if (RightsUtils.isDomainAdmin()) {
+    res.push({
+      color: 'primary',
+      cnt: -1,
+      visible: true,
+      title: 'UPCOMING_DELETIONS',
+      url: '/dashboard/admin/deletions',
+      icon: 'mdi-delete-clock-outline',
+      expandGroup: false,
+      expand: false,
+    });
+  }
   return res;
 });
 
@@ -241,7 +253,7 @@ onMounted(() => {
         <v-card-title class="font-weight-light text-right">
           {{ t(module.title) }}
         </v-card-title>
-        <v-divider :thickness="1" class="border-opacity-100" color="mbti" inset></v-divider>
+        <v-divider :thickness="1" class="border-opacity-100" color="brand" inset></v-divider>
         <v-card-text class="text-body-2 text-right">
           {{ module.cnt !== -1 ? module.cnt : '&#10240;' }}
         </v-card-text>

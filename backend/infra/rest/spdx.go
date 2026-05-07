@@ -220,7 +220,7 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 //	@Success	200		{object}	project.SPDXUploadResponse	"SPDX Upload Response"
 //	@Failure	401		{object}	exception.HttpError			"Unauthorized Error"
 //	@Failure	417		{object}	project.SPDXUploadResponse	"Validation Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms [post]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms [post]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) SPDXUploadFileExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -373,7 +373,7 @@ func extractUpdateTagReq(r *http.Request, handleErrorAsServerException bool) (bo
 //	@Failure	401			{object}	exception.HttpError					"Unauthorized Error"
 //	@Failure	417			{object}	exception.HttpError					"Validation Error"
 //	@Failure	500			{object}	exception.HttpError					"SPDX not found in history"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/status [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/status [get]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) PublicSpdxStatusHandler(w http.ResponseWriter, r *http.Request) {
 	rs := logy.GetRequestSession(r)
@@ -420,7 +420,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxStatusHandler(w http.ResponseWriter, r
 //	@Failure	401			{object}	exception.HttpError				"Unauthorized Error"
 //	@Failure	417			{object}	exception.HttpError				"Validation Error"
 //	@Failure	500			{object}	exception.HttpError				"SPDX not found in history"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/tag [put]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/tag [put]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) PublicSpdxTagUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	rs := logy.GetRequestSession(r)
@@ -483,7 +483,7 @@ func (spdxHandler *SPDXHandler) SpdxTagUpdateHandler(w http.ResponseWriter, r *h
 //	@Failure	401			{object}	exception.HttpError		"Unauthorized Error"
 //	@Failure	417			{object}	exception.HttpError		"Validation Error"
 //	@Failure	500			{object}	exception.HttpError		"SPDX not found in history"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/lock [put]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/lock [put]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) PublicSpdxLockHandler(w http.ResponseWriter, r *http.Request) {
 	rs := logy.GetRequestSession(r)
@@ -528,7 +528,7 @@ func (spdxHandler *SPDXHandler) markProjectSbomRetainFlag(requestSession *logy.R
 // @Failure	401			{object}	exception.HttpError		"Unauthorized Error"
 // @Failure	417			{object}	exception.HttpError		"Validation Error"
 // @Failure	500			{object}	exception.HttpError		"SPDX not found in history"
-// @Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/unlock [put]
+// @Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/unlock [put]
 // @security	Bearer
 func (spdxHandler *SPDXHandler) PublicSpdxUnlockHandler(w http.ResponseWriter, r *http.Request) {
 	rs := logy.GetRequestSession(r)
@@ -654,7 +654,7 @@ func (spdxHandler *SPDXHandler) ExportNoticeFileForSbomAsTextHandler(w http.Resp
 //	@Success	200			{string}	string					"Notice File"
 //	@Failure	404			{object}	exception.HttpError404	"NotFound Error"
 //	@Failure	401			{object}	exception.HttpError		"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/text [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/text [get]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) ExportTextNoticeExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -695,7 +695,7 @@ func (spdxHandler *SPDXHandler) ExportTextNoticeExtern(w http.ResponseWriter, r 
 //	@Success	200			{string}	string					"Notice File"
 //	@Failure	404			{object}	exception.HttpError404	"NotFound Error"
 //	@Failure	401			{object}	exception.HttpError		"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/html [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/html [get]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) ExportHTMLNoticeExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -738,7 +738,7 @@ func (spdxHandler *SPDXHandler) ExportHTMLNoticeExtern(w http.ResponseWriter, r 
 //	@Success	200			{object}	project.NoticeFileJSON	"Notice File"
 //	@Failure	404			{object}	exception.HttpError404	"NotFound Error"
 //	@Failure	401			{object}	exception.HttpError		"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/json [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/notice/json [get]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) ExportJSONNoticeExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -884,4 +884,3 @@ func IsSpdxInUse(spdx *project.SpdxFileBase, prj *project.Project, version *proj
 		spdx.IsInUse
 	return spdxIsInUse
 }
-

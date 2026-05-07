@@ -3,13 +3,14 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useNewsboxStore} from '@disclosure-portal/stores/newsbox.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {storeToRefs} from 'pinia';
 import {computed, ref, watch} from 'vue';
+import {useLanguageStore} from '@shared/stores/language.store';
 
-const appStore = useAppStore();
+const languageStore = useLanguageStore();
+const {appLanguage} = storeToRefs(languageStore);
 const newsboxStore = useNewsboxStore();
 const userStore = useUserStore();
 
@@ -22,42 +23,14 @@ const newsboxItems = computed(() => newsboxStore.newsItems?.items || []);
 const currentTitle = computed(() => {
   const item = newsboxItems.value[currentSlide.value];
   if (!item) return '';
-  return appStore.getAppLanguage === 'de' && item.titleDE ? item.titleDE : item.title;
+  return appLanguage.value === 'de' && item.titleDE ? item.titleDE : item.title;
 });
 
 const currentDescription = computed(() => {
   const item = newsboxItems.value[currentSlide.value];
   if (!item) return '';
-  return appStore.getAppLanguage === 'de' && item.descriptionDE ? item.descriptionDE : item.description;
+  return appLanguage.value === 'de' && item.descriptionDE ? item.descriptionDE : item.description;
 });
-
-watch(
-  () => newsboxStore.showNewsbox,
-  (isOpen) => {
-    if (isOpen) {
-      newsboxStore.fetchItems();
-    } else {
-      currentSlide.value = 0;
-    }
-  },
-  {immediate: true},
-);
-
-watch(
-  () => newsboxStore.newsItems,
-  (response) => {
-    if (response && response.items.length > 0) {
-      if (response?.toShow >= 0 && response?.toShow < response?.items?.length) {
-        currentSlide.value = response.toShow;
-        lastSeenIndex.value = response.toShow;
-      } else {
-        currentSlide.value = 0;
-        lastSeenIndex.value = -1;
-      }
-    }
-  },
-  {immediate: true},
-);
 
 const close = () => {
   if (currentSlide.value >= lastSeenIndex.value) {
@@ -93,6 +66,34 @@ const updateLastSeenForCurrentItem = () => {
 
 const canGoNext = computed(() => newsboxItems.value.length > 1 && currentSlide.value < newsboxItems.value.length - 1);
 const canGoPrevious = computed(() => newsboxItems.value.length > 1 && currentSlide.value > 0);
+
+watch(
+  () => newsboxStore.showNewsbox,
+  (isOpen) => {
+    if (isOpen) {
+      newsboxStore.fetchItems();
+    } else {
+      currentSlide.value = 0;
+    }
+  },
+  {immediate: true},
+);
+
+watch(
+  () => newsboxStore.newsItems,
+  (response) => {
+    if (response && response.items.length > 0) {
+      if (response?.toShow >= 0 && response?.toShow < response?.items?.length) {
+        currentSlide.value = response.toShow;
+        lastSeenIndex.value = response.toShow;
+      } else {
+        currentSlide.value = 0;
+        lastSeenIndex.value = -1;
+      }
+    }
+  },
+  {immediate: true},
+);
 </script>
 
 <template>

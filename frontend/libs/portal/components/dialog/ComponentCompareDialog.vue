@@ -431,7 +431,7 @@ export default defineComponent({
             </v-select>
           </v-col>
         </v-row>
-        <v-tabs v-model="selectedTab" slider-color="mbti" active-class="active" show-arrows bg-color="tabsHeader">
+        <v-tabs v-model="selectedTab" slider-color="brand" active-class="active" show-arrows bg-color="tabsHeader">
           <v-tab value="attributes">
             {{ t('TAB_TITLE_ATTRIBUTES') }}
           </v-tab>

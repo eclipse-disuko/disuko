@@ -43,7 +43,7 @@
       <v-tabs
         v-model="selectedTab"
         data-testid="licenseDetailsTabs"
-        slider-color="mbti"
+        slider-color="brand"
         show-arrows
         bg-color="tabsHeader">
         <v-tab v-for="header in filteredTabHeaders" :key="header.key" :value="header.key" :to="header.key">

@@ -8,15 +8,15 @@ import {ProjectModel} from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {getCssClassForReadonlyRow} from '@disclosure-portal/utils/Table';
-import {openUrlInNewTab} from '@disclosure-portal/utils/url';
+import {formatDateTimeShort} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useClipboard} from '@shared/utils/clipboard';
-import dayjs from 'dayjs';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {DataTableHeader} from '@shared/types/table';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -100,8 +100,8 @@ const getReferenceInfoForClipboard = (item: PolicyRuleDto) => {
 Rule Name: ${item.name}
 Rule Identifier: ${item.key}
 Rule Description: ${item.description}
-Rule Created: ${dayjs(item.created.toString()).format(t('DATETIME_FORMAT_SHORT'))}
-Rule Updated: ${dayjs(item.updated.toString()).format(t('DATETIME_FORMAT_SHORT'))}`;
+Rule Created: ${formatDateTimeShort(item.created)}
+Rule Updated: ${formatDateTimeShort(item.updated)}`;
 };
 
 const copyRuleToClipboard = (item: PolicyRuleDto) => {

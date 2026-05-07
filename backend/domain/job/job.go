@@ -59,6 +59,8 @@ const (
 	DummyMail
 	CalculateUserStats
 	LabelLoadDb
+	CalculatedPolicyRulesUpdate
+	UserDeletion
 	TypeLimit
 )
 

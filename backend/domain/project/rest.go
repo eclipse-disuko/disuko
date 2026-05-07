@@ -345,7 +345,7 @@ type VersionCreationResponseMin struct {
 	Uuid    string `json:"uuid" example:"817e18e3-c0c7-4552-b4ca-aac875aee990"`
 	Success bool   `json:"success"`
 	Message string `json:"message" example:"Resource created"`
-} //	@name	VersionPublicResponseMin
+}
 
 type VersionPublicResponseMin struct {
 	Name string `json:"name" example:"1.0"`

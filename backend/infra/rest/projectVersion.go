@@ -133,7 +133,7 @@ func (projectHandler *ProjectHandler) HandleProjectVersionCreate(requestSession 
 //	@Success	200		{object}	rest.SuccessResponse		"Success Response"
 //	@Failure	417		{object}	exception.HttpError			"The channel already exist"
 //	@Failure	401		{object}	exception.HttpError			"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions [post]
+//	@Router		/v1/projects/{uuid}/versions [post]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionExternCreateHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -154,7 +154,7 @@ func (projectHandler *ProjectHandler) ProjectVersionExternCreateHandler(w http.R
 //	@Param		tag		body		project.ProjectSearchDto	true	"Tag to be searched"
 //	@Success	200		{array}		project.ProjectSearchResDto	"Result list"
 //	@Failure	401		{object}	exception.HttpError			"Unauthorized Error"
-//	@Router		/projects/{uuid}/search [post]
+//	@Router		/v1/projects/{uuid}/search [post]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectSbomSearchHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -207,7 +207,7 @@ func (projectHandler *ProjectHandler) ProjectVersionCreateHandler(w http.Respons
 //	@Success	200		{array}		string					"Versions (also known as Channels)"
 //	@Failure	404		{object}	exception.HttpError404	"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError		"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions [get]
+//	@Router		/v1/projects/{uuid}/versions [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionGetListExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -236,7 +236,7 @@ func (projectHandler *ProjectHandler) ProjectVersionGetListExternHandler(w http.
 //	@Success	200		{array}		project.VersionPublicResponseMin	"Versions (also known as Channels) with UUID and Name"
 //	@Failure	404		{object}	exception.HttpError404				"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError					"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions [get]
+//	@Router		/v2/projects/{uuid}/versions [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionGetListExternHandlerV2(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -270,7 +270,7 @@ func (projectHandler *ProjectHandler) ProjectVersionGetListExternHandlerV2(w htt
 //	@Success	200		{object}	project.VersionPublicResponse	"Version (also known as Channel) Details"
 //	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version} [get]
+//	@Router		/v1/projects/{uuid}/versions/{version} [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionGetExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -320,7 +320,7 @@ func (projectHandler *ProjectHandler) ProjectVersionGetExternHandler(w http.Resp
 //	@Success	200		{array}		project.ExternalSourcePublicResponseDto	"External Source"
 //	@Failure	404		{object}	exception.HttpError404					"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError						"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/ccs [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/ccs [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) CCSGetListExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -344,7 +344,7 @@ func (projectHandler *ProjectHandler) CCSGetListExternHandler(w http.ResponseWri
 //	@Param		source	body		project.SourceExternalDTO	true	"Source"
 //	@Success	200		{object}	rest.SuccessResponse		"Success Response"
 //	@Failure	401		{object}	exception.HttpError			"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/ccs [post]
+//	@Router		/v1/projects/{uuid}/versions/{version}/ccs [post]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) CCSCreateExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -507,7 +507,7 @@ func (projectHandler *ProjectHandler) ProjectVersionGetUsageInApprovalOrReviewRe
 //	@Failure	417		{object}	exception.HttpError		"Can not be deleted, it is in use"
 //	@Failure	404		{object}	exception.HttpError404	"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError		"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version} [delete]
+//	@Router		/v1/projects/{uuid}/versions/{version} [delete]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionDeleteExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -1458,66 +1458,6 @@ func (projectHandler *ProjectHandler) createQualityLicenseRemarks(requestSession
 	return result
 }
 
-func (p *ProjectHandler) ProjectVersionSPDXHistory(w http.ResponseWriter, r *http.Request) {
-	currentProject, version, requestSession := p.retrieveProjectAndVersion2(r)
-
-	_, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
-	if !rights.AllowProjectVersion.Read {
-		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ViewSbom))
-	}
-
-	sbomList := p.SbomListRepository.FindByKey(requestSession, version.Key, false)
-	if sbomList == nil {
-		render.JSON(w, r, []interface{}{})
-		return
-	}
-	spdxFileHistory := sbomList.SpdxFileHistory
-
-	sort.Slice(spdxFileHistory, func(i, j int) bool {
-		return spdxFileHistory[i].Uploaded.UTC().After(spdxFileHistory[j].Uploaded.UTC())
-	})
-	count := len(spdxFileHistory)
-	if count > 0 {
-		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-		if err == nil && limit > 0 {
-			if limit > count {
-				limit = count
-			}
-			spdxFileHistory = spdxFileHistory[:limit]
-		}
-
-		approvableIncluded := false
-		unusedSpdxCount := 0
-		for i, spdxFile := range spdxFileHistory {
-			if limit > 0 && len(currentProject.ApprovableSPDX.SpdxKey) > 0 && spdxFile.Key == currentProject.ApprovableSPDX.SpdxKey {
-				approvableIncluded = true
-			}
-
-			if sbomlockRetained.IsSpdxToRetain(spdxFile, version) {
-				spdxFileHistory[i].IsToRetain = true
-			}
-			if !IsSpdxInUse(spdxFile, currentProject, version) {
-				if unusedSpdxCount < 5 {
-					unusedSpdxCount++
-				} else {
-					spdxFileHistory[i].IsToDelete = true
-				}
-			} else {
-				spdxFileHistory[i].IsInUse = true
-			}
-		}
-		if !approvableIncluded && limit > 0 && len(currentProject.ApprovableSPDX.SpdxKey) > 0 {
-			for _, spdxFile := range sbomList.SpdxFileHistory {
-				if spdxFile.Key == currentProject.ApprovableSPDX.SpdxKey {
-					spdxFileHistory = append(spdxFileHistory, spdxFile)
-				}
-			}
-		}
-	}
-
-	render.JSON(w, r, spdxFileHistory)
-}
-
 func ValidateIDOrLatest(escaped string) string {
 	sbomUuid, err := url.QueryUnescape(escaped)
 	exception.HandleErrorClientMessage(err, message.GetI18N(message.ParamSbomUuidEmpty))
@@ -1543,7 +1483,7 @@ func ValidateIDOrLatest(escaped string) string {
 //	@Success	200			{object}	project.SPDXMetaPublicResponse	"SPDX Meta Data"
 //	@Failure	404			{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401			{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid} [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid} [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -1587,7 +1527,7 @@ func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.Re
 //	@Success	200		{array}		project.VersionHistoryPublicResponse	"Version (also known as Channel) History"
 //	@Failure	404		{object}	exception.HttpError404					"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError						"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionSPDXHistoryExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2030,7 +1970,7 @@ func extractVersionKeyFromRequest(r *http.Request) string {
 //	@Success	200		{object}	project.SpdxStatusInformation	"SPDX Status Information"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
 //	@Failure	417		{object}	project.SPDXUploadResponse		"Validation Error"
-//	@Router		/projects/{uuid}/sbomcheck [post]
+//	@Router		/v1/projects/{uuid}/sbomcheck [post]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectSPDXExternCheckOnDemand(w http.ResponseWriter, r *http.Request) {
 	validation.CheckExpectedContentType(r, validation.ContentTypeFormData)
@@ -2111,7 +2051,7 @@ func (projectHandler *ProjectHandler) ProjectSPDXExternCheckOnDemand(w http.Resp
 //	@Success	200			{object}	project.SpdxStatusInformation	"SPDX Status Information"
 //	@Failure	404			{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401			{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/check [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/sboms/{sbomUuid}/check [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionSPDXExternCheck(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2687,7 +2627,7 @@ func (projectHandler *ProjectHandler) SetReviewRemarkStatus(w http.ResponseWrite
 //	@Success	200		{array}		reviewremarks.RemarkDtoExternV1	"Review remarks"
 //	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/reviewremarks [get]
+//	@Router		/v1/projects/{uuid}/versions/{version}/reviewremarks [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2708,14 +2648,14 @@ func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExtern(w http.R
 // ProjectVersionReviewRemarksExternV2 godoc
 //
 //	@Summary	Get review remarks for version (also known as channel)
-//	@Id			getProjectVersionReviewRemarks
+//	@Id			getProjectVersionReviewRemarksV2
 //	@Produce	json
 //	@Param		uuid	path		string							true	"Project UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
 //	@Param		version	path		string							true	"Project Version Name (also known as Channel Name) e.g.: main"
 //	@Success	200		{array}		reviewremarks.RemarkDtoExternV2	"Review remarks"
 //	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
 //	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
-//	@Router		/projects/{uuid}/versions/{version}/reviewremarks [get]
+//	@Router		/v2/projects/{uuid}/versions/{version}/reviewremarks [get]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExternV2(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
@@ -2745,7 +2685,7 @@ func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExternV2(w http
 //	@Failure	401					{object}	exception.HttpError					"Unauthorized Error"
 //	@Failure	417					{object}	exception.HttpError					"Validation error"
 //	@Failure	500					{object}	exception.HttpError					"Reivew remark not found"
-//	@Router		/projects/{uuid}/versions/{version}/reviewremarks/{reviewRemarkUuid} [post]
+//	@Router		/v1/projects/{uuid}/versions/{version}/reviewremarks/{reviewRemarkUuid} [post]
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksCommentExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)

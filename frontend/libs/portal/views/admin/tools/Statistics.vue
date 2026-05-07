@@ -53,7 +53,7 @@ onMounted(async () => {
         :text="t('TT_UPDATE_SYSTEM_PROFILE')"></DCActionButton>
     </template>
     <template #table>
-      <v-tabs v-model="tabs" slider-color="mbti" active-class="active" show-arrows>
+      <v-tabs v-model="tabs" slider-color="brand" active-class="active" show-arrows>
         <v-tab value="lastDays">
           {{ t('TITLE_STATISTIC_LAST_DAYS') }}
         </v-tab>

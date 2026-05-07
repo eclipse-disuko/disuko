@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {openUrlInNewTab} from '@shared/utils/url';
 
 interface Props {
   url: string;
@@ -25,8 +26,8 @@ const externalLinkDialogConfig = computed(() => ({
   icon: 'mdi mdi-open-in-new',
 }));
 
-const openUrl = () => {
-  window.open(props.url, '_blank');
+const openInNewTab = () => {
+  openUrlInNewTab(props.url);
   closeAction();
 };
 
@@ -42,7 +43,7 @@ const closeAction = () => {
       :config="externalLinkDialogConfig"
       @close="closeAction"
       @secondaryAction="closeAction"
-      @primaryAction="openUrl">
+      @primaryAction="openInNewTab">
       <p>
         {{ t('EXT_LINK_DIALOG_TEXT') }}
         <br /><br />
