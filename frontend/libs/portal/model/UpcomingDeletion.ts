@@ -5,6 +5,7 @@
 export interface BlockingProject {
   key: string;
   name: string;
+  applicationId: string;
   projectLabels: string[];
   policyLabels: string[];
   freeLabels: string[];

@@ -183,6 +183,7 @@ type BlockingProjectDto struct {
 	ProjectLabels []string `json:"projectLabels"`
 	PolicyLabels  []string `json:"policyLabels"`
 	FreeLabels    []string `json:"freeLabels"`
+	ApplicationId string   `json:"applicationId"`
 }
 
 type UpcomingDeletionDto struct {

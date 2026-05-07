@@ -39,6 +39,12 @@ const blockingProjectHeaders = computed((): DataTableHeader[] => [
     sortable: true,
   },
   {
+    title: t('COL_APPID'),
+    align: 'start',
+    value: 'applicationId',
+    sortable: true,
+  },
+  {
     title: t('COL_LABELS'),
     align: 'start',
     value: 'labels',
