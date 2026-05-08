@@ -951,7 +951,7 @@ func (j *Job) processSbom(rs *logy.RequestSession, pr *project.Project, ci compo
 					res.keepOfSourceCodeCount++
 				case "GNU-type CCS Obligation":
 					res.GNU_CCSObligationCount++
-				case "no-FOSS":
+				case "Non-FOSS":
 					res.noFossCount++
 				}
 			}
