@@ -19,8 +19,9 @@ const emit = defineEmits<{
   confirm: [config: IConfirmationDialogConfig];
 }>();
 
-const {t} = useI18n();
 const showDialog = defineModel<boolean>('showDialog', {required: false});
+
+const {t} = useI18n();
 const title = ref<string | undefined>(undefined);
 const contextKey = ref<string | undefined>(undefined);
 const key = ref('');
@@ -71,9 +72,9 @@ const open = (config: IConfirmationDialogConfig | null) => {
 const makeVisible = () => {
   showDialog.value = true;
 };
-const openWithoutDetails = (description: string, okButtonText: string) => {
+const openWithoutDetails = (newDescription: string, okButtonText: string) => {
   methodConfig.value = {
-    description: description,
+    description: newDescription,
     okButton: okButtonText,
   } as IConfirmationDialogConfig;
   open(methodConfig.value);
