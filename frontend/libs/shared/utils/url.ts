@@ -3,5 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export const openUrlInNewTab = (url: string, features?: string) => {
-  window.open('#' + url, '_blank', features);
+  const isExternalUrl = url.startsWith('http://') || url.startsWith('https://');
+  window.open(`${isExternalUrl ? '' : '#'}${url}`, '_blank', features);
 };
