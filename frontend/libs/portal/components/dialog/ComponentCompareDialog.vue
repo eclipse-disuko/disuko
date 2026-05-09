@@ -235,8 +235,8 @@ export default defineComponent({
         componentDetails.value.push(
           new ComponentCompareDetails(
             'License Declared',
-            diffWrapper.licenseDeclared,
-            diffWrapper.getOtherComponent().licenseDeclared,
+            diffWrapper.licenseDeclared || 'NOASSERTION',
+            diffWrapper.getOtherComponent().licenseDeclared || 'NOASSERTION',
             diffWrapper.diff.LicenseDeclared,
             DiffType.value,
           ),
@@ -244,8 +244,8 @@ export default defineComponent({
         componentDetails.value.push(
           new ComponentCompareDetails(
             'License Concluded',
-            diffWrapper.license,
-            diffWrapper.getOtherComponent().license,
+            diffWrapper.license || 'NOASSERTION',
+            diffWrapper.getOtherComponent().license || 'NOASSERTION',
             diffWrapper.diff.License,
             DiffType.value,
           ),
@@ -253,8 +253,8 @@ export default defineComponent({
         componentDetails.value.push(
           new ComponentCompareDetails(
             'License Effective',
-            diffWrapper.licenseEffective,
-            diffWrapper.getOtherComponent().licenseEffective,
+            diffWrapper.licenseEffective || 'NOASSERTION',
+            diffWrapper.getOtherComponent().licenseEffective || 'NOASSERTION',
             diffWrapper.diff.LicenseEffective,
             DiffType.value,
           ),

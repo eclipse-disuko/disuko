@@ -571,13 +571,16 @@ const getTableViewDataForLicenseEffective = (
 };
 
 const componentInfoToCellValueLicense = (comp: ComponentInfo, icon: string): CellValueWithLicenseInformation => {
+  const licenseEffective = comp.licenseEffective || 'NOASSERTION';
+  const licenseDeclared = comp.licenseDeclared || 'NOASSERTION';
+  const license = comp.license || 'NOASSERTION';
   return new CellValueWithLicenseInformation(
-    comp.licenseEffective,
+    licenseEffective,
     comp.version,
     icon,
-    comp.licenseEffective,
-    comp.licenseDeclared,
-    comp.license,
+    licenseEffective,
+    licenseDeclared,
+    license,
     comp.usedPolicyRule,
     comp.licenseApplied,
   );

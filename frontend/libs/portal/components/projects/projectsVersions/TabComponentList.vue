@@ -753,17 +753,17 @@ onUnmounted(async () => {
           </template>
           <template v-slot:[`item.licenseEffective`]="{item}">
             <span>
-              <span v-html="formatText(item.licenseEffective)"></span>
+              <span v-html="formatText(item.licenseEffective || 'NOASSERTION')"></span>
               <Tooltip>
                 <div class="max-w-[500px]">
                   <div>{{ t('COL_SPDX_LICENSE_EFFECTIVE') }}:</div>
-                  <div class="mr-2" v-html="formatText(item.licenseEffective)"></div>
+                  <div class="mr-2" v-html="formatText(item.licenseEffective || 'NOASSERTION')"></div>
                   <br />
                   <div>{{ t('COL_SPDX_LICENSE_DECLARED') }}:</div>
-                  <div class="mr-2">{{ item.licenseDeclared }}</div>
+                  <div class="mr-2" v-html="formatText(item.licenseDeclared || 'NOASSERTION')"></div>
                   <br />
                   <div>{{ t('COL_SPDX_LICENSE_CONCLUDED') }}:</div>
-                  <div class="mr-2">{{ item.license }}</div>
+                  <div class="mr-2" v-html="formatText(item.license || 'NOASSERTION')"></div>
                   <br />
                   <span>{{ item.usedPolicyRule }} (based on {{ item.licenseApplied }})</span>
                 </div>
