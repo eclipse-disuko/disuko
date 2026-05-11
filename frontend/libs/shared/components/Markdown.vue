@@ -2,13 +2,6 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <div>
-    <Markdown class="markdown" html :source="markdownText" />
-    <slot />
-  </div>
-</template>
-
 <script setup lang="ts">
 import MarkdownIt from 'markdown-it';
 import {onMounted, ref} from 'vue';
@@ -46,3 +39,10 @@ onMounted(() => {
   markdownText.value = md.render(props.text);
 });
 </script>
+
+<template>
+  <div>
+    <Markdown class="markdown" html :source="markdownText" />
+    <slot />
+  </div>
+</template>
