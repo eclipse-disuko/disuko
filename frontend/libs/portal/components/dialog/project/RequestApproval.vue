@@ -190,8 +190,8 @@ const open = async (isVehicleProject: boolean) => {
 const loadSBOMHist = async () => {
   selectedSbom.value = null;
   if (!selectedChannel.value?._key) return;
-  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
-  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.spdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }
@@ -452,9 +452,9 @@ defineExpose({open});
                         >mdi-clipboard-check-outline</v-icon
                       >
                     </div>
-                    <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+                    <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                     <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                       >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                     >
@@ -481,9 +481,9 @@ defineExpose({open});
                     >mdi-clipboard-check-outline</v-icon
                   >
                 </div>
-                <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-                <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+                <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+                <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                 <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                   >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                 >

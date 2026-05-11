@@ -336,16 +336,16 @@ onUnmounted(() => {
                 class="pb-1">
                 mdi-star
               </v-icon>
-              <span class="text-caption ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-              <span class="text-caption d-secondary-text" v-if="item.raw.MetaInfo"
-                >&nbsp;-&nbsp;{{ getStrWithMaxLength(39, item.raw.MetaInfo.Name) }}</span
+              <span class="text-caption ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+              <span class="text-caption d-secondary-text" v-if="item.raw.metaInfo"
+                >&nbsp;-&nbsp;{{ getStrWithMaxLength(39, item.raw.metaInfo.name) }}</span
               >
-              <span class="text-caption d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+              <span class="text-caption d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
               <span class="text-caption d-secondary-text mr-1" v-if="item.raw.isRecent"
                 >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
               >
               <span class="text-caption d-secondary-text mr-1" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
-              <DOverallStateIcon v-if="item.raw.OverallReview" :review="item.raw.OverallReview" />
+              <DOverallStateIcon v-if="item.raw.overallReview" :review="item.raw.overallReview" />
             </v-list-item>
           </template>
           <template v-slot:selection="{item}">
@@ -360,17 +360,17 @@ onUnmounted(() => {
               <span v-else class="placeholder-icon"></span>
             </div>
             <span class="text-caption">
-              <DDateCellWithTooltip :value="item.raw.Uploaded"></DDateCellWithTooltip>
+              <DDateCellWithTooltip :value="item.raw.uploaded"></DDateCellWithTooltip>
             </span>
-            <span class="text-caption d-secondary-text ml-1" v-if="item.raw.MetaInfo">
-              - {{ getStrWithMaxLength(39, item.raw.MetaInfo.Name) }}
+            <span class="text-caption d-secondary-text ml-1" v-if="item.raw.metaInfo">
+              - {{ getStrWithMaxLength(39, item.raw.metaInfo.name) }}
             </span>
-            <span class="text-caption d-secondary-text" v-if="item.raw.Tag"
-              >&nbsp;({{ getStrWithMaxLength(10, item.raw.Tag) }})
+            <span class="text-caption d-secondary-text" v-if="item.raw.tag"
+              >&nbsp;({{ getStrWithMaxLength(10, item.raw.tag) }})
             </span>
             <span class="text-caption" v-if="item.raw.isRecent">&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span>
             <span class="text-caption d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }} </span>&nbsp;
-            <DOverallStateIcon v-if="item.raw.OverallReview" :review="item.raw.OverallReview" />
+            <DOverallStateIcon v-if="item.raw.overallReview" :review="item.raw.overallReview" />
           </template>
         </v-select>
         <span v-if="spdxFileHistory.length >= 1 && userIsOwner">

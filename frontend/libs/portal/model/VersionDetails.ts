@@ -8,14 +8,14 @@ import {ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import {PolicyDecisionSlim} from './PolicyDecision';
 
 export class MetaInfo {
-  public Name = '';
-  public SpdxId = '';
-  public SpdxVersion = '';
-  public DataLicense = '';
-  public NameWithUploaded = '';
-  public Comment = '';
-  public Creators: string[] = [];
-  public CreationData = '';
+  public name = '';
+  public spdxId = '';
+  public spdxVersion = '';
+  // public DataLicense = '';
+  // public NameWithUploaded = '';
+  public comment = '';
+  // public Creators: string[] = [];
+  // public CreationData = '';
 }
 
 export class SourceCode {
@@ -81,17 +81,6 @@ export interface IComponentInfo {
   prStatus: string;
   usedPolicyRule: string;
   purl: string;
-}
-
-/** @deprecated: never used and will be deleted */
-export class SpdxFileHistory {
-  public SpdxId = '';
-  public Name = '';
-  public Version = '';
-  public License = '';
-  public Modified = false;
-  public Created = '';
-  public Updated = '';
 }
 
 export class ComponentStats {
@@ -205,40 +194,40 @@ export class ComponentInfoSlim {
 }
 
 export class ApprovalInfo {
-  public IsInApproval = false;
-  public Comment = '';
-  public ApprovalGuid = '';
-  public Status = '';
+  public isInApproval = false;
+  public comment = '';
+  // public ApprovalGuid = '';
+  public status = '';
 }
 
 export type Nullable<T> = T | null;
 
-export class SpdxFile implements IUploaded {
+export class SpdxFile {
   public _key = '';
-  public Created = '';
-  public Hash = '';
-  public Content = '';
-  public ContentValid = false;
-  public SchemaValid = false;
-  public Type = 0;
-  public ValidationErrors = '';
-  public SchemaId = '';
-  public SchemaName = '';
-  public Stats: ComponentStats = new ComponentStats();
-  public ComponentInfo: ComponentInfo[] = [];
-  public MetaInfo: MetaInfo = new MetaInfo();
-  public Uploaded = '';
-  public Updated: Date = new Date();
-  public Origin = '';
-  public Uploader = '';
-  public Tag = '';
-  public ApprovalInfo = new ApprovalInfo();
-  public IsInUse = false;
-  public IsLocked = false;
-  public IsToDelete = false;
-  public IsToRetain = false;
+  public created = '';
+  public hash = '';
+  // public Content = '';
+  // public ContentValid = false;
+  // public SchemaValid = false;
+  // public Type = 0;
+  // public ValidationErrors = '';
+  // public SchemaId = '';
+  // public SchemaName = '';
+  // public Stats: ComponentStats = new ComponentStats();
+  // public ComponentInfo: ComponentInfo[] = [];
+  public metaInfo: MetaInfo = new MetaInfo();
+  public uploaded = '';
+  public updated: Date = new Date();
+  public origin = '';
+  public uploader = '';
+  public tag = '';
+  public approvalInfo = new ApprovalInfo();
+  public isInUse = false;
+  public isLocked = false;
+  public isToDelete = false;
+  public isToRetain = false;
   public isRecent = false;
-  public OverallReview?: OverallReview;
+  public overallReview?: OverallReview;
 }
 
 export class SpdxFileSlim {

@@ -74,8 +74,8 @@ const save = async () => {
     if (selectedSBOM.value) {
       req.sbomId = selectedSBOM.value._key;
       req.comment = comment.value;
-      req.sbomName = selectedSBOM.value.MetaInfo?.Name || '';
-      req.sbomUploaded = selectedSBOM.value.Uploaded;
+      req.sbomName = selectedSBOM.value.metaInfo?.name || '';
+      req.sbomUploaded = selectedSBOM.value.uploaded;
     }
     await versionService.createOverallReview(currentProject.value._key, sbomStore.currentVersionKey, req);
     await projectStore.fetchProjectByKey(currentProject.value._key);
@@ -140,9 +140,9 @@ defineExpose({open});
                   size="small"
                   class="pr-2"
                   icon="mdi-star"></v-icon>
-                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
-                <span class="d-text d-secondary-text"> - {{ item.raw.MetaInfo.Name }}</span>
-                <span class="d-text d-secondary-text ml-1" v-if="item.raw.Tag">({{ item.raw.Tag }})</span>
+                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}</span>
+                <span class="d-text d-secondary-text"> - {{ item.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text ml-1" v-if="item.raw.tag">({{ item.raw.tag }})</span>
                 <span class="d-text d-secondary-text" v-if="item.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
                 <span class="d-text d-secondary-text" v-else> [{{ t('SBOM_FORMER') }}] </span>
               </v-list-item>
@@ -155,9 +155,9 @@ defineExpose({open});
                   size="small"
                   class="pr-2"
                   icon="mdi-star"></v-icon>
-                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.Uploaded) }}</span>
-                <span class="d-text d-secondary-text"> - {{ item.raw.MetaInfo.Name }}</span>
-                <span class="d-text d-secondary-text ml-1" v-if="item.raw.Tag">({{ item.raw.Tag }})</span>
+                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}</span>
+                <span class="d-text d-secondary-text"> - {{ item.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text ml-1" v-if="item.raw.tag">({{ item.raw.tag }})</span>
                 <span class="d-text d-secondary-text" v-if="item.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
                 <span class="d-text d-secondary-text" v-else> [{{ t('SBOM_FORMER') }}] </span>
               </div>

@@ -137,13 +137,13 @@ export class ProjectsResponse extends ProjectsResponseDTO {
 
 export interface ProjectChildren {
   list: ProjectChildrenCombiDto[];
-  projects: ProjectSlimDto[];
+  projects: N[];
 }
 
-export class VersionSboms {
-  public VersionName = '';
-  public VersionKey = '';
-  public SpdxFileHistory: SpdxFile[] = [];
+export interface VersionSboms {
+  versionName: string;
+  versionKey: string;
+  spdxFileHistory: SpdxFile[];
 }
 
 export class VersionSbomsFlat extends SpdxFile {
