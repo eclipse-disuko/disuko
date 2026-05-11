@@ -3,8 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ClassificationsPerLicenseDialog from '@disclosure-portal/components/dialog/ClassificationsPerLicenseDialog.vue';
-import CalculatedRuleConfig from '@disclosure-portal/components/policy-rules/CalculatedRuleConfig.vue';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import Label from '@disclosure-portal/model/Label';
@@ -21,15 +19,8 @@ import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap} from '@disclosure-portal/utils/View';
 import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculatedPolicyRule.store';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DSearchField from '@shared/components/disco/DSearchField.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
-import DLicenseChartIcon from '@shared/components/disco/DLicenseChartIcon.vue';
-import DRuleButtons from '@shared/components/disco/DRuleButtons.vue';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import useSnackbar from '@shared/composables/useSnackbar';
-import TableLayout from '@shared/layouts/TableLayout.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
@@ -93,7 +84,7 @@ const menuClassification = ref(false);
 const menuClassificationNot = ref(false);
 const menuIsLicenseChartNotSelected = ref(false);
 const {info} = useSnackbar();
-const classificationsDialogRef = ref<InstanceType<typeof ClassificationsPerLicenseDialog> | null>(null);
+const classificationsDialogRef = ref();
 
 const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
 const canEditCalculated = computed(() => isPolicyManager.value && rule.value.Calculated);

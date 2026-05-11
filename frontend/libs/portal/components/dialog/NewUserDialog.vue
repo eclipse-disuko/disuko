@@ -6,9 +6,6 @@
 import {getProjectUserTypes, ProjectKeyName, ProjectUser, UserType} from '@disclosure-portal/model/Project';
 import {UserDto} from '@disclosure-portal/model/Users';
 import useRules from '@disclosure-portal/utils/Rules';
-import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

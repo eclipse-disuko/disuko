@@ -8,7 +8,6 @@ import {UseWindowSize} from '@vueuse/components';
 import {useWindowSize} from '@vueuse/core';
 import {ref, watch} from 'vue';
 import {useRoute} from 'vue-router';
-import Stack from './Stack.vue';
 
 interface Props {
   hasTab?: boolean;
