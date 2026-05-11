@@ -243,31 +243,31 @@ export default defineComponent({
         <div class="flex flex-row justify-between">
           <div class="flex flex-col items-center justify-center">
             <v-icon size="small">mdi-layers</v-icon>
-            <div class="text-no-wrap pt-1 text-center">{{ item.stats.Total }}</div>
+            <div class="text-no-wrap pt-1 text-center">{{ item.stats.total }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.Denied > 0 ? 'policyStatusDeniedColor' : ''">
+            <v-icon size="small" :color="item.stats.denied > 0 ? 'policyStatusDeniedColor' : ''">
               mdi-minus-circle
             </v-icon>
-            <div class="pt-1 text-center">{{ item.stats.Denied }}</div>
+            <div class="pt-1 text-center">{{ item.stats.denied }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.NoAssertion > 0 ? 'policyStatusUnassertedColor' : ''">
+            <v-icon size="small" :color="item.stats.noAssertion > 0 ? 'policyStatusUnassertedColor' : ''">
               mdi-lightning-bolt-circle
             </v-icon>
-            <div class="pt-1 text-center">{{ item.stats.NoAssertion }}</div>
+            <div class="pt-1 text-center">{{ item.stats.noAssertion }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.Warned > 0 ? 'policyStatusWarnedColor' : ''">mdi-alert</v-icon>
-            <div class="pt-1 text-center">{{ item.stats.Warned }}</div>
+            <v-icon size="small" :color="item.stats.warned > 0 ? 'policyStatusWarnedColor' : ''">mdi-alert</v-icon>
+            <div class="pt-1 text-center">{{ item.stats.warned }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.Questioned > 0 ? 'green' : ''">mdi-help-circle</v-icon>
-            <div class="pt-1 text-center">{{ item.stats.Questioned }}</div>
+            <v-icon size="small" :color="item.stats.questioned > 0 ? 'green' : ''">mdi-help-circle</v-icon>
+            <div class="pt-1 text-center">{{ item.stats.questioned }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.Allowed > 0 ? 'green' : ''">mdi-check-circle</v-icon>
-            <div class="text-no-wrap pt-1 text-center">{{ item.stats.Allowed }}</div>
+            <v-icon size="small" :color="item.stats.allowed > 0 ? 'green' : ''">mdi-check-circle</v-icon>
+            <div class="text-no-wrap pt-1 text-center">{{ item.stats.allowed }}</div>
           </div>
         </div>
       </div>
