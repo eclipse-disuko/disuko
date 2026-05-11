@@ -80,12 +80,12 @@ describe('useSbomStore', () => {
     await store.fetchSBOMStats('spdxA');
 
     expect(versionServiceMock.getSBOMStats).toHaveBeenCalledTimes(1);
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 3}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 3}});
 
     await store.fetchSBOMStats('spdxA');
 
     expect(versionServiceMock.getSBOMStats).toHaveBeenCalledTimes(1);
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 3}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 3}});
   });
 
   it('does not deduplicate concurrent sbom requests before stats are loaded', async () => {
@@ -107,7 +107,7 @@ describe('useSbomStore', () => {
     secondPending.resolve({data: sbomStats(2)});
     await Promise.all([first, second]);
 
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 2}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 2}});
   });
 
   it('clears only sbom stats when the selected SPDX changes', () => {
@@ -155,7 +155,7 @@ describe('useSbomStore', () => {
 
     newRequest.resolve({data: sbomStats(9)});
     await newPromise;
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 9}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 9}});
   });
 
   it('ignores stale general stats responses after the version changes', async () => {
