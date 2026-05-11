@@ -2,11 +2,21 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-/// <reference types="vite/client" />
+import 'vue-router';
 
 /* eslint-disable */
 declare module '*.vue' {
   import type {DefineComponent} from 'vue';
   const component: DefineComponent<{}, {}, any>;
   export default component;
+}
+
+declare module '*.md';
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    // is optional
+    helpText?: Record<Lang, string>;
+    title?: Record<Lang, string>;
+  }
 }
