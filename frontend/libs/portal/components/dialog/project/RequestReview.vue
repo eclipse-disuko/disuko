@@ -15,7 +15,6 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
-import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import dayjs from 'dayjs';
 import {computed, ref} from 'vue';
@@ -40,7 +39,7 @@ const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const comment = ref('');
 const approver = ref('');
 const approverPreselect = ref<UserDto | undefined>(undefined);
-const selectUserField = ref<InstanceType<typeof DAutocompleteUser>>();
+const selectUserField = ref();
 const form = ref<VForm | null>(null);
 
 const projectModel = computed(() => projectStore.currentProject!);

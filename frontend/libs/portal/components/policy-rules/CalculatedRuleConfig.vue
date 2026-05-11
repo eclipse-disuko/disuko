@@ -3,8 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import DMultiSelect from '@shared/components/disco/DMultiSelect.vue';
-import Stack from '@shared/layouts/Stack.vue';
 import {storeToRefs} from 'pinia';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';

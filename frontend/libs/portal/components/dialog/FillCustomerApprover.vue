@@ -8,7 +8,6 @@ import DHTTPError from '@shared/types/DHTTPError';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {UserDto} from '@disclosure-portal/model/Users';
 import eventBus from '@shared/utils/eventbus';
-import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';

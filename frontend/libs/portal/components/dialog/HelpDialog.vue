@@ -43,9 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import Markdown from '@shared/components/Markdown.vue';
-import DSimpleDialog from '@shared/components/disco/DSimpleDialog.vue';
-import Stack from '@shared/layouts/Stack.vue';
 import {computed, ref, watchEffect} from 'vue';
 
 interface Props {

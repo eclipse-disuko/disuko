@@ -3,7 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {useForm} from '@shared/composables/useForm';
 import {computed} from 'vue';
 

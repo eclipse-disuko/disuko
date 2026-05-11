@@ -4,8 +4,6 @@
 
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
-import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
-import ApprovalInfoTabs from '@disclosure-portal/components/projects/approval/ApprovalInfoTabs.vue';
 import {
   Approval,
   ApprovalStates,
@@ -19,9 +17,6 @@ import {FillCustomerReq, ProjectModel} from '@disclosure-portal/model/Project';
 import {TaskDto, UserDto} from '@disclosure-portal/model/Users';
 import ProjectService from '@disclosure-portal/services/projects';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DFormDialog from '@shared/components/disco/DFormDialog.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
