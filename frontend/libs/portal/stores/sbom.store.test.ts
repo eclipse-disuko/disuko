@@ -229,6 +229,28 @@ describe('useSbomStore', () => {
     });
   });
 
+  describe('getSelectedSBOM (derived)', () => {
+    it('returns the selected SBOM with isRecent true when it is the most recent', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
+      store.setCurrentVersion('versionA');
+      store.setSelectedSBOMKey('spdx-1');
+
+      expect(store.getSelectedSBOM?._key).toBe('spdx-1');
+      expect(store.getSelectedSBOM?.isRecent).toBe(true);
+    });
+
+    it('returns the selected SBOM with isRecent false when it is not the most recent', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
+      store.setCurrentVersion('versionA');
+      store.setSelectedSBOMKey('spdx-2');
+
+      expect(store.getSelectedSBOM?._key).toBe('spdx-2');
+      expect(store.getSelectedSBOM?.isRecent).toBe(false);
+    });
+  });
+
   describe('getAllSBOMs (derived)', () => {
     it('groups flat items into VersionSboms by versionKey', () => {
       const store = useSbomStore();

@@ -96,7 +96,7 @@ export const useSbomStore = defineStore('sbom', () => {
       .map((item, index) => ({...item, isRecent: index === 0})),
   );
   const getChannelSpdxs = computed(() => channelSpdxs.value);
-  const getSelectedSBOM = computed(() => state.allSBOMSFlat.find((item) => item._key === state.selectedSBOMKey));
+  const getSelectedSBOM = computed(() => channelSpdxs.value.find((item) => item._key === state.selectedSBOMKey));
   const getAllSBOMsFlat = computed(() => state.allSBOMSFlat);
   const getAllSBOMs = computed((): VersionSboms[] => {
     const map = new Map<string, VersionSboms>();
