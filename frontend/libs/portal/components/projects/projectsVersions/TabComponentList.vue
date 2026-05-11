@@ -512,17 +512,17 @@ const ruleCallback: IRuleBtnCallbacks = {
     if (!stats.value) return 0;
     switch (policy) {
       case PolicyState.NOT_SET:
-        return stats.value.Total;
+        return stats.value.total;
       case PolicyState.DENY:
-        return stats.value.Denied;
+        return stats.value.denied;
       case PolicyState.NOASSERTION:
-        return stats.value.NoAssertion;
+        return stats.value.noAssertion;
       case PolicyState.QUESTIONED:
-        return stats.value.Questioned;
+        return stats.value.questioned;
       case PolicyState.WARN:
-        return stats.value.Warned;
+        return stats.value.warned;
       case PolicyState.ALLOW:
-        return stats.value.Allowed;
+        return stats.value.allowed;
       default:
         return 0;
     }

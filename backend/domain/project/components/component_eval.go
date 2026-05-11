@@ -48,21 +48,21 @@ type PolicyRuleStatus struct {
 }
 
 type ComponentStats struct {
-	Total       int
-	Allowed     int
-	Warned      int
-	Denied      int
-	Questioned  int
-	NoAssertion int
+	Total       int `json:"total"`
+	Allowed     int `json:"allowed"`
+	Warned      int `json:"warned"`
+	Denied      int `json:"denied"`
+	Questioned  int `json:"questioned"`
+	NoAssertion int `json:"noAssertion"`
 }
 
 type LicenseFamilyStats struct {
-	Total           int
-	NetworkCopyLeft int
-	StrongCopyLeft  int
-	WeakCopyLeft    int
-	Permissive      int
-	Other           int
+	Total           int `json:"total"`
+	NetworkCopyLeft int `json:"networkCopyLeft"`
+	StrongCopyLeft  int `json:"strongCopyLeft"`
+	WeakCopyLeft    int `json:"weakCopyLeft"`
+	Permissive      int `json:"permissive"`
+	Other           int `json:"other"`
 }
 
 type ReviewRemarkStats struct {
@@ -73,10 +73,10 @@ type ReviewRemarkStats struct {
 }
 
 type ScanRemarkStats struct {
-	Total       int
-	Information int
-	Warning     int
-	Problem     int
+	Total       int `json:"total"`
+	Information int `json:"information"`
+	Warning     int `json:"warning"`
+	Problem     int `json:"problem"`
 }
 
 type ScanRemarkTypeStats struct {
@@ -91,16 +91,16 @@ type NotChartFossLicenseStats struct {
 }
 
 type LicenseRemarkStats struct {
-	Total       int
-	Information int
-	Warning     int
-	Alarm       int
+	Total       int `json:"total"`
+	Information int `json:"information"`
+	Warning     int `json:"warning"`
+	Alarm       int `json:"alarm"`
 }
 
 type InApproval struct {
-	IsInApproval bool
-	ApprovalGuid string
-	Status       string
+	IsInApproval bool   `json:"isInApproval"`
+	ApprovalGuid string `json:"approvalGuid"`
+	Status       string `json:"status"`
 }
 
 type GeneralStats struct {
@@ -110,11 +110,11 @@ type GeneralStats struct {
 }
 
 type SBOMStats struct {
-	PolicyState         ComponentStats
-	LicenseFamily       LicenseFamilyStats
-	ScanRemark          ScanRemarkStats
-	LicenseRemark       LicenseRemarkStats
-	ApprovalInfo        InApproval
+	PolicyState         ComponentStats           `json:"policyState"`
+	LicenseFamily       LicenseFamilyStats       `json:"licenseFamily"`
+	ScanRemark          ScanRemarkStats          `json:"scanRemark"`
+	LicenseRemark       LicenseRemarkStats       `json:"licenseRemark"`
+	ApprovalInfo        InApproval               `json:"approvalInfo"`
 	ScanRemarkType      ScanRemarkTypeStats      `json:"scanRemarkType"`
 	NotChartFossLicense NotChartFossLicenseStats `json:"notChartFossLicense"`
 }

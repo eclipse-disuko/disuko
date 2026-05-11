@@ -40,7 +40,7 @@ vi.mock('@disclosure-portal/services/projects', () => ({
 import {useSbomStore} from './sbom.store';
 
 const version = (key: string, name: string): VersionSlim => ({_key: key, name}) as VersionSlim;
-const sbomStats = (allowed: number): SbomStats => ({PolicyState: {Allowed: allowed}}) as SbomStats;
+const sbomStats = (allowed: number): SbomStats => ({policyState: {allowed: allowed}}) as SbomStats;
 const generalStats = (acceptable: number): GeneralStats => ({ReviewRemark: {Acceptable: acceptable}}) as GeneralStats;
 const flatItem = (key: string, versionKey: string, versionName: string): VersionSbomsFlat =>
   ({_key: key, versionKey, versionName}) as VersionSbomsFlat;
