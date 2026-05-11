@@ -196,7 +196,13 @@ watch(
     :theme="config.useWinterTheme ? 'dark' : undefined">
     <DBreadcrumb></DBreadcrumb>
     <v-spacer></v-spacer>
-    <v-btn large color="button" variant="outlined" prepend-icon="mdi-help" class="border-sm mr-2" @click="openHelp">
+    <v-btn
+      large
+      color="button"
+      variant="outlined"
+      prepend-icon="mdi-help-circle-outline"
+      class="border-sm mr-2"
+      @click="openHelp">
       <template v-slot:prepend>
         <span
           v-if="hasCustomHelp"

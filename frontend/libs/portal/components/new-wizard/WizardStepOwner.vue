@@ -60,8 +60,6 @@ onMounted(async () => {
           class="w-1/2"
           rows="5"
           autocomplete="off"
-          :placeholder="t('PLACEHOLDER_NOTICE_CONTACT_ADDRESS')"
-          persistent-placeholder
           variant="outlined"
           v-model="wizardStore.project.projectSettings.noticeContactMeta.address"
           :label="t('NOTICE_CONTACT_ADDRESS')"
