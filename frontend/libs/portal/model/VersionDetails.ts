@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {LicenseRuleSlim} from '@disclosure-portal/model/LicenseRule';
-import {IUploaded, UnmatchedLicense} from '@disclosure-portal/model/Project';
+import {UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import {PolicyDecisionSlim} from './PolicyDecision';
 
@@ -11,11 +11,7 @@ export class MetaInfo {
   public name = '';
   public spdxId = '';
   public spdxVersion = '';
-  // public DataLicense = '';
-  // public NameWithUploaded = '';
   public comment = '';
-  // public Creators: string[] = [];
-  // public CreationData = '';
 }
 
 export class SourceCode {
@@ -196,7 +192,6 @@ export class ComponentInfoSlim {
 export class ApprovalInfo {
   public isInApproval = false;
   public comment = '';
-  // public ApprovalGuid = '';
   public status = '';
 }
 
@@ -206,15 +201,6 @@ export class SpdxFile {
   public _key = '';
   public created = '';
   public hash = '';
-  // public Content = '';
-  // public ContentValid = false;
-  // public SchemaValid = false;
-  // public Type = 0;
-  // public ValidationErrors = '';
-  // public SchemaId = '';
-  // public SchemaName = '';
-  // public Stats: ComponentStats = new ComponentStats();
-  // public ComponentInfo: ComponentInfo[] = [];
   public metaInfo: MetaInfo = new MetaInfo();
   public uploaded = '';
   public updated: Date = new Date();
