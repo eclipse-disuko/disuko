@@ -262,7 +262,7 @@ export default defineComponent({
             <div class="pt-1 text-center">{{ item.stats.Warned }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <v-icon size="small" :color="item.stats.Questioned > 0 ? 'green' : ''">mdi-help</v-icon>
+            <v-icon size="small" :color="item.stats.Questioned > 0 ? 'green' : ''">mdi-help-circle</v-icon>
             <div class="pt-1 text-center">{{ item.stats.Questioned }}</div>
           </div>
           <div class="flex flex-col items-center justify-center">
