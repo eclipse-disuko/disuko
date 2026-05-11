@@ -12,7 +12,7 @@ import {storeToRefs} from 'pinia';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import {debounce} from 'lodash';
+import {refDebounced} from '@vueuse/core';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
 import {useUrls} from '@shared/composables/useUrls';
 
@@ -25,6 +25,7 @@ const {projects, projectsCount, loading, projectPossibleStatuses} = storeToRefs(
 
 const abort = ref<AbortController | null>(null);
 const search = ref('');
+const debouncedSearch = refDebounced(search, 300);
 const selectedFilterStatus = ref<string[]>([]);
 const sortBy = ref<SortItem[]>([{key: 'updated', order: 'desc'}]);
 const itemsPerPage = ref(100);
@@ -36,8 +37,8 @@ const options = computed(
     itemsPerPage: itemsPerPage.value,
     sortBy: sortBy.value,
     groupBy: [],
-    search: search.value,
-    filterString: search.value,
+    search: debouncedSearch.value,
+    filterString: debouncedSearch.value,
     filterBy: {
       status: selectedFilterStatus.value,
     },
@@ -82,16 +83,6 @@ const reload = async () => {
   abort.value = null;
 };
 
-const searchChanged = async () => {
-  if (search.value && search.value.length > 80) {
-    return;
-  }
-
-  await reload();
-};
-
-const debounceReload = debounce(searchChanged, 300);
-
 const onRowClick = (event: Event, item: DataTableItem<ProjectSlim>) => {
   const project: ProjectSlim = item.item;
   openProjectUrlByKey(project._key, router);
@@ -111,7 +102,7 @@ const isExpanded = (item: ProjectSlim) => {
   return expanded.value.includes(item._key);
 };
 
-watch(options, debounceReload, {deep: true});
+watch(options, reload, {deep: true});
 
 onMounted(() => {
   reload();
