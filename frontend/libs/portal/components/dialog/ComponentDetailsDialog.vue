@@ -396,6 +396,15 @@ const getLicenseEffectiveAttribute = (attributes: Details[]) => {
   return foundAttribute ? foundAttribute.Value : 'NOASSERTION';
 };
 
+const NOASSERTION_KEYS = new Set(['licenseEffective', 'licenseConcluded', 'licenseDeclared']);
+
+const getAttributeDisplayValue = (item: LocalDetails): string => {
+  if (NOASSERTION_KEYS.has(item.Key) && !item.Value) {
+    return 'NOASSERTION';
+  }
+  return item.Value;
+};
+
 const dialogLayoutConfig = computed(() => {
   const desc =
     description.value !== 'NOASSERTION'
@@ -788,12 +797,12 @@ defineExpose({
 
               <template #[`item.Value`]="{item}">
                 <DExternalLink v-if="item?.url" :url="item.Value" :text="item.Value" />
-                <span v-else>{{ item.Value }}</span>
+                <span v-else>{{ getAttributeDisplayValue(item) }}</span>
               </template>
 
               <template #[`item.action`]="{item}">
                 <div class="opacity-40 hover:opacity-100">
-                  <DCopyClipboardButton :hint="t('TT_COPY_TO_CLIPBOARD')" :content="item.Value" />
+                  <DCopyClipboardButton :hint="t('TT_COPY_TO_CLIPBOARD')" :content="getAttributeDisplayValue(item)" />
                 </div>
               </template>
             </v-data-table>
