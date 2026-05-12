@@ -44,7 +44,7 @@ declare module 'vue' {
     DApprovalState: typeof import('./../../libs/portal/components/disco/DApprovalState.vue')['default']
     Dashboard: typeof import('./../../libs/portal/views/Dashboard.vue')['default']
     DAutocompleteCompany: typeof import('./../../libs/shared/components/disco/DAutocompleteCompany.vue')['default']
-    DAutocompleteUser: typeof import('./../../libs/portal/components/disco/DAutocompleteUser.vue')['default']
+    DAutocompleteUser: typeof import('./../../libs/shared/components/disco/DAutocompleteUser.vue')['default']
     DBreadcrumb: typeof import('./../../libs/shared/components/DBreadcrumb.vue')['default']
     DCActionButton: typeof import('./../../libs/shared/components/disco/DCActionButton.vue')['default']
     DCloseButton: typeof import('./../../libs/shared/components/disco/DCloseButton.vue')['default']
