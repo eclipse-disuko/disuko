@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {FilterSetDto, FilterSetRequestDto} from '@disclosure-portal/model/FilterSet';
 
-const {api} = getApi();
+const {api} = useApi();
 
 class FilterSetService {
   public async getFilterSets(tablename: string): Promise<FilterSetDto[]> {

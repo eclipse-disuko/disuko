@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {NewsboxItemCreateDto, NewsboxItem, NewsboxItems, default as Newsbox} from '@disclosure-portal/model/Newsbox';
-import {UserLastSeenDto} from '@disclosure-portal/model/Users';
+import {UserLastSeenDto} from '@shared/types/Users';
 import {default as newsboxService} from '@disclosure-portal/services/newsbox.service';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {defineStore} from 'pinia';

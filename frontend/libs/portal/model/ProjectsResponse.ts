@@ -4,7 +4,7 @@
 
 import {CustomId} from '@disclosure-portal/model/CustomId';
 import {ProjectModel} from '@disclosure-portal/model/Project';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import {SpdxFile, VersionSlimDto} from '@disclosure-portal/model/VersionDetails';
 import {Application} from './Application';
 

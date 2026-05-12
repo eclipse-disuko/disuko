@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import Icons from '@disclosure-portal/constants/icons';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DLabel from '@disclosure-portal/components/disco/DLabel.vue';

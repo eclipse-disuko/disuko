@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {ICountResponse, IFoundResponse} from '@disclosure-portal/model/Common';
 import License, {
   LicenseSlim,
@@ -16,7 +16,7 @@ import {AuditLog} from '@disclosure-portal/model/VersionDetails';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import {AxiosResponse} from 'axios';
 
-const {api} = getApi();
+const {api} = useApi();
 
 const modelName = 'licenses';
 

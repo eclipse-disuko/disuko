@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {
   Approval,
   ApprovableInfo,
@@ -47,13 +47,13 @@ import {
   VersionSboms,
 } from '@disclosure-portal/model/ProjectsResponse';
 import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {AuditLog, ComponentMultiDiff, NoticeFileFormat} from '@disclosure-portal/model/VersionDetails';
 import {IProjectCreatedResponse, WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import {AxiosResponse} from 'axios';
 
-const {api, NO_IDLE_PARAM} = getApi();
+const {api, NO_IDLE_PARAM} = useApi();
 
 const modelName = 'projects';
 

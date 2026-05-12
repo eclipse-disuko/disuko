@@ -10,7 +10,7 @@ import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {ComponentDetails, ProjectModel, UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {SpdxIdentifier} from '@disclosure-portal/model/Spdx';
 import StatusDialogConfig from '@disclosure-portal/model/StatusDialogConfig';
-import {TaskDto} from '@disclosure-portal/model/Users';
+import {TaskDto} from '@shared/types/Users';
 import {ComponentMultiDiff, ExternalSource, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
 
 export interface ProviderPrivacyDialogInterface {

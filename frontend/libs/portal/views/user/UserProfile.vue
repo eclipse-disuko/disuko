@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import UserMain from '@disclosure-portal/components/user/UserMain.vue';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {defineComponent, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
