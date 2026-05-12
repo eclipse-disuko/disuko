@@ -53,6 +53,7 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	jwtLib "github.com/golang-jwt/jwt/v4"
 )
 
 type UserHandler struct {
@@ -598,6 +599,91 @@ func (handler *UserHandler) GetProfileData(w http.ResponseWriter, r *http.Reques
 		Profile: userData,
 	}
 	render.JSON(w, r, response)
+}
+
+func (handler *UserHandler) CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	userName, _ := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	currentUser := handler.UserRepository.FindByUserId(requestSession, userName)
+	if currentUser == nil {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorPermissionDeniedUser, userName))
+	}
+
+	var requestDto user.CreateTokenRequestDto
+	validation.DecodeAndValidate(r, &requestDto, false)
+
+	if requestDto.Expiry.Before(time.Now()) {
+		exception.ThrowExceptionClient400Message(message.GetI18N(message.ErrorUserTokenExpiryInvalid), "")
+	}
+
+	maxExpiry := time.Now().AddDate(2, 0, 0)
+	if requestDto.Expiry.After(maxExpiry) {
+		exception.ThrowExceptionClient400Message(message.GetI18N(message.ErrorUserTokenExpiryExceedsMax), "")
+	}
+
+	token := user.NewToken(requestDto.Description, requestDto.Expiry)
+	currentUser.Tokens = append(currentUser.Tokens, token)
+	handler.UserRepository.Update(requestSession, currentUser)
+
+	claims := user.UserTokenClaims{
+		UserKey:  currentUser.GetKey(),
+		TokenKey: token.GetKey(),
+		RegisteredClaims: jwtLib.RegisteredClaims{
+			Subject:   patSubject,
+			ExpiresAt: jwtLib.NewNumericDate(requestDto.Expiry),
+		},
+	}
+	jwtToken := jwtLib.NewWithClaims(jwtLib.SigningMethodHS256, claims)
+	signedToken, err := jwtToken.SignedString([]byte(conf.Config.Auth.UserTokenSigningKey))
+	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorTokenCreate))
+
+	render.JSON(w, r, user.CreateTokenResponseDto{Token: signedToken})
+}
+
+func (handler *UserHandler) ListTokensHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	userName, _ := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	currentUser := handler.UserRepository.FindByUserId(requestSession, userName)
+	if currentUser == nil {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorPermissionDeniedUser, userName))
+	}
+
+	render.JSON(w, r, domain.ToDtos(currentUser.Tokens))
+}
+
+func (handler *UserHandler) ExpireTokenHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	userName, _ := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+
+	currentUser := handler.UserRepository.FindByUserId(requestSession, userName)
+	if currentUser == nil {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorPermissionDeniedUser, userName))
+	}
+
+	tokenKey := chi.URLParam(r, "tokenKey")
+
+	var found *user.Token
+	for i := range currentUser.Tokens {
+		if currentUser.Tokens[i].GetKey() == tokenKey {
+			found = &currentUser.Tokens[i]
+			break
+		}
+	}
+
+	if found == nil {
+		exception.ThrowExceptionClient404Message3(message.GetI18N(message.ErrorUserTokenNotFound))
+	}
+
+	if found.Expiry.Before(time.Now()) {
+		exception.ThrowExceptionClient400Message(message.GetI18N(message.ErrorUserTokenAlreadyExpired), "")
+	}
+
+	found.Expiry = time.Now()
+	handler.UserRepository.Update(requestSession, currentUser)
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (handler *UserHandler) GetTaskListForAdmin(w http.ResponseWriter, r *http.Request) {

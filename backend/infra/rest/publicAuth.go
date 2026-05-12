@@ -11,11 +11,13 @@ import (
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/publicauth"
+	"github.com/eclipse-disuko/disuko/domain/user"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/helper/validation"
 	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/render"
 	"github.com/golang-jwt/jwt/v4"
@@ -24,6 +26,7 @@ import (
 var (
 	refreshSubject = "public refresh"
 	accesSubject   = "public access"
+	patSubject     = "pat"
 )
 
 type PublicAuthHandler struct {
@@ -227,7 +230,7 @@ func (h *PublicAuthHandler) Info(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, res)
 }
 
-func projectAccessAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepository, pr *project.Project, cookie *http.Cookie) *project.Token {
+func projectAccessAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepository, pr *project.Project, cookie *http.Cookie) string {
 	token, err := jwt.ParseWithClaims(cookie.Value, &publicauth.AccessClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(conf.Config.PublicAuth.SigningKey), nil
 	})
@@ -247,10 +250,10 @@ func projectAccessAuth(rs *logy.RequestSession, repo projectRepo.IProjectReposit
 	return projectTokenKeyAuth(rs, repo, pr, claims.TokenKey)
 }
 
-func projectTokenKeyAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepository, pr *project.Project, key string) *project.Token {
+func projectTokenKeyAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepository, pr *project.Project, key string) string {
 	prToken := pr.GetActiveTokenByKey(key)
 	if prToken != nil {
-		return prToken
+		return prToken.Origin()
 	}
 	if !pr.HasParent() {
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid access token"), "Project token not found or expired")
@@ -267,7 +270,7 @@ func projectTokenKeyAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepos
 	if parentToken == nil {
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid access token"), "Project token not found or expired")
 	}
-	return parentToken
+	return parentToken.Origin()
 }
 
 func projectTokenAuth(rs *logy.RequestSession, repo projectRepo.IProjectRepository, pr *project.Project, token string) *project.Token {
@@ -291,4 +294,42 @@ func projectTokenAuth(rs *logy.RequestSession, repo projectRepo.IProjectReposito
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid disco token"), "Project token not found or expired")
 	}
 	return parentToken
+}
+
+func patAuth(rs *logy.RequestSession, pr *project.Project, prRepo projectRepo.IProjectRepository, userRepo userRepo.IUsersRepository, tokenStr string) string {
+	token, err := jwt.ParseWithClaims(tokenStr, &user.UserTokenClaims{}, func(token *jwt.Token) (any, error) {
+		return []byte(conf.Config.Auth.UserTokenSigningKey), nil
+	})
+	if err != nil {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), err.Error())
+	}
+	claims, ok := token.Claims.(*user.UserTokenClaims)
+	if !ok {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Unexpected claims")
+	}
+	user := userRepo.FindByKey(rs, claims.UserKey, false)
+	if user == nil {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Unexpected claims")
+	}
+	ut := user.Token(claims.TokenKey)
+	if ut == nil {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Unexpected claims")
+	}
+	if ut.Expired() {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Unexpected claims")
+	}
+	if pr.GetMember(user.User) != nil {
+		return user.TokenOrigin(ut)
+	}
+	if !pr.HasParent() {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Project access denied")
+	}
+	parent := prRepo.FindByKey(rs, pr.Parent, false)
+	if parent == nil {
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "Parent project not found")
+	}
+	if pr.GetMember(user.User) == nil {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Project access denied")
+	}
+	return user.TokenOrigin(ut)
 }

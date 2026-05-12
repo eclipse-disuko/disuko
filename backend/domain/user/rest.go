@@ -5,9 +5,12 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/helper"
+	jwtLib "github.com/golang-jwt/jwt/v4"
 )
 
 type MetaDataDto struct {
@@ -158,6 +161,28 @@ type DeletePersonalDataDto struct {
 	EntityType string `json:"entity_type"`
 }
 
+type CreateTokenRequestDto struct {
+	Description string    `json:"description" validate:"required,lte=255"`
+	Expiry      time.Time `json:"expiry" validate:"required"`
+}
+
+type CreateTokenResponseDto struct {
+	Token string `json:"token"`
+}
+
+type TokenDto struct {
+	Key         string    `json:"_key"`
+	Description string    `json:"description"`
+	Expiry      time.Time `json:"expiry"`
+	Created     time.Time `json:"created"`
+}
+
+type UserTokenClaims struct {
+	jwtLib.RegisteredClaims
+	UserKey  string `json:"userKey"`
+	TokenKey string `json:"tokenKey"`
+}
+
 func (entity *User) ToUserMailDto() *UserMailDto {
 	return &UserMailDto{
 		User:     entity.User,
@@ -165,6 +190,13 @@ func (entity *User) ToUserMailDto() *UserMailDto {
 		Lastname: entity.Lastname,
 		Email:    entity.Email,
 	}
+}
+
+func (entity *User) TokenOrigin(token *Token) string {
+	if len(token.Description) > 0 {
+		return fmt.Sprintf("PAT %s ('%s', identifier: %s)", entity.User, token.Description, helper.MaskUuid(token.Key))
+	}
+	return fmt.Sprintf("PAT %s (identifier: %s)", entity.User, helper.MaskUuid(token.Key))
 }
 
 type RoleDeletionResult struct {
@@ -183,12 +215,12 @@ type BlockingProjectDto struct {
 }
 
 type UpcomingDeletionDto struct {
-	User             string              `json:"user"`
-	Forename         string              `json:"forename"`
-	Lastname         string              `json:"lastname"`
-	Deprovisioned    time.Time           `json:"deprovisioned"`
-	DeletionDate     time.Time           `json:"deletionDate"`
-	Overdue          bool                `json:"overdue"`
+	User             string               `json:"user"`
+	Forename         string               `json:"forename"`
+	Lastname         string               `json:"lastname"`
+	Deprovisioned    time.Time            `json:"deprovisioned"`
+	DeletionDate     time.Time            `json:"deletionDate"`
+	Overdue          bool                 `json:"overdue"`
 	BlockingProjects []BlockingProjectDto `json:"blockingProjects"`
 }
 

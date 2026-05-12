@@ -348,7 +348,7 @@ func (projectHandler *ProjectHandler) CCSGetListExternHandler(w http.ResponseWri
 //	@security	Bearer
 func (projectHandler *ProjectHandler) CCSCreateExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	projectData, version, token := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
+	projectData, version, origin := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 	if projectData.IsDeprecated() {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.DeprecatedProjectError))
 	}
@@ -368,7 +368,6 @@ func (projectHandler *ProjectHandler) CCSCreateExternHandler(w http.ResponseWrit
 	}()
 	projectData, version, _ = projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 
-	origin := helper.CreateOrigin(project.OriginApi, token.Company, token.Description, token.Key)
 	ip := jwt.TrimPortFromRemoteAddress(r.RemoteAddr)
 
 	projectHandler.HandleExternalSourceCreate(requestSession, projectData, version, origin, ip, w, r, false)
@@ -2689,7 +2688,7 @@ func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksExternV2(w http
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksCommentExtern(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, version, token := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
+	currentProject, version, origin := projectHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 	if currentProject.IsDeprecated() {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.DeprecatedProjectError))
 	}
@@ -2716,7 +2715,6 @@ func (projectHandler *ProjectHandler) ProjectVersionReviewRemarksCommentExtern(w
 		exception.ThrowExceptionClient404Message3(message.GetI18N(message.ErrorDbNotFound, remarkUuid))
 	}
 
-	origin := helper.CreateOrigin(project.OriginApi, token.Company, token.Description, token.Key)
 	ip := jwt.TrimPortFromRemoteAddress(r.RemoteAddr)
 
 	var before reviewremarks.Remark
