@@ -58,13 +58,13 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
   ]);
 
   const getScopeFilterValues = (filterName: ScopeFilterName): Array<string | boolean> => {
-    const value = state.rule.CalculatedConfig.licenseScope[filterName];
+    const value = state.rule.calculatedConfig.licenseScope[filterName];
     return filterName === 'isLicenseChart' ? value.map(String) : (value as Array<string | boolean>);
   };
 
   const calculatedRuleConfig = computed<CalculatedRuleConfigType>(() => ({
-    calculated: state.rule.Calculated,
-    buckets: state.rule.CalculatedConfig.bucketDefinition,
+    calculated: state.rule.calculated,
+    buckets: state.rule.calculatedConfig.bucketDefinition,
     classificationOptions: classificationOptions.value,
     scopeConfig: {
       isLicenseChart: {
@@ -95,15 +95,15 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
   };
 
   const setCalculated = (value: boolean): void => {
-    state.rule.Calculated = value;
+    state.rule.calculated = value;
   };
 
   const setBucketClassifications = (bucketName: CalculatedBucketName, value: string[]): void => {
-    state.rule.CalculatedConfig.bucketDefinition[bucketName] = value;
+    state.rule.calculatedConfig.bucketDefinition[bucketName] = value;
   };
 
   const setScopeFilterValues = (filterName: ScopeFilterName, values: Array<string | boolean>): void => {
-    const scope = state.rule.CalculatedConfig.licenseScope;
+    const scope = state.rule.calculatedConfig.licenseScope;
     if (filterName === 'isLicenseChart') {
       scope.isLicenseChart = toBoolArray(values);
     } else {

@@ -52,7 +52,7 @@ const initBreadcrumbs = () => {
     {title: t('BC_Dashboard'), disabled: false, href: '/dashboard/home'},
     {title: t('POLICY_RULES'), disabled: false, href: '/dashboard/policyrules'},
     {
-      title: '' + rule.value.Name,
+      title: '' + rule.value.name,
       disabled: false,
       href: '/dashboard/policyrules/' + encodeURIComponent(ruleId.value),
     },
@@ -97,7 +97,7 @@ onMounted(async () => {
 
 // Set up reactive title based on policy rule name
 watch(
-  () => rule.value?.Name,
+  () => rule.value?.name,
   (rule) => {
     if (rule) {
       useReactiveTitle(rule + ' | Policy Rule');
@@ -112,10 +112,10 @@ watch(
     <v-row>
       <v-col xs="12" md="auto" class="d-flex align-center">
         <span class="text-h5 pr-2">{{ t('POLICY_RULE') }}</span>
-        <span class="text-h5 px-2">{{ rule.Name }}</span>
+        <span class="text-h5 px-2">{{ rule.name }}</span>
         <NewPolicyRuleDialog v-slot="{showDialog}" :policy-labels="policyLabels" :policy-rule="rule" @reload="reload">
           <DCActionButton
-            v-if="isPolicyManager && !rule.Deprecated"
+            v-if="isPolicyManager && !rule.deprecated"
             large
             class="align-content-center mx-2"
             icon="mdi-pencil"
@@ -165,8 +165,8 @@ watch(
                     <v-card-text>
                       <span class="text-caption text-grey-lighten-1">{{ t('DEPRECATED') }}</span
                       ><br />
-                      <span class="text-body-2" v-if="rule.Deprecated">{{
-                        formatDateTimeShort(rule.DeprecatedDate)
+                      <span class="text-body-2" v-if="rule.deprecated">{{
+                        formatDateTimeShort(rule.deprecatedDate)
                       }}</span>
                     </v-card-text>
                   </v-sheet>
@@ -174,22 +174,22 @@ watch(
                     <v-card-text>
                       <span class="text-caption text-grey-lighten-1">{{ t('DESCRIPTION') }}</span
                       ><br />
-                      <span>{{ String(rule.Description) }}</span>
+                      <span>{{ String(rule.description) }}</span>
                     </v-card-text>
                   </v-sheet>
                 </v-col>
-                <v-col md="6" xs="12" sm="12" v-if="!rule.ApplyToAll">
+                <v-col md="6" xs="12" sm="12" v-if="!rule.applyToAll">
                   <v-sheet class="d-flex flex-row">
                     <v-card-text>
                       <v-icon color="grey-lighten-1" size="x-small" class="mr-2">{{ icons.POLICY }}</v-icon>
                       <span class="text-caption text-grey-lighten-1">{{ t('POLICY_LABELS_SETS') }}</span>
                       <div class="d-flex flex-row flex-wrap">
                         <div
-                          v-for="(labelSets, lsi) in rule.LabelSets"
+                          v-for="(labelSets, lsi) in rule.labelSets"
                           :key="lsi"
                           class="ma-2 d-flex justify-space-between">
                           <div
-                            v-if="rule.LabelSets.length >= 1 && rule.LabelSets[0].length >= 1"
+                            v-if="rule.labelSets.length >= 1 && rule.labelSets[0].length >= 1"
                             class="policyLabelBorder pa-2 rounded">
                             <v-tooltip
                               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"

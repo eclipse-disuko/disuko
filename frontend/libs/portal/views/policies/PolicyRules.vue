@@ -61,7 +61,7 @@ const items = ref<PolicyRule[]>([]);
 const search = ref('');
 const isPolicyManager = ref(false);
 const policyLabels = ref<Label[]>([]);
-const sortItems = ref<SortItem[]>([{key: 'Name', order: 'asc'}]);
+const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const policyRuleDialogRef = ref();
 const currentPolicyRuleForAction = ref<PolicyRule | null>(null);
 
@@ -85,7 +85,7 @@ const showDeletionConfirmationDialog = (item: PolicyRule) => {
   confirmConfig.value = {
     type: ConfirmationType.DELETE,
     key: item._key,
-    name: item.Name,
+    name: item.name,
     okButtonIsDisabled: false,
     okButton: 'Btn_delete',
     description: 'DLG_CONFIRMATION_DESCRIPTION',
@@ -101,7 +101,7 @@ const showDeprecationConfirmationDialog = async (pr: PolicyRule) => {
   confirmDeprConfig.value = {
     type: ConfirmationType.DEPRECATE,
     key: pr._key,
-    name: pr.Name,
+    name: pr.name,
     description: 'DLG_PR_DEPRECATION_CONFIRMATION_DESCRIPTION',
     emphasiseText: 'PR_DEPRECATION_UNREVERTABLE',
     emphasiseConfirmationText: 'PR_DEPRECATION_UNREVERTABLE_CONFIRM',
@@ -140,7 +140,7 @@ const filteredList = computed<PolicyRule[]>(() => {
   if (!Array.isArray(items.value)) {
     return [];
   }
-  return items.value.filter((pr) => selectedFilterStatus.value.some((s) => s == pr.Status));
+  return items.value.filter((pr) => selectedFilterStatus.value.some((s) => s == pr.status));
 });
 
 const downloadSingleCsv = async (id: string) => {
@@ -155,7 +155,7 @@ const showCopyConfirmationDialog = (item: PolicyRule) => {
   confirmCopyConfig.value = {
     type: ConfirmationType.NOT_SET,
     key: item._key,
-    name: item.Name,
+    name: item.name,
     okButtonIsDisabled: false,
     okButton: 'BTN_COPY',
     description: 'DLG_CONFIRMATION_COPY_PR',
@@ -174,7 +174,7 @@ const onPolicyRuleDialogClosed = async () => {
 };
 
 const getActionButtons = (item: PolicyRule): TableActionButtonsProps['buttons'] => {
-  const canManage = isPolicyManager.value && !item.Deprecated;
+  const canManage = isPolicyManager.value && !item.deprecated;
 
   return [
     {
@@ -237,49 +237,49 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_STATUS'),
     align: 'start',
-    value: 'Status',
+    value: 'status',
     width: 110,
     sortable: true,
   },
   {
     title: t('COL_NAME'),
     align: 'start',
-    value: 'Name',
+    value: 'name',
     width: 300,
     sortable: true,
   },
   {
     title: t('DESCRIPTION'),
     align: 'start',
-    value: 'Description',
+    value: 'description',
     width: 350,
     sortable: false,
   },
   {
     title: t('TOTAL'),
     align: 'center',
-    value: 'Total',
+    value: 'total',
     width: 75,
     sortable: false,
   },
   {
     title: t('ALLOWED'),
     align: 'center',
-    value: 'Allowed',
+    value: 'allowed',
     width: 75,
     sortable: false,
   },
   {
     title: t('WARNED'),
     align: 'center',
-    value: 'Warned',
+    value: 'warned',
     width: 75,
     sortable: false,
   },
   {
     title: t('DENIED'),
     align: 'center',
-    value: 'Denied',
+    value: 'denied',
     width: 75,
     sortable: false,
   },
@@ -348,27 +348,27 @@ const headers = computed((): DataTableHeader[] => [
               </template>
             </GridFilterHeader>
           </template>
-          <template #[`item.Status`]="{item}">
-            <span class="font-bold" :style="{color: policyRulesUtils.getTextStatusColor(item.Status)}">{{
-              t('PR_STATUS_' + item.Status.toUpperCase())
+          <template #[`item.status`]="{item}">
+            <span class="font-bold" :style="{color: policyRulesUtils.getTextStatusColor(item.status)}">{{
+              t('PR_STATUS_' + item.status.toUpperCase())
             }}</span>
           </template>
-          <template #[`item.Allowed`]="{item}">
-            {{ item.ComponentsAllow.length }}
+          <template #[`item.allowed`]="{item}">
+            {{ item.componentsAllow.length }}
           </template>
-          <template #[`item.Warned`]="{item}">
-            {{ item.ComponentsWarn.length }}
+          <template #[`item.warned`]="{item}">
+            {{ item.componentsWarn.length }}
           </template>
-          <template #[`item.Denied`]="{item}">
-            {{ item.ComponentsDeny.length }}
+          <template #[`item.denied`]="{item}">
+            {{ item.componentsDeny.length }}
           </template>
           <template #[`item.Total`]="{item}">
-            {{ item.ComponentsAllow.length + item.ComponentsDeny.length + item.ComponentsWarn.length }}
+            {{ item.componentsAllow.length + item.componentsDeny.length + item.componentsWarn.length }}
           </template>
-          <template #[`item.Description`]="{item}">
-            <v-tooltip :text="item.Description" width="320" location="bottom" content-class="dpTooltip">
+          <template #[`item.description`]="{item}">
+            <v-tooltip :text="item.description" width="320" location="bottom" content-class="dpTooltip">
               <template #activator="{props}"
-                ><span v-bind="props">{{ getStrWithMaxLength(95, item.Description) }}</span>
+                ><span v-bind="props">{{ getStrWithMaxLength(95, item.description) }}</span>
               </template></v-tooltip
             >
           </template>
