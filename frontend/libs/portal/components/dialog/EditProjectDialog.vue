@@ -26,7 +26,7 @@ const isVisible = ref(false);
 const project = ref<ProjectPostRequest>(new ProjectPostRequest());
 const projectEditForm = ref<VForm | null>(null);
 const config = ref<DialogEditProjectConfig>({} as DialogEditProjectConfig);
-const applicationSelectorRef = ref<InstanceType<typeof ApplicationSelector>>();
+const applicationSelectorRef = ref();
 
 const isEnterpriseOrMobilePlatform = computed((): boolean => {
   const enterpriseLabelKey = labels.getLabelByNameAndType(PolicyLabels.ENTERPRISE_PLATFORM, 'POLICY')?._key || '';

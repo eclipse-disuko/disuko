@@ -34,7 +34,7 @@ const uploadURL = ref(config.SERVER_URL + '/api/v1/admin/schemas');
 const sbomFileError = ref('');
 const predefinedLabels = ref<Label[]>(props.labels);
 const schemaFormValid = ref<boolean>(false);
-const upload = ref<InstanceType<typeof DiscoFileUpload> | null>(null);
+const upload = ref();
 
 const activeRules = ref({
   required: useRules().minMax('Name', 3, 80, false),
