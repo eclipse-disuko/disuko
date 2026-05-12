@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ActionRights} from '@disclosure-portal/model/Credentials';
-import {CRUDRights} from '@disclosure-portal/model/Rights';
+import {ActionRights} from '@shared/types/Credentials';
+import {CRUDRights} from '@shared/types/Rights';
 
 export class AccessRights {
   public allowSchema!: CRUDRights;

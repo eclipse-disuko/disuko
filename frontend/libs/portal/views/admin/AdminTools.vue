@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';

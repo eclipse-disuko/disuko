@@ -9,7 +9,7 @@ import Label from '@disclosure-portal/model/Label';
 import {compareFamily, LicenseSlim} from '@disclosure-portal/model/License';
 import PolicyRule, {PolicyRules, PolicyState} from '@disclosure-portal/model/PolicyRule';
 import {compareLevel, levelWeight} from '@disclosure-portal/model/Quality';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import policyRuleService from '@disclosure-portal/services/policyrules';

@@ -7,7 +7,7 @@ import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/co
 import {Approval, ApprovalStates, ApprovalType, ApprovalUpdate, ApproverRoles} from '@disclosure-portal/model/Approval';
 import {ApprovalResponse} from '@disclosure-portal/model/ApprovalRequest';
 import {FillCustomerReq} from '@disclosure-portal/model/Project';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';

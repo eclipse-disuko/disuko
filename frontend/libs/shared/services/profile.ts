@@ -2,18 +2,18 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
-import SimpleProfileData from '@disclosure-portal/model/ProfileData';
-import {ProjectRoleDto, TaskDto, UserDto, UserRequestDto} from '@disclosure-portal/model/Users';
-import {GetDashboardCounts} from '@disclosure-portal/services/admin';
+import {useApi} from '@shared/api/useApi';
+import SimpleProfileData from '@shared/types/ProfileData';
+import {ProjectRoleDto, TaskDto, UserDto, UserRequestDto} from '@shared/types/Users';
 import {AxiosResponse} from 'axios';
+import {DashboardCounts} from '@shared/types/DashboardCounts';
 
-const {api} = getApi();
+const {api} = useApi();
 
 const modelName = 'profile';
 
 class ProfileService {
-  public async getDashboardCounts(): Promise<GetDashboardCounts> {
+  public async getDashboardCounts(): Promise<DashboardCounts> {
     const result = await api.get('/api/v1/counts/dashboard');
     return result.data;
   }

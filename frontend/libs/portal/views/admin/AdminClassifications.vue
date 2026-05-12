@@ -7,7 +7,7 @@ import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/Co
 import {useView} from '@disclosure-portal/composables/useView';
 import IObligation from '@disclosure-portal/model/IObligation';
 import {compareLevel} from '@disclosure-portal/model/Quality';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import {useUserStore} from '@disclosure-portal/stores/user';

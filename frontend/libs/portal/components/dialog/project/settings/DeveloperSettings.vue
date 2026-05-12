@@ -76,7 +76,7 @@
 <script lang="ts" setup>
 import {ProjectLabels} from '@disclosure-portal/constants/policyLabels';
 import {ProjectModel, ProjectSettingsModel} from '@disclosure-portal/model/Project';
-import {Group, Rights} from '@disclosure-portal/model/Rights';
+import {Group, Rights} from '@shared/types/Rights';
 import {WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';

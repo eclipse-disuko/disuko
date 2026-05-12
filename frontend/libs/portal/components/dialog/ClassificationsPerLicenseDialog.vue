@@ -6,7 +6,7 @@
 import {useView} from '@disclosure-portal/composables/useView';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import {compareLevel} from '@disclosure-portal/model/Quality';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';

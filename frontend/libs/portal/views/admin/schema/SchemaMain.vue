@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import Icons from '@disclosure-portal/constants/icons';
 import Label from '@disclosure-portal/model/Label';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import SchemaModel from '@disclosure-portal/model/Schema';
 import StatusDialogConfig from '@disclosure-portal/model/StatusDialogConfig';
 import AdminService from '@disclosure-portal/services/admin';

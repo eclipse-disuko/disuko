@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Group} from '@disclosure-portal/model/Rights';
+import {Group} from '@shared/types/Rights';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {useRouter} from 'vue-router';
 

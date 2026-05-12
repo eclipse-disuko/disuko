@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/types/Rights';
 import adminService from '@disclosure-portal/services/admin';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';

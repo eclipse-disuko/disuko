@@ -4,12 +4,12 @@
 
 import {useAxios} from '@shared/api/useAxios';
 import {AxiosResponse} from 'axios';
-import {initInterceptors} from './interceptors';
+import {initInterceptors} from '@shared/utils/interceptors';
 
-export const getApi = () => {
+export const useApi = () => {
   const {instance, NO_IDLE_PARAM} = useAxios();
 
-  initInterceptors(instance, NO_IDLE_PARAM);
+  initInterceptors(instance);
 
   const getData = async <T>(promise: Promise<AxiosResponse<T>>): Promise<T | null> => {
     const response: AxiosResponse<T> = await promise;

@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {formatDate} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader} from '@shared/types/table';
@@ -82,7 +82,7 @@ const filteredLogsData = computed(() => {
 });
 
 const tasksStatusOptions = computed(() => {
-  const statuses = tasksData.value.map((task) => task.entityStatus).filter((status) => status);
+  const statuses = tasksData.value.map((task) => task.entityStatus).filter((status) => Boolean(status));
   return [...new Set(statuses)].map((status) => ({text: status, value: status}));
 });
 

@@ -5,10 +5,10 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import Icons from '@disclosure-portal/constants/icons';
-import SimpleProfileData from '@disclosure-portal/model/ProfileData';
-import {UserDto, UserRequestDto} from '@disclosure-portal/model/Users';
+import SimpleProfileData from '@shared/types/ProfileData';
+import {UserDto, UserRequestDto} from '@shared/types/Users';
 import AdminService from '@disclosure-portal/services/admin';
-import profileService from '@disclosure-portal/services/profile';
+import profileService from '@shared/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
 import {formatDate} from '@disclosure-portal/utils/View';
