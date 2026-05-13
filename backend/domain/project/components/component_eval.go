@@ -66,10 +66,10 @@ type LicenseFamilyStats struct {
 }
 
 type ReviewRemarkStats struct {
-	Total                  int
-	Acceptable             int
-	AcceptableAfterChanges int
-	NotAcceptable          int
+	Total                  int `json:"total"`
+	Acceptable             int `json:"acceptable"`
+	AcceptableAfterChanges int `json:"acceptableAfterChanges"`
+	NotAcceptable          int `json:"notAcceptable"`
 }
 
 type ScanRemarkStats struct {
@@ -104,9 +104,9 @@ type InApproval struct {
 }
 
 type GeneralStats struct {
-	SBOMDelivered  bool
-	SourceUploaded bool
-	ReviewRemark   ReviewRemarkStats
+	SBOMDelivered  bool              `json:"sbomDelivered"`
+	SourceUploaded bool              `json:"sourceUploaded"`
+	ReviewRemark   ReviewRemarkStats `json:"reviewRemark"`
 }
 
 type SBOMStats struct {

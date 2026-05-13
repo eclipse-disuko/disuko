@@ -143,7 +143,7 @@ const chartOptionsPolicyStates = createChartOptions('bar', openFilteredComponent
 
 const chartDataReviewRemarks = computed(() => {
   return createChartData(
-    ['NotAcceptable', 'AcceptableAfterChanges', 'Acceptable'] as (keyof ReviewRemarkStats)[],
+    ['notAcceptable', 'acceptableAfterChanges', 'acceptable'] as (keyof ReviewRemarkStats)[],
     'RR_CHART',
     reviewRemarksStats.value,
     (label) => getColorForLabel('reviewRemark', label),
@@ -354,10 +354,9 @@ function getColorForLabel(type: string, label: string, transparent = true) {
       questioned: '--v-theme-chartGreen',
     },
     reviewRemark: {
-      // todo: refactor with ReviewRemarkStats refactoring
-      Acceptable: '--v-theme-chartGreen',
-      AcceptableAfterChanges: '--v-theme-chartYellow',
-      NotAcceptable: '--v-theme-chartRed',
+      acceptable: '--v-theme-chartGreen',
+      acceptableAfterChanges: '--v-theme-chartYellow',
+      notAcceptable: '--v-theme-chartRed',
     },
     scanRemark: {
       information: '--v-theme-chartGrey',
@@ -508,7 +507,7 @@ async function loadChartData() {
 
   policyStateStats.value = sbomStatsData.policyState;
   licenseFamilyStats.value = sbomStatsData.licenseFamily;
-  reviewRemarksStats.value = generalStatsData.ReviewRemark;
+  reviewRemarksStats.value = generalStatsData.reviewRemark;
   scanRemarkStats.value = sbomStatsData.scanRemark;
   licenseRemarkStats.value = sbomStatsData.licenseRemark;
   legendItemsReviewRemarks.value = generateLegend(chartDataReviewRemarks.value);
@@ -626,7 +625,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -810,7 +809,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>

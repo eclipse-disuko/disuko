@@ -97,10 +97,10 @@ export class LicenseFamilyStats {
   public other = 0;
 }
 export class ReviewRemarkStats {
-  public Total = 0;
-  public Acceptable = 0;
-  public AcceptableAfterChanges = 0;
-  public NotAcceptable = 0;
+  public total = 0;
+  public acceptable = 0;
+  public acceptableAfterChanges = 0;
+  public notAcceptable = 0;
 }
 
 export class ScanRemarkStats {
@@ -135,9 +135,9 @@ export class InApproval {
 }
 
 export class GeneralStats {
-  public SBOMDelivered = false;
-  public SourceUploaded = false;
-  public ReviewRemark = new ReviewRemarkStats();
+  public sBOMDelivered = false;
+  public sourceUploaded = false;
+  public reviewRemark = new ReviewRemarkStats();
 }
 
 export class SbomStats {
