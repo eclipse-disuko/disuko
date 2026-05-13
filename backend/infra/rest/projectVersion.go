@@ -1644,19 +1644,9 @@ func (projectHandler *ProjectHandler) GetGeneralVersionStatsHandler(w http.Respo
 	if !rights.AllowProjectVersion.Read {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ReadVersions))
 	}
-	generalStats := components.GeneralStats{
-		SBOMDelivered:  false,
-		SourceUploaded: false,
-	}
-	if projectHandler.SbomListRepository.ExistByKey(requestSession, version.Key) {
-		generalStats.SBOMDelivered = true
-	}
-	if len(version.GetSourceExternalAll()) > 0 {
-		generalStats.SourceUploaded = true
-	}
-	generalStats.ReviewRemark = projectHandler.calculateReviewRemarkStats(requestSession, version.Key)
 
-	render.JSON(w, r, generalStats)
+	reviewRemarkStats := projectHandler.calculateReviewRemarkStats(requestSession, version.Key)
+	render.JSON(w, r, components.GeneralStats{ReviewRemark: reviewRemarkStats})
 }
 
 func (projectHandler *ProjectHandler) calculateReviewRemarkStats(requestSession *logy.RequestSession, versionKey string) components.ReviewRemarkStats {
