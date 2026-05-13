@@ -220,6 +220,11 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Put("/{taskId}/delegate", s.handlers.user.DelegateTask) // delegate task endpoint
 				})
 				r.Get("/projectroles", s.handlers.user.GetProjectRoles) // test missing
+				r.Route("/tokens", func(r chi.Router) {
+					r.Get("/", s.handlers.user.ListTokensHandler)
+					r.Post("/", s.handlers.user.CreateTokenHandler)
+					r.Post("/{tokenKey}/expire", s.handlers.user.ExpireTokenHandler)
+				})
 			})
 			r.Route("/newsbox/items", func(r chi.Router) {
 				r.Get("/", s.handlers.user.GetNewsBoxItems)      // test missing

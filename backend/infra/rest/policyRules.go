@@ -12,6 +12,7 @@ import (
 	changeloglist2 "github.com/eclipse-disuko/disuko/domain/changeloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/changeloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
+	"github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
@@ -45,6 +46,7 @@ type PolicyRulesHandler struct {
 	PolicyRulesService      project3.Service
 	SbomListRepository      sbomlist.ISbomListRepository
 	ChangeLogListRepository changeloglist.IChangeLogListRepository
+	UserRepository          user.IUsersRepository
 }
 
 func (policyRulesHandler *PolicyRulesHandler) PolicyRulesGetByIdHandler(w http.ResponseWriter, r *http.Request) {

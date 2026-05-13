@@ -5,7 +5,6 @@
 package helper
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -43,22 +42,13 @@ func ByteToMB(byteCount int64) float64 {
 	return float64(byteCount) / 1024 / 1024
 }
 
-func CreateOrigin(origin string, company string, description string, key string) string {
-	if len(description) > 0 {
-		origin = fmt.Sprintf("%s ('%s', identifier: %s) by '%s'", origin, description, maskUuid(key), company)
-	} else {
-		origin = fmt.Sprintf("%s (identifier: %s) by '%s'", origin, maskUuid(key), company)
-	}
-	return origin
-}
-
-func maskUuid(uuid string) string {
+func MaskUuid(uuid string) string {
 	asterisks := strings.Repeat("*", len(uuid)-10)
 	return uuid[:10] + asterisks
 }
 
 func GetPointerOfTimeNow() *time.Time {
-	//is ugly, but there is no other way
+	// is ugly, but there is no other way
 	now := time.Now()
 	return &now
 }
