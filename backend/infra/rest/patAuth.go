@@ -37,15 +37,6 @@ func patAuth(rs *logy.RequestSession, pr *project.Project, prRepo projectRepo.IP
 	if m := pr.GetMember(user.User); m != nil && m.UserType == project.OWNER {
 		return user.TokenOrigin(ut)
 	}
-	if !pr.HasParent() {
-		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Project access denied")
-	}
-	parent := prRepo.FindByKey(rs, pr.Parent, false)
-	if parent == nil {
-		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "Parent project not found")
-	}
-	if pr.GetMember(user.User) == nil {
-		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Project access denied")
-	}
-	return user.TokenOrigin(ut)
+	exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), "Project access denied")
+	return ""
 }
