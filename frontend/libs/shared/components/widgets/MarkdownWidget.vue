@@ -2,11 +2,6 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <div class="markdown" v-html="markdownText"></div>
-  <slot name="default"> </slot>
-</template>
-
 <script setup lang="ts">
 import MarkdownIt from 'markdown-it';
 import {onMounted, ref, watch} from 'vue';
@@ -52,3 +47,8 @@ watch(
   },
 );
 </script>
+
+<template>
+  <div class="markdown" v-html="markdownText"></div>
+  <slot name="default"> </slot>
+</template>

@@ -3,19 +3,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {LicenseRuleSlim} from '@disclosure-portal/model/LicenseRule';
-import {IUploaded, UnmatchedLicense} from '@disclosure-portal/model/Project';
+import {UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import {PolicyDecisionSlim} from './PolicyDecision';
 
 export class MetaInfo {
-  public Name = '';
-  public SpdxId = '';
-  public SpdxVersion = '';
-  public DataLicense = '';
-  public NameWithUploaded = '';
-  public Comment = '';
-  public Creators: string[] = [];
-  public CreationData = '';
+  public name = '';
+  public spdxId = '';
+  public spdxVersion = '';
+  public comment = '';
 }
 
 export class SourceCode {
@@ -83,33 +79,22 @@ export interface IComponentInfo {
   purl: string;
 }
 
-/** @deprecated: never used and will be deleted */
-export class SpdxFileHistory {
-  public SpdxId = '';
-  public Name = '';
-  public Version = '';
-  public License = '';
-  public Modified = false;
-  public Created = '';
-  public Updated = '';
-}
-
 export class ComponentStats {
-  public Total = 0;
-  public Allowed = 0;
-  public Warned = 0;
-  public Denied = 0;
-  public Questioned = 0;
-  public NoAssertion = 0;
+  public total = 0;
+  public allowed = 0;
+  public warned = 0;
+  public denied = 0;
+  public questioned = 0;
+  public noAssertion = 0;
 }
 
 export class LicenseFamilyStats {
-  public Total = 0;
-  public Permissive = 0;
-  public WeakCopyLeft = 0;
-  public StrongCopyLeft = 0;
-  public NetworkCopyLeft = 0;
-  public Other = 0;
+  public total = 0;
+  public permissive = 0;
+  public weakCopyLeft = 0;
+  public strongCopyLeft = 0;
+  public networkCopyLeft = 0;
+  public other = 0;
 }
 export class ReviewRemarkStats {
   public Total = 0;
@@ -119,10 +104,10 @@ export class ReviewRemarkStats {
 }
 
 export class ScanRemarkStats {
-  public Total = 0;
-  public Information = 0;
-  public Warning = 0;
-  public Problem = 0;
+  public total = 0;
+  public information = 0;
+  public warning = 0;
+  public problem = 0;
 }
 
 export class ScanRemarkTypeStats {
@@ -137,16 +122,16 @@ export class NotChartFossLicenseStats {
 }
 
 export class LicenseRemarkStats {
-  public Total = 0;
-  public Information = 0;
-  public Warning = 0;
-  public Alarm = 0;
+  public total = 0;
+  public information = 0;
+  public warning = 0;
+  public alarm = 0;
 }
 
 export class InApproval {
-  public IsInApproval = false;
-  public ApprovalGuid = '';
-  public Status = '';
+  public isInApproval = false;
+  public approvalGuid = '';
+  public status = '';
 }
 
 export class GeneralStats {
@@ -156,11 +141,11 @@ export class GeneralStats {
 }
 
 export class SbomStats {
-  public PolicyState = new ComponentStats();
-  public LicenseFamily = new LicenseFamilyStats();
-  public ScanRemark = new ScanRemarkStats();
-  public LicenseRemark = new LicenseRemarkStats();
-  public ApprovalInfo = new InApproval();
+  public policyState = new ComponentStats();
+  public licenseFamily = new LicenseFamilyStats();
+  public scanRemark = new ScanRemarkStats();
+  public licenseRemark = new LicenseRemarkStats();
+  // public ApprovalInfo = new InApproval();
   public scanRemarkType = new ScanRemarkTypeStats();
   public notChartFossLicense = new NotChartFossLicenseStats();
 }
@@ -205,40 +190,30 @@ export class ComponentInfoSlim {
 }
 
 export class ApprovalInfo {
-  public IsInApproval = false;
-  public Comment = '';
-  public ApprovalGuid = '';
-  public Status = '';
+  public isInApproval = false;
+  public comment = '';
+  public status = '';
 }
 
 export type Nullable<T> = T | null;
 
-export class SpdxFile implements IUploaded {
+export class SpdxFile {
   public _key = '';
-  public Created = '';
-  public Hash = '';
-  public Content = '';
-  public ContentValid = false;
-  public SchemaValid = false;
-  public Type = 0;
-  public ValidationErrors = '';
-  public SchemaId = '';
-  public SchemaName = '';
-  public Stats: ComponentStats = new ComponentStats();
-  public ComponentInfo: ComponentInfo[] = [];
-  public MetaInfo: MetaInfo = new MetaInfo();
-  public Uploaded = '';
-  public Updated: Date = new Date();
-  public Origin = '';
-  public Uploader = '';
-  public Tag = '';
-  public ApprovalInfo = new ApprovalInfo();
-  public IsInUse = false;
-  public IsLocked = false;
-  public IsToDelete = false;
-  public IsToRetain = false;
+  public created = '';
+  public hash = '';
+  public metaInfo: MetaInfo = new MetaInfo();
+  public uploaded = '';
+  public updated: Date = new Date();
+  public origin = '';
+  public uploader = '';
+  public tag = '';
+  public approvalInfo = new ApprovalInfo();
+  public isInUse = false;
+  public isLocked = false;
+  public isToDelete = false;
+  public isToRetain = false;
   public isRecent = false;
-  public OverallReview?: OverallReview;
+  public overallReview?: OverallReview;
 }
 
 export class SpdxFileSlim {

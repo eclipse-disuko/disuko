@@ -49,7 +49,7 @@ const flipCard = async (card: WizardCardProps) => {
           <Stack>
             <div class="self-end">
               <v-btn size="x-small" flat @click.stop="flipCard(card)" icon variant="text">
-                <v-icon color="primary">mdi mdi-help</v-icon>
+                <v-icon color="primary">mdi mdi-help-circle-outline</v-icon>
               </v-btn>
             </div>
             <div class="align-end flex justify-center">

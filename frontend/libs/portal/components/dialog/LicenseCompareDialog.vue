@@ -9,7 +9,7 @@ import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DLicenseChartIcon from '@shared/components/disco/DLicenseChartIcon.vue';
+import DLicenseChartIcon from '@disclosure-portal/components/disco/DLicenseChartIcon.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {CodeDiff} from 'v-code-diff';
 import {defineComponent, onMounted, ref} from 'vue';

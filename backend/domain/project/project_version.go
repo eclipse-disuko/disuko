@@ -21,11 +21,9 @@ type ProjectVersion struct {
 	SourceExternal     SourcesExternal
 	InternalVersion    int
 	Status             ProjectVersionStatusType `json:"status"`
-	// Created            time.Time
-	// Updated            time.Time
-	Deleted        bool
-	OverallReviews []overallreview.OverallReview
-	Subscriber     []string
+	Deleted            bool
+	OverallReviews     []overallreview.OverallReview
+	Subscriber         []string
 }
 
 func (s SourcesExternal) GetUrls() []string {

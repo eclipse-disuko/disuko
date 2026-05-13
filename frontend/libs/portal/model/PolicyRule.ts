@@ -10,20 +10,20 @@ import type {
 } from '@disclosure-portal/model/CalculatedPolicyRules';
 
 export default class PolicyRule extends BaseDto {
-  public Status = '';
-  public Name = '';
-  public Description = '';
-  public ComponentsAllow: string[] = [];
-  public ComponentsDeny: string[] = [];
-  public ComponentsWarn: string[] = [];
-  public LabelSets: string[][] = [];
-  public Auxiliary: boolean = false;
-  public Deprecated: boolean = false;
-  public DeprecatedDate = '';
-  public Active: boolean = true;
-  public ApplyToAll: boolean = false;
-  public Calculated: boolean = false;
-  public CalculatedConfig: CalculatedPolicyConfig = {
+  public status = '';
+  public name = '';
+  public description = '';
+  public componentsAllow: string[] = [];
+  public componentsDeny: string[] = [];
+  public componentsWarn: string[] = [];
+  public labelSets: string[][] = [];
+  public auxiliary: boolean = false;
+  public deprecated: boolean = false;
+  public deprecatedDate = '';
+  public active: boolean = true;
+  public applyToAll: boolean = false;
+  public calculated: boolean = false;
+  public calculatedConfig: CalculatedPolicyConfig = {
     bucketDefinition: {
       deniedClassifications: [],
       warnedClassifications: [],
@@ -43,23 +43,23 @@ export default class PolicyRule extends BaseDto {
     if (dto) {
       Object.assign(this, dto);
     }
-    if (!this.ComponentsAllow) {
-      this.ComponentsAllow = [];
+    if (!this.componentsAllow) {
+      this.componentsAllow = [];
     }
-    if (!this.ComponentsDeny) {
-      this.ComponentsDeny = [];
+    if (!this.componentsDeny) {
+      this.componentsDeny = [];
     }
-    if (!this.ComponentsWarn) {
-      this.ComponentsWarn = [];
+    if (!this.componentsWarn) {
+      this.componentsWarn = [];
     }
-    if (!this.LabelSets) {
-      this.LabelSets = [];
+    if (!this.labelSets) {
+      this.labelSets = [];
     }
-    if (this.LabelSets.length < 1) {
-      this.LabelSets[0] = [];
+    if (this.labelSets.length < 1) {
+      this.labelSets[0] = [];
     }
 
-    const config = this.CalculatedConfig ?? ({} as CalculatedPolicyConfig);
+    const config = this.calculatedConfig ?? ({} as CalculatedPolicyConfig);
 
     const getLicenseScope = (): CalculatedPolicyScope => {
       return {
@@ -79,7 +79,7 @@ export default class PolicyRule extends BaseDto {
       };
     };
 
-    this.CalculatedConfig = {
+    this.calculatedConfig = {
       bucketDefinition: getBucketDefinition(),
       licenseScope: getLicenseScope(),
     };

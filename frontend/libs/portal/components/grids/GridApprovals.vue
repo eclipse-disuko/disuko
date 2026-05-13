@@ -324,18 +324,18 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
                 v-if="item.type == ApprovalType.Internal"
                 :item="item"
                 :tabs-list="['history', 'general', 'details', 'documents', 'attributes']"
-                task-description=""></ApprovalInfoTabs>
+                task-description="" />
               <ApprovalInfoTabs
                 v-if="item.type == ApprovalType.Plausibility"
                 :item="item"
                 :tabs-list="['generalReview', 'details']"
-                task-description=""></ApprovalInfoTabs>
+                task-description="" />
               <ApprovalInfoTabs
                 v-if="item.type == ApprovalType.External"
                 :item="item"
                 :tabs-list="['generalExternal', 'details', 'documents', 'attributes']"
                 @reloads-approvals="reloadInternal(true)"
-                task-description=""></ApprovalInfoTabs>
+                task-description="" />
             </td>
           </template>
           <template #[`item.title`]="{item}">
@@ -370,9 +370,9 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
   </TableLayout>
 
   <ConfirmationDialog
-    v-model="abortConfirmationDialogVisible"
+    v-model:showDialog="abortConfirmationDialogVisible"
     :config="confirmationDialogConfig"
-    @confirm="doAbort"></ConfirmationDialog>
+    @confirm="doAbort" />
   <DFormDialog v-model:showDialog="fillCustomerDialogOpen">
     <FillCustomerApprover
       :title="t('UM_DIALOG_TITLE_FILL_OWNER')"

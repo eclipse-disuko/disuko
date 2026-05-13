@@ -109,7 +109,7 @@ const onEditProject = async () => {
           :label="t('DUMMY_MAKE')"
           density="compact"></v-checkbox-btn>
         <v-btn size="x-small" flat icon variant="text" class="cursor-default">
-          <v-icon color="primary">mdi mdi-help</v-icon>
+          <v-icon color="primary">mdi mdi-help-circle-outline</v-icon>
           <Tooltip :text="t('HOME_EXPLAIN_NEW_DUMMY_PROJECT')"></Tooltip>
         </v-btn>
       </div>

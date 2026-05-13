@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {useForm} from '@shared/composables/useForm';
 import {computed} from 'vue';
-import Tooltip from './Tooltip.vue';
 
 const props = defineProps<{
   modelValue: string;

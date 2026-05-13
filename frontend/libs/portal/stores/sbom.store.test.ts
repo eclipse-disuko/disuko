@@ -40,7 +40,7 @@ vi.mock('@disclosure-portal/services/projects', () => ({
 import {useSbomStore} from './sbom.store';
 
 const version = (key: string, name: string): VersionSlim => ({_key: key, name}) as VersionSlim;
-const sbomStats = (allowed: number): SbomStats => ({PolicyState: {Allowed: allowed}}) as SbomStats;
+const sbomStats = (allowed: number): SbomStats => ({policyState: {allowed: allowed}}) as SbomStats;
 const generalStats = (acceptable: number): GeneralStats => ({ReviewRemark: {Acceptable: acceptable}}) as GeneralStats;
 const flatItem = (key: string, versionKey: string, versionName: string): VersionSbomsFlat =>
   ({_key: key, versionKey, versionName}) as VersionSbomsFlat;
@@ -80,12 +80,12 @@ describe('useSbomStore', () => {
     await store.fetchSBOMStats('spdxA');
 
     expect(versionServiceMock.getSBOMStats).toHaveBeenCalledTimes(1);
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 3}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 3}});
 
     await store.fetchSBOMStats('spdxA');
 
     expect(versionServiceMock.getSBOMStats).toHaveBeenCalledTimes(1);
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 3}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 3}});
   });
 
   it('does not deduplicate concurrent sbom requests before stats are loaded', async () => {
@@ -107,7 +107,7 @@ describe('useSbomStore', () => {
     secondPending.resolve({data: sbomStats(2)});
     await Promise.all([first, second]);
 
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 2}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 2}});
   });
 
   it('clears only sbom stats when the selected SPDX changes', () => {
@@ -155,7 +155,7 @@ describe('useSbomStore', () => {
 
     newRequest.resolve({data: sbomStats(9)});
     await newPromise;
-    expect(store.getSbomStats).toEqual({PolicyState: {Allowed: 9}});
+    expect(store.getSbomStats).toEqual({policyState: {allowed: 9}});
   });
 
   it('ignores stale general stats responses after the version changes', async () => {
@@ -229,6 +229,28 @@ describe('useSbomStore', () => {
     });
   });
 
+  describe('getSelectedSBOM (derived)', () => {
+    it('returns the selected SBOM with isRecent true when it is the most recent', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
+      store.setCurrentVersion('versionA');
+      store.setSelectedSBOMKey('spdx-1');
+
+      expect(store.getSelectedSBOM?._key).toBe('spdx-1');
+      expect(store.getSelectedSBOM?.isRecent).toBe(true);
+    });
+
+    it('returns the selected SBOM with isRecent false when it is not the most recent', () => {
+      const store = useSbomStore();
+      store.allSBOMSFlat = [flatItem('spdx-1', 'versionA', 'Version A'), flatItem('spdx-2', 'versionA', 'Version A')];
+      store.setCurrentVersion('versionA');
+      store.setSelectedSBOMKey('spdx-2');
+
+      expect(store.getSelectedSBOM?._key).toBe('spdx-2');
+      expect(store.getSelectedSBOM?.isRecent).toBe(false);
+    });
+  });
+
   describe('getAllSBOMs (derived)', () => {
     it('groups flat items into VersionSboms by versionKey', () => {
       const store = useSbomStore();
@@ -241,11 +263,11 @@ describe('useSbomStore', () => {
       const result = store.getAllSBOMs;
 
       expect(result).toHaveLength(2);
-      expect(result[0].VersionKey).toBe('versionA');
-      expect(result[0].VersionName).toBe('Version A');
-      expect(result[0].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
-      expect(result[1].VersionKey).toBe('versionB');
-      expect(result[1].SpdxFileHistory.map((s) => s._key)).toEqual(['spdx-3']);
+      expect(result[0].versionKey).toBe('versionA');
+      expect(result[0].versionName).toBe('Version A');
+      expect(result[0].spdxFileHistory.map((s) => s._key)).toEqual(['spdx-1', 'spdx-2']);
+      expect(result[1].versionKey).toBe('versionB');
+      expect(result[1].spdxFileHistory.map((s) => s._key)).toEqual(['spdx-3']);
     });
 
     it('preserves insertion order of versions', () => {
@@ -254,8 +276,8 @@ describe('useSbomStore', () => {
 
       const result = store.getAllSBOMs;
 
-      expect(result[0].VersionKey).toBe('versionB');
-      expect(result[1].VersionKey).toBe('versionA');
+      expect(result[0].versionKey).toBe('versionB');
+      expect(result[1].versionKey).toBe('versionA');
     });
 
     it('returns an empty array when allSBOMSFlat is empty', () => {

@@ -73,7 +73,12 @@ export default defineComponent({
         <template v-slot:activator="{props}">
           <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" v-bind="props">
             <template v-slot:activator="{props}">
-              <v-icon color="primary" v-bind="props" @click="showMenu = !showMenu" size="small" icon="mdi-help" />
+              <v-icon
+                color="primary"
+                v-bind="props"
+                @click="showMenu = !showMenu"
+                size="small"
+                icon="mdi-help-circle-outline" />
             </template>
             <span>{{ t('CHARTS_TT_HELP') }}</span>
           </v-tooltip>

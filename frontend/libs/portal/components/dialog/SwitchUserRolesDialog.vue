@@ -7,7 +7,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import {UserDto} from '@disclosure-portal/model/Users';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DLabel from '@shared/components/disco/DLabel.vue';
+import DLabel from '@disclosure-portal/components/disco/DLabel.vue';
 import {defineComponent, nextTick, reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 

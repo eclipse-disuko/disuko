@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import {DialogEditProjectConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
-import ApplicationSelector from '@disclosure-portal/components/dialog/project/ApplicationSelector.vue';
 import Icons from '@disclosure-portal/constants/icons';
 import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
@@ -12,9 +11,6 @@ import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@disclosure-portal/utils/Rules';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DLabel from '@shared/components/disco/DLabel.vue';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -30,7 +26,7 @@ const isVisible = ref(false);
 const project = ref<ProjectPostRequest>(new ProjectPostRequest());
 const projectEditForm = ref<VForm | null>(null);
 const config = ref<DialogEditProjectConfig>({} as DialogEditProjectConfig);
-const applicationSelectorRef = ref<InstanceType<typeof ApplicationSelector>>();
+const applicationSelectorRef = ref();
 
 const isEnterpriseOrMobilePlatform = computed((): boolean => {
   const enterpriseLabelKey = labels.getLabelByNameAndType(PolicyLabels.ENTERPRISE_PLATFORM, 'POLICY')?._key || '';

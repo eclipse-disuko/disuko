@@ -3,9 +3,6 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -20,7 +17,7 @@ const emit = defineEmits<{
 
 const formRef = ref<VForm | null>(null);
 const delegateUser = ref('');
-const delegateUserRef = ref<InstanceType<typeof DAutocompleteUser>>();
+const delegateUserRef = ref();
 
 const close = () => {
   showDialog.value = false;

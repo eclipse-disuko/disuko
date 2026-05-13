@@ -205,40 +205,40 @@ onMounted(async () => {
         <v-row v-if="dataAreLoaded && sbomStats">
           <v-col class="d-flex ga-2">
             <v-tooltip
-              v-if="sbomStats.PolicyState.NoAssertion > 0"
+              v-if="sbomStats.policyState.noAssertion > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
               content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="red" icon="mdi-lightning-bolt-circle" class="mr-2"></v-icon>
-                  {{ `${sbomStats.PolicyState.NoAssertion} ${t('UNASSERTED')}` }}
+                  {{ `${sbomStats.policyState.noAssertion} ${t('UNASSERTED')}` }}
                 </v-btn>
               </template>
               <span>{{ t('TT_UNASSERTED') }}</span>
             </v-tooltip>
             <v-tooltip
-              v-if="sbomStats.PolicyState.Denied > 0"
+              v-if="sbomStats.policyState.denied > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
               content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="red" icon="mdi-minus-circle" class="mr-2"></v-icon>
-                  {{ `${sbomStats.PolicyState.Denied} ${t('DENIED')}` }}
+                  {{ `${sbomStats.policyState.denied} ${t('DENIED')}` }}
                 </v-btn>
               </template>
               <span>{{ t('TT_DENIED') }}</span>
             </v-tooltip>
             <v-tooltip
-              v-if="sbomStats.PolicyState.Warned > 0"
+              v-if="sbomStats.policyState.warned > 0"
               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
               location="bottom"
               content-class="dpTooltip">
               <template v-slot:activator="{props}">
                 <v-btn class="text-none card-border font-weight-light" variant="text" size="small" v-bind="props">
                   <v-icon color="warning" icon="mdi-alert" class="mr-2"></v-icon>
-                  {{ `${sbomStats.PolicyState.Warned} ${t('WARNED')}` }}
+                  {{ `${sbomStats.policyState.warned} ${t('WARNED')}` }}
                 </v-btn>
               </template>
               <span>{{ t('TT_WARNED') }}</span>

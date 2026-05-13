@@ -34,7 +34,7 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.Total > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.total > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
                       <v-icon size="small" class="pr-1">mdi-layers</v-icon>
@@ -47,10 +47,10 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.Denied > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.denied > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
-                      <v-icon size="small" class="pr-1" :color="stats.Denied > 0 ? 'policyStatusDeniedColor' : ''">
+                      <v-icon size="small" class="pr-1" :color="stats.denied > 0 ? 'policyStatusDeniedColor' : ''">
                         mdi-minus-circle
                       </v-icon>
                       <span class="text-caption">{{ t('TAD_DENIED') }}</span>
@@ -62,13 +62,13 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.NoAssertion > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.noAssertion > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
                       <v-icon
                         size="small"
                         class="pr-1"
-                        :color="stats.NoAssertion > 0 ? 'policyStatusUnassertedColor' : ''">
+                        :color="stats.noAssertion > 0 ? 'policyStatusUnassertedColor' : ''">
                         mdi-lightning-bolt-circle
                       </v-icon>
                       <span class="text-caption">{{ t('TAD_UNASSERTED') }}</span>
@@ -80,10 +80,10 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.Warned > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.warned > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
-                      <v-icon size="small" class="pr-1" :color="stats.Warned > 0 ? 'policyStatusWarnedColor' : ''"
+                      <v-icon size="small" class="pr-1" :color="stats.warned > 0 ? 'policyStatusWarnedColor' : ''"
                         >mdi-alert
                       </v-icon>
                       <span class="text-caption"> {{ t('TAD_WARNED') }}</span>
@@ -95,10 +95,10 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.Questioned > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.questioned > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
-                      <v-icon size="small" class="pr-1" :color="stats.Questioned > 0 ? 'green' : ''">mdi-help </v-icon>
+                      <v-icon size="small" class="pr-1" :color="stats.questioned > 0 ? 'green' : ''">mdi-help </v-icon>
                       <span class="text-caption"> {{ t('TAD_QUESTIONED') }}</span>
                     </div>
                   </th>
@@ -108,10 +108,10 @@ const props = withDefaults(
               <v-tooltip v-bind:location="'bottom'" content-class="dpTooltip">
                 <template v-slot:activator="{props: tooltipProps}">
                   <th
-                    :class="stats.Allowed > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
+                    :class="stats.allowed > 0 ? 'text-center' : 'text-grey-lighten-1 text-center'"
                     v-bind="tooltipProps">
                     <div class="d-flex align-center justify-center">
-                      <v-icon size="small" class="pr-1" :color="stats.Allowed > 0 ? 'green' : ''"
+                      <v-icon size="small" class="pr-1" :color="stats.allowed > 0 ? 'green' : ''"
                         >mdi-check-circle
                       </v-icon>
                       <span class="text-caption"> {{ t('TAD_ALLOWED') }}</span>
@@ -124,23 +124,23 @@ const props = withDefaults(
           </thead>
           <tbody>
             <tr>
-              <td :class="stats.Total === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.Total }}
+              <td :class="stats.total === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.total }}
               </td>
-              <td :class="stats.Denied === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.Denied }}
+              <td :class="stats.denied === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.denied }}
               </td>
-              <td :class="stats.NoAssertion === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.NoAssertion }}
+              <td :class="stats.noAssertion === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.noAssertion }}
               </td>
-              <td :class="stats.Warned === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.Warned }}
+              <td :class="stats.warned === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.warned }}
               </td>
-              <td :class="stats.Questioned === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.Questioned }}
+              <td :class="stats.questioned === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.questioned }}
               </td>
-              <td :class="stats.Allowed === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
-                {{ stats.Allowed }}
+              <td :class="stats.allowed === 0 ? 'text-grey-lighten-1 text-center' : 'text-center'">
+                {{ stats.allowed }}
               </td>
             </tr>
           </tbody>

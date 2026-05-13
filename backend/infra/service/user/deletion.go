@@ -153,7 +153,24 @@ func (s *DeletionService) BlockingProjects(rs *logy.RequestSession, u *user.User
 			continue
 		}
 		if !pr.OtherOwnersExists(m.UserId) {
-			blocking = append(blocking, user.BlockingProjectDto{Key: pr.Key, Name: pr.Name})
+			applicationId := ""
+			if pr.ApplicationMeta.Id != "" {
+				applicationId = pr.ApplicationMeta.Name
+				if pr.ApplicationMeta.SecondaryId != "" {
+					applicationId += " (" + pr.ApplicationMeta.SecondaryId + ")"
+				}
+			}
+			if len(applicationId) == 0 && pr.ApplicationId != nil && *pr.ApplicationId != "" {
+				applicationId = *pr.ApplicationId
+			}
+			blocking = append(blocking, user.BlockingProjectDto{
+				Key:           pr.Key,
+				Name:          pr.Name,
+				ProjectLabels: pr.ProjectLabels,
+				PolicyLabels:  pr.PolicyLabels,
+				FreeLabels:    pr.FreeLabels,
+				ApplicationId: applicationId,
+			})
 		}
 	}
 	return blocking

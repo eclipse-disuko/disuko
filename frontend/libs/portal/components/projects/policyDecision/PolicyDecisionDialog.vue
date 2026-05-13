@@ -51,8 +51,8 @@ const config = ref<DialogPolicyDecisionConfig>({
 const projectKey = computed(() => projectStore.currentProject!._key);
 const currentVersionKey = computed(() => sbomStore.getCurrentVersion._key);
 const currentSbomId = computed(() => sbomStore.getSelectedSBOM?._key);
-const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.MetaInfo.Name);
-const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.Uploaded);
+const currentSbomName = computed(() => sbomStore.getSelectedSBOM?.metaInfo.name);
+const currentSbomUploaded = computed(() => sbomStore.getSelectedSBOM?.uploaded);
 
 const selectedComponent = computed(() => config.value.component);
 const policies = computed(() => config.value.policies);
@@ -101,9 +101,9 @@ const doDialogAction = async (decision: 'allow' | 'deny') => {
   }
 
   const policyDecisionRequest: PolicyDecisionRequest = {
-    sbomId: currentSbomId.value,
-    sbomName: currentSbomName.value,
-    sbomUploaded: currentSbomUploaded.value,
+    sbomId: currentSbomId.value!,
+    sbomName: currentSbomName.value!,
+    sbomUploaded: currentSbomUploaded.value!,
     componentSpdxId: selectedComponent.value!.spdxId,
     componentName: selectedComponent.value!.name,
     componentVersion: selectedComponent.value!.version,

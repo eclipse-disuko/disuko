@@ -2,14 +2,6 @@
 <!---->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-<template>
-  <v-breadcrumbs :items="breadcrumbs" color="grey-darken-1">
-    <template v-slot:divider>
-      <v-icon icon="mdi-chevron-right" size="x-small" color="grey-darken-1"></v-icon>
-    </template>
-  </v-breadcrumbs>
-</template>
-
 <script setup lang="ts">
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {storeToRefs} from 'pinia';
@@ -30,6 +22,14 @@ const breadcrumbs = computed<InternalBreadcrumbItem[]>(() =>
   }),
 );
 </script>
+
+<template>
+  <v-breadcrumbs :items="breadcrumbs" color="grey-darken-1">
+    <template v-slot:divider>
+      <v-icon icon="mdi-chevron-right" size="x-small" color="grey-darken-1"></v-icon>
+    </template>
+  </v-breadcrumbs>
+</template>
 
 <style>
 .v-breadcrumbs-item--disabled {

@@ -67,7 +67,7 @@ const uploadURL = ref('');
 const isBranchSelectionEnabled = ref(true);
 const selectedFilterChannel = ref<string[]>([]);
 const selectedBranch = ref<NameKeyIdentifier>({} as NameKeyIdentifier);
-const sortItems = ref<SortItem[]>([{key: 'Uploaded', order: 'desc'}]);
+const sortItems = ref<SortItem[]>([{key: 'uploaded', order: 'desc'}]);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
 const {info: snack} = useSnackbar();
@@ -78,7 +78,7 @@ const helpText = ref('');
 const upload = ref();
 
 const sortByName = (a: SpdxFile, b: SpdxFile): number => {
-  return b.MetaInfo.Name.localeCompare(a.MetaInfo.Name);
+  return b.metaInfo.name.localeCompare(a.metaInfo.name);
 };
 
 const headers = computed((): DataTableHeader[] => [
@@ -100,7 +100,7 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_REVIEW_STATUS'),
     align: 'center',
-    value: 'OverallReview',
+    value: 'overallReview',
     width: 80,
   },
   ...(!props.channelView
@@ -117,35 +117,35 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_SBOM_TAG'),
     align: 'start',
-    value: 'Tag',
+    value: 'tag',
     sortable: true,
     width: 130,
   },
   {
     title: t('COL_SBOM_FORMAT'),
     align: 'start',
-    value: 'MetaInfo.SpdxVersion',
+    value: 'metaInfo.spdxVersion',
     sortable: true,
     width: 100,
   },
   {
     title: t('COL_SBOM_ORIGIN'),
     align: 'start',
-    value: 'Origin',
+    value: 'origin',
     sortable: true,
     width: 100,
   },
   {
     title: t('COL_SBOM_UPLOADER'),
     align: 'start',
-    value: 'Uploader',
+    value: 'uploader',
     sortable: true,
     width: 110,
   },
   {
     title: t('COL_UPLOADED'),
     align: 'start',
-    value: 'Uploaded',
+    value: 'uploaded',
     sortable: true,
     width: 110,
   },
@@ -153,11 +153,11 @@ const headers = computed((): DataTableHeader[] => [
 
 const items = computed((): DataTableItems[] => {
   const getSearchIndex = (file: VersionSbomsFlat) => {
-    const approvalInfo = file.ApprovalInfo
-      ? ` ${t(`SBOM_STATUS_${file.ApprovalInfo.Status}`)} ${file.ApprovalInfo.Comment}`
+    const approvalInfo = file.approvalInfo
+      ? ` ${t(`SBOM_STATUS_${file.approvalInfo.status}`)} ${file.approvalInfo.comment}`
       : '';
 
-    return `${file._key} ${file.MetaInfo.Name} ${formatDateTime(file.Uploaded)}${approvalInfo}`;
+    return `${file._key} ${file.metaInfo.name} ${formatDateTime(file.uploaded)}${approvalInfo}`;
   };
 
   if (!props.channelView) {
@@ -226,12 +226,12 @@ Project Policy Labels: ${policyLabelNames}
 Project Version: ${item.versionName}
 Version Identifier:  ${item.versionKey}
 Reference Timestamp: ${formatDateAndTime(dayjs().toISOString())} (UTC)
-SBOM Name: ${item.MetaInfo.Name}
+SBOM Name: ${item.metaInfo.name}
 SBOM Identifier: ${item._key}
-Origin: ${item.Origin}
-Uploader: ${item.Uploader}
-Upload Date: ${formatDateTimeShort(item.Uploaded, true)} (UTC)
-SBOM SHA-256: ${item.Hash}
+Origin: ${item.origin}
+Uploader: ${item.uploader}
+Upload Date: ${formatDateTimeShort(item.uploaded, true)} (UTC)
+SBOM SHA-256: ${item.hash}
 Deliveries Link: ${deleviryLink}`;
 };
 
@@ -267,7 +267,7 @@ const downloadFile = (item: VersionSbomsFlat) => {
     .then((res) => {
       const spdxFiles = items.value.filter((sbomFile) => sbomFile._key === item._key);
       if (spdxFiles && spdxFiles.length > 0) {
-        const updated = formatDateTimeShort(spdxFiles[0].Updated);
+        const updated = formatDateTimeShort(spdxFiles[0].updated);
         link.download = item.versionName + '_' + updated + '.json';
         link.href = URL.createObjectURL(new Blob([res.data as unknown as BlobPart]));
         link.click();
@@ -352,7 +352,7 @@ const showConfirm = (item: VersionSbomsFlat) => {
     type: ConfirmationType.NOT_SET,
     key: item._key,
     contextKey: item.versionKey,
-    name: item.MetaInfo.Name,
+    name: item.metaInfo.name,
     okButtonIsDisabled: false,
     okButton: 'BTN_DELETE',
     description: 'DLG_CONFIRMATION_DESCRIPTION',
@@ -388,8 +388,8 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
       disabled: projectModel.value.isDeprecated,
     },
     {
-      icon: item.IsLocked ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline',
-      hint: item.IsLocked ? t('TT_unlock_spdx') : t('TT_lock_spdx'),
+      icon: item.isLocked ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline',
+      hint: item.isLocked ? t('TT_unlock_spdx') : t('TT_lock_spdx'),
       event: 'toggleLock',
       show: isOwnerOrDomainAdmin.value,
       disabled: projectModel.value.isDeprecated,
@@ -419,7 +419,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
       hint: t('TT_delete_spdx'),
       event: 'delete',
       show: isOwnerOrDomainAdmin.value,
-      disabled: item.IsInUse || item.IsLocked || item.IsToRetain || projectModel.value.isDeprecated,
+      disabled: item.isInUse || item.isLocked || item.isToRetain || projectModel.value.isDeprecated,
     },
   ];
 };
@@ -514,41 +514,41 @@ onMounted(async () => {
             </GridFilterHeader>
           </template>
           <template #[`item.searchIndex`]="{item}">
-            {{ formatDateTime(item.Uploaded) }} -&nbsp;{{ item.MetaInfo.Name }}
+            {{ formatDateTime(item.uploaded) }} -&nbsp;{{ item.metaInfo.name }}
             <br />
             <span class="font-weight-bold">UUID: </span>
             <span>{{ item._key }}</span>
-            <br v-if="item.ApprovalInfo && item.ApprovalInfo.Status" />
-            <span class="font-weight-bold" v-if="item.ApprovalInfo && item.ApprovalInfo.Status">{{
-              t(`SBOM_STATUS_${item.ApprovalInfo.Status}`)
+            <br v-if="item.approvalInfo && item.approvalInfo.status" />
+            <span class="font-weight-bold" v-if="item.approvalInfo && item.approvalInfo.status">{{
+              t(`SBOM_STATUS_${item.approvalInfo.status}`)
             }}</span>
-            <span v-if="item.ApprovalInfo && item.ApprovalInfo.Status">
+            <span v-if="item.approvalInfo && item.approvalInfo.status">
               <v-icon
                 small
-                v-if="item.ApprovalInfo && item.ApprovalInfo.Comment && item.ApprovalInfo.Comment.length > 0"
+                v-if="item.approvalInfo && item.approvalInfo.comment && item.approvalInfo.comment.length > 0"
                 >chevron_right</v-icon
               >
-              {{ item.ApprovalInfo.Comment }}</span
+              {{ item.approvalInfo.comment }}</span
             >
-            <br v-if="item.IsToDelete" />
-            <span v-if="item.IsToDelete" class="font-weight-bold text-[rgb(var(--v-theme-error))]">{{
+            <br v-if="item.isToDelete" />
+            <span v-if="item.isToDelete" class="font-weight-bold text-[rgb(var(--v-theme-error))]">{{
               t('SBOM_ABOUT_DELETION_NOTE')
             }}</span>
-            <br v-if="item.IsToRetain" />
-            <span v-if="item.IsToRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">{{
+            <br v-if="item.isToRetain" />
+            <span v-if="item.isToRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">{{
               t('SBOM_MARKED_FOR_RETENTION')
             }}</span>
           </template>
-          <template #[`item.OverallReview`]="{item}">
-            <DOverallStateIcon v-if="item.OverallReview" :review="item.OverallReview" />
+          <template #[`item.overallReview`]="{item}">
+            <DOverallStateIcon v-if="item.overallReview" :review="item.overallReview" />
           </template>
-          <template #[`item.Uploaded`]="{item}">
-            <DDateCellWithTooltip :value="item.Uploaded" />
+          <template #[`item.uploaded`]="{item}">
+            <DDateCellWithTooltip :value="item.uploaded" />
           </template>
-          <template #[`item.Tag`]="{item}">
+          <template #[`item.tag`]="{item}">
             <v-chip
               v-if="
-                item.ApprovalInfo.IsInApproval ||
+                item.approvalInfo.isInApproval ||
                 projectModel.isDeprecated ||
                 !projectModel.accessRights.allowSBOMAction.upload ||
                 !projectModel.accessRights.allowSBOMAction.delete
@@ -557,29 +557,29 @@ onMounted(async () => {
               class="mr-1 mb-1 px-2 py-2"
               label>
               <v-icon class="pr-2" small color="labelIconColor" left>mdi-label</v-icon>
-              <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
-              <span v-else class="letterSpacing">{{ item.Tag }}</span>
+              <span v-if="!item.tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
+              <span v-else class="letterSpacing">{{ item.tag }}</span>
             </v-chip>
             <DSpdxTagDialog
-              :presetTag="item.Tag"
+              :presetTag="item.tag"
               :versionID="item.versionKey"
               :spdxID="item._key"
-              :spdxName="item.MetaInfo.Name"
+              :spdxName="item.metaInfo.name"
               :channel-view="channelView"
               v-slot="{showDialog}"
               v-else>
               <v-chip color="labelBackgroundColor" class="mr-1 mb-1 px-2 py-2" label link @click.stop="showDialog">
                 <v-icon class="pr-2" small color="primary" left>mdi-label</v-icon>
-                <span v-if="!item.Tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
-                <span v-else class="letterSpacing">{{ item.Tag }}</span>
+                <span v-if="!item.tag" class="letterSpacing">{{ t('SPDX_TAG_UNSET') }}</span>
+                <span v-else class="letterSpacing">{{ item.tag }}</span>
               </v-chip>
             </DSpdxTagDialog>
           </template>
-          <template v-slot:[`item.Origin`]="{item}">
-            <Tooltip v-if="originTooltip(item.Origin)" location="bottom" :text="originTooltip(item.Origin)" as-parent>
-              {{ originShort(item.Origin) }}
+          <template v-slot:[`item.origin`]="{item}">
+            <Tooltip v-if="originTooltip(item.origin)" location="bottom" :text="originTooltip(item.origin)" as-parent>
+              {{ originShort(item.origin) }}
             </Tooltip>
-            <span v-else>{{ item.Origin }}</span>
+            <span v-else>{{ item.origin }}</span>
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons

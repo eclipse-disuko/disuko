@@ -32,7 +32,7 @@ const isLoading = ref(false);
 const policyRulesDialog: Ref<DiscoForm | null> = ref(null);
 
 const activeRules = {
-  required: [(v: any) => !!v || t('REQUIRED_FIELD', {field: 'Name'})],
+  required: [(v: any) => !!v || t('REQUIRED_FIELD', {field: 'name'})],
   description: [(v: any) => v.length <= 1500 || t('MAX_LENGTH_EXCEEDED', {field: 'Description', length: 1500})],
 };
 
@@ -41,8 +41,8 @@ const doDialogAction = async () => {
   if (!info?.valid) {
     return;
   }
-  if (item.value.Name) {
-    item.value.Name = item.value.Name.trim();
+  if (item.value.name) {
+    item.value.name = item.value.name.trim();
   }
   isLoading.value = true;
 
@@ -63,15 +63,15 @@ const doDialogAction = async () => {
   }
 };
 const addLabelSet = () => {
-  if (item.value.LabelSets[item.value.LabelSets.length - 1].length > 0) {
-    item.value.LabelSets.push([]);
+  if (item.value.labelSets[item.value.labelSets.length - 1].length > 0) {
+    item.value.labelSets.push([]);
   }
 };
 const showDialog = () => {
   title.value = props.policyRule ? 'AL_DIALOG_TITLE_EDIT' : 'AL_DIALOG_TITLE';
   if (props.policyRule) {
     const cloned = new PolicyRule(Object.assign({}, props.policyRule));
-    cloned.LabelSets = (props.policyRule.LabelSets || []).map((set) => [...set]);
+    cloned.labelSets = (props.policyRule.labelSets || []).map((set) => [...set]);
     item.value = cloned;
   } else {
     item.value = new PolicyRule();
@@ -85,9 +85,9 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 const removeLabelSetIfEmpty = async (index: number) => {
-  if (item.value.LabelSets[index]?.length === 0) {
+  if (item.value.labelSets[index]?.length === 0) {
     await nextTick();
-    item.value.LabelSets = item.value.LabelSets.toSpliced(index, 1);
+    item.value.labelSets = item.value.labelSets.toSpliced(index, 1);
   }
 };
 
@@ -113,21 +113,21 @@ defineExpose({
                 variant="outlined"
                 class="required"
                 hide-details="auto"
-                v-model="item.Name"
+                v-model="item.name"
                 :rules="activeRules.required"
                 :label="t('AL_DIALOG_TF_NAME')"
                 autofocus />
             </v-col>
           </v-row>
-          <v-row v-if="!item.ApplyToAll">
+          <v-row v-if="!item.applyToAll">
             <v-col cols="12" xs="12" class="pb-2">
               <v-select
                 variant="outlined"
                 :class="{
-                  'pb-2': item.LabelSets.length > 1 && index !== item.LabelSets.length - 1,
+                  'pb-2': item.labelSets.length > 1 && index !== item.labelSets.length - 1,
                 }"
                 hide-details="auto"
-                v-model="item.LabelSets[index]"
+                v-model="item.labelSets[index]"
                 item-title="name"
                 item-value="_key"
                 clearable
@@ -136,14 +136,14 @@ defineExpose({
                 :label="t('AL_DIALOG_SB_LABELS')"
                 @update:modelValue="() => removeLabelSetIfEmpty(index)"
                 v-bind:menu-props="{location: 'bottom'}"
-                v-for="(_, index) in item.LabelSets"
+                v-for="(_, index) in item.labelSets"
                 :key="index">
                 <template v-slot:chip="{item, props}">
                   <DLabel closable :parentProps="props" :labelName="item.title" :iconName="icons.TAG" />
                 </template>
               </v-select>
             </v-col>
-            <v-col cols="12" xs="12" class="pt-0" v-if="!(item.LabelSets[item.LabelSets.length - 1]?.length <= 0)">
+            <v-col cols="12" xs="12" class="pt-0" v-if="!(item.labelSets[item.labelSets.length - 1]?.length <= 0)">
               <div class="d-flex align-center border-md border-opacity-25 border-dashed px-3 py-3" @click="addLabelSet">
                 <v-icon color="primary">mdi-plus</v-icon>
                 <span class="font-weight-light pl-1">{{ t('NP_DIALOG_MORE_LABEL_SET') }}</span>
@@ -157,31 +157,31 @@ defineExpose({
                 class="required"
                 hide-details="auto"
                 no-resize
-                v-model="item.Description"
+                v-model="item.description"
                 :counter="1500"
                 :label="t('AL_DIALOG_TF_DESCRIPTION')"
                 :rules="activeRules.description"></v-textarea>
               <v-checkbox
-                v-model="item.Active"
+                v-model="item.active"
                 hide-details
                 color="primary"
                 :label="t('ACTIVE_FLAG')"
                 class="mt-0 shrink pt-0" />
               <v-checkbox
-                v-model="item.ApplyToAll"
+                v-model="item.applyToAll"
                 hide-details
                 color="primary"
                 :label="t('APPLY_TO_ALL_FLAG')"
                 class="mt-0 shrink pt-0" />
               <v-checkbox
-                v-model="item.Auxiliary"
+                v-model="item.auxiliary"
                 hide-details
                 color="primary"
                 :label="t('AUXILIARY_FLAG')"
                 class="mt-0 shrink pt-0" />
 
               <v-checkbox
-                v-model="item.Calculated"
+                v-model="item.calculated"
                 hide-details
                 color="primary"
                 :label="t('CALCULATED_POLICY_RULE_ENABLED')"

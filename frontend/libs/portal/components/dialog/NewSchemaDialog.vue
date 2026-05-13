@@ -3,15 +3,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 import Label from '@disclosure-portal/model/Label';
 import SchemaPostRequest from '@disclosure-portal/model/SchemaPostRequest';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useRules from '@disclosure-portal/utils/Rules';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
-import DLabel from '@shared/components/disco/DLabel.vue';
-import DiscoFileUpload from '@shared/components/widgets/DiscoFileUpload.vue';
 import config from '@shared/utils/config';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -39,7 +34,7 @@ const uploadURL = ref(config.SERVER_URL + '/api/v1/admin/schemas');
 const sbomFileError = ref('');
 const predefinedLabels = ref<Label[]>(props.labels);
 const schemaFormValid = ref<boolean>(false);
-const upload = ref<InstanceType<typeof DiscoFileUpload> | null>(null);
+const upload = ref();
 
 const activeRules = ref({
   required: useRules().minMax('Name', 3, 80, false),

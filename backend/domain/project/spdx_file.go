@@ -42,7 +42,9 @@ type SpdxFileBase struct {
 	IsInUse  bool // store in DB
 	IsLocked bool // store in DB
 
+	// Deprecated
 	IsToDelete bool // do not store in DB, only for Frontend, based on conditions
+	// Deprecated
 	IsToRetain bool // do not store in DB, only for Frontend, based on conditions
 }
 
@@ -115,7 +117,7 @@ type IdentifiedLicense struct {
 	AliasTargetId string
 }
 
-func (spdx *SpdxFileBase) ValidateSpdxContent(requestSession *logy.RequestSession, spdxString string, spdxSchema *schema.SpdxSchema) (bool, error) {
+func (entity *SpdxFileBase) ValidateSpdxContent(requestSession *logy.RequestSession, spdxString string, spdxSchema *schema.SpdxSchema) (bool, error) {
 	schemaLoader := gojsonschema.NewStringLoader(spdxSchema.Content)
 	documentLoader := gojsonschema.NewStringLoader(spdxString)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
@@ -123,7 +125,7 @@ func (spdx *SpdxFileBase) ValidateSpdxContent(requestSession *logy.RequestSessio
 		return false, err
 	}
 	if result.Valid() {
-		logy.Infof(requestSession, "Sbom with key %s has been validated against schema %s", spdx.Key, spdxSchema.Key)
+		logy.Infof(requestSession, "Sbom with key %s has been validated against schema %s", entity.Key, spdxSchema.Key)
 		return true, nil
 	}
 	logy.Warnf(requestSession, "The document is not valid. see errors :\n")
@@ -235,7 +237,7 @@ func ExtractComponentInfo(componentInfo *[]components.ComponentInfo, componentTy
 	}
 }
 
-func (spdxFile *SpdxFileBase) ExtractMetaInfo(spdxString string) {
+func (entity *SpdxFileBase) ExtractMetaInfo(spdxString string) {
 	value := gjson.GetMany(spdxString, "name", "SPDXID", "spdxVersion", "dataLicense",
 		"comment", "creationInfo.creators", "creationInfo.created", "externalDocumentRefs")
 
@@ -251,7 +253,7 @@ func (spdxFile *SpdxFileBase) ExtractMetaInfo(spdxString string) {
 		refs = true
 	}
 
-	spdxFile.MetaInfo = MetaInfo{
+	entity.MetaInfo = MetaInfo{
 		Name:            value[0].String(),
 		SpdxId:          value[1].String(),
 		SpdxVersion:     value[2].String(),

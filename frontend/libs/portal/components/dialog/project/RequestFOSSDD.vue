@@ -242,8 +242,8 @@ const open = async (isVehicle: boolean) => {
   if (!projectModel.value.isGroup) {
     allChannelSboms.value.clear();
     for (const channel of channels.value) {
-      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === channel._key);
-      allChannelSboms.value.set(channel._key, versionEntry?.SpdxFileHistory ?? []);
+      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === channel._key);
+      allChannelSboms.value.set(channel._key, versionEntry?.spdxFileHistory ?? []);
     }
   }
 
@@ -272,8 +272,8 @@ const loadSBOMHist = async () => {
   selectedSbom.value = null;
   if (!selectedChannel.value?._key) return;
   await sbomStore.fetchAllSBOMsFlat();
-  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.VersionKey === selectedChannel.value!._key);
-  const spdxFileHistory = (versionEntry?.SpdxFileHistory ?? []).slice(0, 5);
+  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === selectedChannel.value!._key);
+  const spdxFileHistory = (versionEntry?.spdxFileHistory ?? []).slice(0, 5);
   if (spdxFileHistory[0]) {
     spdxFileHistory[0].isRecent = true;
   }
@@ -382,7 +382,7 @@ const doDialogAction = async () => {
 };
 
 const isDeniedOrUnasserted = computed(() => {
-  return vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
+  return vehicle.value && (stats.value.denied > 0 || stats.value.noAssertion > 0);
 });
 
 /**
@@ -392,7 +392,7 @@ const isDeniedOrUnasserted = computed(() => {
  * and contains denied or unasserted components.
  */
 const isEnterpriseOrMobileOrOther = computed(() => {
-  return !vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
+  return !vehicle.value && (stats.value.denied > 0 || stats.value.noAssertion > 0);
 });
 
 const showRedWarnDeniedDecisionsMessage = computed(
@@ -461,9 +461,9 @@ defineExpose({open});
                           >mdi-clipboard-check-outline</v-icon
                         >
                       </div>
-                      <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-                      <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-                      <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+                      <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+                      <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+                      <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                       <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                         >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                       >
@@ -490,9 +490,9 @@ defineExpose({open});
                       >mdi-clipboard-check-outline</v-icon
                     >
                   </div>
-                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.Uploaded) }}&nbsp;</span>
-                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.MetaInfo.Name }}</span>
-                  <span class="d-text d-secondary-text" v-if="item.raw.Tag">&nbsp;({{ item.raw.Tag }})</span>
+                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
+                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
+                  <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
                   <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
                     >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                   >

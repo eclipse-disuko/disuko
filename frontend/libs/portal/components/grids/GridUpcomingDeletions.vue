@@ -6,13 +6,18 @@
 import {UpcomingDeletion} from '@disclosure-portal/model/UpcomingDeletion';
 import {BlockingProject} from '@disclosure-portal/model/UpcomingDeletion';
 import adminService from '@disclosure-portal/services/admin';
+import Icons from '@disclosure-portal/constants/icons';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useLabelStore} from '@disclosure-portal/stores/label.store';
 
 const {t} = useI18n();
+
+const labelStore = useLabelStore();
+const icons = Icons;
 
 const items = ref<UpcomingDeletion[]>([]);
 const loaded = ref(false);
@@ -32,6 +37,18 @@ const blockingProjectHeaders = computed((): DataTableHeader[] => [
     align: 'start',
     value: 'name',
     sortable: true,
+  },
+  {
+    title: t('COL_APPID'),
+    align: 'start',
+    value: 'applicationId',
+    sortable: true,
+  },
+  {
+    title: t('COL_LABELS'),
+    align: 'start',
+    value: 'labels',
+    sortable: false,
   },
 ]);
 
@@ -64,6 +81,12 @@ const headers = computed((): DataTableHeader[] => [
     title: t('COL_LASTNAME'),
     align: 'start',
     value: 'lastname',
+    sortable: true,
+  },
+  {
+    title: t('COL_DEPARTMENT'),
+    align: 'start',
+    value: 'department',
     sortable: true,
   },
   {
@@ -145,6 +168,12 @@ onMounted(async () => {
             {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
           </v-icon>
         </template>
+        <template #[`item.department`]="{item}">
+          <span v-if="item.departmentDescription && item.department"
+            >{{ item.departmentDescription }} ({{ item.department }})</span
+          >
+          <span v-else>-</span>
+        </template>
         <template #[`item.deprovisioned`]="{item}">
           <DDateCellWithTooltip :value="item.deprovisioned" />
         </template>
@@ -170,6 +199,35 @@ onMounted(async () => {
                     variant="compact"
                     :buttons="blockingProjectActionButtons"
                     @open="openProject(project)" />
+                </template>
+                <template #[`item.labels`]="{item: project}">
+                  <div class="flex flex-wrap gap-1 py-1">
+                    <Tooltip
+                      v-for="(l, i) in project.freeLabels"
+                      :key="'free' + i"
+                      :text="t('TT_free_label')"
+                      as-parent>
+                      <DLabel :labelName="l" :iconName="icons.TAG" />
+                    </Tooltip>
+                    <Tooltip
+                      v-for="(l, i) in project.policyLabels"
+                      :key="'policy' + i"
+                      :text="`${t('TT_policy_label_with_description')}${labelStore.getLabelByKey(l).description}`"
+                      as-parent>
+                      <DLabel
+                        :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
+                        :iconName="icons.POLICY" />
+                    </Tooltip>
+                    <Tooltip
+                      v-for="(l, i) in project.projectLabels"
+                      :key="'proj' + i"
+                      :text="`${t('TT_project_label_with_description')}${labelStore.getLabelByKey(l).description}`"
+                      as-parent>
+                      <DLabel
+                        :labelName="labelStore.getLabelByKey(l).name ?? 'UNKNOWN_LABEL'"
+                        :iconName="icons.PROJECT_LABEL" />
+                    </Tooltip>
+                  </div>
                 </template>
               </v-data-table>
             </td>

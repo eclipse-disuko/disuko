@@ -2497,22 +2497,10 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 	if !rights.AllowProjectVersion.Read {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ViewSbom))
 	}
-	type NameKeyIdentifier struct {
-		Key  string `json:"key"`
-		Name string `json:"name"`
-	}
-	type ResponseFlatSbomItem struct {
-		VersionKey  string `json:"versionKey"`
-		VersionName string `json:"versionName"`
-		*project.SpdxFileBase
-	}
-	type ResponseFlatSboms struct {
-		Items   []ResponseFlatSbomItem `json:"items"`
-		Version []NameKeyIdentifier    `json:"versions"`
-	}
-	newResult := ResponseFlatSboms{}
-	newResult.Items = make([]ResponseFlatSbomItem, 0)
-	newResult.Version = make([]NameKeyIdentifier, 0)
+
+	newResult := project.ResponseFlatSboms{}
+	newResult.Items = make([]project.ResponseFlatSbomItem, 0)
+	newResult.Version = make([]project.NameKeyIdentifier, 0)
 
 	var vs []*project.ProjectVersion
 	for _, v := range currentProject.Versions {
@@ -2527,7 +2515,7 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 		if version.Deleted {
 			continue
 		}
-		nameKey := NameKeyIdentifier{
+		nameKey := project.NameKeyIdentifier{
 			Key:  version.Key,
 			Name: version.Name,
 		}
@@ -2543,27 +2531,27 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 		})
 
 		unusedSpdxCount := 0
-		for _, sbom := range sbomList.SpdxFileHistory {
-			vs := ResponseFlatSbomItem{
-				VersionKey:   version.Key,
-				VersionName:  version.Name,
-				SpdxFileBase: sbom,
-			}
+		for _, sbomEntity := range sbomList.SpdxFileHistory {
+			spdxFileDto := sbomEntity.ToDto()
 
-			if sbomLockRetained.IsSpdxToRetain(sbom, version) {
-				sbom.IsToRetain = true
+			if sbomLockRetained.IsSpdxToRetain(sbomEntity, version) {
+				spdxFileDto.IsToRetain = true
 			}
-			if !IsSpdxInUse(sbom, currentProject, version) {
+			if !IsSpdxInUse(sbomEntity, currentProject, version) {
 				if unusedSpdxCount < 5 {
 					unusedSpdxCount++
 				} else {
-					sbom.IsToDelete = true
+					spdxFileDto.IsToDelete = true
 				}
 			} else {
-				sbom.IsInUse = true
+				spdxFileDto.IsInUse = true
 			}
 
-			newResult.Items = append(newResult.Items, vs)
+			newResult.Items = append(newResult.Items, project.ResponseFlatSbomItem{
+				VersionKey:  version.Key,
+				VersionName: version.Name,
+				SpdxFileDto: spdxFileDto,
+			})
 		}
 	}
 	sort.Slice(newResult.Items, func(i, j int) bool {

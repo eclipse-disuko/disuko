@@ -54,18 +54,30 @@ onMounted(async () => {
         data-testid="OwnerSettings__Address"
         :rules="validationRules.address" />
 
-      <v-textarea
-        v-if="!wizardStore.isVehicleOnboardArchitecture"
-        id="thirdparty-address"
-        rows="5"
-        autocomplete="off"
-        :placeholder="t('PLACEHOLDER_NOTICE_CONTACT_ADDRESS')"
-        persistent-placeholder
-        variant="outlined"
-        v-model="wizardStore.project.projectSettings.noticeContactMeta.address"
-        :label="t('NOTICE_CONTACT_ADDRESS')"
-        hide-details="auto"
-        :rules="validationRules.address" />
+      <Stack direction="row" class="items-start gap-4" v-if="!wizardStore.isVehicleOnboardArchitecture">
+        <v-textarea
+          id="thirdparty-address"
+          class="w-1/2"
+          rows="5"
+          autocomplete="off"
+          variant="outlined"
+          v-model="wizardStore.project.projectSettings.noticeContactMeta.address"
+          :label="t('NOTICE_CONTACT_ADDRESS')"
+          hide-details="auto"
+          :rules="validationRules.address" />
+        <Stack class="w-1/2 gap-1 pt-1">
+          <Stack direction="row" class="items-center gap-1">
+            <span class="text-caption text-medium-emphasis">{{ t('EXAMPLE') }}</span>
+            <span class="cursor-help">
+              <v-icon size="small" color="primary">mdi-help-circle-outline</v-icon>
+              <Tooltip :text="t('NOTICE_CONTACT_ADDRESS_TAB_HINT') + t('NOTICE_CONTACT_ADDRESS_INFO')" />
+            </span>
+          </Stack>
+          <pre class="text-caption text-medium-emphasis whitespace-pre-wrap">{{
+            t('PLACEHOLDER_NOTICE_CONTACT_ADDRESS')
+          }}</pre>
+        </Stack>
+      </Stack>
     </Stack>
   </v-form>
 </template>

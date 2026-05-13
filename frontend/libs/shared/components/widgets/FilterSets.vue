@@ -345,6 +345,7 @@ export default defineComponent({
   },
 });
 </script>
+
 <template>
   <v-row tag="div" class="d-flex justify-end pr-3">
     <v-menu v-model="filterSetMenu" :close-on-content-click="false" max-width="1024">

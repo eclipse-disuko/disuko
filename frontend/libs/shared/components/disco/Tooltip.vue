@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed} from 'vue';
-import DExternalLink from './DExternalLink.vue';
 
 interface Props {
   activator?: string;

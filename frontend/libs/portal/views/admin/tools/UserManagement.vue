@@ -5,9 +5,6 @@
 <script setup lang="ts">
 import {UserDto} from '@disclosure-portal/model/Users';
 import {formatDate} from '@disclosure-portal/utils/View';
-import DAutocompleteUser from '@shared/components/disco/DAutocompleteUser.vue';
-import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DIconButton from '@shared/components/disco/DIconButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';
