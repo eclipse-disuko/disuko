@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {ChangeLogResponse} from '@disclosure-portal/model/ChangeLog';
 import {Checklist, ChecklistItem} from '@disclosure-portal/model/Checklist';
 import {ICountResponse, ISuccessRsponse} from '@disclosure-portal/model/Common';
@@ -16,7 +16,7 @@ import {MailData} from '@disclosure-portal/model/MailData';
 import {MemStats} from '@disclosure-portal/model/Memstats';
 import {Notification, NotificationDto} from '@disclosure-portal/model/Notification';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
-import SimpleProfileData from '@disclosure-portal/model/ProfileData';
+import SimpleProfileData from '@shared/types/ProfileData';
 import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import SampleDataCreationState from '@disclosure-portal/model/SampleData';
 import SchemaModel from '@disclosure-portal/model/Schema';
@@ -30,33 +30,20 @@ import {
   UserDto,
   UserList,
   UserMailDto,
-  UserRequestDto,
   UserRolesRequestDto,
-} from '@disclosure-portal/model/Users';
+  UserRequestDto,
+} from '@shared/types/Users';
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import {AxiosResponse} from 'axios';
+import {DashboardCounts} from '@shared/types/DashboardCounts';
 
 const modelName = 'admin';
 
-export interface GetDashboardCounts {
-  projectCount: number;
-  licenseCount: number;
-  policyRuleCount: number;
-  labelCount: number;
-  schemaCount: number;
-  obligationCount: number;
-  userCount: number;
-  disclosureCount: number;
-  reviewTemplateCount: number;
-  activeJobCount: number;
-  hasNewNewsboxItem: boolean;
-}
-
-const {api} = getApi();
+const {api} = useApi();
 
 class AdminService {
-  public async getDashboardCounts(): Promise<GetDashboardCounts> {
+  public async getDashboardCounts(): Promise<DashboardCounts> {
     const result = await api.get('/api/v1/admin/counts/dashboard');
     return result.data;
   }

@@ -7,7 +7,7 @@ import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck'
 import {DocumentMeta, InternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';

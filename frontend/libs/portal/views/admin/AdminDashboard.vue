@@ -4,16 +4,17 @@
 
 <script setup lang="ts">
 import ITile from '@disclosure-portal/model/ITile';
-import adminService, {GetDashboardCounts} from '@disclosure-portal/services/admin';
+import adminService from '@disclosure-portal/services/admin';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {DashboardCounts} from '@shared/types/DashboardCounts';
 
 const {t} = useI18n();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 
-const counts = ref<GetDashboardCounts | undefined>();
+const counts = ref<DashboardCounts | undefined>();
 
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs(dashboardCrumbs);

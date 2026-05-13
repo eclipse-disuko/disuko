@@ -14,7 +14,7 @@ import {
 } from '@disclosure-portal/model/Approval';
 import {ApprovalResponse} from '@disclosure-portal/model/ApprovalRequest';
 import {FillCustomerReq, ProjectModel} from '@disclosure-portal/model/Project';
-import {TaskDto, UserDto} from '@disclosure-portal/model/Users';
+import {TaskDto, UserDto} from '@shared/types/Users';
 import ProjectService from '@disclosure-portal/services/projects';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import useSnackbar from '@shared/composables/useSnackbar';

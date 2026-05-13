@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {CustomId} from '@disclosure-portal/model/CustomId';
 
 export const customId = () => {
-  const {api, getData} = getApi();
+  const {api, getData} = useApi();
 
   const getCustomIds = () => getData<CustomId[]>(api.get(`/api/v1/customids`));
 

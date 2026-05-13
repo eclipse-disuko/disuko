@@ -14,7 +14,7 @@ import License, {
   LicenseSlim,
   PossibleFilterValues,
 } from '@disclosure-portal/model/License';
-import {Group, Rights} from '@disclosure-portal/model/Rights';
+import {Group, Rights} from '@shared/types/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import filterSetService from '@disclosure-portal/services/filtersets';
 import licenseService from '@disclosure-portal/services/license';

@@ -7,7 +7,7 @@ import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/co
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {NameKeyIdentifier, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
-import {Group} from '@disclosure-portal/model/Rights';
+import {Group} from '@shared/types/Rights';
 import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';

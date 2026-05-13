@@ -5,9 +5,9 @@
 <script setup lang="ts">
 import {DocumentMeta, PlausibilityCheckRequest} from '@disclosure-portal/model/ApprovalRequest';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
-import profileService from '@disclosure-portal/services/profile';
+import profileService from '@shared/services/profile';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';

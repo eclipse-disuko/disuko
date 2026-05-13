@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {AnnouncementsResponse} from '@disclosure-portal/model/AnnouncementsResponse';
 
-const {api} = getApi();
+const {api} = useApi();
 
 const modelName = 'announcements';
 

@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
-import {RefreshTokenRequestDto, RefreshTokenResponseDto} from '@disclosure-portal/model/Credentials';
+import {useApi} from '@shared/api/useApi';
+import {RefreshTokenRequestDto, RefreshTokenResponseDto} from '@shared/types/Credentials';
 import {AxiosResponse} from 'axios';
 
-const {api} = getApi();
+const {api} = useApi();
 
 class SessionService {
   public async getRefreshAccessToken(): Promise<AxiosResponse<RefreshTokenResponseDto>> {
