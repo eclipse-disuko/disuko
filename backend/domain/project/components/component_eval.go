@@ -104,9 +104,7 @@ type InApproval struct {
 }
 
 type GeneralStats struct {
-	SBOMDelivered  bool              `json:"sbomDelivered"`
-	SourceUploaded bool              `json:"sourceUploaded"`
-	ReviewRemark   ReviewRemarkStats `json:"reviewRemark"`
+	ReviewRemark ReviewRemarkStats `json:"reviewRemark"`
 }
 
 type SBOMStats struct {

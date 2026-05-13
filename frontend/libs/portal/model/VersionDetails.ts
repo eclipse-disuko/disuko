@@ -135,8 +135,6 @@ export class InApproval {
 }
 
 export class GeneralStats {
-  public sBOMDelivered = false;
-  public sourceUploaded = false;
   public reviewRemark = new ReviewRemarkStats();
 }
 
