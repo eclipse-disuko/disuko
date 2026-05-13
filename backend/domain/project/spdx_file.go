@@ -219,8 +219,8 @@ func ExtractComponentInfo(componentInfo *[]components.ComponentInfo, componentTy
 		*componentInfo = append(*componentInfo, components.ComponentInfo{
 			SpdxId:            value.Get("SPDXID").String(),
 			Name:              name,
-			License:           value.Get("licenseConcluded").String(),
-			LicenseDeclared:   value.Get("licenseDeclared").String(),
+			License:           getOrNoAssertion(value.Get("licenseConcluded")),
+			LicenseDeclared:   getOrNoAssertion(value.Get("licenseDeclared")),
 			LicenseComments:   value.Get("licenseComments").String(),
 			Version:           version,
 			CopyrightText:     value.Get("copyrightText").String(),
@@ -263,4 +263,11 @@ func (entity *SpdxFileBase) ExtractMetaInfo(spdxString string) {
 		CreationData:    value[6].String(),
 		HasExternalRefs: refs,
 	}
+}
+
+func getOrNoAssertion(result gjson.Result) string {
+	if !result.Exists() {
+		return "NOASSERTION"
+	}
+	return result.String()
 }
