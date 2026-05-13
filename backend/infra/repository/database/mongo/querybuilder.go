@@ -85,9 +85,9 @@ func renderUnset(attributes []string) bson.D {
 func renderSort(config database.SortConfig) bson.D {
 	var res bson.D
 	for _, attrConfig := range config {
-		orderNum := 1
+		orderNum := -1
 		if attrConfig.Order == database.ASC {
-			orderNum = -1
+			orderNum = 1
 		}
 		res = append(res, bson.E{
 			Key:   strings.ToLower(attrConfig.Name),
