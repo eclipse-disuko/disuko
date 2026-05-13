@@ -86,8 +86,8 @@ const menuIsLicenseChartNotSelected = ref(false);
 const {info} = useSnackbar();
 const classificationsDialogRef = ref();
 
-const canEditManual = computed(() => isPolicyManager.value && !rule.value.Deprecated && !rule.value.Calculated);
-const canEditCalculated = computed(() => isPolicyManager.value && rule.value.Calculated);
+const canEditManual = computed(() => isPolicyManager.value && !rule.value.deprecated && !rule.value.calculated);
+const canEditCalculated = computed(() => isPolicyManager.value && rule.value.calculated);
 
 const retrieveRule = async (policyRuleId: string) => {
   if (router.currentRoute.value.params.uuid) {
@@ -106,7 +106,7 @@ const initBreadcrumbs = () => {
     {title: t('BC_Dashboard'), disabled: false, href: '/dashboard/home'},
     {title: t('POLICY_RULES'), disabled: false, href: '/dashboard/policyrules'},
     {
-      title: '' + rule.value.Name,
+      title: '' + rule.value.name,
       disabled: false,
       href: '/dashboard/policyrules/' + encodeURIComponent(ruleId.value),
     },
@@ -410,11 +410,11 @@ const createLabelsMap = () => {
 const getComponents = (policyState: PolicyState) => {
   switch (policyState) {
     case PolicyState.ALLOW:
-      return rule.value.ComponentsAllow;
+      return rule.value.componentsAllow;
     case PolicyState.DENY:
-      return rule.value.ComponentsDeny;
+      return rule.value.componentsDeny;
     case PolicyState.WARN:
-      return rule.value.ComponentsWarn;
+      return rule.value.componentsWarn;
     default:
       throw new Error('Unknown rule state: ' + mode.value);
   }
@@ -539,11 +539,11 @@ const ruleCallback: IRuleBtnCallbacks = {
   getCountForPolicyFilterBtn: (policy) => {
     switch (policy) {
       case PolicyState.ALLOW:
-        return rule.value.ComponentsAllow.length;
+        return rule.value.componentsAllow.length;
       case PolicyState.DENY:
-        return rule.value.ComponentsDeny.length;
+        return rule.value.componentsDeny.length;
       case PolicyState.WARN:
-        return rule.value.ComponentsWarn.length;
+        return rule.value.componentsWarn.length;
       default:
         throw new Error('Method not implemented.');
     }
@@ -734,23 +734,23 @@ const handleSetCalculatedEnabled = (value: boolean) => {
         <div class="grid w-full basis-full gap-6" :class="{'grid-cols-2': canEditManual || canEditCalculated}">
           <div v-if="isPolicyManager" class="d-flex ga-2 align-center mt-2 h-9 flex-row">
             <h3 class="d-subtitle-2">
-              {{ t(rule.Calculated ? 'TABLE_HEADER_CALCULATED_LICENSES' : 'TABLE_HEADER_LICENSES') }}
+              {{ t(rule.calculated ? 'TABLE_HEADER_CALCULATED_LICENSES' : 'TABLE_HEADER_LICENSES') }}
             </h3>
             <DCActionButton
               :text="t('BTN_SAVE')"
               icon="mdi-content-save"
               :hint="t('BTN_SAVE')"
               @click="saveChanges"
-              v-if="hasChanges && rule.Deprecated === false && !rule.Calculated" />
+              v-if="hasChanges && rule.deprecated === false && !rule.calculated" />
           </div>
           <div v-if="isPolicyManager" class="d-flex align-center justify-space-between mt-2 h-9 flex-row">
-            <h3 v-if="!rule.Calculated && ruleLoaded" class="d-subtitle-2">
+            <h3 v-if="!rule.calculated && ruleLoaded" class="d-subtitle-2">
               {{ t('TABLE_HEADER_AVAILABLE_LICENSES') }}
             </h3>
             <div v-else></div>
             <template v-if="ruleLoaded">
               <DCActionButton
-                v-if="!rule.Calculated"
+                v-if="!rule.calculated"
                 variant="outlined"
                 :text="t('CALCULATED_POLICY_RULE_ENABLED')"
                 icon="mdi-calculator-variant"
@@ -766,7 +766,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
             </template>
           </div>
 
-          <div :class="{'col-span-2': !canEditManual && !rule.Calculated, 'col-start-1': rule.Calculated}">
+          <div :class="{'col-span-2': !canEditManual && !rule.calculated, 'col-start-1': rule.calculated}">
             <div class="d-flex ga-1 label-filter flex-row">
               <div class="overflow-auto">
                 <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
@@ -1523,7 +1523,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                   icon="mdi-content-save"
                   :hint="t('BTN_SAVE')"
                   @click="saveChanges"
-                  v-if="hasChanges && rule.Deprecated === false" />
+                  v-if="hasChanges && rule.deprecated === false" />
               </div>
             </div>
           </div>

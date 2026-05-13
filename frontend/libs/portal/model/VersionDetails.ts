@@ -80,34 +80,34 @@ export interface IComponentInfo {
 }
 
 export class ComponentStats {
-  public Total = 0;
-  public Allowed = 0;
-  public Warned = 0;
-  public Denied = 0;
-  public Questioned = 0;
-  public NoAssertion = 0;
+  public total = 0;
+  public allowed = 0;
+  public warned = 0;
+  public denied = 0;
+  public questioned = 0;
+  public noAssertion = 0;
 }
 
 export class LicenseFamilyStats {
-  public Total = 0;
-  public Permissive = 0;
-  public WeakCopyLeft = 0;
-  public StrongCopyLeft = 0;
-  public NetworkCopyLeft = 0;
-  public Other = 0;
+  public total = 0;
+  public permissive = 0;
+  public weakCopyLeft = 0;
+  public strongCopyLeft = 0;
+  public networkCopyLeft = 0;
+  public other = 0;
 }
 export class ReviewRemarkStats {
-  public Total = 0;
-  public Acceptable = 0;
-  public AcceptableAfterChanges = 0;
-  public NotAcceptable = 0;
+  public total = 0;
+  public acceptable = 0;
+  public acceptableAfterChanges = 0;
+  public notAcceptable = 0;
 }
 
 export class ScanRemarkStats {
-  public Total = 0;
-  public Information = 0;
-  public Warning = 0;
-  public Problem = 0;
+  public total = 0;
+  public information = 0;
+  public warning = 0;
+  public problem = 0;
 }
 
 export class ScanRemarkTypeStats {
@@ -122,30 +122,28 @@ export class NotChartFossLicenseStats {
 }
 
 export class LicenseRemarkStats {
-  public Total = 0;
-  public Information = 0;
-  public Warning = 0;
-  public Alarm = 0;
+  public total = 0;
+  public information = 0;
+  public warning = 0;
+  public alarm = 0;
 }
 
 export class InApproval {
-  public IsInApproval = false;
-  public ApprovalGuid = '';
-  public Status = '';
+  public isInApproval = false;
+  public approvalGuid = '';
+  public status = '';
 }
 
 export class GeneralStats {
-  public SBOMDelivered = false;
-  public SourceUploaded = false;
-  public ReviewRemark = new ReviewRemarkStats();
+  public reviewRemark = new ReviewRemarkStats();
 }
 
 export class SbomStats {
-  public PolicyState = new ComponentStats();
-  public LicenseFamily = new LicenseFamilyStats();
-  public ScanRemark = new ScanRemarkStats();
-  public LicenseRemark = new LicenseRemarkStats();
-  public ApprovalInfo = new InApproval();
+  public policyState = new ComponentStats();
+  public licenseFamily = new LicenseFamilyStats();
+  public scanRemark = new ScanRemarkStats();
+  public licenseRemark = new LicenseRemarkStats();
+  // public ApprovalInfo = new InApproval();
   public scanRemarkType = new ScanRemarkTypeStats();
   public notChartFossLicense = new NotChartFossLicenseStats();
 }

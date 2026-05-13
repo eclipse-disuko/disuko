@@ -10,7 +10,7 @@ import {useIdleStore} from '@shared/stores/idle.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import DLabel from '@shared/components/disco/DLabel.vue';
+import DLabel from '@disclosure-portal/components/disco/DLabel.vue';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

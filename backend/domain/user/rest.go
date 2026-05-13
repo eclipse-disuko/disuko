@@ -210,28 +210,41 @@ type RoleDeletionResult struct {
 }
 
 type BlockingProjectDto struct {
-	Key  string `json:"key"`
-	Name string `json:"name"`
+	Key           string   `json:"key"`
+	Name          string   `json:"name"`
+	ProjectLabels []string `json:"projectLabels"`
+	PolicyLabels  []string `json:"policyLabels"`
+	FreeLabels    []string `json:"freeLabels"`
+	ApplicationId string   `json:"applicationId"`
 }
 
 type UpcomingDeletionDto struct {
-	User             string               `json:"user"`
-	Forename         string               `json:"forename"`
-	Lastname         string               `json:"lastname"`
-	Deprovisioned    time.Time            `json:"deprovisioned"`
-	DeletionDate     time.Time            `json:"deletionDate"`
-	Overdue          bool                 `json:"overdue"`
-	BlockingProjects []BlockingProjectDto `json:"blockingProjects"`
+	User                  string              `json:"user"`
+	Forename              string              `json:"forename"`
+	Lastname              string              `json:"lastname"`
+	Department            string              `json:"department"`
+	DepartmentDescription string              `json:"departmentDescription"`
+	Deprovisioned         time.Time           `json:"deprovisioned"`
+	DeletionDate          time.Time           `json:"deletionDate"`
+	Overdue               bool                `json:"overdue"`
+	BlockingProjects      []BlockingProjectDto `json:"blockingProjects"`
 }
 
 func (entity *User) ToUpcomingDeletionDto(blockingProjects []BlockingProjectDto) *UpcomingDeletionDto {
+	var department, departmentDescription string
+	if entity.MetaData != nil {
+		department = entity.MetaData.Department
+		departmentDescription = entity.MetaData.DepartmentDescription
+	}
 	return &UpcomingDeletionDto{
-		User:             entity.User,
-		Forename:         entity.Forename,
-		Lastname:         entity.Lastname,
-		Deprovisioned:    entity.Deprovisioned,
-		DeletionDate:     entity.DeletionDate(),
-		Overdue:          entity.DeletionOverdue(),
-		BlockingProjects: blockingProjects,
+		User:                  entity.User,
+		Forename:             entity.Forename,
+		Lastname:             entity.Lastname,
+		Department:           department,
+		DepartmentDescription: departmentDescription,
+		Deprovisioned:        entity.Deprovisioned,
+		DeletionDate:         entity.DeletionDate(),
+		Overdue:              entity.DeletionOverdue(),
+		BlockingProjects:     blockingProjects,
 	}
 }

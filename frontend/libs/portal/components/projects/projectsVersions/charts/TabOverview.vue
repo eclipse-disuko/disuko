@@ -100,7 +100,7 @@ watch(
 
 const chartDataLicenseFamily = computed(() => {
   return createChartData(
-    ['Other', 'NetworkCopyLeft', 'StrongCopyLeft', 'WeakCopyLeft', 'Permissive'] as (keyof LicenseFamilyStats)[],
+    ['other', 'networkCopyLeft', 'strongCopyLeft', 'weakCopyLeft', 'permissive'] as (keyof LicenseFamilyStats)[],
     'LF_CHART',
     licenseFamilyStats.value,
     (label) => getColorForLabel('licenseFamily', label),
@@ -131,7 +131,7 @@ const chartOptionsLicenseFamily = createChartOptions('bar', openFamilyFilteredCo
 
 const chartDataPolicyStates = computed(() => {
   return createChartData(
-    ['Denied', 'NoAssertion', 'Warned', 'Questioned', 'Allowed'] as (keyof ComponentStats)[],
+    ['denied', 'noAssertion', 'warned', 'questioned', 'allowed'] as (keyof ComponentStats)[],
     'PS_CHART',
     policyStateStats.value,
     (label) => getColorForLabel('policyState', label),
@@ -143,7 +143,7 @@ const chartOptionsPolicyStates = createChartOptions('bar', openFilteredComponent
 
 const chartDataReviewRemarks = computed(() => {
   return createChartData(
-    ['NotAcceptable', 'AcceptableAfterChanges', 'Acceptable'] as (keyof ReviewRemarkStats)[],
+    ['notAcceptable', 'acceptableAfterChanges', 'acceptable'] as (keyof ReviewRemarkStats)[],
     'RR_CHART',
     reviewRemarksStats.value,
     (label) => getColorForLabel('reviewRemark', label),
@@ -155,7 +155,7 @@ const chartOptionsReviewRemark = createChartOptions('doughnut', openFilteredRevi
 
 const chartDataScanRemarks = computed(() => {
   return createChartData(
-    ['Problem', 'Warning', 'Information'] as (keyof ScanRemarkStats)[],
+    ['problem', 'warning', 'information'] as (keyof ScanRemarkStats)[],
     'SR_CHART',
     scanRemarkStats.value,
     (label) => getColorForLabel('scanRemark', label),
@@ -167,7 +167,7 @@ const chartOptionsScanRemark = createChartOptions('doughnut', openFilteredScanRe
 
 const chartDataLicenseRemarks = computed(() => {
   return createChartData(
-    ['Alarm', 'Warning', 'Information'] as (keyof LicenseRemarkStats)[],
+    ['alarm', 'warning', 'information'] as (keyof LicenseRemarkStats)[],
     'LR_CHART',
     licenseRemarkStats.value,
     (label) => getColorForLabel('licenseRemark', label),
@@ -340,33 +340,33 @@ function createChartOptions(
 function getColorForLabel(type: string, label: string, transparent = true) {
   const colorMap: {[key: string]: {[key: string]: string}} = {
     licenseFamily: {
-      Other: '--v-theme-chartFLRed',
-      NetworkCopyLeft: '--v-theme-chartFLRed',
-      StrongCopyLeft: '--v-theme-chartFLRed',
-      WeakCopyLeft: '--v-theme-chartFLYellow',
-      Permissive: '--v-theme-chartFLGreen',
+      other: '--v-theme-chartFLRed',
+      networkCopyLeft: '--v-theme-chartFLRed',
+      strongCopyLeft: '--v-theme-chartFLRed',
+      weakCopyLeft: '--v-theme-chartFLYellow',
+      permissive: '--v-theme-chartFLGreen',
     },
     policyState: {
-      Allowed: '--v-theme-chartGreen',
-      Warned: '--v-theme-chartYellow',
-      NoAssertion: '--v-theme-chartRed',
-      Denied: '--v-theme-chartRed',
-      Questioned: '--v-theme-chartGreen',
+      allowed: '--v-theme-chartGreen',
+      warned: '--v-theme-chartYellow',
+      noAssertion: '--v-theme-chartRed',
+      denied: '--v-theme-chartRed',
+      questioned: '--v-theme-chartGreen',
     },
     reviewRemark: {
-      Acceptable: '--v-theme-chartGreen',
-      AcceptableAfterChanges: '--v-theme-chartYellow',
-      NotAcceptable: '--v-theme-chartRed',
+      acceptable: '--v-theme-chartGreen',
+      acceptableAfterChanges: '--v-theme-chartYellow',
+      notAcceptable: '--v-theme-chartRed',
     },
     scanRemark: {
-      Information: '--v-theme-chartGrey',
-      Warning: '--v-theme-chartYellow',
-      Problem: '--v-theme-chartRed',
+      information: '--v-theme-chartGrey',
+      warning: '--v-theme-chartYellow',
+      problem: '--v-theme-chartRed',
     },
     licenseRemark: {
-      Information: '--v-theme-chartGrey',
-      Warning: '--v-theme-chartYellow',
-      Alarm: '--v-theme-chartRed',
+      information: '--v-theme-chartGrey',
+      warning: '--v-theme-chartYellow',
+      alarm: '--v-theme-chartRed',
     },
   };
   const colorVariable = (colorMap[type] && colorMap[type][label]) || '--v-theme-chartGrey';
@@ -505,11 +505,11 @@ async function loadChartData() {
   const sbomStatsData = sbomStore.getSbomStats;
   const generalStatsData = sbomStore.getGeneralStats;
 
-  policyStateStats.value = sbomStatsData.PolicyState;
-  licenseFamilyStats.value = sbomStatsData.LicenseFamily;
-  reviewRemarksStats.value = generalStatsData.ReviewRemark;
-  scanRemarkStats.value = sbomStatsData.ScanRemark;
-  licenseRemarkStats.value = sbomStatsData.LicenseRemark;
+  policyStateStats.value = sbomStatsData.policyState;
+  licenseFamilyStats.value = sbomStatsData.licenseFamily;
+  reviewRemarksStats.value = generalStatsData.reviewRemark;
+  scanRemarkStats.value = sbomStatsData.scanRemark;
+  licenseRemarkStats.value = sbomStatsData.licenseRemark;
   legendItemsReviewRemarks.value = generateLegend(chartDataReviewRemarks.value);
   legendItemsLicenseRemarks.value = generateLegend(chartDataLicenseRemarks.value);
   legendItemsScanRemarks.value = generateLegend(chartDataScanRemarks.value);
@@ -556,7 +556,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'PS_CHART_HELP'"
                 :navigation-path="unfilteredComponentsPath()"></ChartHeader>
             </v-card-text>
-            <v-card v-if="policyStateStats.Total === 0" class="empty-container justify-center text-center">
+            <v-card v-if="policyStateStats.total === 0" class="empty-container justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card>
             <v-sheet v-else color="transparent">
@@ -589,7 +589,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'SR_CHART_HELP'"
                 :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="scanRemarkStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="scanRemarkStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -625,7 +625,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -663,7 +663,7 @@ function unfilteredReviewRemarksPath() {
                 :header-text="'LICENSE_FAMILY'"
                 :help-text="'LF_CHART_HELP'"></ChartHeader>
             </v-card-text>
-            <v-card v-if="licenseFamilyStats.Total === 0" class="empty-container justify-center text-center">
+            <v-card v-if="licenseFamilyStats.total === 0" class="empty-container justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card>
             <v-sheet v-else color="transparent">
@@ -694,7 +694,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'LR_CHART_HELP'"
                 :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="licenseRemarkStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -732,7 +732,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'SR_CHART_HELP'"
                 :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="scanRemarkStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="scanRemarkStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -768,7 +768,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'LR_CHART_HELP'"
                 :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="licenseRemarkStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>
@@ -809,7 +809,7 @@ function unfilteredReviewRemarksPath() {
                 :help-text="'RR_CHART_HELP'"
                 :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
             </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.Total === 0" class="justify-center text-center">
+            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
               <span>{{ t('NO_DATA') }}</span>
             </v-card-text>
             <v-row v-else>

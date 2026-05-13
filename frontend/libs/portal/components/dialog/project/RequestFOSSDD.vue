@@ -382,7 +382,7 @@ const doDialogAction = async () => {
 };
 
 const isDeniedOrUnasserted = computed(() => {
-  return vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
+  return vehicle.value && (stats.value.denied > 0 || stats.value.noAssertion > 0);
 });
 
 /**
@@ -392,7 +392,7 @@ const isDeniedOrUnasserted = computed(() => {
  * and contains denied or unasserted components.
  */
 const isEnterpriseOrMobileOrOther = computed(() => {
-  return !vehicle.value && (stats.value.Denied > 0 || stats.value.NoAssertion > 0);
+  return !vehicle.value && (stats.value.denied > 0 || stats.value.noAssertion > 0);
 });
 
 const showRedWarnDeniedDecisionsMessage = computed(

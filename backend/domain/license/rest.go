@@ -56,14 +56,6 @@ type PolicyRulePublicResponseDto struct {
 	Licenses    []PolicyRuleLicensePublicResponse `json:"licenses"`
 } //	@name	PolicyRule
 
-type StringResponse struct {
-	Licenses []string
-}
-
-type Response struct {
-	Licenses []License
-}
-
 type ImportResponse struct {
 	JobId string
 }
@@ -79,22 +71,22 @@ const (
 type PolicyRulesDto struct {
 	domain.BaseDto
 
-	Status      PolicyRulesStatus
-	Name        string
-	LabelSets   [][]string
-	Description string
+	Status      PolicyRulesStatus `json:"status"`
+	Name        string            `json:"name"`
+	LabelSets   [][]string        `json:"labelSets"`
+	Description string            `json:"description"`
 
-	ComponentsAllow []string
-	ComponentsDeny  []string
-	ComponentsWarn  []string
+	ComponentsAllow []string `json:"componentsAllow"`
+	ComponentsDeny  []string `json:"componentsDeny"`
+	ComponentsWarn  []string `json:"componentsWarn"`
 
-	Auxiliary        bool
-	Deprecated       bool
-	DeprecatedDate   time.Time
-	Active           bool
-	ApplyToAll       bool
-	Calculated       bool
-	CalculatedConfig CalculatedPolicyConfig
+	Auxiliary        bool                   `json:"auxiliary"`
+	Deprecated       bool                   `json:"deprecated"`
+	DeprecatedDate   time.Time              `json:"deprecatedDate"`
+	Active           bool                   `json:"active"`
+	ApplyToAll       bool                   `json:"applyToAll"`
+	Calculated       bool                   `json:"calculated"`
+	CalculatedConfig CalculatedPolicyConfig `json:"calculatedConfig"`
 }
 
 type PolicyRulesAssignmentDto struct {
