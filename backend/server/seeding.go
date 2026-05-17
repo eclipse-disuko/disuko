@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -122,6 +123,59 @@ func (db *dbRepos) processSeedFile(requestSession *logy.RequestSession, path str
 	}
 
 	return nil
+}
+
+func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) {
+	if db.i18nLocale.GetLocaleCount(requestSession) > 0 {
+		return
+	}
+
+	seedDir := "./conf/dbseeds/i18n"
+	entries, err := os.ReadDir(seedDir)
+	if err != nil {
+		logy.Infof(requestSession, "i18n seed dir not found, skipping: %v", err)
+		return
+	}
+
+	// Collect all keys per locale from all matching files
+	localeKeys := make(map[string]map[string]string)
+	for _, e := range entries {
+		if e.Type().IsDir() || !strings.HasSuffix(e.Name(), ".json") {
+			continue
+		}
+		name := e.Name()
+		// filename pattern: <scope>.<localeCode>.json  e.g. portal.en.json
+		parts := strings.SplitN(strings.TrimSuffix(name, ".json"), ".", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		localeCode := strings.ToLower(parts[1])
+
+		data, readErr := os.ReadFile(filepath.Join(seedDir, name))
+		if readErr != nil {
+			logy.Warnf(requestSession, "could not read i18n seed file %s: %v", name, readErr)
+			continue
+		}
+		var kvs map[string]string
+		if jsonErr := json.Unmarshal(data, &kvs); jsonErr != nil {
+			logy.Warnf(requestSession, "could not parse i18n seed file %s: %v", name, jsonErr)
+			continue
+		}
+		if localeKeys[localeCode] == nil {
+			localeKeys[localeCode] = make(map[string]string)
+		}
+		for k, v := range kvs {
+			localeKeys[localeCode][k] = v
+		}
+	}
+
+	for localeCode, keys := range localeKeys {
+		db.i18nLocale.SetLocaleMetadata(requestSession, localeCode, localeCode, localeCode, localeCode == "en", "portal")
+		for k, v := range keys {
+			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "", "seed")
+		}
+		logy.Infof(requestSession, "seeded i18n locale %s with %d keys", localeCode, len(keys))
+	}
 }
 
 func (db *dbRepos) insertIfNotExists(requestSession *logy.RequestSession, ent interface{}, entDb base.IDatabase) error {

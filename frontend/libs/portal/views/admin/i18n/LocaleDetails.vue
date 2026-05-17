@@ -10,6 +10,7 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
+import useSnackbar from '@shared/composables/useSnackbar';
 
 interface LocaleEntry {
   key: string;
@@ -51,6 +52,7 @@ interface I18nLocaleListItem {
 }
 
 const {t} = useI18n();
+const snackbar = useSnackbar();
 const route = useRoute();
 const router = useRouter();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
@@ -205,8 +207,10 @@ const exportAsJson = async () => {
     anchor.click();
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
+    snackbar.info(t('ADMIN_I18N_SUCCESS_EXPORT'));
   } catch {
     actionError.value = t('ERROR_500_TITLE');
+    snackbar.error(t('ERROR_500_TITLE'));
   } finally {
     isExporting.value = false;
   }
@@ -273,6 +277,7 @@ const onImportFilesSelected = async (event: Event) => {
     importResult.value = currentLocaleResponse.data;
     showImportResultDialog.value = true;
     showImportDialog.value = false;
+    snackbar.info(t('ADMIN_I18N_SUCCESS_IMPORT'));
     await fetchLocale();
   } catch (error: any) {
     const responseData = error?.response?.data as I18nImportResponse | undefined;
@@ -363,6 +368,7 @@ const addEntry = async () => {
     ...entries.value,
   ];
 
+  snackbar.info(t('ADMIN_I18N_SUCCESS_SAVED'));
   resetAddEntryDialog();
 };
 
@@ -388,6 +394,7 @@ const saveEdit = async () => {
     };
   });
 
+  snackbar.info(t('ADMIN_I18N_SUCCESS_SAVED'));
   cancelEdit();
 };
 
@@ -431,6 +438,7 @@ const onDeleteConfirm = async () => {
     cancelEdit();
   }
 
+  snackbar.info(t('ADMIN_I18N_SUCCESS_DELETED'));
   showDeleteDialog.value = false;
   deleteEntryKey.value = null;
   deleteGlobally.value = false;

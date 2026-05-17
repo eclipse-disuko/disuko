@@ -23,7 +23,7 @@ import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
 import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const route = useRoute();
 const userStore = useUserStore();
 const appStore = useAppStore();

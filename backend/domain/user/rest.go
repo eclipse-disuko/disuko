@@ -187,14 +187,14 @@ type BlockingProjectDto struct {
 }
 
 type UpcomingDeletionDto struct {
-	User                  string              `json:"user"`
-	Forename              string              `json:"forename"`
-	Lastname              string              `json:"lastname"`
-	Department            string              `json:"department"`
-	DepartmentDescription string              `json:"departmentDescription"`
-	Deprovisioned         time.Time           `json:"deprovisioned"`
-	DeletionDate          time.Time           `json:"deletionDate"`
-	Overdue               bool                `json:"overdue"`
+	User                  string               `json:"user"`
+	Forename              string               `json:"forename"`
+	Lastname              string               `json:"lastname"`
+	Department            string               `json:"department"`
+	DepartmentDescription string               `json:"departmentDescription"`
+	Deprovisioned         time.Time            `json:"deprovisioned"`
+	DeletionDate          time.Time            `json:"deletionDate"`
+	Overdue               bool                 `json:"overdue"`
 	BlockingProjects      []BlockingProjectDto `json:"blockingProjects"`
 }
 

@@ -130,6 +130,7 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 	if err != nil {
 		logy.Fatalf(requestSession, err.Error())
 	}
+	s.repos.seedI18n(requestSession)
 	go s.repos.analyticsComponents.InitIndex(requestSession)
 	go s.repos.analyticsLicenses.InitIndex(requestSession)
 }
