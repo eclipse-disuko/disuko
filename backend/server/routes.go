@@ -29,6 +29,15 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 		}
 		r.Route("/api/v1", func(r chi.Router) {
 			r.Get("/counts/dashboard", s.handlers.count.GetDashboardCountsHandler)
+			r.Route("/i18n", func(r chi.Router) {
+				r.Get("/", s.handlers.i18n.GetLocales)
+				r.Get("/export/{locale}", s.handlers.i18n.ExportLocaleJSON)
+				r.Get("/{locale}", s.handlers.i18n.GetLocale)
+				r.Post("/{locale}/import", s.handlers.i18n.ImportLocaleJSON)
+				r.Get("/{locale}/{key}", s.handlers.i18n.GetTranslationByKey)
+				r.Put("/{locale}/{key}", s.handlers.i18n.UpsertTranslationByKey)
+				r.Delete("/{locale}/{key}", s.handlers.i18n.DeleteTranslationByKey)
+			})
 			r.Route("/analyse", func(r chi.Router) {
 				r.Get("/files/start", s.handlers.analyseFiles.AnalyseFilesHandlerStart)
 				r.Get("/files/stop", s.handlers.analyseFiles.AnalyseFilesHandlerStop)

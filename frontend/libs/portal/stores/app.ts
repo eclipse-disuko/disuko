@@ -12,9 +12,31 @@ import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
 import {useRoute} from 'vue-router';
 
+const SUPPORTED_LANGUAGES = ['en', 'de'] as const;
+
+const normalizeSupportedLanguage = (language: string): (typeof SUPPORTED_LANGUAGES)[number] => {
+  const normalized = language.trim().toLowerCase();
+  return normalized === 'de' ? 'de' : 'en';
+};
+
+function resolveInitialAppLanguage(): string {
+  const stored = localStorage.getItem('appLanguage');
+  if (stored && stored.trim()) {
+    const normalized = normalizeSupportedLanguage(stored);
+    localStorage.setItem('appLanguage', normalized);
+    return normalized;
+  }
+  const initial = 'en';
+  localStorage.setItem('appLanguage', initial);
+  return initial;
+}
+
 export const useAppStore = defineStore('app', () => {
   // State as reactive object with type
   const state = reactive({
+    appLanguage: resolveInitialAppLanguage(),
+    publishedLanguages: [...SUPPORTED_LANGUAGES] as string[],
+    publishedLanguageLabels: {} as Record<string, {displayName?: string; nativeName?: string}>,
     LabelsTools: new LabelsTools(),
     tiles: [] as ITile[],
     alternateRender: false,
@@ -118,6 +140,46 @@ export const useAppStore = defineStore('app', () => {
     });
   };
 
+  const setLanguage = (language: string) => {
+    const normalized = normalizeSupportedLanguage(language);
+    state.appLanguage = normalized;
+    localStorage.setItem('appLanguage', state.appLanguage);
+  };
+
+  const setPublishedLanguages = (languages: Array<string | {code: string; displayName?: string; nativeName?: string}>) => {
+    const normalizedObjects = (languages || [])
+      .map((item) => {
+        if (typeof item === 'string') {
+          const code = item.trim().toLowerCase();
+          return code ? {code} : null;
+        }
+        const code = (item.code || '').trim().toLowerCase();
+        if (!code) return null;
+        return {
+          code,
+          displayName: item.displayName?.trim(),
+          nativeName: item.nativeName?.trim(),
+        };
+      })
+      .filter((item): item is {code: string; displayName?: string; nativeName?: string} => item !== null)
+      .filter((item) => SUPPORTED_LANGUAGES.includes(item.code as (typeof SUPPORTED_LANGUAGES)[number]));
+
+    const uniqueByCode = Array.from(new Map(normalizedObjects.map((item) => [item.code, item])).values());
+    state.publishedLanguages = [...SUPPORTED_LANGUAGES];
+    state.publishedLanguageLabels = uniqueByCode.reduce(
+      (acc, item) => {
+        acc[item.code] = {displayName: item.displayName, nativeName: item.nativeName};
+        return acc;
+      },
+      {} as Record<string, {displayName?: string; nativeName?: string}>,
+    );
+    setLanguage(state.appLanguage);
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(state.appLanguage === 'de' ? 'en' : 'de');
+  };
+
   const setDummyDesignMode = (isDummy: boolean) => {
     state.dummyDesignMode = isDummy;
   };
@@ -148,6 +210,9 @@ export const useAppStore = defineStore('app', () => {
 
   // Getters
   const getLabelsTools = computed(() => state.LabelsTools);
+  const getAppLanguage = computed(() => state.appLanguage);
+  const getPublishedLanguages = computed(() => state.publishedLanguages);
+  const getPublishedLanguageLabels = computed(() => state.publishedLanguageLabels);
 
   return {
     // State
@@ -162,11 +227,17 @@ export const useAppStore = defineStore('app', () => {
     setNavItemGroup,
     setTiles,
     startTokenRefresher,
+    toggleLanguage,
+    setLanguage,
+    setPublishedLanguages,
     setDummyDesignMode,
     unsetDummyDesignMode,
     setShouldReloadApprovals,
 
     // Getters
     getLabelsTools,
+    getAppLanguage,
+    getPublishedLanguages,
+    getPublishedLanguageLabels,
   };
 });
