@@ -2125,5 +2125,14 @@
   "COL_DELETION_DATE": "Deletion Date",
   "COL_OVERDUE": "Overdue",
   "COL_BLOCKING_PROJECTS": "Blocking Projects",
-  "TT_OPEN_PROJECT": "Open project"
+  "TT_OPEN_PROJECT": "Open project",
+  "PERSONAL_TOKENS": "Personal Tokens",
+  "PERSONAL_TOKEN_ADD_TITLE": "New Personal Token",
+  "PERSONAL_TOKEN_ISSUED_TITLE": "Token Created",
+  "PERSONAL_TOKEN_LABEL": "Token",
+  "PERSONAL_TOKEN_SECURITY_WARNING": "This token will only be shown once. Please copy and store it securely.",
+  "PERSONAL_TOKEN_CREATED": "Personal token created successfully",
+  "PERSONAL_TOKEN_EXPIRED": "Personal token expired successfully",
+  "CONFIRM_EXPIRE_PERSONAL_TOKEN_DESCRIPTION": "Are you sure you want to expire this token? The token will not be valid anymore.",
+  "BTN_EXPIRE": "Expire"
 }

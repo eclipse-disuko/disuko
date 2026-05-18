@@ -113,6 +113,9 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
             <v-tab value="tasks">
               {{ t('TASKS') }}
             </v-tab>
+            <v-tab value="personalTokens" v-if="!hasUsersAccess">
+              {{ t('PERSONAL_TOKENS') }}
+            </v-tab>
             <v-tab value="auditLog" v-if="hasUsersAccess">
               {{ t('TITLE_AUDIT_LOG') }}
             </v-tab>
@@ -261,6 +264,9 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
                 :hideEditAction="true"
                 :readOnly="hasUsersAccess"
                 :in-own-view="false" />
+            </v-tabs-window-item>
+            <v-tabs-window-item value="personalTokens" v-if="!hasUsersAccess">
+              <GridPersonalToken />
             </v-tabs-window-item>
             <v-tabs-window-item value="auditLog" v-if="hasUsersAccess">
               <GridAuditLog :fetch-method="() => AdminService.getUserAuditTrail(userProfile._key)" />
