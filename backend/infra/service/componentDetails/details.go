@@ -197,6 +197,9 @@ func getAttributes(details map[string]json.RawMessage) (res []project.Detail) {
 	for _, copy := range copyAttributes {
 		rawValue, ok := details[copy]
 		value := ""
+		if !ok && (copy == "licenseDeclared" || copy == "licenseConcluded") {
+			value = "NOASSERTION"
+		}
 		if ok {
 			if copy == "licenseInfoFromFiles" {
 				var values []string
@@ -227,6 +230,9 @@ func getAttributes(details map[string]json.RawMessage) (res []project.Detail) {
 				err := json.Unmarshal(rawValue, &value)
 				exception.HandleErrorServerMessage(err, message.GetI18N(message.UnmarshallingSpdxContent))
 			}
+		}
+		if value == "" && (copy == "licenseDeclared" || copy == "licenseConcluded") {
+			value = "NOASSERTION"
 		}
 		res = append(res, project.Detail{
 			Key:   copy,
