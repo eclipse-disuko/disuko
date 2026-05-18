@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {useApi} from '@shared/api/useApi';
-import SimpleProfileData from '@shared/types/ProfileData';
+import SimpleProfileData from '@disclosure-portal/model/ProfileData';
 import {ProjectRoleDto, TaskDto, UserDto, UserRequestDto} from '@shared/types/Users';
 import {AxiosResponse} from 'axios';
 import {DashboardCounts} from '@shared/types/DashboardCounts';

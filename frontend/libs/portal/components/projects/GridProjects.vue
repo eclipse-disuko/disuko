@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import {Rights} from '@shared/types/Rights';
+import {Rights} from '@disclosure-portal/model/Rights';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';

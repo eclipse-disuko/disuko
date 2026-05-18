@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {UserDto} from '@shared/types/Users';
-import profileService from '@shared/services/profile';
+import profileService from '@disclosure-portal/services/profile';
 import projectService from '@disclosure-portal/services/projects';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {RuleFunction} from '@disclosure-portal/types/rules';

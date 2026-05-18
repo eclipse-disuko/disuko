@@ -8,7 +8,7 @@ import {LicenseRuleSlim} from '@disclosure-portal/model/LicenseRule';
 import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {ProjectChildren} from '@disclosure-portal/model/ProjectsResponse';
-import {Group, Rights} from '@shared/types/Rights';
+import {Group, Rights} from '@disclosure-portal/model/Rights';
 import {UserDto} from '@shared/types/Users';
 import {SupplierExtraData} from '@disclosure-portal/model/Wizard';
 import {IMap} from '@disclosure-portal/utils/View';

@@ -7,7 +7,7 @@ import {DocumentMeta, PlausibilityCheckRequest} from '@disclosure-portal/model/A
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {UserDto} from '@shared/types/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
-import profileService from '@shared/services/profile';
+import profileService from '@disclosure-portal/services/profile';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';

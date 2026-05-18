@@ -6,7 +6,7 @@
 import Icons from '@disclosure-portal/constants/icons';
 import {AccessRights, ProjectAccessRights} from '@disclosure-portal/model/AccessRights';
 import {ActionRights} from '@shared/types/Credentials';
-import {CRUDRights} from '@shared/types/Rights';
+import {CRUDRights} from '@disclosure-portal/model/Rights';
 import {IMap} from '@disclosure-portal/utils/View';
 import {DataTableHeader} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';

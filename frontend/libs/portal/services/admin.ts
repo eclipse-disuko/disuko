@@ -16,7 +16,7 @@ import {MailData} from '@disclosure-portal/model/MailData';
 import {MemStats} from '@disclosure-portal/model/Memstats';
 import {Notification, NotificationDto} from '@disclosure-portal/model/Notification';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
-import SimpleProfileData from '@shared/types/ProfileData';
+import SimpleProfileData from '@disclosure-portal/model/ProfileData';
 import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import SampleDataCreationState from '@disclosure-portal/model/SampleData';
 import SchemaModel from '@disclosure-portal/model/Schema';

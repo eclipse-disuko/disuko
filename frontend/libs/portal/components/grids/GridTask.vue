@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import {TaskDto} from '@shared/types/Users';
-import Profile from '@shared/services/profile';
+import Profile from '@disclosure-portal/services/profile';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
