@@ -140,6 +140,9 @@ const filteredList = computed<PolicyRule[]>(() => {
   if (!Array.isArray(items.value)) {
     return [];
   }
+  if (!selectedFilterStatus.value.length) {
+    return items.value;
+  }
   return items.value.filter((pr) => selectedFilterStatus.value.some((s) => s == pr.status));
 });
 
