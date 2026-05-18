@@ -157,6 +157,12 @@ const onConfirm = async (config: IConfirmationDialogConfig) => {
     await projectStore.deprecateProject(config.key);
     await projectStore.fetchProjectByKey(config.key);
   } else if (config.type === ConfirmationType.NOT_SET) {
+    const project = projectStore.currentProject!;
+    if (project.documentMeta.deptMissing) {
+      dialogStore.settingsDialogTab = 'developer';
+    } else if (project.customerMeta.deptMissing) {
+      dialogStore.settingsDialogTab = 'owner';
+    }
     dialogStore.isSettingsDialogOpen = true;
   }
 };

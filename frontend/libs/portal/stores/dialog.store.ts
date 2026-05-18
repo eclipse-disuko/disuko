@@ -9,6 +9,7 @@ import {reactive, toRefs} from 'vue';
 export const useDialogStore = defineStore('dialogStore', () => {
   const state = reactive({
     isSettingsDialogOpen: false,
+    settingsDialogTab: '' as string,
   });
   return {...toRefs(state)};
 });
