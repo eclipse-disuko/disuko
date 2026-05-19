@@ -38,10 +38,6 @@ const minDate = computed(() => dayjs().add(1, 'day').format('YYYY-MM-DD'));
 const maxDate = computed(() => dayjs().add(2, 'year').format('YYYY-MM-DD'));
 
 const rules = {
-  description: [
-    (v: string) => !!v || t('FIELD_REQUIRED'),
-    (v: string) => v.length <= 255 || t('FIELD_MAX_LENGTH', {max: 255}),
-  ],
   expiry: [(v: string) => !!v || t('FIELD_REQUIRED')],
 };
 
@@ -98,7 +94,7 @@ defineExpose({open});
 </script>
 
 <template>
-  <v-dialog v-model="isVisible" content-class="large" persistent scrollable :width="isTokenDisplay ? '600' : '500'">
+  <v-dialog v-model="isVisible" persistent :width="isTokenDisplay ? '600' : '500'">
     <DialogLayout
       :config="dialogConfig"
       @primary-action="doCreate"
@@ -141,9 +137,7 @@ defineExpose({open});
           <div v-if="!isTokenDisplay">
             <TextArea
               v-model="description"
-              :rules="rules.description"
               :label="t('NP_DIALOG_TF_DESCRIPTION')"
-              :counter="255"
               variant="outlined"
               auto-grow
               max-rows="4"
@@ -173,8 +167,6 @@ defineExpose({open});
                 first-day-of-week="1"
                 color="primary"
                 show-current
-                border="0"
-                :elevation="0"
                 :min="minDate"
                 :max="maxDate"
                 @update:model-value="isDatePickerVisible = false" />
