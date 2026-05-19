@@ -620,11 +620,11 @@ watch(
 
   <v-dialog v-model="showAddEntryDialog" max-width="600px" persistent>
     <v-form ref="addEntryFormRef">
-      <v-card class="pa-8 dDialog" flat>
+      <v-card class="pa-8">
         <v-card-title>
           <v-row>
             <v-col cols="10" class="d-flex align-center">
-              <span class="text-h5">{{ `${t('BTN_ADD')} ${t('KEY')}` }}</span>
+              <span class="text-h5">{{ `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}` }}</span>
             </v-col>
             <v-col cols="2" class="px-0 text-right">
               <DCloseButton @click="resetAddEntryDialog" />
@@ -671,17 +671,16 @@ watch(
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="resetAddEntryDialog" />
-          <DCActionButton isDialogButton variant="elevated" :text="t('BTN_ADD')" @clicked="addEntry" />
+        <v-card-actions class="justify-end">
+          <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetAddEntryDialog">{{ t('BTN_CANCEL') }}</v-btn>
+          <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="addEntry">{{ t('NP_DIALOG_BTN_CREATE') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
   </v-dialog>
 
   <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="pa-8 dDialog" flat>
+    <v-card class="pa-8">
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -717,16 +716,15 @@ watch(
           </div>
         </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="resetDeleteDialog" />
-        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_DELETE')" @clicked="onDeleteConfirm" />
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetDeleteDialog">{{ t('BTN_CANCEL') }}</v-btn>
+        <v-btn size="small" variant="flat" color="error" class="mr-1" @click="onDeleteConfirm">{{ t('BTN_DELETE') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="showImportDialog" max-width="500px" persistent>
-    <v-card class="pa-8 dDialog" flat>
+    <v-card class="pa-8">
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -749,16 +747,15 @@ watch(
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="closeImportDialog" />
-        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_UPLOAD_JSON')" :disabled="isImporting" @clicked="selectImportFiles" />
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="closeImportDialog">{{ t('BTN_CANCEL') }}</v-btn>
+        <v-btn size="small" variant="flat" color="primary" class="mr-1" :disabled="isImporting" @click="selectImportFiles">{{ t('BTN_UPLOAD_JSON') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="showImportResultDialog" max-width="800px">
-    <v-card class="pa-8 dDialog" flat>
+    <v-card class="pa-8">
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -796,9 +793,8 @@ watch(
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_CLOSE')" @clicked="resetImportResultDialog" />
+      <v-card-actions class="justify-end">
+        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="resetImportResultDialog">{{ t('BTN_CLOSE') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

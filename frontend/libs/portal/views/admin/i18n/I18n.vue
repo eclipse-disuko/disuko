@@ -173,7 +173,7 @@ onMounted(async () => {
           :search="search"
           :sort-by="sortItems"
           @click:row="onRowClick"
-          :items-per-page="10">
+          :items-per-page="-1">
           <template #[`item.code`]="{item}">
             <v-chip size="small" color="primary" variant="tonal">{{ item.code.toUpperCase() }}</v-chip>
           </template>
