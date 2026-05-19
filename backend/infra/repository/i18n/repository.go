@@ -142,19 +142,6 @@ func (repository *i18nRepositoryStruct) GetTranslation(requestSession *logy.Requ
 	return entry.Value, true
 }
 
-func (repository *i18nRepositoryStruct) FindAllEntries(requestSession *logy.RequestSession, localeCode string) map[string]*i18n.I18nEntry {
-	locale := repository.FindByKey(requestSession, localeCode, false)
-	if locale == nil {
-		return make(map[string]*i18n.I18nEntry)
-	}
-
-	if locale.Entries == nil {
-		return make(map[string]*i18n.I18nEntry)
-	}
-
-	return locale.Entries
-}
-
 func (repository *i18nRepositoryStruct) DeleteTranslation(requestSession *logy.RequestSession, localeCode string, key string) {
 	locale := repository.FindByKey(requestSession, localeCode, false)
 	if locale == nil {

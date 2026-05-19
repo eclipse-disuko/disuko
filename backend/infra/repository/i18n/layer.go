@@ -20,7 +20,6 @@ type II18nRepository interface {
 	// Returns false if locale is set as default.
 	DeleteLocale(requestSession *logy.RequestSession, localeCode string) bool
 	GetTranslation(requestSession *logy.RequestSession, localeCode string, key string) (string, bool)
-	FindAllEntries(requestSession *logy.RequestSession, localeCode string) map[string]*i18n.I18nEntry
 	DeleteTranslation(requestSession *logy.RequestSession, localeCode string, key string)
 	GetLocaleCount(requestSession *logy.RequestSession) int
 }
