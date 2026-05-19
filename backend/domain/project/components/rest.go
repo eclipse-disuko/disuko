@@ -135,8 +135,8 @@ func (entity *ComponentResult) ToComponentInfoDto(
 		Name:                       entity.Component.Name,
 		Version:                    entity.Component.Version,
 		LicenseEffective:           entity.Component.EffectiveLicensesString(),
-		License:                    entity.Component.License,
-		LicenseDeclared:            entity.Component.LicenseDeclared,
+		License:                    orNoAssertion(entity.Component.License),
+		LicenseDeclared:            orNoAssertion(entity.Component.LicenseDeclared),
 		LicenseComments:            entity.Component.LicenseComments,
 		WorstFamily:                string(entity.Component.WorstFamily()),
 		CopyrightText:              entity.Component.CopyrightText,
@@ -212,7 +212,6 @@ func recommendLicense(
 
 	if len(denies) > 0 {
 		return nil, new(message.DeniedLicensesMsg)
-
 	}
 
 	return nil, nil
@@ -383,4 +382,11 @@ func ToUnmatchedDto(unmatched []*UnmatchedLicense) []*UnmatchedLicenseDto {
 		})
 	}
 	return dtos
+}
+
+func orNoAssertion(s string) string {
+	if s == "" {
+		return "NOASSERTION"
+	}
+	return s
 }
