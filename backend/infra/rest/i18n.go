@@ -5,7 +5,6 @@
 package rest
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -36,118 +35,14 @@ var protectedLocales = map[string]struct{}{
 }
 
 func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, []i18nDomain.I18nImportIssueDto) {
-	issues := make([]i18nDomain.I18nImportIssueDto, 0)
-	result := make(map[string]string)
-
-	decoder := json.NewDecoder(bytes.NewReader(payload))
-	token, err := decoder.Token()
-	if err != nil {
-		issues = append(issues, i18nDomain.I18nImportIssueDto{
+	var result map[string]string
+	if err := json.Unmarshal(payload, &result); err != nil {
+		return nil, []i18nDomain.I18nImportIssueDto{{
 			FileName: fileName,
 			Code:     "INVALID_JSON",
-			Message:  "File contains invalid JSON",
-		})
-		return nil, issues
+			Message:  "File contains invalid JSON or non-string values",
+		}}
 	}
-
-	delim, ok := token.(json.Delim)
-	if !ok || delim != '{' {
-		issues = append(issues, i18nDomain.I18nImportIssueDto{
-			FileName: fileName,
-			Code:     "INVALID_ROOT",
-			Message:  "JSON root must be an object",
-		})
-		return nil, issues
-	}
-
-	seenKeys := make(map[string]struct{})
-	for decoder.More() {
-		keyToken, err := decoder.Token()
-		if err != nil {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileName,
-				Code:     "INVALID_JSON",
-				Message:  "Failed to parse JSON key",
-			})
-			return nil, issues
-		}
-
-		key, ok := keyToken.(string)
-		if !ok {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileName,
-				Code:     "INVALID_KEY",
-				Message:  "JSON object keys must be strings",
-			})
-			return nil, issues
-		}
-
-		if _, exists := seenKeys[key]; exists {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileName,
-				Key:      key,
-				Code:     "DUPLICATE_KEY",
-				Message:  "Duplicate key found in JSON file",
-			})
-		}
-		seenKeys[key] = struct{}{}
-
-		var rawValue json.RawMessage
-		if err := decoder.Decode(&rawValue); err != nil {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileName,
-				Key:      key,
-				Code:     "INVALID_VALUE",
-				Message:  "Failed to parse JSON value",
-			})
-			continue
-		}
-
-		var textValue string
-		if err := json.Unmarshal(rawValue, &textValue); err != nil {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileName,
-				Key:      key,
-				Code:     "UNSUPPORTED_VALUE_TYPE",
-				Message:  "Only string values are supported",
-			})
-			continue
-		}
-
-		result[key] = textValue
-	}
-
-	endToken, err := decoder.Token()
-	if err != nil {
-		issues = append(issues, i18nDomain.I18nImportIssueDto{
-			FileName: fileName,
-			Code:     "INVALID_JSON",
-			Message:  "Failed to close JSON object",
-		})
-		return nil, issues
-	}
-
-	endDelim, ok := endToken.(json.Delim)
-	if !ok || endDelim != '}' {
-		issues = append(issues, i18nDomain.I18nImportIssueDto{
-			FileName: fileName,
-			Code:     "INVALID_JSON",
-			Message:  "Invalid JSON object ending",
-		})
-	}
-
-	if decoder.More() {
-		issues = append(issues, i18nDomain.I18nImportIssueDto{
-			FileName: fileName,
-			Code:     "INVALID_JSON",
-			Message:  "Unexpected trailing JSON tokens",
-		})
-	}
-
-	if len(issues) > 0 {
-		return nil, issues
-	}
-
 	return result, nil
 }
 
@@ -158,14 +53,14 @@ func ensureI18nWriteAccess(requestSession *logy.RequestSession, r *http.Request)
 	}
 }
 
-func (handler *I18nHandler) findDefaultLocale(requestSession *logy.RequestSession) (string, bool) {
+func (handler *I18nHandler) findDefaultLocale(requestSession *logy.RequestSession) (*i18nDomain.I18nLocale, bool) {
 	allLocales := handler.I18nRepository.FindAll(requestSession, false)
 	for _, locale := range allLocales {
-		if locale != nil && locale.IsDefault {
-			return locale.Key, true
+		if locale.IsDefault {
+			return locale, true
 		}
 	}
-	return "", false
+	return nil, false
 }
 
 func (handler *I18nHandler) GetLocale(w http.ResponseWriter, r *http.Request) {
@@ -178,11 +73,11 @@ func (handler *I18nHandler) GetLocale(w http.ResponseWriter, r *http.Request) {
 	locale := handler.I18nRepository.FindByLocaleCode(requestSession, requestedLocale, false)
 	fallbackUsed := false
 	if locale == nil {
-		defaultLocaleCode, ok := handler.findDefaultLocale(requestSession)
+		defaultLocale, ok := handler.findDefaultLocale(requestSession)
 		if !ok {
 			exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbNotFound), "i18n locale not found: "+requestedLocale)
 		}
-		locale = handler.I18nRepository.FindByLocaleCode(requestSession, defaultLocaleCode, false)
+		locale = defaultLocale
 		fallbackUsed = true
 	}
 	if locale == nil {
@@ -412,11 +307,11 @@ func (handler *I18nHandler) GetTranslationByKey(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	defaultLocaleCode, foundDefault := handler.findDefaultLocale(requestSession)
+	defaultLocale, foundDefault := handler.findDefaultLocale(requestSession)
 	if foundDefault {
-		if value, ok := handler.I18nRepository.GetTranslation(requestSession, defaultLocaleCode, key); ok {
+		if value, ok := handler.I18nRepository.GetTranslation(requestSession, defaultLocale.Key, key); ok {
 			render.JSON(w, r, i18nDomain.I18nTranslationResponseDto{
-				LocaleCode:   defaultLocaleCode,
+				LocaleCode:   defaultLocale.Key,
 				RequestedKey: key,
 				Value:        value,
 				FallbackUsed: true,
