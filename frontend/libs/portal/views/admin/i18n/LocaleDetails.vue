@@ -57,7 +57,6 @@ const route = useRoute();
 const router = useRouter();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {api} = getApi();
-const snackbar = useSnackbar();
 const knownLocalesForGlobalDelete = ['en', 'de'];
 
 const search = ref('');
