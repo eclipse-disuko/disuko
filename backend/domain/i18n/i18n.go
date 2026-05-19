@@ -4,17 +4,13 @@
 package i18n
 
 import (
-	"time"
-
 	"github.com/eclipse-disuko/disuko/domain"
 )
 
-// I18nLocale represents a language locale with all translation entries for that language.
 type I18nLocale struct {
 	domain.RootEntity `bson:",inline"`
 	domain.SoftDelete `bson:",inline"`
 
-	LocaleCode  string
 	DisplayName string
 	NativeName  string
 	IsDefault   bool
@@ -22,38 +18,29 @@ type I18nLocale struct {
 	Scope       string
 }
 
-// I18nEntry represents a single translation entry within a locale.
 type I18nEntry struct {
-	Key         string
+	domain.ChildEntity `bson:",inline"`
 	Value       string
 	Description string
 	CreatedBy   string
-	CreatedAt   time.Time
 	UpdatedBy   string
-	UpdatedAt   time.Time
 }
 
-// NewI18nLocale creates a new I18nLocale entity.
 func NewI18nLocale(localeCode string) *I18nLocale {
 	return &I18nLocale{
 		RootEntity: domain.NewRootEntityWithKey(localeCode),
-		LocaleCode: localeCode,
 		Entries:    make(map[string]*I18nEntry),
 	}
 }
 
-// NewI18nEntry creates a new translation entry.
 func NewI18nEntry(key, value, description string) *I18nEntry {
 	return &I18nEntry{
-		Key:         key,
+		ChildEntity: domain.SetChildEntity(key),
 		Value:       value,
 		Description: description,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
 	}
 }
 
-// SetEntry updates or adds a translation entry.
 func (locale *I18nLocale) SetEntry(entry *I18nEntry) {
 	if locale.Entries == nil {
 		locale.Entries = make(map[string]*I18nEntry)
@@ -61,7 +48,6 @@ func (locale *I18nLocale) SetEntry(entry *I18nEntry) {
 	locale.Entries[entry.Key] = entry
 }
 
-// GetEntry retrieves a translation entry by key.
 func (locale *I18nLocale) GetEntry(key string) *I18nEntry {
 	if locale.Entries == nil {
 		return nil
@@ -69,7 +55,6 @@ func (locale *I18nLocale) GetEntry(key string) *I18nEntry {
 	return locale.Entries[key]
 }
 
-// RemoveEntry removes a translation entry by key.
 func (locale *I18nLocale) RemoveEntry(key string) {
 	if locale.Entries == nil {
 		return
@@ -77,10 +62,13 @@ func (locale *I18nLocale) RemoveEntry(key string) {
 	delete(locale.Entries, key)
 }
 
-// GetEntryCount returns the number of translation entries.
-func (locale *I18nLocale) GetEntryCount() int {
-	if locale.Entries == nil {
-		return 0
+func (locale *I18nLocale) ToListDTO() I18nLocaleListResponseDto {
+	return I18nLocaleListResponseDto{
+		LocaleCode:  locale.Key,
+		DisplayName: locale.DisplayName,
+		NativeName:  locale.NativeName,
+		IsDefault:   locale.IsDefault,
+		Scope:       locale.Scope,
+		EntryCount:  len(locale.Entries),
 	}
-	return len(locale.Entries)
 }

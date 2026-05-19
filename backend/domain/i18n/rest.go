@@ -42,22 +42,6 @@ type I18nLocaleUpsertRequestDto struct {
 	Scope       string `json:"scope"`
 }
 
-type I18nMigrationLocaleResultDto struct {
-	LocaleCode  string `json:"localeCode"`
-	SourceCount int    `json:"sourceCount"`
-	TargetCount int    `json:"targetCount"`
-	Upserted    int    `json:"upserted"`
-	Verified    bool   `json:"verified"`
-}
-
-type I18nMigrationResponseDto struct {
-	DryRun        bool                           `json:"dryRun"`
-	Scope         string                         `json:"scope"`
-	IncludeShared bool                           `json:"includeShared"`
-	Locales       []I18nMigrationLocaleResultDto `json:"locales"`
-	Success       bool                           `json:"success"`
-}
-
 type I18nImportIssueDto struct {
 	FileName string `json:"fileName"`
 	Key      string `json:"key,omitempty"`

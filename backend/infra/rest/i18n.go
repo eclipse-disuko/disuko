@@ -11,10 +11,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 
 	i18nDomain "github.com/eclipse-disuko/disuko/domain/i18n"
@@ -30,6 +27,12 @@ import (
 
 type I18nHandler struct {
 	I18nRepository i18nRepo.II18nRepository
+}
+
+// protectedLocales lists locale codes that cannot be deleted via the API.
+var protectedLocales = map[string]struct{}{
+	"en": {},
+	"de": {},
 }
 
 func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, []i18nDomain.I18nImportIssueDto) {
@@ -148,82 +151,6 @@ func parseLocaleImportJSON(fileName string, payload []byte) (map[string]string, 
 	return result, nil
 }
 
-func marshalSortedLocaleEntries(entries map[string]string) ([]byte, error) {
-	keys := make([]string, 0, len(entries))
-	for key := range entries {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	buffer := bytes.NewBufferString("{")
-	for index, key := range keys {
-		if index > 0 {
-			buffer.WriteString(",")
-		}
-
-		encodedKey, err := json.Marshal(key)
-		if err != nil {
-			return nil, err
-		}
-		encodedValue, err := json.Marshal(entries[key])
-		if err != nil {
-			return nil, err
-		}
-
-		buffer.Write(encodedKey)
-		buffer.WriteString(":")
-		buffer.Write(encodedValue)
-	}
-	buffer.WriteString("}")
-
-	return buffer.Bytes(), nil
-}
-
-func flattenI18nEntries(prefix string, input map[string]interface{}, out map[string]string) {
-	for key, value := range input {
-		fullKey := key
-		if prefix != "" {
-			fullKey = prefix + "." + key
-		}
-
-		switch typed := value.(type) {
-		case string:
-			out[fullKey] = typed
-		case map[string]interface{}:
-			flattenI18nEntries(fullKey, typed, out)
-		default:
-			out[fullKey] = fmt.Sprint(typed)
-		}
-	}
-}
-
-func readLocaleJSON(filePath string) (map[string]string, error) {
-	raw, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
-	parsed := make(map[string]interface{})
-	if err := json.Unmarshal(raw, &parsed); err != nil {
-		return nil, err
-	}
-
-	result := make(map[string]string)
-	flattenI18nEntries("", parsed, result)
-	return result, nil
-}
-
-func localeNames(localeCode string) (string, string) {
-	switch strings.ToLower(localeCode) {
-	case "en":
-		return "English", "English"
-	case "de":
-		return "German", "Deutsch"
-	default:
-		return strings.ToUpper(localeCode), strings.ToUpper(localeCode)
-	}
-}
-
 func ensureI18nWriteAccess(requestSession *logy.RequestSession, r *http.Request) {
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
 	if !rights.IsApplicationAdmin() && !rights.IsDomainAdmin() {
@@ -235,7 +162,7 @@ func (handler *I18nHandler) findDefaultLocale(requestSession *logy.RequestSessio
 	allLocales := handler.I18nRepository.FindAll(requestSession, false)
 	for _, locale := range allLocales {
 		if locale != nil && locale.IsDefault {
-			return locale.LocaleCode, true
+			return locale.Key, true
 		}
 	}
 	return "", false
@@ -270,7 +197,7 @@ func (handler *I18nHandler) GetLocale(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, i18nDomain.I18nLocaleResponseDto{
-		LocaleCode:   locale.LocaleCode,
+		LocaleCode:   locale.Key,
 		DisplayName:  locale.DisplayName,
 		NativeName:   locale.NativeName,
 		IsDefault:    locale.IsDefault,
@@ -300,7 +227,7 @@ func (handler *I18nHandler) ExportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	body, err := marshalSortedLocaleEntries(entries)
+	body, err := json.Marshal(entries)
 	if err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorUnexpectError), err)
 	}
@@ -335,99 +262,79 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fileHeaders := make([]*multipart.FileHeader, 0)
+	var fileHeader *multipart.FileHeader
 	if r.MultipartForm != nil {
-		if files, ok := r.MultipartForm.File["files"]; ok {
-			fileHeaders = append(fileHeaders, files...)
-		}
-		if files, ok := r.MultipartForm.File["file"]; ok {
-			fileHeaders = append(fileHeaders, files...)
+		if files, ok := r.MultipartForm.File["file"]; ok && len(files) > 0 {
+			fileHeader = files[0]
 		}
 	}
 
-	if len(fileHeaders) == 0 {
+	if fileHeader == nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          false,
 			ValidationPassed: false,
 			Locale:           localeCode,
 			Errors: []i18nDomain.I18nImportIssueDto{{
-				Code:    "NO_FILES",
-				Message: "No JSON files uploaded",
+				Code:    "NO_FILE",
+				Message: "No JSON file uploaded",
 			}},
 		})
 		return
 	}
 
-	issues := make([]i18nDomain.I18nImportIssueDto, 0)
-	mergedEntries := make(map[string]string)
-	keyToFile := make(map[string]string)
-	totalKeysParsed := 0
-
-	for _, fileHeader := range fileHeaders {
-		fileReader, err := fileHeader.Open()
-		if err != nil {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileHeader.Filename,
-				Code:     "FILE_READ_ERROR",
-				Message:  "Unable to open uploaded file",
-			})
-			continue
-		}
-
-		content, readErr := io.ReadAll(fileReader)
-		_ = fileReader.Close()
-		if readErr != nil {
-			issues = append(issues, i18nDomain.I18nImportIssueDto{
-				FileName: fileHeader.Filename,
-				Code:     "FILE_READ_ERROR",
-				Message:  "Unable to read uploaded file",
-			})
-			continue
-		}
-
-		parsedEntries, parseIssues := parseLocaleImportJSON(fileHeader.Filename, content)
-		if len(parseIssues) > 0 {
-			issues = append(issues, parseIssues...)
-			continue
-		}
-
-		totalKeysParsed += len(parsedEntries)
-		for key, value := range parsedEntries {
-			if sourceFile, exists := keyToFile[key]; exists {
-				issues = append(issues, i18nDomain.I18nImportIssueDto{
-					FileName: fileHeader.Filename,
-					Key:      key,
-					Code:     "DUPLICATE_KEY_ACROSS_FILES",
-					Message:  "Key is duplicated across uploaded files (also in " + sourceFile + ")",
-				})
-				continue
-			}
-
-			keyToFile[key] = fileHeader.Filename
-			mergedEntries[key] = value
-		}
-	}
-
-	if len(issues) > 0 {
+	fileReader, err := fileHeader.Open()
+	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          false,
 			ValidationPassed: false,
 			Locale:           localeCode,
-			FilesProcessed:   len(fileHeaders),
-			TotalKeysParsed:  totalKeysParsed,
-			Errors:           issues,
+			Errors: []i18nDomain.I18nImportIssueDto{{
+				FileName: fileHeader.Filename,
+				Code:     "FILE_READ_ERROR",
+				Message:  "Unable to open uploaded file",
+			}},
+		})
+		return
+	}
+	content, readErr := io.ReadAll(fileReader)
+	_ = fileReader.Close()
+	if readErr != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
+			Success:          false,
+			ValidationPassed: false,
+			Locale:           localeCode,
+			Errors: []i18nDomain.I18nImportIssueDto{{
+				FileName: fileHeader.Filename,
+				Code:     "FILE_READ_ERROR",
+				Message:  "Unable to read uploaded file",
+			}},
 		})
 		return
 	}
 
-	if len(mergedEntries) == 0 {
+	parsedEntries, parseIssues := parseLocaleImportJSON(fileHeader.Filename, content)
+	if len(parseIssues) > 0 {
+		render.Status(r, http.StatusBadRequest)
+		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
+			Success:          false,
+			ValidationPassed: false,
+			Locale:           localeCode,
+			FilesProcessed:   1,
+			TotalKeysParsed:  len(parsedEntries),
+			Errors:           parseIssues,
+		})
+		return
+	}
+
+	if len(parsedEntries) == 0 {
 		render.JSON(w, r, i18nDomain.I18nImportResponseDto{
 			Success:          true,
 			ValidationPassed: true,
 			Locale:           localeCode,
-			FilesProcessed:   len(fileHeaders),
+			FilesProcessed:   1,
 			TotalKeysParsed:  0,
 			Appended:         0,
 			Updated:          0,
@@ -455,14 +362,14 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 	updated := 0
 	unchanged := 0
 
-	keys := make([]string, 0, len(mergedEntries))
-	for key := range mergedEntries {
+	keys := make([]string, 0, len(parsedEntries))
+	for key := range parsedEntries {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		newValue := mergedEntries[key]
+		newValue := parsedEntries[key]
 		if oldValue, exists := existingEntries[key]; exists {
 			if oldValue == newValue {
 				unchanged++
@@ -472,7 +379,6 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		} else {
 			appended++
 		}
-
 		handler.I18nRepository.SetTranslation(requestSession, localeCode, key, newValue, "Imported from JSON", currentUser)
 	}
 
@@ -480,8 +386,8 @@ func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		Success:          true,
 		ValidationPassed: true,
 		Locale:           localeCode,
-		FilesProcessed:   len(fileHeaders),
-		TotalKeysParsed:  totalKeysParsed,
+		FilesProcessed:   1,
+		TotalKeysParsed:  len(parsedEntries),
 		Appended:         appended,
 		Updated:          updated,
 		Unchanged:        unchanged,
@@ -536,18 +442,7 @@ func (handler *I18nHandler) GetLocales(w http.ResponseWriter, r *http.Request) {
 		if locale == nil {
 			continue
 		}
-		entryCount := 0
-		if locale.Entries != nil {
-			entryCount = len(locale.Entries)
-		}
-		result = append(result, i18nDomain.I18nLocaleListResponseDto{
-			LocaleCode:  locale.LocaleCode,
-			DisplayName: locale.DisplayName,
-			NativeName:  locale.NativeName,
-			IsDefault:   locale.IsDefault,
-			Scope:       locale.Scope,
-			EntryCount:  entryCount,
-		})
+		result = append(result, locale.ToListDTO())
 	}
 	render.JSON(w, r, result)
 }
@@ -610,7 +505,7 @@ func (handler *I18nHandler) DeleteLocale(w http.ResponseWriter, r *http.Request)
 	}
 
 	normalizedLocaleCode := strings.ToLower(localeCode)
-	if normalizedLocaleCode == "en" || normalizedLocaleCode == "de" {
+	if _, isProtected := protectedLocales[normalizedLocaleCode]; isProtected {
 		render.Status(r, http.StatusBadRequest)
 		render.JSON(w, r, map[string]string{"message": "Locale cannot be deleted"})
 		return
@@ -624,110 +519,4 @@ func (handler *I18nHandler) DeleteLocale(w http.ResponseWriter, r *http.Request)
 	}
 
 	render.JSON(w, r, SuccessResponse{Success: true})
-}
-
-func (handler *I18nHandler) MigrateFromJSON(w http.ResponseWriter, r *http.Request) {
-	requestSession := logy.GetRequestSession(r)
-	ensureI18nWriteAccess(requestSession, r)
-
-	username := roles.GetUsernameFromRequest(requestSession, r)
-	if username == "" {
-		username = "SYSTEM"
-	}
-
-	dryRun := true
-	if rawDryRun := strings.TrimSpace(r.URL.Query().Get("dryRun")); rawDryRun != "" {
-		parsed, err := strconv.ParseBool(rawDryRun)
-		if err != nil {
-			exception.ThrowExceptionBadRequestResponse()
-		}
-		dryRun = parsed
-	}
-
-	includeShared := true
-	if rawIncludeShared := strings.TrimSpace(r.URL.Query().Get("includeShared")); rawIncludeShared != "" {
-		parsed, err := strconv.ParseBool(rawIncludeShared)
-		if err != nil {
-			exception.ThrowExceptionBadRequestResponse()
-		}
-		includeShared = parsed
-	}
-
-	scope := strings.TrimSpace(r.URL.Query().Get("scope"))
-	if scope == "" {
-		scope = "portal"
-	}
-
-	baseDir := filepath.Clean("../frontend/libs")
-	sourceFolders := []string{filepath.Join(baseDir, scope, "i18n", "locales")}
-	if includeShared {
-		sourceFolders = append(sourceFolders, filepath.Join(baseDir, "shared", "i18n", "locales"))
-	}
-
-	entriesByLocale := make(map[string]map[string]string)
-	for _, folder := range sourceFolders {
-		matches, err := filepath.Glob(filepath.Join(folder, "*.json"))
-		if err != nil {
-			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorUnexpectError), err)
-		}
-		for _, filePath := range matches {
-			localeCode := strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
-			parsedEntries, err := readLocaleJSON(filePath)
-			if err != nil {
-				exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorUnexpectError), err)
-			}
-			if _, ok := entriesByLocale[localeCode]; !ok {
-				entriesByLocale[localeCode] = make(map[string]string)
-			}
-			for key, value := range parsedEntries {
-				entriesByLocale[localeCode][key] = value
-			}
-		}
-	}
-
-	if len(entriesByLocale) == 0 {
-		exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbNotFound), "no locale JSON files found for migration")
-	}
-
-	results := make([]i18nDomain.I18nMigrationLocaleResultDto, 0, len(entriesByLocale))
-	for localeCode, entries := range entriesByLocale {
-		displayName, nativeName := localeNames(localeCode)
-		sourceCount := len(entries)
-		upserted := 0
-
-		if !dryRun {
-			handler.I18nRepository.SetLocaleMetadata(requestSession, localeCode, displayName, nativeName, strings.EqualFold(localeCode, "en"), scope)
-			for key, value := range entries {
-				handler.I18nRepository.SetTranslation(requestSession, localeCode, key, value, "Migrated from JSON", username)
-				upserted++
-			}
-		}
-
-		targetCount := handler.I18nRepository.GetEntryCountForLocale(requestSession, localeCode)
-		if dryRun {
-			upserted = sourceCount
-		}
-
-		verified := targetCount >= sourceCount
-		if dryRun {
-			verified = true
-		}
-
-		results = append(results, i18nDomain.I18nMigrationLocaleResultDto{
-			LocaleCode:  localeCode,
-			SourceCount: sourceCount,
-			TargetCount: targetCount,
-			Upserted:    upserted,
-			Verified:    verified,
-		})
-	}
-
-	response := i18nDomain.I18nMigrationResponseDto{
-		DryRun:        dryRun,
-		Scope:         scope,
-		IncludeShared: includeShared,
-		Locales:       results,
-		Success:       true,
-	}
-	render.JSON(w, r, response)
 }
