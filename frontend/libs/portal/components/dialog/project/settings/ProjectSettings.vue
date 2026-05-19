@@ -43,6 +43,9 @@ const isVehicleOnboard = computed(() => {
   return projectModel.value.policyLabels.includes(onboardLabel._key);
 });
 
+const ownerDeptMissing = computed(() => Boolean(projectStore.currentProject?.customerMeta?.deptMissing));
+const developerDeptMissing = computed(() => Boolean(projectStore.currentProject?.documentMeta?.deptMissing));
+
 const rules = {
   name: minMax(t('NP_DIALOG_TF_DEVELOPER'), 3, 80, false),
   address: minMax(t('NP_DIALOG_TF_ADDRESS'), 3, 300, true),
@@ -57,6 +60,13 @@ const showDialog = async () => {
 
 watch(isSettingsDialogOpen, async (newVal) => {
   if (newVal) {
+    if (dialogStore.settingsDialogTab) {
+      activeTab.value = dialogStore.settingsDialogTab;
+      dialogStore.settingsDialogTab = '';
+    } else {
+      activeTab.value = 'general';
+    }
+
     if (projectModel.value.hasParent) {
       settingsModel.value = new ProjectSettingsModel();
       settingsModel.value.customerMeta = projectModel.value.parentProjectSettings.customerMeta;
@@ -126,8 +136,8 @@ defineExpose({
         <v-card-text class="pt-2">
           <v-tabs v-model="activeTab" slider-color="brand" show-arrows bg-color="tabsHeader">
             <v-tab value="general">{{ t('TAB_GENERAL') }}</v-tab>
-            <v-tab value="owner">{{ t('TAB_OWNER') }}</v-tab>
-            <v-tab value="developer">{{ t('TAB_DEVELOPER') }}</v-tab>
+            <v-tab value="owner" :class="{'text-error': ownerDeptMissing}">{{ t('TAB_OWNER') }}</v-tab>
+            <v-tab value="developer" :class="{'text-error': developerDeptMissing}">{{ t('TAB_DEVELOPER') }}</v-tab>
             <v-tab value="customids">{{ t('TAB_CUSTOM_IDs') }}</v-tab>
           </v-tabs>
           <v-tabs-window v-model="activeTab">
