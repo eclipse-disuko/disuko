@@ -145,7 +145,7 @@ export const createNavItemsGroup = function () {
         active: false,
       } as INavItem,
       {
-        title: 'Internationalization',
+        title: 'ADMIN_I18N_PAGE_TITLE',
         path: '/dashboard/admin/i18n',
         iconName: 'mdi-translate',
         condition: rights.isApplicationAdmin(),
