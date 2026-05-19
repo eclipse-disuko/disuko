@@ -5,9 +5,11 @@
 package project
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/helper"
 )
 
 type Token struct {
@@ -40,4 +42,11 @@ func (token *Token) IsExpired() bool {
 
 func (token *Token) GetExpired() (time.Time, error) {
 	return time.Parse(time.RFC3339, token.Expiry)
+}
+
+func (token *Token) Origin() string {
+	if len(token.Description) > 0 {
+		return fmt.Sprintf("API ('%s', identifier: %s) by '%s'", token.Description, helper.MaskUuid(token.Key), token.Company)
+	}
+	return fmt.Sprintf("API (identifier: %s) by '%s'", helper.MaskUuid(token.Key), token.Company)
 }

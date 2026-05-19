@@ -40,6 +40,7 @@ proxy:
 auth:
   accesssecret: "dummy secret, please set a complex secret on prod environment"
   refreshsecret: "dummy secret for refresh, please set a complex secret on prod environment"
+  usertokensigningkey: "dummy user token signing key, please set a complex key on prod environment"
 s3:
   isenabled: true
   isrestapienabled: false

@@ -13,6 +13,33 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
+type Token struct {
+	domain.ChildEntity `bson:"inline"`
+	Description        string
+	Expiry             time.Time
+}
+
+func NewToken(description string, expiry time.Time) Token {
+	return Token{
+		ChildEntity: domain.NewChildEntity(),
+		Description: description,
+		Expiry:      expiry,
+	}
+}
+
+func (t Token) Expired() bool {
+	return t.Expiry.Before(time.Now())
+}
+
+func (t Token) ToDto() TokenDto {
+	return TokenDto{
+		Key:         t.GetKey(),
+		Description: t.Description,
+		Expiry:      t.Expiry,
+		Created:     t.GetCreated(),
+	}
+}
+
 type IUserDtoProvider interface {
 	FindByUserId(requestSession *logy.RequestSession, name string) *User
 }
@@ -48,6 +75,7 @@ type User struct {
 	IsInternal        bool
 	Deprovisioned     time.Time
 	NewsboxLastSeenId string
+	Tokens            []Token
 }
 
 func (m *MetaData) Equal(cmp *MetaData) bool {
@@ -74,6 +102,15 @@ func (entity *User) DeletionDate() time.Time {
 
 func (entity *User) DeletionOverdue() bool {
 	return !entity.Deprovisioned.IsZero() && time.Now().UTC().After(entity.DeletionDate())
+}
+
+func (entity *User) Token(key string) *Token {
+	for _, t := range entity.Tokens {
+		if t.Key == key {
+			return &t
+		}
+	}
+	return nil
 }
 
 func CreateUser(forename string, lastname string, username string, email string, roles []string, metaData *MetaData, isInternal bool) *User {

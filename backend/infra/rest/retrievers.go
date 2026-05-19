@@ -7,6 +7,7 @@ package rest
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/eclipse-disuko/disuko/domain/project"
 	sbomlist2 "github.com/eclipse-disuko/disuko/domain/project/sbomlist"
@@ -14,12 +15,13 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/message"
 	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 )
 
-func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, repo project2.IProjectRepository, r *http.Request) (*project.Project, *project.ProjectVersion, *project.Token) {
-	currentProject, token := retrieveProjectFromPublicRequest(rs, repo, r, true, true)
+func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, userRepo userRepo.IUsersRepository, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
+	currentProject, origin := retrieveProjectFromPublicRequest(rs, prRepo, userRepo, r, true, true)
 
 	versionEscaped := chi.URLParam(r, "version")
 	versionName, err := url.QueryUnescape(versionEscaped)
@@ -39,12 +41,12 @@ func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, repo pr
 	if version.Deleted {
 		exception.ThrowExceptionClient404Message3(message.GetI18N(message.ErrorVersionDeleted))
 	}
-	return currentProject, version, token
+	return currentProject, version, origin
 }
 
-func retrieveProjectFromPublicRequest(rs *logy.RequestSession, repo project2.IProjectRepository, r *http.Request, withVersions bool, denyDeprecated bool) (*project.Project, *project.Token) {
+func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, userRepo userRepo.IUsersRepository, r *http.Request, withVersions bool, denyDeprecated bool) (*project.Project, string) {
 	prID := extractProjectKeyFromRequest(r)
-	pr := repo.FindByKey(rs, prID, !withVersions)
+	pr := prRepo.FindByKey(rs, prID, !withVersions)
 	if pr == nil {
 		exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbRead, project2.ProjectCollectionName), "project not found: "+prID)
 	}
@@ -56,20 +58,32 @@ func retrieveProjectFromPublicRequest(rs *logy.RequestSession, repo project2.IPr
 	if expired {
 		newToken := pr.Token
 		if !withVersions {
-			full := repo.FindByKey(rs, pr.Key, false)
+			full := prRepo.FindByKey(rs, pr.Key, false)
 			full.Token = newToken
-			repo.Update(rs, full)
+			prRepo.Update(rs, full)
 		} else {
-			repo.Update(rs, pr)
+			prRepo.Update(rs, pr)
 		}
 	}
 
 	accessCookie, err := r.Cookie("access")
 	if err == nil {
-		return pr, projectAccessAuth(rs, repo, pr, accessCookie)
+		return pr, projectAccessAuth(rs, prRepo, pr, accessCookie)
 	}
 	authHeader := r.Header.Get("Authorization")
-	return pr, projectTokenAuth(rs, repo, pr, assertTokenUUID(authHeader, DiscoBearer))
+
+	s := strings.Split(authHeader, " ")
+	if len(s) != 2 {
+		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid disco token"), "Malformed token provided")
+	}
+	if s[0] == DiscoBearer {
+		return pr, projectTokenAuth(rs, prRepo, pr, assertTokenUUID(authHeader, DiscoBearer)).Origin()
+	}
+	if s[0] == Bearer {
+		return pr, patAuth(rs, pr, prRepo, userRepo, s[1])
+	}
+	exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid disco token"), "Malformed token provided")
+	return nil, ""
 }
 
 func retrieveProject2(repo project2.IProjectRepository, r *http.Request, withVersions bool) (*project.Project, *logy.RequestSession) {
@@ -140,24 +154,20 @@ func (p *ProjectHandler) retrieveSbomListAndLatestFile(requestSession *logy.Requ
 	return retrieveSbomListAndLatestFile(requestSession, p.SbomListRepository, key)
 }
 
-func (p *ProjectHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, *project.Token) {
-	return retrieveProjectAndVersionFromPublicRequest(rs, p.ProjectRepository, r)
+func (p *ProjectHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
+	return retrieveProjectAndVersionFromPublicRequest(rs, p.ProjectRepository, p.UserRepository, r)
 }
 
-func (h *ProjectHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, *project.Token) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, r, withVersions, true)
+func (h *ProjectHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.UserRepository, r, withVersions, true)
 }
 
-func (h *PublicAuthHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, *project.Token) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepo, r, withVersions, true)
+func (h *PolicyRulesHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.UserRepository, r, withVersions, true)
 }
 
-func (h *PolicyRulesHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, *project.Token) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, r, withVersions, true)
-}
-
-func (s *SPDXHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, *project.Token) {
-	return retrieveProjectAndVersionFromPublicRequest(rs, s.ProjectRepository, r)
+func (s *SPDXHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
+	return retrieveProjectAndVersionFromPublicRequest(rs, s.ProjectRepository, s.UserRepository, r)
 }
 
 func (p *ProjectHandler) retrieveProjectAndVersion2(r *http.Request) (*project.Project, *project.ProjectVersion, *logy.RequestSession) {

@@ -400,6 +400,11 @@ const (
 	DeniedLicensesMsg                         = "DENIED_LICENSES_MSG"
 	EqualWeightLicensesMsg                    = "EQUAL_WEIGHT_LICENSES_MSG"
 	TransferOwnershipBlocked                  = "TRANSFER_OWNERSHIP_BLOCKED"
+	ErrorUserTokenExpiryExceedsMax            = "ERROR_USER_TOKEN_EXPIRY_EXCEEDS_MAX"
+	ErrorUserTokenExpiryInvalid               = "ERROR_USER_TOKEN_EXPIRY_INVALID"
+	ErrorUserTokenSigningKeyMissing           = "ERROR_USER_TOKEN_SIGNING_KEY_MISSING"
+	ErrorUserTokenNotFound                    = "ERROR_USER_TOKEN_NOT_FOUND"
+	ErrorUserTokenAlreadyExpired              = "ERROR_USER_TOKEN_ALREADY_EXPIRED"
 )
 
 func InitI18N() {
@@ -720,6 +725,11 @@ func InitI18N() {
 	addI18NKeyValue(InvalidPolicyDecisionLicenseApprovalState, "Invalid policy decision data: Forbidden license not allowed")
 	addI18NKeyValue(InvalidBulkPolicyDecisionData, "Invalid bulk policy decision data.")
 	addI18NKeyValue(ParamPolicyDecisionUuidEmpty, "Url parameter 'policyDecisionId' missing")
+	addI18NKeyValue(ErrorUserTokenExpiryExceedsMax, "Token expiry exceeds maximum of 2 years.")
+	addI18NKeyValue(ErrorUserTokenExpiryInvalid, "Token expiry must be in the future.")
+	addI18NKeyValue(ErrorUserTokenSigningKeyMissing, "User token signing key is not configured.")
+	addI18NKeyValue(ErrorUserTokenNotFound, "Token not found.")
+	addI18NKeyValue(ErrorUserTokenAlreadyExpired, "Token is already expired.")
 }
 
 func GetI18N(key string, a ...any) I18N {

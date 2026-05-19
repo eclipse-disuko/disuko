@@ -14,6 +14,7 @@ import (
 
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
+	"github.com/eclipse-disuko/disuko/infra/repository/user"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 	"go.uber.org/zap/zapcore"
 
@@ -42,7 +43,6 @@ import (
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	sbomlist2 "github.com/eclipse-disuko/disuko/domain/project/sbomlist"
-	"github.com/eclipse-disuko/disuko/helper"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/jwt"
 	"github.com/eclipse-disuko/disuko/helper/roles"
@@ -73,6 +73,7 @@ type SPDXHandler struct {
 	SbomRetainedService       *sbomLockRetained.Service
 	ProjectLabelService       *projectLabelService.ProjectLabelService
 	PolicyDecisionsRepository policydecisions.IPolicyDecisionsRepository
+	UserRepository            user.IUsersRepository
 }
 
 func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.RequestSession, currentProject *project.Project, version *project.ProjectVersion, origin string, uploader string, w http.ResponseWriter, r *http.Request, isPublic bool) {
@@ -224,12 +225,11 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) SPDXUploadFileExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, version, token := spdxHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
+	currentProject, version, origin := spdxHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 	if currentProject.IsDeprecated() {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.DeprecatedProjectError))
 	}
 
-	origin := helper.CreateOrigin(project.OriginApi, token.Company, token.Description, token.Key)
 	ip := jwt.TrimPortFromRemoteAddress(r.RemoteAddr)
 
 	spdxHandler.HandleSPDXUploadFile(requestSession, currentProject, version, origin, ip, w, r, true)

@@ -121,6 +121,7 @@ func (s *Server) setupHandlers() {
 		PolicyRulesService:      s.services.policyRules,
 		SbomListRepository:      s.repos.sbomList,
 		ChangeLogListRepository: s.repos.changeLogList,
+		UserRepository:          s.repos.user,
 	}
 	s.handlers.licenses = rest.LicensesHandler{
 		PolicyRulesRepository: s.repos.policyRules,
@@ -162,6 +163,7 @@ func (s *Server) setupHandlers() {
 		SbomRetainedService:       s.services.sbomRetained,
 		ProjectLabelService:       &s.services.projectLabelService,
 		PolicyDecisionsRepository: s.repos.policyDecisions,
+		UserRepository:            s.repos.user,
 	}
 	s.handlers.job = rest.JobHandler{JobRepository: s.repos.job}
 	s.handlers.application = rest.ApplicationHandler{

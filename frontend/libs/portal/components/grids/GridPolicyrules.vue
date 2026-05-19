@@ -25,7 +25,6 @@ const breadcrumbs = useBreadcrumbsStore();
 const {copyToClipboard} = useClipboard();
 
 const search = ref('');
-const tablePolicyRules = ref<HTMLElement | null>(null);
 const rules = ref<PolicyRuleDto[]>([]);
 
 const headers = computed((): DataTableHeader[] => {
@@ -100,8 +99,8 @@ const getReferenceInfoForClipboard = (item: PolicyRuleDto) => {
 Rule Name: ${item.name}
 Rule Identifier: ${item.key}
 Rule Description: ${item.description}
-Rule Created: ${formatDateTimeShort(item.created)}
-Rule Updated: ${formatDateTimeShort(item.updated)}`;
+Rule Created: ${formatDateTimeShort(new Date(item.created))}
+Rule Updated: ${formatDateTimeShort(new Date(item.updated))}`;
 };
 
 const copyRuleToClipboard = (item: PolicyRuleDto) => {

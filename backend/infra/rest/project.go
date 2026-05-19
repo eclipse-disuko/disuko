@@ -109,6 +109,7 @@ import (
 
 const (
 	DiscoBearer        = "DISCO"
+	Bearer             = "Bearer"
 	ApprovalLockPrefix = "al-"
 )
 
@@ -2236,7 +2237,7 @@ func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.Res
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, r, true, false)
+	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.UserRepository, r, true, false)
 	projectHandler.HandleProjectStatus(requestSession, currentProject, w, r)
 }
 
