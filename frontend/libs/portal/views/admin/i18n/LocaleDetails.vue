@@ -57,6 +57,7 @@ const route = useRoute();
 const router = useRouter();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {api} = getApi();
+const snackbar = useSnackbar();
 const knownLocalesForGlobalDelete = ['en', 'de'];
 
 const search = ref('');
@@ -357,6 +358,7 @@ const addEntry = async () => {
     );
   } catch {
     addEntryError.value = t('ERROR_500_TITLE');
+    snackbar.error(t('ERROR_500_TITLE'));
     return;
   }
 
@@ -380,6 +382,7 @@ const saveEdit = async () => {
   const key = editRowKey.value;
   const persisted = await upsertTranslation(key, draftTranslation.value);
   if (!persisted) {
+    snackbar.error(t('ERROR_500_TITLE'));
     return;
   }
 
@@ -430,6 +433,9 @@ const onDeleteConfirm = async () => {
 
   if (failedSecondaryLocales.length > 0) {
     actionError.value = `Deleted in ${localeCode.value.toUpperCase()}, but failed in: ${failedSecondaryLocales.join(', ').toUpperCase()}`;
+    snackbar.error(actionError.value);
+  } else {
+    snackbar.info(t('ADMIN_I18N_SUCCESS_DELETED'));
   }
 
   entries.value = entries.value.filter((entry) => entry.key !== keyToDelete);
@@ -534,21 +540,21 @@ watch(
         :hint="`${t('BTN_ADD')} ${t('KEY')}`"
         :text="t('BTN_ADD')"
         :disabled="isLoading || isImporting"
-        @click="showAddEntryDialog = true" />
+        @clicked="showAddEntryDialog = true" />
       <DCActionButton
         large
         class="mx-2"
         icon="mdi-file-export-outline"
         :text="t('BTN_EXPORT_JSON')"
         :disabled="isLoading || isExporting || isImporting"
-        @click="exportAsJson" />
+        @clicked="exportAsJson" />
       <DCActionButton
         large
         class="mx-2"
         icon="mdi-file-upload-outline"
         :text="t('BTN_UPLOAD_JSON')"
         :disabled="isLoading || isExporting || isImporting"
-        @click="openImportPicker" />
+        @clicked="openImportPicker" />
       <v-spacer></v-spacer>
       <DSearchField v-model="search" />
       <input
@@ -615,7 +621,7 @@ watch(
 
   <v-dialog v-model="showAddEntryDialog" max-width="600px" persistent>
     <v-form ref="addEntryFormRef">
-      <v-card class="pa-8">
+      <v-card class="pa-8 dDialog" flat>
         <v-card-title>
           <v-row>
             <v-col cols="10" class="d-flex align-center">
@@ -666,20 +672,17 @@ watch(
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetAddEntryDialog">
-            {{ t('BTN_CANCEL') }}
-          </v-btn>
-          <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="addEntry">
-            {{ t('BTN_ADD') }}
-          </v-btn>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="resetAddEntryDialog" />
+          <DCActionButton isDialogButton variant="elevated" :text="t('BTN_ADD')" @clicked="addEntry" />
         </v-card-actions>
       </v-card>
     </v-form>
   </v-dialog>
 
   <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="pa-8">
+    <v-card class="pa-8 dDialog" flat>
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -715,19 +718,16 @@ watch(
           </div>
         </v-row>
       </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetDeleteDialog">
-          {{ t('BTN_CANCEL') }}
-        </v-btn>
-        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="onDeleteConfirm">
-          {{ t('BTN_DELETE') }}
-        </v-btn>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="resetDeleteDialog" />
+        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_DELETE')" @clicked="onDeleteConfirm" />
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="showImportDialog" max-width="500px" persistent>
-    <v-card class="pa-8">
+    <v-card class="pa-8 dDialog" flat>
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -750,19 +750,16 @@ watch(
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="closeImportDialog">
-          {{ t('BTN_CANCEL') }}
-        </v-btn>
-        <v-btn size="small" variant="flat" color="primary" class="mr-1" :disabled="isImporting" @click="selectImportFiles">
-          {{ t('BTN_UPLOAD_JSON') }}
-        </v-btn>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <DCActionButton isDialogButton variant="text" :text="t('BTN_CANCEL')" class="mr-8" @clicked="closeImportDialog" />
+        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_UPLOAD_JSON')" :disabled="isImporting" @clicked="selectImportFiles" />
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="showImportResultDialog" max-width="800px">
-    <v-card class="pa-8">
+    <v-card class="pa-8 dDialog" flat>
       <v-card-title>
         <v-row>
           <v-col cols="10" class="d-flex align-center">
@@ -800,10 +797,9 @@ watch(
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="resetImportResultDialog">
-          {{ t('BTN_CLOSE') }}
-        </v-btn>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <DCActionButton isDialogButton variant="elevated" :text="t('BTN_CLOSE')" @clicked="resetImportResultDialog" />
       </v-card-actions>
     </v-card>
   </v-dialog>

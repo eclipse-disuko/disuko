@@ -78,6 +78,76 @@ func (db *dbRepos) seedDb(requestSession *logy.RequestSession) error {
 			return err
 		}
 	}
+
+	if err := db.seedI18n(requestSession); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) error {
+	if db.i18nLocale.GetLocaleCount(requestSession) > 0 {
+		return nil
+	}
+
+	const i18nSeedPath = "./conf/dbseeds/i18n/"
+	matches, err := filepath.Glob(i18nSeedPath + "*.json")
+	if err != nil {
+		return fmt.Errorf("i18n seed glob: %w", err)
+	}
+	if len(matches) == 0 {
+		logy.Debugf(requestSession, "no i18n seed files found, skipping")
+		return nil
+	}
+
+	// Merge entries per locale code across all seed files (portal + shared)
+	type localeData struct {
+		entries map[string]string
+	}
+	byLocale := map[string]*localeData{}
+
+	for _, filePath := range matches {
+		base := filepath.Base(filePath) // e.g. "portal.en.json"
+		// locale code is the last part before .json, split by "."
+		parts := strings.Split(strings.TrimSuffix(base, ".json"), ".")
+		localeCode := parts[len(parts)-1]
+
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return fmt.Errorf("i18n seed read %s: %w", filePath, err)
+		}
+		var entries map[string]string
+		if err := json.Unmarshal(raw, &entries); err != nil {
+			return fmt.Errorf("i18n seed parse %s: %w", filePath, err)
+		}
+
+		if _, ok := byLocale[localeCode]; !ok {
+			byLocale[localeCode] = &localeData{entries: map[string]string{}}
+		}
+		for k, v := range entries {
+			byLocale[localeCode].entries[k] = v
+		}
+	}
+
+	localeDisplayNames := map[string][2]string{
+		"en": {"English", "English"},
+		"de": {"German", "Deutsch"},
+	}
+
+	for localeCode, data := range byLocale {
+		displayName, nativeName := localeCode, localeCode
+		if names, ok := localeDisplayNames[localeCode]; ok {
+			displayName, nativeName = names[0], names[1]
+		}
+		isDefault := strings.EqualFold(localeCode, "en")
+		db.i18nLocale.SetLocaleMetadata(requestSession, localeCode, displayName, nativeName, isDefault, "portal")
+		for k, v := range data.entries {
+			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "Seeded from JSON", "SYSTEM")
+		}
+		logy.Debugf(requestSession, "i18n seed: loaded %d keys for locale %s", len(data.entries), localeCode)
+	}
+
 	return nil
 }
 
@@ -123,59 +193,6 @@ func (db *dbRepos) processSeedFile(requestSession *logy.RequestSession, path str
 	}
 
 	return nil
-}
-
-func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) {
-	if db.i18nLocale.GetLocaleCount(requestSession) > 0 {
-		return
-	}
-
-	seedDir := "./conf/dbseeds/i18n"
-	entries, err := os.ReadDir(seedDir)
-	if err != nil {
-		logy.Infof(requestSession, "i18n seed dir not found, skipping: %v", err)
-		return
-	}
-
-	// Collect all keys per locale from all matching files
-	localeKeys := make(map[string]map[string]string)
-	for _, e := range entries {
-		if e.Type().IsDir() || !strings.HasSuffix(e.Name(), ".json") {
-			continue
-		}
-		name := e.Name()
-		// filename pattern: <scope>.<localeCode>.json  e.g. portal.en.json
-		parts := strings.SplitN(strings.TrimSuffix(name, ".json"), ".", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		localeCode := strings.ToLower(parts[1])
-
-		data, readErr := os.ReadFile(filepath.Join(seedDir, name))
-		if readErr != nil {
-			logy.Warnf(requestSession, "could not read i18n seed file %s: %v", name, readErr)
-			continue
-		}
-		var kvs map[string]string
-		if jsonErr := json.Unmarshal(data, &kvs); jsonErr != nil {
-			logy.Warnf(requestSession, "could not parse i18n seed file %s: %v", name, jsonErr)
-			continue
-		}
-		if localeKeys[localeCode] == nil {
-			localeKeys[localeCode] = make(map[string]string)
-		}
-		for k, v := range kvs {
-			localeKeys[localeCode][k] = v
-		}
-	}
-
-	for localeCode, keys := range localeKeys {
-		db.i18nLocale.SetLocaleMetadata(requestSession, localeCode, localeCode, localeCode, localeCode == "en", "portal")
-		for k, v := range keys {
-			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "", "seed")
-		}
-		logy.Infof(requestSession, "seeded i18n locale %s with %d keys", localeCode, len(keys))
-	}
 }
 
 func (db *dbRepos) insertIfNotExists(requestSession *logy.RequestSession, ent interface{}, entDb base.IDatabase) error {
