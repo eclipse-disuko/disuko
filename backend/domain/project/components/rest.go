@@ -309,8 +309,7 @@ func applyLicenseWeights(
 	licensesWeightMap map[string]float64,
 ) {
 	for _, ps := range policyStatusDtos {
-		weight := licensesWeightMap[ps.LicenseMatched]
-		ps.LicenseRecommendationWeight = &weight
+		ps.LicenseRecommendationWeight = new(licensesWeightMap[ps.LicenseMatched])
 	}
 }
 

@@ -1,9 +1,6 @@
 # Compiled class file
 *.class
 
-# Agent instruction files (local only)
-.github/agents/
-
 # Docker compose env variables
 *.cert
 *.crt
