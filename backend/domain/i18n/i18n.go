@@ -72,3 +72,20 @@ func (locale *I18nLocale) ToListDTO() I18nLocaleListResponseDto {
 		EntryCount:  len(locale.Entries),
 	}
 }
+
+func (locale *I18nLocale) ToDTO(fallbackUsed bool) I18nLocaleResponseDto {
+	entries := make(map[string]string, len(locale.Entries))
+	for key, value := range locale.Entries {
+		entries[key] = value.Value
+	}
+	return I18nLocaleResponseDto{
+		LocaleCode:   locale.Key,
+		DisplayName:  locale.DisplayName,
+		NativeName:   locale.NativeName,
+		IsDefault:    locale.IsDefault,
+		Scope:        locale.Scope,
+		EntryCount:   len(entries),
+		Entries:      entries,
+		FallbackUsed: fallbackUsed,
+	}
+}

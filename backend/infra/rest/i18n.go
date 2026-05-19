@@ -84,23 +84,7 @@ func (handler *I18nHandler) GetLocale(w http.ResponseWriter, r *http.Request) {
 		exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbNotFound), "default i18n locale not found")
 	}
 
-	entries := make(map[string]string)
-	for key, value := range locale.Entries {
-		if value != nil {
-			entries[key] = value.Value
-		}
-	}
-
-	render.JSON(w, r, i18nDomain.I18nLocaleResponseDto{
-		LocaleCode:   locale.Key,
-		DisplayName:  locale.DisplayName,
-		NativeName:   locale.NativeName,
-		IsDefault:    locale.IsDefault,
-		Scope:        locale.Scope,
-		EntryCount:   len(entries),
-		Entries:      entries,
-		FallbackUsed: fallbackUsed,
-	})
+	render.JSON(w, r, locale.ToDTO(fallbackUsed))
 }
 
 func (handler *I18nHandler) ExportLocaleJSON(w http.ResponseWriter, r *http.Request) {
