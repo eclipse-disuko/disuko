@@ -31,6 +31,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/cache"
 	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	checklistService "github.com/eclipse-disuko/disuko/infra/service/checklist"
+	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	"golang.org/x/text/language"
 
 	"github.com/eclipse-disuko/disuko/domain/job"
@@ -148,6 +149,7 @@ type ProjectHandler struct {
 	OverallReviewService          *projectService.OverallReviewService
 	PolicyDecisionsRepository     policydecisions.IPolicyDecisionsRepository
 	UserService                   *userService.Service
+	PATAuthService                *patauth.Service
 }
 
 func (projectHandler *ProjectHandler) ProjectDeprecateHandler(w http.ResponseWriter, r *http.Request) {
@@ -2237,7 +2239,7 @@ func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.Res
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.UserRepository, r, true, false)
+	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.PATAuthService, r, true, false)
 	projectHandler.HandleProjectStatus(requestSession, currentProject, w, r)
 }
 

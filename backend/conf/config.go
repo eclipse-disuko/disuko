@@ -229,9 +229,6 @@ var Config = struct {
 			Port   int
 		}
 	}
-	BasicAuth struct {
-		Pepper string
-	}
 }{}
 
 func init() {
@@ -349,8 +346,6 @@ func checkEnvironmentVariables() {
 	Config.Connector.Department.Scheme = getEnvVariable("DEPARTMENT_SCHEME", Config.Connector.Department.Scheme)
 	Config.Connector.Department.Host = getEnvVariable("DEPARTMENT_HOST", Config.Connector.Department.Host)
 	Config.Connector.Department.Port = getEnvVariableInt("DEPARTMENT_PORT", Config.Connector.Department.Port)
-
-	Config.BasicAuth.Pepper = getEnvVariable("BASICAUTH_PEPPER", Config.BasicAuth.Pepper)
 
 	Config.Smtp.Host = getEnvVariable("SMTP_HOST", Config.Smtp.Host)
 	Config.Smtp.Port = getEnvVariable("SMTP_PORT", Config.Smtp.Port)
