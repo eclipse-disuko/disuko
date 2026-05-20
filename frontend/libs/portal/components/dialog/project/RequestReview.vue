@@ -78,6 +78,7 @@ const activeRules = ref({
 });
 
 const open = async (payload?: {comment: string; reviewer: string}) => {
+  idle.showIdle = true;
   if (payload) {
     comment.value = t(payload.comment);
     const users = (await profileService.getUsersBySearchFragment(payload.reviewer, true)).data;
@@ -88,6 +89,7 @@ const open = async (payload?: {comment: string; reviewer: string}) => {
   approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
 
   await autoSelect();
+  idle.showIdle = false;
   isVisible.value = true;
 };
 
