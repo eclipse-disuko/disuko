@@ -6,7 +6,7 @@ import INavItem from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
 import SimpleProfileData from '@disclosure-portal/model/ProfileData';
 import {Rights} from '@disclosure-portal/model/Rights';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {defineStore} from 'pinia';
 

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ActionRights} from '@disclosure-portal/model/Credentials';
+import {ActionRights} from '@shared/types/Credentials';
 import {CRUDRights} from '@disclosure-portal/model/Rights';
 
 export class AccessRights {

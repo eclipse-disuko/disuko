@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {ISuccessRsponse} from '@disclosure-portal/model/Common';
 import ExternalSourcePostRequest from '@disclosure-portal/model/ExternalSourcePostRequest';
 import {ComponentLicenses, ProjectModel, SbomLicenses} from '@disclosure-portal/model/Project';
@@ -30,7 +30,7 @@ import {AxiosResponse} from 'axios';
 import {BulkSetReviewRemarkStatusRequest} from '../model/ReviewRemarkBulkOperations';
 
 const modelName = 'projects';
-const {api} = getApi();
+const {api} = useApi();
 
 class VersionService {
   public async getVersion(projectUid: string, versionKey: string | null) {

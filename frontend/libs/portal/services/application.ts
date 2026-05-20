@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {Application} from '@disclosure-portal/model/Application';
 
-const {api} = getApi();
+const {api} = useApi();
 
 class ApplicationService {
   public async searchApplicationByQuery(query: string) {

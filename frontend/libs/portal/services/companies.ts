@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {Department} from '@disclosure-portal/model/Department';
 
-const {api} = getApi();
+const {api} = useApi();
 
 class CompanyService {
   public async find(searchStr: string): Promise<Department[]> {

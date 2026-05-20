@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {ProjectRoleDto} from '@disclosure-portal/model/Users';
+import {ProjectRoleDto} from '@shared/types/Users';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';

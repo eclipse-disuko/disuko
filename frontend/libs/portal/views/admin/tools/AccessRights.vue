@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import Icons from '@disclosure-portal/constants/icons';
 import {AccessRights, ProjectAccessRights} from '@disclosure-portal/model/AccessRights';
-import {ActionRights} from '@disclosure-portal/model/Credentials';
+import {ActionRights} from '@shared/types/Credentials';
 import {CRUDRights} from '@disclosure-portal/model/Rights';
 import {IMap} from '@disclosure-portal/utils/View';
 import {DataTableHeader} from '@shared/types/table';

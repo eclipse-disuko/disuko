@@ -156,8 +156,6 @@ const onConfirm = async (config: IConfirmationDialogConfig) => {
   } else if (config.type === ConfirmationType.DEPRECATE) {
     await projectStore.deprecateProject(config.key);
     await projectStore.fetchProjectByKey(config.key);
-  } else if (config.type === ConfirmationType.NOT_SET) {
-    dialogStore.isSettingsDialogOpen = true;
   }
 };
 
@@ -187,15 +185,13 @@ watch(
   currentProject,
   async () => {
     await nextTick();
-    if (currentProject.value.deptMissing) {
-      confirmConfig.value = {
-        type: ConfirmationType.NOT_SET,
-        key: currentProject.value._key,
-        name: currentProject.value.name,
-        description: 'DLG_CONFIRMATION_DESCRIPTION_DEPT_MISSING',
-        okButton: 'Btn_edit_settings',
-      };
-      confirmDialogVisible.value = true;
+    if (currentProject.value.deptMissing && currentProject.value.accessRights.allowProject.update) {
+      if (currentProject.value.documentMeta.deptMissing) {
+        dialogStore.settingsDialogTab = 'developer';
+      } else if (currentProject.value.customerMeta.deptMissing) {
+        dialogStore.settingsDialogTab = 'owner';
+      }
+      dialogStore.isSettingsDialogOpen = true;
     }
   },
   {immediate: true},

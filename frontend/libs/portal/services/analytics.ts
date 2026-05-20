@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {
   CombinedSearchOptions,
   IAnalyticsComponentsSearchResponse,
@@ -12,7 +12,7 @@ import {
   OccurencesRes,
 } from '@disclosure-portal/model/Analytics';
 
-const {api} = getApi();
+const {api} = useApi();
 
 const modelName = 'analytics';
 
