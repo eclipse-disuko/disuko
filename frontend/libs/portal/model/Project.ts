@@ -354,16 +354,16 @@ export class ApprovableDto {
 }
 
 export class TokenRequest {
-  public Company: string;
-  public Description: string;
-  public Expiry: string;
-  public Status: string;
+  public company: string;
+  public description: string;
+  public expiry: string;
+  public status: string;
 
   constructor(company: string, description: string, expiry: string, status: string) {
-    this.Company = company;
-    this.Description = description;
-    this.Expiry = expiry;
-    this.Status = status;
+    this.company = company;
+    this.description = description;
+    this.expiry = expiry;
+    this.status = status;
   }
 }
 
