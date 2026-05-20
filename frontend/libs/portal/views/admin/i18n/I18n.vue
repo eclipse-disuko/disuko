@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import {getApi} from '@disclosure-portal/api';
+import {type I18nLocaleListItem} from '@disclosure-portal/model/I18n';
+import i18nService from '@disclosure-portal/services/i18n.service';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
@@ -7,28 +8,9 @@ import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 
-const {api} = getApi();
-
 const {t} = useI18n();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const router = useRouter();
-
-interface LocaleRegistryItem {
-  code: string;
-  isDefault: boolean;
-  entryCount: number;
-  displayName?: string;
-  nativeDisplayName?: string;
-}
-
-interface I18nLocaleListItem {
-  localeCode: string;
-  displayName: string;
-  nativeName: string;
-  isDefault: boolean;
-  scope: string;
-  entryCount: number;
-}
 
 interface LanguageRow {
   code: string;
@@ -40,20 +22,14 @@ interface LanguageRow {
   isDefault: boolean;
 }
 
-const localeRegistry = ref<LocaleRegistryItem[]>([]);
+const localeRegistry = ref<I18nLocaleListItem[]>([]);
 const isLoadingLocales = ref(false);
 
 const fetchLocales = async () => {
   isLoadingLocales.value = true;
   try {
-    const res = await api.get<I18nLocaleListItem[]>('/api/v1/i18n');
-    localeRegistry.value = (res.data || []).map((item) => ({
-      code: item.localeCode,
-      isDefault: item.isDefault,
-      entryCount: item.entryCount,
-      displayName: item.displayName || undefined,
-      nativeDisplayName: item.nativeName || undefined,
-    }));
+    const res = await i18nService.getLocales();
+    localeRegistry.value = res.data || [];
   } finally {
     isLoadingLocales.value = false;
   }
@@ -66,9 +42,9 @@ const languageRows = computed<LanguageRow[]>(() => {
   return localeRegistry.value.map((item) => {
     const diff = item.entryCount - defaultCount;
     return {
-      code: item.code,
-      name: item.displayName || t(`LANG_${item.code}`),
-      nativeName: item.nativeDisplayName || t(`LANG_NATIVE_${item.code}`),
+      code: item.localeCode,
+      name: item.displayName || t(`LANG_${item.localeCode}`),
+      nativeName: item.nativeName || t(`LANG_NATIVE_${item.localeCode}`),
       keyCount: item.entryCount,
       missingCount: diff < 0 ? Math.abs(diff) : 0,
       extraCount: diff > 0 ? diff : 0,

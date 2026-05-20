@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import {getApi} from '@disclosure-portal/api';
+import {type I18nImportResponse, type I18nLocaleListItem, type I18nLocaleResponse} from '@disclosure-portal/model/I18n';
+import i18nService from '@disclosure-portal/services/i18n.service';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
-import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
+import DialogLayout, {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
+import Stack from '@shared/layouts/Stack.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
@@ -17,46 +19,11 @@ interface LocaleEntry {
   translation: string;
 }
 
-interface I18nLocaleResponse {
-  localeCode: string;
-  displayName: string;
-  nativeName: string;
-  isDefault: boolean;
-  scope: string;
-  entryCount: number;
-  entries: Record<string, string>;
-  fallbackUsed: boolean;
-}
-
-interface I18nImportIssue {
-  fileName: string;
-  key?: string;
-  code: string;
-  message: string;
-}
-
-interface I18nImportResponse {
-  success: boolean;
-  validationPassed: boolean;
-  locale: string;
-  filesProcessed: number;
-  totalKeysParsed: number;
-  appended: number;
-  updated: number;
-  unchanged: number;
-  errors?: I18nImportIssue[];
-}
-
-interface I18nLocaleListItem {
-  localeCode: string;
-}
-
 const {t} = useI18n();
 const snackbar = useSnackbar();
 const route = useRoute();
 const router = useRouter();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
-const {api} = getApi();
 const knownLocalesForGlobalDelete = ['en', 'de'];
 
 const search = ref('');
@@ -108,6 +75,26 @@ const pageTitle = computed(() => {
 
 const pageDescription = computed(() => t('ADMIN_I18N_DETAIL_PAGE_DESCRIPTION'));
 const importResultHasErrors = computed(() => (importResult.value?.errors?.length || 0) > 0);
+
+const addEntryDialogConfig = computed((): DialogLayoutConfig => ({
+  title: `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}`,
+  primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
+  secondaryButton: {text: t('BTN_CANCEL')},
+}));
+
+const deleteDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('DLG_CONFIRMATION_TITLE'),
+}));
+
+const importDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('BTN_UPLOAD_JSON'),
+  primaryButton: {text: t('BTN_UPLOAD_JSON'), disabled: isImporting.value},
+  secondaryButton: {text: t('BTN_CANCEL')},
+}));
+
+const importResultDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('ADMIN_I18N_IMPORT_RESULT_TITLE'),
+}));
 
 const normalizeValue = (value: unknown): string => {
   if (value === null || value === undefined) {
@@ -165,7 +152,7 @@ const fetchLocale = async () => {
   isLoading.value = true;
   actionError.value = '';
   try {
-    const response = await api.get<I18nLocaleResponse>(`/api/v1/i18n/${encodeURIComponent(localeCode.value)}`);
+    const response = await i18nService.getLocale(localeCode.value);
     localeMeta.value = response.data;
     syncEntries(response.data?.entries || {});
   } catch {
@@ -179,10 +166,7 @@ const fetchLocale = async () => {
 const upsertTranslation = async (key: string, value: string): Promise<boolean> => {
   actionError.value = '';
   try {
-    await api.put(`/api/v1/i18n/${encodeURIComponent(localeCode.value)}/${encodeURIComponent(key)}`, {
-      value,
-      description: '',
-    });
+    await i18nService.upsertTranslation(localeCode.value, key, value);
     return true;
   } catch {
     actionError.value = t('ERROR_500_TITLE');
@@ -194,9 +178,7 @@ const exportAsJson = async () => {
   isExporting.value = true;
   actionError.value = '';
   try {
-		const response = await api.get(`/api/v1/i18n/export/${encodeURIComponent(localeCode.value)}`, {
-      responseType: 'blob',
-    });
+		const response = await i18nService.exportLocale(localeCode.value);
 
     const fileName = `locale.${localeCode.value}.json`;
     const url = URL.createObjectURL(response.data);
@@ -249,7 +231,7 @@ const onImportFilesSelected = async (event: Event) => {
     // Determine which locales to import to
     let targetLocales = [localeCode.value];
     if (importToAllLocales.value) {
-      const localeResponse = await api.get<I18nLocaleListItem[]>('/api/v1/i18n');
+      const localeResponse = await i18nService.getLocales();
       targetLocales = Array.from(new Set(localeResponse.data.map((item) => item.localeCode)));
     }
 
@@ -260,15 +242,7 @@ const onImportFilesSelected = async (event: Event) => {
         formData.append('files', file);
       });
 
-      return api.post<I18nImportResponse>(
-        `/api/v1/i18n/${encodeURIComponent(targetLocale)}/import`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
-      );
+      return i18nService.importLocale(targetLocale, formData);
     });
 
     const responses = await Promise.all(importPromises);
@@ -339,7 +313,7 @@ const addEntry = async () => {
     let targetLocales = [localeCode.value];
 
     if (addEntryToAllLocales.value) {
-      const localeResponse = await api.get<I18nLocaleListItem[]>('/api/v1/i18n');
+      const localeResponse = await i18nService.getLocales();
       targetLocales = Array.from(new Set((localeResponse.data || [])
         .map((item) => String(item.localeCode || '').toLowerCase())
         .filter((code) => !!code)));
@@ -350,10 +324,7 @@ const addEntry = async () => {
 
     await Promise.all(
       targetLocales.map((targetLocale) =>
-        api.put(`/api/v1/i18n/${encodeURIComponent(targetLocale)}/${encodeURIComponent(key)}`, {
-          value: newEntryTranslation.value,
-          description: '',
-        })),
+        i18nService.upsertTranslation(targetLocale, key, newEntryTranslation.value)),
     );
   } catch {
     addEntryError.value = t('ERROR_500_TITLE');
@@ -414,7 +385,7 @@ const onDeleteConfirm = async () => {
 
   const deleteResults = await Promise.allSettled(
     targetLocales.map((targetLocale) =>
-      api.delete(`/api/v1/i18n/${encodeURIComponent(targetLocale)}/${encodeURIComponent(keyToDelete)}`),
+      i18nService.deleteTranslation(targetLocale, keyToDelete),
     ),
   );
 
@@ -620,182 +591,108 @@ watch(
 
   <v-dialog v-model="showAddEntryDialog" max-width="600px" persistent>
     <v-form ref="addEntryFormRef">
-      <v-card class="pa-8">
-        <v-card-title>
-          <v-row>
-            <v-col cols="10" class="d-flex align-center">
-              <span class="text-h5">{{ `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}` }}</span>
-            </v-col>
-            <v-col cols="2" class="px-0 text-right">
-              <DCloseButton @click="resetAddEntryDialog" />
-            </v-col>
-          </v-row>
-        </v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-col cols="12" class="px-0">
-              <v-text-field
-                v-model="newEntryKey"
-                variant="outlined"
-                class="required"
-                :rules="addEntryRules.key"
-                :label="t('KEY')"
-                placeholder="e.g. ADMIN_I18N_PAGE_TITLE"
-                hide-details="auto"
-                autofocus />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" class="px-0">
-              <v-textarea
-                v-model="newEntryTranslation"
-                auto-grow
-                rows="3"
-                variant="outlined"
-                class="required"
-                :rules="addEntryRules.translation"
-                :label="t('VALUE')"
-                placeholder="e.g. Internationalization"
-                hide-details="auto" />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" class="px-0">
-              <v-checkbox
-                v-model="addEntryToAllLocales"
-                density="compact"
-                :label="t('ADMIN_I18N_ADD_TO_ALL_LOCALES')"
-                hide-details
-                class="mt-2" />
-              <p v-if="addEntryError" class="text-error text-caption mt-3 mb-0">{{ addEntryError }}</p>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetAddEntryDialog">{{ t('BTN_CANCEL') }}</v-btn>
-          <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="addEntry">{{ t('NP_DIALOG_BTN_CREATE') }}</v-btn>
-        </v-card-actions>
-      </v-card>
+      <DialogLayout
+        :config="addEntryDialogConfig"
+        @close="resetAddEntryDialog"
+        @secondary-action="resetAddEntryDialog"
+        @primary-action="addEntry">
+        <Stack>
+          <v-text-field
+            v-model="newEntryKey"
+            variant="outlined"
+            class="required"
+            :rules="addEntryRules.key"
+            :label="t('KEY')"
+            placeholder="e.g. ADMIN_I18N_PAGE_TITLE"
+            hide-details="auto"
+            autofocus />
+          <v-textarea
+            v-model="newEntryTranslation"
+            auto-grow
+            rows="3"
+            variant="outlined"
+            class="required"
+            :rules="addEntryRules.translation"
+            :label="t('VALUE')"
+            placeholder="e.g. Internationalization"
+            hide-details="auto" />
+          <v-checkbox
+            v-model="addEntryToAllLocales"
+            density="compact"
+            :label="t('ADMIN_I18N_ADD_TO_ALL_LOCALES')"
+            hide-details
+            class="mt-2" />
+          <p v-if="addEntryError" class="text-error text-caption mt-0 mb-0">{{ addEntryError }}</p>
+        </Stack>
+      </DialogLayout>
     </v-form>
   </v-dialog>
 
   <v-dialog v-model="showDeleteDialog" max-width="500px">
-    <v-card class="pa-8">
-      <v-card-title>
-        <v-row>
-          <v-col cols="10" class="d-flex align-center">
-            <span class="text-h5">{{ t('DLG_CONFIRMATION_TITLE') }}</span>
-          </v-col>
-          <v-col cols="2" class="px-0 text-right">
-            <DCloseButton @click="resetDeleteDialog" />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" class="px-0">
-            {{ t('DLG_CONFIRMATION_DESCRIPTION') }}<strong>{{ deleteEntryKey }}</strong>?
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" class="px-0">
-            <v-checkbox
-              v-model="deleteGlobally"
-              density="compact"
-              :label="t('ADMIN_I18N_DELETE_FROM_ALL_LOCALES')"
-              hide-details
-              class="mt-2" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <div class="f-modal-alert">
-            <div class="f-modal-icon f-modal-warning scaleWarning">
-              <span class="f-modal-body pulseWarningIns"></span>
-              <span class="f-modal-dot pulseWarningIns"></span>
-            </div>
+    <DialogLayout :config="deleteDialogConfig" @close="resetDeleteDialog">
+      <template #right>
+        <v-btn size="small" variant="text" color="primary" @click="resetDeleteDialog">{{ t('BTN_CANCEL') }}</v-btn>
+        <v-btn size="small" variant="flat" color="error" @click="onDeleteConfirm">{{ t('BTN_DELETE') }}</v-btn>
+      </template>
+      <Stack>
+        <span>{{ t('DLG_CONFIRMATION_DESCRIPTION') }}<strong>{{ deleteEntryKey }}</strong>?</span>
+        <v-checkbox
+          v-model="deleteGlobally"
+          density="compact"
+          :label="t('ADMIN_I18N_DELETE_FROM_ALL_LOCALES')"
+          hide-details
+          class="mt-2" />
+        <div class="f-modal-alert">
+          <div class="f-modal-icon f-modal-warning scaleWarning">
+            <span class="f-modal-body pulseWarningIns"></span>
+            <span class="f-modal-dot pulseWarningIns"></span>
           </div>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="resetDeleteDialog">{{ t('BTN_CANCEL') }}</v-btn>
-        <v-btn size="small" variant="flat" color="error" class="mr-1" @click="onDeleteConfirm">{{ t('BTN_DELETE') }}</v-btn>
-      </v-card-actions>
-    </v-card>
+        </div>
+      </Stack>
+    </DialogLayout>
   </v-dialog>
 
   <v-dialog v-model="showImportDialog" max-width="500px" persistent>
-    <v-card class="pa-8">
-      <v-card-title>
-        <v-row>
-          <v-col cols="10" class="d-flex align-center">
-            <span class="text-h5">{{ t('BTN_UPLOAD_JSON') }}</span>
-          </v-col>
-          <v-col cols="2" class="px-0 text-right">
-            <DCloseButton @click="closeImportDialog" />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" class="px-0">
-            <v-checkbox
-              v-model="importToAllLocales"
-              density="compact"
-              :label="t('ADMIN_I18N_IMPORT_TO_ALL_LOCALES')"
-              hide-details
-              class="mt-2" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="text" color="primary" class="mr-5" @click="closeImportDialog">{{ t('BTN_CANCEL') }}</v-btn>
-        <v-btn size="small" variant="flat" color="primary" class="mr-1" :disabled="isImporting" @click="selectImportFiles">{{ t('BTN_UPLOAD_JSON') }}</v-btn>
-      </v-card-actions>
-    </v-card>
+    <DialogLayout
+      :config="importDialogConfig"
+      @close="closeImportDialog"
+      @secondary-action="closeImportDialog"
+      @primary-action="selectImportFiles">
+      <Stack>
+        <v-checkbox
+          v-model="importToAllLocales"
+          density="compact"
+          :label="t('ADMIN_I18N_IMPORT_TO_ALL_LOCALES')"
+          hide-details
+          class="mt-2" />
+      </Stack>
+    </DialogLayout>
   </v-dialog>
 
   <v-dialog v-model="showImportResultDialog" max-width="800px">
-    <v-card class="pa-8">
-      <v-card-title>
-        <v-row>
-          <v-col cols="10" class="d-flex align-center">
-            <span class="text-h5">{{ t('ADMIN_I18N_IMPORT_RESULT_TITLE') }}</span>
-          </v-col>
-          <v-col cols="2" class="px-0 text-right">
-            <DCloseButton @click="resetImportResultDialog" />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" class="px-0">
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_LOCALE') }}:</strong> {{ importResult?.locale }}</p>
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_FILES') }}:</strong> {{ importResult?.filesProcessed ?? 0 }}</p>
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_KEYS') }}:</strong> {{ importResult?.totalKeysParsed ?? 0 }}</p>
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_APPENDED') }}:</strong> {{ importResult?.appended ?? 0 }}</p>
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UPDATED') }}:</strong> {{ importResult?.updated ?? 0 }}</p>
-            <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UNCHANGED') }}:</strong> {{ importResult?.unchanged ?? 0 }}</p>
-
-            <v-alert
-              v-if="importResultHasErrors"
-              type="error"
-              variant="tonal"
-              class="mt-4"
-              :title="t('ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE')">
-              <ul class="mb-0 pl-4">
-                <li v-for="(issue, index) in importResult?.errors || []" :key="`${issue.fileName}-${issue.key || ''}-${index}`">
-                  {{ issue.fileName }}
-                  <span v-if="issue.key"> ({{ issue.key }})</span>
-                  : {{ issue.message }}
-                </li>
-              </ul>
-            </v-alert>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn size="small" variant="flat" color="primary" class="mr-1" @click="resetImportResultDialog">{{ t('BTN_CLOSE') }}</v-btn>
-      </v-card-actions>
-    </v-card>
+    <DialogLayout :config="importResultDialogConfig" @close="resetImportResultDialog">
+      <Stack>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_LOCALE') }}:</strong> {{ importResult?.locale }}</p>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_FILES') }}:</strong> {{ importResult?.filesProcessed ?? 0 }}</p>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_KEYS') }}:</strong> {{ importResult?.totalKeysParsed ?? 0 }}</p>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_APPENDED') }}:</strong> {{ importResult?.appended ?? 0 }}</p>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UPDATED') }}:</strong> {{ importResult?.updated ?? 0 }}</p>
+        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UNCHANGED') }}:</strong> {{ importResult?.unchanged ?? 0 }}</p>
+        <v-alert
+          v-if="importResultHasErrors"
+          type="error"
+          variant="tonal"
+          class="mt-4"
+          :title="t('ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE')">
+          <ul class="mb-0 pl-4">
+            <li v-for="(issue, index) in importResult?.errors || []" :key="`${issue.fileName}-${issue.key || ''}-${index}`">
+              {{ issue.fileName }}
+              <span v-if="issue.key"> ({{ issue.key }})</span>
+              : {{ issue.message }}
+            </li>
+          </ul>
+        </v-alert>
+      </Stack>
+    </DialogLayout>
   </v-dialog>
 </template>

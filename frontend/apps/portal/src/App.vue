@@ -3,8 +3,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {getApi} from '@disclosure-portal/api';
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import i18nService from '@disclosure-portal/services/i18n.service';
 import DHTTPError from '@shared/types/DHTTPError';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import i18n from '@disclosure-portal/i18n';
@@ -137,23 +137,18 @@ onUnmounted(() => {
   window.removeEventListener('resize', onResizeWindow);
 });
 
-const loadI18nLocale = async (i18nApi: ReturnType<typeof getApi>['api'], code: string) => {
-  const res = await i18nApi.get(`/api/v1/i18n/${encodeURIComponent(code)}`);
+const loadI18nLocale = async (code: string) => {
+  const res = await i18nService.getLocale(code);
   if (res.data?.entries) {
-    i18n.global.setLocaleMessage(code, res.data.entries);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    i18n.global.setLocaleMessage(code, res.data.entries as any);
   }
 };
 
-interface I18nLocaleListItem {
-  localeCode: string;
-  displayName?: string;
-  nativeName?: string;
-}
-
-const loadLocales = async (i18nApi: ReturnType<typeof getApi>['api']) => {
-  const list = await i18nApi.get<I18nLocaleListItem[]>('/api/v1/i18n');
+const loadLocales = async () => {
+  const list = await i18nService.getLocales();
   const locales = list.data || [];
-  await Promise.all(locales.map((item) => loadI18nLocale(i18nApi, item.localeCode)));
+  await Promise.all(locales.map((item) => loadI18nLocale(item.localeCode)));
   return locales.map((item) => ({
     code: item.localeCode,
     displayName: item.displayName,
@@ -169,10 +164,9 @@ onMounted(async () => {
   languageStore.initializeLanguage();
   eventKeyStore.initEventKeyStore();
 
-  const {api: i18nApi} = getApi();
   const [simpleProfileData, locales] = await Promise.all([
     profileService.getProfileData(),
-    loadLocales(i18nApi),
+    loadLocales(),
   ]);
 
   appStore.setPublishedLanguages(locales);
