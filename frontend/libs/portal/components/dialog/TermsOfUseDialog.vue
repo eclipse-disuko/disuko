@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {UserRequestDto} from '@disclosure-portal/model/Users';
+import {UserRequestDto} from '@shared/types/Users';
 import ProfileServer from '@disclosure-portal/services/profile';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import termsOfUseEn from '@shared/assets/documents/terms_of_use/TermsOfUseCurrent.md?raw';

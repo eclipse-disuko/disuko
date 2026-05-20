@@ -6,7 +6,7 @@
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import Icons from '@disclosure-portal/constants/icons';
 import SimpleProfileData from '@disclosure-portal/model/ProfileData';
-import {UserDto, UserRequestDto} from '@disclosure-portal/model/Users';
+import {UserDto, UserRequestDto} from '@shared/types/Users';
 import AdminService from '@disclosure-portal/services/admin';
 import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';

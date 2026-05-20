@@ -4,7 +4,7 @@
 
 import {ProjectSettingsModel} from '@disclosure-portal/model/Project';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {Application} from './Application';
 
 export enum ProjectCreationMode {

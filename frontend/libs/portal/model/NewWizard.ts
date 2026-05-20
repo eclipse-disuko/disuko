@@ -6,7 +6,7 @@ import {CustomId} from '@disclosure-portal/model/CustomId';
 import {Department} from '@disclosure-portal/model/Department';
 import type Label from '@disclosure-portal/model/Label';
 import {Project} from '@disclosure-portal/model/Project';
-import {UserDto} from '@disclosure-portal/model/Users';
+import {UserDto} from '@shared/types/Users';
 import {SupplierExtraData} from '@disclosure-portal/model/Wizard';
 
 export const stepIds = {

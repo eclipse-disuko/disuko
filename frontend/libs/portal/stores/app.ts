@@ -4,13 +4,13 @@
 
 import INavItem, {INavItemGroup} from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
-import {GetDashboardCounts} from '@disclosure-portal/services/admin';
 import sessionService from '@disclosure-portal/services/session';
 import {LabelsTools} from '@disclosure-portal/utils/Labels';
 import {useStorage} from '@vueuse/core';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
 import {useRoute} from 'vue-router';
+import {DashboardCounts} from '@shared/types/DashboardCounts';
 
 const SUPPORTED_LANGUAGES = ['en', 'de'] as const;
 
@@ -199,7 +199,7 @@ export const useAppStore = defineStore('app', () => {
   const setShouldReloadApprovals = (value: boolean) => {
     state.shouldReloadApprovals = value;
   };
-  const updateTileCounts = (counts: GetDashboardCounts) => {
+  const updateTileCounts = (counts: DashboardCounts) => {
     for (const tile of state.tiles) {
       if (tile.url === '/dashboard/tasks') tile.cnt = counts.activeJobCount;
       if (tile.url === '/dashboard/projects') tile.cnt = counts.projectCount;

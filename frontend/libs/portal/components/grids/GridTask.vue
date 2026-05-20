@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG // // SPDX-License-Identifier: Apache-2.0
 
 <script setup lang="ts">
-import {TaskDto} from '@disclosure-portal/model/Users';
+import {TaskDto} from '@shared/types/Users';
 import Profile from '@disclosure-portal/services/profile';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';

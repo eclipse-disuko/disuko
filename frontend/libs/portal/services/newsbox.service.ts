@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {NewsboxItem, NewsboxItemCreateDto, default as Newsbox} from '@disclosure-portal/model/Newsbox';
-import {UserLastSeenDto} from '@disclosure-portal/model/Users';
+import {UserLastSeenDto} from '@shared/types/Users';
 import {AxiosResponse} from 'axios';
 
-const {api} = getApi();
+const {api} = useApi();
 
 const basePath = 'newsbox/items';
 

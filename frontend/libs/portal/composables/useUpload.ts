@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import SchemaPostRequest from '@disclosure-portal/model/SchemaPostRequest';
 import {AxiosProgressEvent} from 'axios';
 
 export const useUpload = () => {
-  const {api} = getApi();
+  const {api} = useApi();
 
   const uploadFormDataFile = async ({
     uploadUrl,
