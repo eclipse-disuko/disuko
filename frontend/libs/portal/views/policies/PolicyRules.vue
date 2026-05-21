@@ -338,7 +338,7 @@ const headers = computed((): DataTableHeader[] => [
           :items-per-page="-1"
           :search="search"
           :sort-by="sortItems">
-          <template #[`header.Status`]="{column, getSortIcon, toggleSort}">
+          <template #[`header.status`]="{column, getSortIcon, toggleSort}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #filter>
                 <GridHeaderFilterIcon
