@@ -2,6 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+  CreatePersonalTokenRequest,
+  CreatePersonalTokenResponse,
+  PersonalToken,
+} from '@disclosure-portal/model/PersonalToken';
 import {useApi} from '@shared/api/useApi';
 import SimpleProfileData from '@disclosure-portal/model/ProfileData';
 import {ProjectRoleDto, TaskDto, UserDto, UserRequestDto} from '@shared/types/Users';
@@ -54,6 +59,20 @@ class ProfileService {
 
   public async delegateTask(taskId: string, delegateUserId: string): Promise<AxiosResponse<TaskDto>> {
     return api.put(`/api/v1/${modelName}/tasks/${taskId}/delegate`, {delegateUserId});
+  }
+
+  public async getTokens(): Promise<PersonalToken[]> {
+    const result = await api.get<PersonalToken[]>(`/api/v1/${modelName}/tokens`);
+    return result.data;
+  }
+
+  public async createToken(data: CreatePersonalTokenRequest): Promise<CreatePersonalTokenResponse> {
+    const result = await api.post<CreatePersonalTokenResponse>(`/api/v1/${modelName}/tokens`, data);
+    return result.data;
+  }
+
+  public async expireToken(tokenKey: string): Promise<void> {
+    await api.post(`/api/v1/${modelName}/tokens/${tokenKey}/expire`);
   }
 }
 

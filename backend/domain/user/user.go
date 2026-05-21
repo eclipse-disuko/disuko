@@ -36,6 +36,7 @@ func (t Token) ToDto() TokenDto {
 		Key:         t.GetKey(),
 		Description: t.Description,
 		Expiry:      t.Expiry,
+		Expired:     t.Expiry.Before(time.Now()),
 		Created:     t.GetCreated(),
 	}
 }
