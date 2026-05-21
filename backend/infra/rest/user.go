@@ -635,7 +635,7 @@ func (handler *UserHandler) CreateTokenHandler(w http.ResponseWriter, r *http.Re
 		},
 	}
 	jwtToken := jwtLib.NewWithClaims(jwtLib.SigningMethodHS256, claims)
-	signedToken, err := jwtToken.SignedString([]byte(conf.Config.Auth.UserTokenSigningKey))
+	signedToken, err := jwtToken.SignedString([]byte(conf.Config.PATAuth.SigningKey))
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorTokenCreate))
 
 	render.JSON(w, r, user.CreateTokenResponseDto{Token: signedToken})

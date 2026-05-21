@@ -14,7 +14,7 @@ import (
 
 func patAuth(rs *logy.RequestSession, pr *project.Project, prRepo projectRepo.IProjectRepository, userRepo userRepo.IUsersRepository, tokenStr string) string {
 	token, err := jwt.ParseWithClaims(tokenStr, &user.UserTokenClaims{}, func(token *jwt.Token) (any, error) {
-		return []byte(conf.Config.Auth.UserTokenSigningKey), nil
+		return []byte(conf.Config.PATAuth.SigningKey), nil
 	})
 	if err != nil {
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid PAT"), err.Error())

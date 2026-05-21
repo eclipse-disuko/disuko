@@ -163,7 +163,9 @@ var Config = struct {
 		RefreshSecret               string
 		AccessTokenExpiresInMinutes int `default:"30"`
 		RefreshTokenExpiresInHours  int `default:"12"`
-		UserTokenSigningKey         string
+	}
+	PATAuth struct {
+		SigningKey string
 	}
 	Server   Server
 	Database struct {
@@ -309,7 +311,8 @@ func checkEnvironmentVariables() {
 
 	Config.Auth.AccessSecret = getEnvVariable("AUTH_ACCESS_SECRET", Config.Auth.AccessSecret)
 	Config.Auth.RefreshSecret = getEnvVariable("AUTH_REFRESH_SECRET", Config.Auth.RefreshSecret)
-	Config.Auth.UserTokenSigningKey = getEnvVariable("AUTH_USER_TOKEN_SIGNING_KEY", Config.Auth.UserTokenSigningKey)
+
+	Config.PATAuth.SigningKey = getEnvVariable("PAT_SIGNING_KEY", Config.PATAuth.SigningKey)
 
 	Config.S3.IsEnabled = getEnvVariableBoolean("S3_ENABLED", Config.S3.IsEnabled)
 	Config.S3.IsRestApiEnabled = getEnvVariableBoolean("S3_REST_API_ENABLED", Config.S3.IsRestApiEnabled)
