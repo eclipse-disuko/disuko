@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {getApi} from '@disclosure-portal/api';
+import {useApi} from '@shared/api/useApi';
 import {I18nImportResponse, I18nLocaleListItem, I18nLocaleResponse} from '@disclosure-portal/model/I18n';
 import {AxiosResponse} from 'axios';
 
-const {api} = getApi();
+const {api} = useApi();
 
 class I18nService {
   public getLocales(): Promise<AxiosResponse<I18nLocaleListItem[]>> {
