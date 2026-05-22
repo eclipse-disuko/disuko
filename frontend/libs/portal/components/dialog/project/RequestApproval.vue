@@ -196,7 +196,8 @@ const doDialogAction = async () => {
         customerApprover2: ownerApprover2.value,
         supplierApprover1: developerApprover1.value,
         supplierApprover2: developerApprover2.value,
-        fossVersion: fossVersion.value,
+        fossVersion:
+          fossVefrontend / libs / portal / components / dialog / project / shared / ApprovalContentTabs.vuersion.value,
       };
 
       projectService.createInternalApproval(req, projectModel.value._key).then(async (response) => {
@@ -322,6 +323,8 @@ defineExpose({open});
           <FossVersionSelector v-model="fossVersion" :disabled="true" />
 
           <ApprovalContentTabs
+            v-model:tab="tab"
+            v-model:selected-projects="selectedProjects"
             :stats="stats"
             :show-red-warn-denied-decisions-message="approvableInfo.hasDeniedDecisions"
             :projects="approvableInfo.projects ?? []"
@@ -329,11 +332,7 @@ defineExpose({open});
             :is-group="projectModel.isGroup"
             :no-f-o-s-s="noFOSS"
             :foss-version="fossVersion"
-            :selected-projects="selectedProjects"
-            :do-filter="true"
-            :tab="tab"
-            @update:tab="tab = $event"
-            @update:selected-projects="selectedProjects = $event" />
+            :do-filter="true" />
 
           <v-textarea
             v-model="comment"

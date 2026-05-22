@@ -185,17 +185,15 @@ defineExpose({open});
             <FossVersionSelector v-model="fossVersion" :disabled="true" />
 
             <ApprovalContentTabs
+              v-model:tab="tab"
+              v-model:selected-projects="selectedProjects"
               :stats="stats"
               :show-red-warn-denied-decisions-message="showRedWarnDeniedDecisionsMessage"
               :projects="approvableInfo.projects ?? []"
               :channels="projectModel.versions"
               :is-group="projectModel.isGroup"
               :no-f-o-s-s="noFOSS"
-              :foss-version="fossVersion"
-              :selected-projects="selectedProjects"
-              :tab="tab"
-              @update:tab="tab = $event"
-              @update:selected-projects="selectedProjects = $event" />
+              :foss-version="fossVersion" />
 
             <v-textarea
               v-model="comment"

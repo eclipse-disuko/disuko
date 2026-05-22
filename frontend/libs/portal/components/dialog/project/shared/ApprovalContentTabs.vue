@@ -15,34 +15,24 @@ interface Props {
   isGroup: boolean;
   noFOSS: boolean;
   fossVersion: 'default' | 'legacy';
-  selectedProjects: string[];
   doFilter?: boolean;
-  tab: 'general' | 'approvable';
 }
 
 const props = withDefaults(defineProps<Props>(), {
   doFilter: false,
 });
-
-const emit = defineEmits<{
-  'update:selectedProjects': [value: string[]];
-  'update:tab': [value: 'general' | 'approvable'];
-}>();
+const selectedProjects = defineModel<string[]>('selectedProjects', {required: true});
+const tab = defineModel<'general' | 'approvable'>('tab', {required: true});
 
 const {t} = useI18n();
 </script>
 
 <template>
-  <v-tabs
-    :model-value="props.tab"
-    slider-color="mbti"
-    show-arrows
-    bg-color="tabsHeader"
-    @update:model-value="emit('update:tab', $event)">
+  <v-tabs v-model="tab" slider-color="mbti" show-arrows bg-color="tabsHeader">
     <v-tab value="general">{{ t('TAB_TITLE_GENERAL') }}</v-tab>
     <v-tab value="approvable" v-if="props.isGroup">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
   </v-tabs>
-  <v-tabs-window :model-value="props.tab">
+  <v-tabs-window v-model="tab">
     <v-tabs-window-item value="general">
       <DApprovalComponents
         :stats="props.stats"
@@ -55,10 +45,10 @@ const {t} = useI18n();
         :do-filter="props.doFilter"
         :filter-is-f-o-s-s="!props.noFOSS"
         :foss-version="props.fossVersion"
-        :selected-projects="props.selectedProjects"
+        :selected-projects="selectedProjects"
         showSbomExtras
         selectable
-        @update:selectedProjects="emit('update:selectedProjects', $event)" />
+        @update:selectedProjects="selectedProjects = $event" />
     </v-tabs-window-item>
   </v-tabs-window>
 </template>
