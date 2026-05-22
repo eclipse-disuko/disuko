@@ -292,20 +292,14 @@ defineExpose({open});
 
           <SbomChannelSelector
             v-if="!projectModel.isGroup"
+            v-model:selected-channel="selectedChannel"
+            v-model:selected-sbom="selectedSbom"
             :channels="channels"
             :sboms="sboms"
-            :selected-channel="selectedChannel"
-            :selected-sbom="selectedSbom"
             :no-f-o-s-s="noFOSS"
             :approvable-spdx-key="projectModel.approvablespdx.spdxkey"
-            @update:selected-channel="
-              selectedChannel = $event;
-              loadSBOMHist();
-            "
-            @update:selected-sbom="
-              selectedSbom = $event;
-              loadStats();
-            " />
+            @update:selected-channel="loadSBOMHist()"
+            @update:selected-sbom="loadStats()" />
 
           <section v-if="mixedFOSS">
             <v-alert color="warning" type="warning">
@@ -352,9 +346,7 @@ defineExpose({open});
 
           <v-switch v-model="withZip" color="primary" :label="t('WITH_ZIP_MARKER')" hide-details></v-switch>
 
-          <LegacyApprovalSection
-            v-if="fossVersion === 'legacy'"
-            v-model="documentFlags" />
+          <LegacyApprovalSection v-if="fossVersion === 'legacy'" v-model="documentFlags" />
         </Stack>
       </DialogLayout>
     </v-dialog>

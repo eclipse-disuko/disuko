@@ -10,17 +10,13 @@ import {useI18n} from 'vue-i18n';
 interface Props {
   channels: VersionSlim[];
   sboms: SpdxFile[];
-  selectedChannel: VersionSlim | null;
-  selectedSbom: SpdxFile | null;
   noFOSS: boolean;
   approvableSpdxKey: string;
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<{
-  'update:selectedChannel': [value: VersionSlim | null];
-  'update:selectedSbom': [value: SpdxFile | null];
-}>();
+const selectedChannel = defineModel<VersionSlim | null>('selectedChannel', {required: true});
+const selectedSbom = defineModel<SpdxFile | null>('selectedSbom', {required: true});
 
 const {t} = useI18n();
 </script>
@@ -28,7 +24,7 @@ const {t} = useI18n();
 <template>
   <Stack>
     <v-select
-      :model-value="props.selectedChannel"
+      v-model="selectedChannel"
       variant="outlined"
       item-title="name"
       return-object
@@ -36,18 +32,16 @@ const {t} = useI18n();
       :items="props.channels"
       :disabled="props.noFOSS"
       hide-details
-      autocomplete="off"
-      @update:model-value="emit('update:selectedChannel', $event)" />
+      autocomplete="off" />
     <v-autocomplete
-      :model-value="props.selectedSbom"
+      v-model="selectedSbom"
       :disabled="props.noFOSS"
       variant="outlined"
       item-title="name"
       :label="t('SELECT_SBOM_DELIVERY')"
       hide-details
       autocomplete="off"
-      :items="props.sboms"
-      @update:model-value="emit('update:selectedSbom', $event)">
+      :items="props.sboms">
       <template v-slot:item="{item, props: itemProps}">
         <v-list-item v-bind="itemProps" title="">
           <div class="d-flex">

@@ -33,31 +33,11 @@ const {t} = useI18n();
 
   <ExpansionPanel :title="t('SBOM_APPROVAL_ATTRIBUTES')">
     <template #body>
-      <v-checkbox
-        v-model="model.c1"
-        :readonly="model.c6"
-        :label="t('SBOM_APPROVAL_CHECK1')"
-        hide-details />
-      <v-checkbox
-        v-model="model.c2"
-        :readonly="model.c6"
-        :label="t('SBOM_APPROVAL_CHECK2')"
-        hide-details />
-      <v-checkbox
-        v-model="model.c3"
-        :readonly="model.c6"
-        :label="t('SBOM_APPROVAL_CHECK3')"
-        hide-details />
-      <v-checkbox
-        v-model="model.c4"
-        :readonly="model.c6"
-        :label="t('SBOM_APPROVAL_CHECK4')"
-        hide-details />
-      <v-checkbox
-        v-model="model.c5"
-        :readonly="model.c6"
-        :label="t('SBOM_APPROVAL_CHECK5')"
-        hide-details />
+      <v-checkbox v-model="model.c1" :readonly="model.c6" :label="t('SBOM_APPROVAL_CHECK1')" hide-details />
+      <v-checkbox v-model="model.c2" :readonly="model.c6" :label="t('SBOM_APPROVAL_CHECK2')" hide-details />
+      <v-checkbox v-model="model.c3" :readonly="model.c6" :label="t('SBOM_APPROVAL_CHECK3')" hide-details />
+      <v-checkbox v-model="model.c4" :readonly="model.c6" :label="t('SBOM_APPROVAL_CHECK4')" hide-details />
+      <v-checkbox v-model="model.c5" :readonly="model.c6" :label="t('SBOM_APPROVAL_CHECK5')" hide-details />
       <v-checkbox v-model="model.c6" :label="t('SBOM_APPROVAL_CHECK6')" disabled></v-checkbox>
     </template>
   </ExpansionPanel>
