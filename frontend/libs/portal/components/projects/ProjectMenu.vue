@@ -90,8 +90,8 @@ const handleDialogOpen = (dialogRef: Ref<any, any>, ...openArgs: unknown[]) => {
   }
 };
 
-const generateFoss = () => handleDialogOpen(reqfoss, isVehiclePlatformOrItsChildren.value);
-const requestApproval = () => handleDialogOpen(reqapproval, isVehiclePlatformOrItsChildren.value);
+const generateFoss = () => handleDialogOpen(reqfoss);
+const requestApproval = () => handleDialogOpen(reqapproval);
 const reviewRD = () => handleDialogOpen(reqreview, reviewPresetRD, isVehiclePlatformOrItsChildren.value);
 const requestReview = () => handleDialogOpen(reqreview, undefined, isVehiclePlatformOrItsChildren.value);
 

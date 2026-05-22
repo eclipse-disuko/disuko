@@ -1451,6 +1451,7 @@
   "SBOM_APPROVAL_VEHICLE_CHECK2": "Abschließende Konformität: Erklärung über die uneingeschränkte Übereinstimmung der Verwendung von FOSS mit der für das jeweilige Produkt erteilten Genehmigung",
   "SBOM_APPROVAL_VEHICLE_CHECK3": "Kein FOSS: Aussage, dass keine FOSS-Komponenten verwendet werden",
   "NO_FOSS_MARKER": "Keinerlei FOSS-Komponenten verwendet.",
+  "NO_FOSS_DISABLED_TOOLTIP": "Die Einstellung „Keinerlei FOSS-Komponenten verwendet.“ kann nur in den Projekteinstellungen geändert werden.",
   "WITH_ZIP_MARKER": "Archiv zur Dokumentation erstellen",
   "NO_FOSS_WARNING": "Sind Sie sicher, dass keinerlei FOSS-Komponenten verwendet wurden?",
   "NO_FOSS_MESSAGE": "Sie haben die Option ausgewählt, dass in diesem Projekt keinerlei FOSS-Komponenten verwendet werden. Deaktivieren Sie die Option, wenn Sie eine SBOM-Lieferung auswählen möchten",

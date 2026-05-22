@@ -1436,6 +1436,7 @@
   "SBOM_APPROVAL_VEHICLE_CHECK2": "Final Conformity: Statement of unrestricted Conformity of the Use of FOSS with the Permission granted for the specific Product",
   "SBOM_APPROVAL_VEHICLE_CHECK3": "No FOSS: Statement that no FOSS components are used",
   "NO_FOSS_MARKER": "No FOSS components are used",
+  "NO_FOSS_DISABLED_TOOLTIP": "The 'No FOSS components are used' setting can only be changed in the project settings.",
   "WITH_ZIP_MARKER": "Create archive for documentation",
   "NO_FOSS_WARNING": "Are you sure that no FOSS components are used?",
   "NO_FOSS_MESSAGE": "You have selected the option that no FOSS components are used in this project. Unselect the option if you want to select a SBOM delivery",

@@ -3,55 +3,35 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
+import {useApprovalFormBase} from '@disclosure-portal/composables/useApprovalFormBase';
 import {DocumentMeta, InternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {UserDto} from '@shared/types/Users';
-import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
-import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
+import {useAppStore} from '@disclosure-portal/stores/app';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
-import config from '@shared/utils/config';
-import dayjs from 'dayjs';
-import {computed, nextTick, ref, watch} from 'vue';
+import {nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
-import {ApprovableInfo} from '@disclosure-portal/model/Approval';
-import {useAppStore} from '@disclosure-portal/stores/app';
+import SbomChannelSelector from './shared/SbomChannelSelector.vue';
+import FossVersionSelector from './shared/FossVersionSelector.vue';
+import ApprovalContentTabs from './shared/ApprovalContentTabs.vue';
+import LegacyApprovalSection from './shared/LegacyApprovalSection.vue';
 
 const projectStore = useProjectStore();
 const appStore = useAppStore();
-const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
 const idle = useIdleStore();
-const {isAudited} = useApprovalCheck();
 
-const isVisible = ref(false);
-const selectedChannel = ref<VersionSlim | null>(null);
-const sboms = ref<SpdxFile[]>([]);
-const selectedSbom = ref<SpdxFile | null>(null);
-const sbomStats = ref<ComponentStats>({} as ComponentStats);
-const tab = ref(0);
-const approverTab = ref(0);
-const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
-const comment = ref('');
-const c1 = ref(false);
-const c2 = ref(false);
-const c3 = ref(false);
-const c4 = ref(false);
-const c5 = ref(false);
-const noFOSS = ref(false);
-const withZip = ref(false);
+const approverTab = ref<'developer' | 'owner'>('developer');
 const form = ref<VForm | null>(null);
 const ownerApprover1 = ref('');
 const ownerApprover2 = ref('');
@@ -65,67 +45,9 @@ const developerApproverIn1 = ref();
 const developerApproverPre1 = ref<UserDto>();
 const developerApproverIn2 = ref();
 const developerApproverPre2 = ref<UserDto>();
-const isVehicle = ref(false);
-const fossVersion = ref<'default' | 'legacy'>('legacy');
 
-const projectModel = computed(() => projectStore.currentProject!);
-const channels = computed(() => {
-  const res = Object.values(projectModel.value.versions);
-  res.sort((a, b) => (dayjs(a.updated).isBefore(b.updated) ? 1 : -1));
-  return res;
-});
-const countApprovables = computed(() => {
-  if (!Array.isArray(approvableInfo.value.projects)) {
-    return 0;
-  }
-  return approvableInfo.value.projects.filter((p) => {
-    if (!p.approvablespdx) {
-      return false;
-    }
-    const hasSpdxKey = p.approvablespdx.spdxkey !== '';
-    const hasVersionKey = p.approvablespdx.versionkey !== '';
-    return hasSpdxKey && hasVersionKey;
-  }).length;
-});
-const defaultC2 = () => {
-  if (noFOSS.value) {
-    return false;
-  } else {
-    return countApprovables.value > 0 || selectedSbom.value != null;
-  }
-};
-const defaultC3 = () => {
-  if (noFOSS.value) {
-    return false;
-  } else {
-    return !(countApprovables.value > 0);
-  }
-};
-const defaultC4 = () => !noFOSS.value;
-
-const setDefaultFlags = () => {
-  c1.value = false;
-  c2.value = defaultC2();
-  c3.value = defaultC3();
-  c4.value = defaultC4();
-  c5.value = false;
-};
-
-const resetFormState = () => {
-  selectedChannel.value = null;
-  selectedSbom.value = null;
-  sboms.value = [];
-  sbomStats.value = new ComponentStats();
-  comment.value = '';
-  tab.value = 0;
-  approverTab.value = 0;
-  c1.value = false;
-  c2.value = false;
-  c3.value = false;
-  c4.value = false;
-  c5.value = false;
-  noFOSS.value = false;
-  withZip.value = false;
+const resetExtraState = () => {
+  approverTab.value = 'developer';
   ownerApprover1.value = '';
   ownerApprover2.value = '';
   developerApprover1.value = '';
@@ -136,34 +58,53 @@ const resetFormState = () => {
   developerApproverPre2.value = undefined;
 };
 
-watch(isVisible, (newValue) => {
-  if (!newValue) {
-    resetFormState();
-  }
-});
-
-watch(noFOSS, () => {
-  setDefaultFlags();
-  selectedChannel.value = null;
-  selectedSbom.value = null;
-  sbomStats.value = new ComponentStats();
-});
-watch(selectedSbom, () => {
-  setDefaultFlags();
-});
-
-const stats = computed(() => {
-  if (projectModel.value.isGroup) {
-    return approvableInfo.value.stats;
-  }
-  return sbomStats.value;
+const {
+  isVisible,
+  selectedChannel,
+  sboms,
+  selectedSbom,
+  approvableInfo,
+  comment,
+  withZip,
+  noFOSS,
+  fossVersion,
+  mixedFOSS,
+  c1,
+  c2,
+  c3,
+  c4,
+  c5,
+  selectedProjects,
+  tab,
+  projectModel,
+  channels,
+  countApprovables,
+  stats,
+  selectedProjectsContainEmptySbom,
+  updateSelectedProjects,
+  checkFossMixedStatus,
+  loadSBOMHist,
+  loadStats,
+  autoSelect,
+  fetchApprovableInfo,
+} = useApprovalFormBase({
+  setDefaultFlags: () => {
+    c1.value = false;
+    c2.value = noFOSS.value ? false : countApprovables.value > 0 || selectedSbom.value != null;
+    c3.value = noFOSS.value ? false : !(countApprovables.value > 0);
+    c4.value = !noFOSS.value;
+    c5.value = false;
+  },
+  resetExtraState,
 });
 
 const commentRule = longText(t('TAD_COMMENT'));
 
-const open = async (isVehicleProject: boolean) => {
+const open = async () => {
   idle.showIdle = true;
-  isVehicle.value = isVehicleProject;
+  await fetchApprovableInfo();
+
+  fossVersion.value = 'legacy';
   if (projectModel.value.customerMeta.userFRI) {
     ownerApproverPre1.value = projectModel.value.customerMeta.userFRI;
   }
@@ -177,68 +118,14 @@ const open = async (isVehicleProject: boolean) => {
     developerApproverPre2.value = projectModel.value.supplierExtraData.userSRI;
   }
   noFOSS.value = projectModel.value.isNoFoss;
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
+  updateSelectedProjects();
+  checkFossMixedStatus();
 
   await autoSelect();
-  setDefaultFlags();
   developerApproverIn1.value?.resetForm();
   developerApproverIn2.value?.resetForm();
   idle.showIdle = false;
   isVisible.value = true;
-};
-
-const loadSBOMHist = async () => {
-  selectedSbom.value = null;
-  if (!selectedChannel.value?._key) return;
-  const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === selectedChannel.value!._key);
-  const spdxFileHistory = (versionEntry?.spdxFileHistory ?? []).slice(0, 5);
-  if (spdxFileHistory[0]) {
-    spdxFileHistory[0].isRecent = true;
-  }
-  sboms.value = spdxFileHistory;
-};
-
-const loadStats = async () => {
-  if (!selectedChannel.value || !selectedSbom.value) {
-    sbomStats.value = new ComponentStats();
-    return;
-  }
-  sbomStats.value = (
-    await versionService.getVersionComponentsForSbom(
-      projectModel.value._key,
-      selectedChannel.value?._key ?? '',
-      selectedSbom.value?._key ?? '',
-    )
-  ).componentStats;
-};
-
-const autoSelect = async () => {
-  if (channels.value.length === 0) {
-    return;
-  }
-
-  if (approvableInfo.value.projects.length === 0) {
-    return;
-  }
-  if (!noFOSS.value) {
-    selectedChannel.value =
-      channels.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.versionkey) ?? null;
-  }
-  if (!!sbomStore.selectedSBOMKey && !projectModel.value.isGroup) {
-    selectedChannel.value = sbomStore.currentVersion;
-  }
-  if (selectedChannel.value) {
-    await loadSBOMHist();
-    if (sboms.value.length === 0) {
-      return;
-    }
-    selectedSbom.value =
-      sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
-    if (selectedSbom.value === null) {
-      selectedSbom.value = sbomStore.getSelectedSBOM ?? null;
-    }
-    await loadStats();
-  }
 };
 
 const jobStore = useJobStore();
@@ -253,18 +140,18 @@ const doDialogAction = async () => {
       const isOwner1Valid = await ownerApproverIn1.value?.validateOnCreate();
       const isOwner2Valid = await ownerApproverIn2.value?.validateOnCreate();
       if (!isDev1Valid || !isDev2Valid) {
-        approverTab.value = 1;
+        approverTab.value = 'developer';
         return;
       }
       if (!isOwner1Valid || !isOwner2Valid) {
-        approverTab.value = 0;
+        approverTab.value = 'owner';
         return;
       }
       if (
         (ownerApprover1.value !== '' || ownerApprover2.value !== '') &&
         ownerApprover1.value === ownerApprover2.value
       ) {
-        approverTab.value = 0;
+        approverTab.value = 'owner';
         const d = new ErrorDialogConfig();
         d.title = '' + t('SBOM_REQUEST_INTERNAL_APPROVAL');
         d.description = '' + t('EQUAL_OWNER_APPROVERS_ERROR_MESSAGE');
@@ -275,7 +162,7 @@ const doDialogAction = async () => {
         (ownerApprover1.value !== '' && ownerApprover2.value === '') ||
         (ownerApprover1.value === '' && ownerApprover2.value !== '')
       ) {
-        approverTab.value = 0;
+        approverTab.value = 'owner';
         const d = new ErrorDialogConfig();
         d.title = '' + t('SBOM_REQUEST_INTERNAL_APPROVAL');
         d.description = '' + t('BOTH_OR_NONE_OWNER_APPROVERS_ALLOWED_ERROR_MESSAGE');
@@ -283,7 +170,7 @@ const doDialogAction = async () => {
         return;
       }
       if (developerApprover1.value === developerApprover2.value) {
-        approverTab.value = 1;
+        approverTab.value = 'developer';
         const d = new ErrorDialogConfig();
         d.title = '' + t('SBOM_REQUEST_INTERNAL_APPROVAL');
         d.description = '' + t('EQUAL_DEVELOPER_APPROVERS_ERROR_MESSAGE');
@@ -319,7 +206,7 @@ const doDialogAction = async () => {
         customerApprover2: ownerApprover2.value,
         supplierApprover1: developerApprover1.value,
         supplierApprover2: developerApprover2.value,
-        fossVersion: 'vanilla',
+        fossVersion: fossVersion.value,
       };
 
       projectService.createInternalApproval(req, projectModel.value._key).then(async (response) => {
@@ -356,35 +243,11 @@ defineExpose({open});
     <v-dialog v-model="isVisible" content-class="large" scrollable width="850">
       <DialogLayout :config="dialogConfig" @close="close" @secondary-action="close" @primary-action="doDialogAction">
         <Stack class="gap-4">
-          <v-tabs v-model="approverTab" slider-color="brand" show-arrows bg-color="tabsHeader">
-            <v-tab value="owner">{{ t('TAB_TITLE_OWNER_APPROVER') }}</v-tab>
+          <v-tabs v-model="approverTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
             <v-tab value="developer">{{ t('TAB_TITLE_DEVELOPER_APPROVER') }}</v-tab>
+            <v-tab value="owner">{{ t('TAB_TITLE_OWNER_APPROVER') }}</v-tab>
           </v-tabs>
           <v-tabs-window v-model="approverTab" eager>
-            <v-tabs-window-item value="owner">
-              <Stack class="gap-4">
-                <Stack direction="row">
-                  <v-icon size="small" color="warning">mdi-alert</v-icon>
-                  <span class="text-body-2">{{ t('REPORTER_REMARK') }}</span>
-                </Stack>
-                <DAutocompleteUser
-                  ref="ownerApproverIn1"
-                  v-model="ownerApprover1"
-                  :preselect="ownerApproverPre1"
-                  :project-key="projectModel._key"
-                  :label="t('FIRST_REPORTER_LABEL')"
-                  data-testid="ownerApprover1"
-                  only-internal-users />
-                <DAutocompleteUser
-                  ref="ownerApproverIn2"
-                  v-model="ownerApprover2"
-                  :preselect="ownerApproverPre2"
-                  :project-key="projectModel._key"
-                  :label="t('SECOND_REPORTER_LABEL')"
-                  data-testid="ownerApprover2"
-                  only-internal-users />
-              </Stack>
-            </v-tabs-window-item>
             <v-tabs-window-item value="developer" eager>
               <Stack class="gap-4">
                 <Stack direction="row">
@@ -411,110 +274,82 @@ defineExpose({open});
                   required />
               </Stack>
             </v-tabs-window-item>
-          </v-tabs-window>
-
-          <Stack v-if="!projectModel.isGroup">
-            <v-select
-              v-model="selectedChannel"
-              variant="outlined"
-              item-title="name"
-              return-object
-              :label="t('SELECT_VERSION')"
-              :items="channels"
-              :disabled="noFOSS"
-              hide-details
-              @update:modelValue="loadSBOMHist" />
-            <v-autocomplete
-              v-model="selectedSbom"
-              @update:modelValue="loadStats"
-              variant="outlined"
-              item-title="name"
-              :label="t('SELECT_SBOM_DELIVERY')"
-              :items="sboms"
-              :disabled="noFOSS"
-              hide-details>
-              <template v-slot:item="{item, props}">
-                <v-list-item v-bind="props" title="">
-                  <div class="d-flex">
-                    <v-icon
-                      color="primary"
-                      v-if="projectModel.approvablespdx.spdxkey == item.raw._key"
-                      size="small"
-                      class="pb-1">
-                      mdi-star
-                    </v-icon>
-                    <div>
-                      <v-icon
-                        color="green"
-                        v-if="isVehicle && isAudited(selectedChannel, item?.raw?._key)"
-                        size="small"
-                        class="ml-1 pb-1"
-                        >mdi-clipboard-check-outline</v-icon
-                      >
-                    </div>
-                    <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
-                      >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
-                    >
-                    <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
-                  </div>
-                </v-list-item>
-              </template>
-              <template v-slot:selection="{item}">
-                <div style="min-width: 13px">
-                  <v-icon
-                    color="primary"
-                    v-if="projectModel.approvablespdx.spdxkey == item.raw._key"
-                    size="small"
-                    class="pb-1"
-                    >mdi-star</v-icon
-                  >
-                </div>
-                <div>
-                  <v-icon
-                    color="green"
-                    v-if="isVehicle && isAudited(selectedChannel, item?.raw?._key)"
-                    size="small"
-                    class="ml-1 pb-1"
-                    >mdi-clipboard-check-outline</v-icon
-                  >
-                </div>
-                <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-                <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
-                  >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
-                >
-                <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
-              </template>
-            </v-autocomplete>
-          </Stack>
-
-          <Stack v-if="config.useFutureFoss" direction="row" align="center" class="rounded bg-gray-500/20 py-1">
-            <v-radio-group inline hide-details v-model="fossVersion">
-              <v-radio :label="t('FOSSDD_STANDARD')" value="default"></v-radio>
-              <v-radio :label="t('FOSSDD_LEGACY')" value="legacy"></v-radio>
-            </v-radio-group>
-            <v-spacer></v-spacer>
-            <DIconButton icon="mdi-information-outline" :hint="t('FOSSDD_VERSION_TOOLTIP')" />
-          </Stack>
-
-          <v-tabs v-model="tab" slider-color="brand" show-arrows bg-color="tabsHeader">
-            <v-tab value="general">{{ t('TAB_TITLE_GENERAL') }}</v-tab>
-            <v-tab value="approvable" v-if="projectModel.isGroup">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
-          </v-tabs>
-          <v-tabs-window v-model="tab">
-            <v-tabs-window-item value="general">
-              <DApprovalComponents
-                :stats="stats!"
-                :showRedWarnDeniedDecisionsMessage="approvableInfo.hasDeniedDecisions" />
-            </v-tabs-window-item>
-            <v-tabs-window-item eager value="approvable" v-if="projectModel.isGroup">
-              <GridSPDXList :projects="approvableInfo.projects" :channels="projectModel.versions" showSbomExtras />
+            <v-tabs-window-item value="owner">
+              <Stack class="gap-4">
+                <Stack direction="row">
+                  <v-icon size="small" color="warning">mdi-alert</v-icon>
+                  <span class="text-body-2">{{ t('REPORTER_REMARK') }}</span>
+                </Stack>
+                <DAutocompleteUser
+                  ref="ownerApproverIn1"
+                  v-model="ownerApprover1"
+                  :preselect="ownerApproverPre1"
+                  :project-key="projectModel._key"
+                  :label="t('FIRST_REPORTER_LABEL')"
+                  data-testid="ownerApprover1"
+                  only-internal-users />
+                <DAutocompleteUser
+                  ref="ownerApproverIn2"
+                  v-model="ownerApprover2"
+                  :preselect="ownerApproverPre2"
+                  :project-key="projectModel._key"
+                  :label="t('SECOND_REPORTER_LABEL')"
+                  data-testid="ownerApprover2"
+                  only-internal-users />
+              </Stack>
             </v-tabs-window-item>
           </v-tabs-window>
+
+          <SbomChannelSelector
+            v-if="!projectModel.isGroup"
+            :channels="channels"
+            :sboms="sboms"
+            :selected-channel="selectedChannel"
+            :selected-sbom="selectedSbom"
+            :no-f-o-s-s="noFOSS"
+            :approvable-spdx-key="projectModel.approvablespdx.spdxkey"
+            @update:selected-channel="
+              selectedChannel = $event;
+              loadSBOMHist();
+            "
+            @update:selected-sbom="
+              selectedSbom = $event;
+              loadStats();
+            " />
+
+          <section v-if="mixedFOSS">
+            <v-alert color="warning" type="warning">
+              <span>{{ t('MIXED_FOSS_MESSAGE') }}</span>
+            </v-alert>
+          </section>
+
+          <section v-if="noFOSS && fossVersion === 'legacy'">
+            <v-alert color="warning" type="warning">
+              <span>{{ t('NO_FOSS_MESSAGE') }}</span>
+            </v-alert>
+          </section>
+
+          <section v-if="selectedProjectsContainEmptySbom">
+            <v-alert color="warning" type="warning">
+              <span>{{ t('NO_PROJECT_NO_FOSS') }}</span>
+            </v-alert>
+          </section>
+
+          <FossVersionSelector v-model="fossVersion" :disabled="true" />
+
+          <ApprovalContentTabs
+            :stats="stats"
+            :show-red-warn-denied-decisions-message="approvableInfo.hasDeniedDecisions"
+            :projects="approvableInfo.projects ?? []"
+            :channels="projectModel.versions"
+            :is-group="projectModel.isGroup"
+            :no-f-o-s-s="noFOSS"
+            :foss-version="fossVersion"
+            :selected-projects="selectedProjects"
+            :do-filter="true"
+            :tab="tab"
+            @update:tab="tab = $event"
+            @update:selected-projects="selectedProjects = $event" />
 
           <v-textarea
             v-model="comment"
@@ -526,13 +361,20 @@ defineExpose({open});
             no-resize />
 
           <v-switch v-model="withZip" color="primary" :label="t('WITH_ZIP_MARKER')" hide-details></v-switch>
-          <div>
-            <Stack direction="row" align="center">
-              <v-icon v-if="noFOSS" size="small">mdi-alert</v-icon>
-              <span class="d-block" v-if="noFOSS">{{ t('NO_FOSS_WARNING') }}</span>
-            </Stack>
-            <v-switch v-model="noFOSS" color="primary" :label="t('NO_FOSS_MARKER')" hide-details></v-switch>
-          </div>
+
+          <LegacyApprovalSection
+            v-if="fossVersion === 'legacy'"
+            :no-f-o-s-s="noFOSS"
+            :c1="c1"
+            :c2="c2"
+            :c3="c3"
+            :c4="c4"
+            :c5="c5"
+            @update:c1="c1 = $event"
+            @update:c2="c2 = $event"
+            @update:c3="c3 = $event"
+            @update:c4="c4 = $event"
+            @update:c5="c5 = $event" />
         </Stack>
       </DialogLayout>
     </v-dialog>
