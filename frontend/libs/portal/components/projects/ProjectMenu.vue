@@ -7,8 +7,8 @@ import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/co
 import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import type {Project} from '@disclosure-portal/model/Project';
 import ProjectService from '@disclosure-portal/services/projects';
-import {useAppStore} from '@disclosure-portal/stores/app';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
+import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
@@ -26,12 +26,11 @@ const reviewPresetRD = {
 
 const {t} = useI18n();
 const router = useRouter();
-const appStore = useAppStore();
+const labelStore = useLabelStore();
 const projectStore = useProjectStore();
 const wizardStore = useWizardStore();
 const dialogStore = useDialogStore();
 
-const labelTools = computed(() => appStore.getLabelsTools);
 const {hasVehiclePlatformChildren, hasOnlyVehiclePlatformChildren} = storeToRefs(projectStore);
 const currentProject = computed((): Project => projectStore.currentProject!);
 
@@ -46,7 +45,7 @@ const addChildrenErrorDialog = ref();
 const isVehiclePlatform = computed(() => {
   if (!currentProject.value) return false;
   for (const lbl of currentProject.value.policyLabels) {
-    if (labelTools.value.policyLabelsMap[lbl]?.name === PolicyLabels.VEHICLE_PLATFORM) {
+    if (labelStore.getLabelByKey(lbl)?.name === PolicyLabels.VEHICLE_PLATFORM) {
       return true;
     }
   }

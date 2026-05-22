@@ -15,7 +15,6 @@ interface RuntimeConfig {
     LOGOUT: string;
   };
   isProd: boolean;
-  useFutureFoss?: boolean;
   /**
    * Future FOSS config for Vehicle projects
    */
@@ -37,7 +36,6 @@ let config = {
     LOGOUT: import.meta.env.VITE_OAUTH_LOGOUT,
   },
   isProd: false,
-  useFutureFoss: import.meta.env.VITE_USE_FUTURE_FOSS === 'true',
   useFutureProduct: import.meta.env.VITE_USE_FUTURE_PRODUCT === 'true',
   useFutureIt: import.meta.env.VITE_USE_FUTURE_IT === 'true',
   enforceFOSSOfficeConfirmation: false,
@@ -79,7 +77,6 @@ export const setup = async () => {
         LOGOUT: runtimeConfig.data.VITE_OAUTH_LOGOUT,
       },
       isProd: runtimeConfig.data.IS_PROD,
-      useFutureFoss: runtimeConfig.data.VITE_USE_FUTURE_FOSS,
       useFutureProduct: runtimeConfig.data.VITE_USE_FUTURE_PRODUCT,
       useFutureIt: runtimeConfig.data.VITE_USE_FUTURE_IT,
       enforceFOSSOfficeConfirmation: runtimeConfig.data.ENFORCE_CONFIRMATION,

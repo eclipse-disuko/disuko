@@ -12,7 +12,6 @@ import {useIdleStore} from '@shared/stores/idle.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
-import config from '@shared/utils/config';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -46,6 +45,8 @@ const {
   channels,
   countApprovables,
   stats,
+  isFutureFossEnabled,
+  isVehicleProject,
   selectedProjectsContainEmptySbom,
   updateSelectedProjects,
   checkFossMixedStatus,
@@ -72,7 +73,7 @@ const open = async () => {
   await fetchApprovableInfo();
 
   checkFossMixedStatus();
-  fossVersion.value = config.useFutureFoss ? 'default' : 'legacy';
+  fossVersion.value = isFutureFossEnabled.value ? 'default' : 'legacy';
   noFOSS.value = projectModel.value.isNoFoss;
   updateSelectedProjects();
   await autoSelect();
@@ -181,7 +182,7 @@ defineExpose({open});
               </v-alert>
             </section>
 
-            <FossVersionSelector v-if="config.useFutureFoss" v-model="fossVersion" />
+            <FossVersionSelector v-model="fossVersion" :disabled="!(isVehicleProject && isFutureFossEnabled)" />
 
             <ApprovalContentTabs
               v-model:tab="tab"

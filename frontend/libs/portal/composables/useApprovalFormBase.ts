@@ -4,11 +4,14 @@
 
 import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {DocumentMeta} from '@disclosure-portal/model/ApprovalRequest';
+import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
+import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
+import config from '@shared/utils/config';
 import dayjs from 'dayjs';
 import {computed, ref, watch} from 'vue';
 
@@ -19,12 +22,25 @@ interface UseApprovalFormBaseOptions {
 
 export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
   const projectStore = useProjectStore();
+  const labelStore = useLabelStore();
   const sbomStore = useSbomStore();
 
   const normalizeApprovableInfo = (value?: Partial<ApprovableInfo> | null): ApprovableInfo => ({
     ...new ApprovableInfo(),
     ...value,
     projects: Array.isArray(value?.projects) ? value.projects : [],
+  });
+
+  const isVehicleProject = computed(() => {
+    const project = projectStore.currentProject;
+    if (!project) return false;
+    if (projectStore.hasVehiclePlatformChildren) return true;
+    return project.policyLabels.some((lbl) => labelStore.getLabelByKey(lbl)?.name === PolicyLabels.VEHICLE_PLATFORM);
+  });
+
+  const isFutureFossEnabled = computed(() => {
+    if (isVehicleProject.value) return !!config.useFutureProduct;
+    return !!config.useFutureIt;
   });
 
   const isVisible = ref(false);
@@ -181,11 +197,12 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
       }
       selectedSbom.value =
         sboms.value.find((a) => a._key === approvableInfo.value.projects[0].approvablespdx.spdxkey) ?? null;
-      if (!!sbomStore.selectedSBOMKey) {
+      if (selectedSbom.value === null) {
         selectedSbom.value = sbomStore.getSelectedSBOM ?? null;
       }
       await loadStats();
     }
+    options.setDefaultFlags();
   };
 
   const resetBase = () => {
@@ -255,6 +272,8 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
     channels,
     countApprovables,
     stats,
+    isFutureFossEnabled,
+    isVehicleProject,
     selectedProjectsContainEmptySbom,
     updateSelectedProjects,
     checkFossMixedStatus,

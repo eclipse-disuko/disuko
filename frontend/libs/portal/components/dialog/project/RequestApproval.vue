@@ -16,7 +16,6 @@ import {useAppStore} from '@disclosure-portal/stores/app';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
-import config from '@shared/utils/config';
 import {nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -77,6 +76,7 @@ const {
   channels,
   countApprovables,
   stats,
+  isFutureFossEnabled,
   selectedProjectsContainEmptySbom,
   updateSelectedProjects,
   checkFossMixedStatus,
@@ -101,7 +101,7 @@ const open = async () => {
   idle.showIdle = true;
   await fetchApprovableInfo();
 
-  fossVersion.value = config.useFutureFoss ? 'default' : 'legacy';
+  fossVersion.value = isFutureFossEnabled.value ? 'default' : 'legacy';
   if (projectModel.value.customerMeta.userFRI) {
     ownerApproverPre1.value = projectModel.value.customerMeta.userFRI;
   }
@@ -320,7 +320,7 @@ defineExpose({open});
             </v-alert>
           </section>
 
-          <FossVersionSelector v-if="config.useFutureFoss" v-model="fossVersion" />
+          <FossVersionSelector v-model="fossVersion" :disabled="true" />
 
           <ApprovalContentTabs
             v-model:tab="tab"
