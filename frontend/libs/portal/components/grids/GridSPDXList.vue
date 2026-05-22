@@ -161,7 +161,7 @@ export default defineComponent({
       isApproved,
       handleSelectionChange,
       selectedItems,
-        isProjectNoFoss,
+      isProjectNoFoss,
     };
   },
 });
