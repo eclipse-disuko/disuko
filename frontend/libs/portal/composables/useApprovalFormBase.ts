@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {ApprovableInfo} from '@disclosure-portal/model/Approval';
+import {DocumentMeta} from '@disclosure-portal/model/ApprovalRequest';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
@@ -32,16 +33,12 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
   const selectedSbom = ref<SpdxFile | null>(null);
   const sbomStats = ref<ComponentStats>(new ComponentStats());
   const approvableInfo = ref<ApprovableInfo>(normalizeApprovableInfo());
+  const documentFlags = ref<DocumentMeta>(new DocumentMeta());
   const comment = ref('');
   const withZip = ref(false);
   const noFOSS = ref(false);
   const fossVersion = ref<'default' | 'legacy'>('legacy');
   const mixedFOSS = ref(false);
-  const c1 = ref(false);
-  const c2 = ref(false);
-  const c3 = ref(false);
-  const c4 = ref(false);
-  const c5 = ref(false);
   const selectedProjects = ref<string[]>([]);
   const tab = ref<'general' | 'approvable'>('general');
 
@@ -197,13 +194,9 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
     selectedSbom.value = null;
     sbomStats.value = new ComponentStats();
     approvableInfo.value = normalizeApprovableInfo();
+    documentFlags.value = new DocumentMeta();
     comment.value = '';
     withZip.value = false;
-    c1.value = false;
-    c2.value = false;
-    c3.value = false;
-    c4.value = false;
-    c5.value = false;
     noFOSS.value = false;
     tab.value = 'general';
     selectedProjects.value = [];
@@ -222,6 +215,7 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
   });
 
   watch(noFOSS, () => {
+    documentFlags.value = Object.assign(new DocumentMeta(), documentFlags.value, {c6: noFOSS.value});
     options.setDefaultFlags();
     selectedChannel.value = null;
     selectedSbom.value = null;
@@ -249,16 +243,12 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
     selectedSbom,
     sbomStats,
     approvableInfo,
+    documentFlags,
     comment,
     withZip,
     noFOSS,
     fossVersion,
     mixedFOSS,
-    c1,
-    c2,
-    c3,
-    c4,
-    c5,
     selectedProjects,
     tab,
     projectModel,

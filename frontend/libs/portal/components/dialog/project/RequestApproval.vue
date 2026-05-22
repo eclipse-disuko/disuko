@@ -64,16 +64,12 @@ const {
   sboms,
   selectedSbom,
   approvableInfo,
+  documentFlags,
   comment,
   withZip,
   noFOSS,
   fossVersion,
   mixedFOSS,
-  c1,
-  c2,
-  c3,
-  c4,
-  c5,
   selectedProjects,
   tab,
   projectModel,
@@ -89,11 +85,11 @@ const {
   fetchApprovableInfo,
 } = useApprovalFormBase({
   setDefaultFlags: () => {
-    c1.value = false;
-    c2.value = noFOSS.value ? false : countApprovables.value > 0 || selectedSbom.value != null;
-    c3.value = noFOSS.value ? false : !(countApprovables.value > 0);
-    c4.value = !noFOSS.value;
-    c5.value = false;
+    documentFlags.value.c1 = false;
+    documentFlags.value.c2 = noFOSS.value ? false : countApprovables.value > 0 || selectedSbom.value != null;
+    documentFlags.value.c3 = noFOSS.value ? false : !(countApprovables.value > 0);
+    documentFlags.value.c4 = !noFOSS.value;
+    documentFlags.value.c5 = false;
   },
   resetExtraState,
 });
@@ -189,13 +185,7 @@ const doDialogAction = async () => {
         await projectService.updateApprovableSpdx(approvableSpdx, projectModel.value._key);
       }
 
-      const metaDoc = new DocumentMeta();
-      metaDoc.c1 = c1.value;
-      metaDoc.c2 = c2.value;
-      metaDoc.c3 = c3.value;
-      metaDoc.c4 = c4.value;
-      metaDoc.c5 = c5.value;
-      metaDoc.c6 = noFOSS.value;
+      const metaDoc = Object.assign(new DocumentMeta(), documentFlags.value, {c6: noFOSS.value});
 
       const req: InternalApprovalRequest = {
         withZip: withZip.value,
@@ -364,17 +354,7 @@ defineExpose({open});
 
           <LegacyApprovalSection
             v-if="fossVersion === 'legacy'"
-            :no-f-o-s-s="noFOSS"
-            :c1="c1"
-            :c2="c2"
-            :c3="c3"
-            :c4="c4"
-            :c5="c5"
-            @update:c1="c1 = $event"
-            @update:c2="c2 = $event"
-            @update:c3="c3 = $event"
-            @update:c4="c4 = $event"
-            @update:c5="c5 = $event" />
+            v-model="documentFlags" />
         </Stack>
       </DialogLayout>
     </v-dialog>
