@@ -1455,6 +1455,8 @@
   "WITH_ZIP_MARKER": "Archiv zur Dokumentation erstellen",
   "NO_FOSS_WARNING": "Sind Sie sicher, dass keinerlei FOSS-Komponenten verwendet wurden?",
   "NO_FOSS_MESSAGE": "Sie haben die Option ausgewählt, dass in diesem Projekt keinerlei FOSS-Komponenten verwendet werden. Deaktivieren Sie die Option, wenn Sie eine SBOM-Lieferung auswählen möchten",
+  "MIXED_FOSS_MESSAGE": "Diese Gruppe enthält Projekte mit unterschiedlichen FOSS-Einstellungen. Einige Unterprojekte haben andere FOSS-Konfigurationen als das übergeordnete Projekt.",
+  "NO_PROJECT_NO_FOSS": "Einige ausgewählte Projekte haben keine SBOM-Lieferung zugewiesen.",
   "WARNING_MISSING_DEPT": "Abteilungszuweisung ungültig",
   "COL_USER_ACCESS_SCOPE": "Zugriffsbereich",
   "USER_ACCESS_SCOPE": "Zugriffsbereich",

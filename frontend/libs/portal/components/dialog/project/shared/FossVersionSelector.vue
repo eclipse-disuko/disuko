@@ -6,10 +6,12 @@
 import {useI18n} from 'vue-i18n';
 
 interface Props {
-  disabled: boolean;
+  disabled?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  disabled: false,
+});
 const model = defineModel<'default' | 'legacy'>({required: true});
 
 const {t} = useI18n();

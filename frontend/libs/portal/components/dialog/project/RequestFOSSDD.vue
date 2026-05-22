@@ -9,10 +9,10 @@ import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
-import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
+import config from '@shared/utils/config';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -21,7 +21,6 @@ import FossVersionSelector from './shared/FossVersionSelector.vue';
 import ApprovalContentTabs from './shared/ApprovalContentTabs.vue';
 import LegacyApprovalSection from './shared/LegacyApprovalSection.vue';
 
-useProjectStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const idle = useIdleStore();
@@ -73,7 +72,7 @@ const open = async () => {
   await fetchApprovableInfo();
 
   checkFossMixedStatus();
-  fossVersion.value = 'legacy';
+  fossVersion.value = config.useFutureFoss ? 'default' : 'legacy';
   noFOSS.value = projectModel.value.isNoFoss;
   updateSelectedProjects();
   await autoSelect();
@@ -90,6 +89,14 @@ const doDialogAction = async () => {
     return;
   }
 
+  if (!projectModel.value.isGroup && selectedChannel.value !== null && selectedSbom.value === null) {
+    const d = new ErrorDialogConfig();
+    d.title = '' + t('TITLE_GENERATE_FOSS_DD');
+    d.description = '' + t('BOTH_OR_NONE_CHANNEL_AND_SBOM_ALLOWED_ERROR_MESSAGE');
+    eventBus.emit('on-error', {error: d});
+    return;
+  }
+
   const metaDoc = Object.assign(new DocumentMeta(), documentFlags.value, {c6: noFOSS.value});
 
   const req: ExternalApprovalRequest = {
@@ -100,14 +107,6 @@ const doDialogAction = async () => {
     fossVersion: fossVersion.value,
     selectedProjects: selectedProjects.value,
   };
-
-  if (!projectModel.value.isGroup && selectedChannel.value !== null && selectedSbom.value === null) {
-    const d = new ErrorDialogConfig();
-    d.title = '' + t('TITLE_GENERATE_FOSS_DD');
-    d.description = '' + t('BOTH_OR_NONE_CHANNEL_AND_SBOM_ALLOWED_ERROR_MESSAGE');
-    eventBus.emit('on-error', {error: d});
-    return;
-  }
 
   idle.showIdle = true;
 
@@ -182,7 +181,7 @@ defineExpose({open});
               </v-alert>
             </section>
 
-            <FossVersionSelector v-model="fossVersion" :disabled="true" />
+            <FossVersionSelector v-if="config.useFutureFoss" v-model="fossVersion" />
 
             <ApprovalContentTabs
               v-model:tab="tab"

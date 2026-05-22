@@ -16,6 +16,7 @@ import {useAppStore} from '@disclosure-portal/stores/app';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
+import config from '@shared/utils/config';
 import {nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -100,7 +101,7 @@ const open = async () => {
   idle.showIdle = true;
   await fetchApprovableInfo();
 
-  fossVersion.value = 'legacy';
+  fossVersion.value = config.useFutureFoss ? 'default' : 'legacy';
   if (projectModel.value.customerMeta.userFRI) {
     ownerApproverPre1.value = projectModel.value.customerMeta.userFRI;
   }
@@ -196,8 +197,7 @@ const doDialogAction = async () => {
         customerApprover2: ownerApprover2.value,
         supplierApprover1: developerApprover1.value,
         supplierApprover2: developerApprover2.value,
-        fossVersion:
-          fossVefrontend / libs / portal / components / dialog / project / shared / ApprovalContentTabs.vuersion.value,
+        fossVersion: fossVersion.value,
       };
 
       projectService.createInternalApproval(req, projectModel.value._key).then(async (response) => {
@@ -234,7 +234,7 @@ defineExpose({open});
     <v-dialog v-model="isVisible" content-class="large" scrollable width="850">
       <DialogLayout :config="dialogConfig" @close="close" @secondary-action="close" @primary-action="doDialogAction">
         <Stack class="gap-4">
-          <v-tabs v-model="approverTab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+          <v-tabs v-model="approverTab" slider-color="brand" show-arrows bg-color="tabsHeader">
             <v-tab value="developer">{{ t('TAB_TITLE_DEVELOPER_APPROVER') }}</v-tab>
             <v-tab value="owner">{{ t('TAB_TITLE_OWNER_APPROVER') }}</v-tab>
           </v-tabs>
@@ -320,7 +320,7 @@ defineExpose({open});
             </v-alert>
           </section>
 
-          <FossVersionSelector v-model="fossVersion" :disabled="true" />
+          <FossVersionSelector v-if="config.useFutureFoss" v-model="fossVersion" />
 
           <ApprovalContentTabs
             v-model:tab="tab"

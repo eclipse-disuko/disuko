@@ -28,7 +28,7 @@ const {t} = useI18n();
 </script>
 
 <template>
-  <v-tabs v-model="tab" slider-color="mbti" show-arrows bg-color="tabsHeader">
+  <v-tabs v-model="tab" slider-color="brand" show-arrows bg-color="tabsHeader">
     <v-tab value="general">{{ t('TAB_TITLE_GENERAL') }}</v-tab>
     <v-tab value="approvable" v-if="props.isGroup">{{ t('TAB_TITLE_DETAILS') }}</v-tab>
   </v-tabs>

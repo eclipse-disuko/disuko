@@ -1440,6 +1440,8 @@
   "WITH_ZIP_MARKER": "Create archive for documentation",
   "NO_FOSS_WARNING": "Are you sure that no FOSS components are used?",
   "NO_FOSS_MESSAGE": "You have selected the option that no FOSS components are used in this project. Unselect the option if you want to select a SBOM delivery",
+  "MIXED_FOSS_MESSAGE": "This group contains projects with mixed FOSS settings. Some child projects have different FOSS configurations than the parent.",
+  "NO_PROJECT_NO_FOSS": "Some selected projects do not have a SBOM delivery assigned.",
   "WARNING_MISSING_DEPT": "invalid department assigned",
   "COL_USER_ACCESS_SCOPE": "Access Scope",
   "USER_ACCESS_SCOPE": "Access Scope",
