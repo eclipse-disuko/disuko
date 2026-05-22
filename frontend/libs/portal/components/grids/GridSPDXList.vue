@@ -43,6 +43,10 @@ export default defineComponent({
       type: [Map, Object] as PropType<Map<string, VersionSlim> | Record<string, VersionSlim>>,
       default: () => new Map(),
     },
+    projectNoFossByKey: {
+      type: Object as PropType<Record<string, boolean>>,
+      default: () => ({}),
+    },
   },
   emits: ['update:selectedProjects'],
   setup(props, {emit}) {
@@ -126,13 +130,15 @@ export default defineComponent({
       emit('update:selectedProjects', selectedKeys);
     };
 
+    const isProjectNoFoss = (projectKey: string) => props.projectNoFossByKey[projectKey] ?? false;
+
     const filteredList = computed(() => {
       if (props.doFilter) {
         return props.projects.filter((p) => {
           if (props.filterIsFOSS) {
-            return !p.isNonFoss;
+            return !isProjectNoFoss(p.projectKey);
           } else {
-            return p.isNonFoss;
+            return isProjectNoFoss(p.projectKey);
           }
         });
       }
@@ -155,6 +161,7 @@ export default defineComponent({
       isApproved,
       handleSelectionChange,
       selectedItems,
+        isProjectNoFoss,
     };
   },
 });
@@ -199,7 +206,7 @@ export default defineComponent({
           variant="outlined"
           selected-class="blue"
           label
-          v-if="item.items[0].raw.isNonFoss">
+          v-if="isProjectNoFoss(item.items[0].raw.projectKey)">
           <span class="font-weight-bold text-uppercase">{{ t('BADGE_NO_FOSS') }}</span>
         </v-chip>
 

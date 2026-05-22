@@ -12,6 +12,7 @@ interface Props {
   showRedWarnDeniedDecisionsMessage: boolean;
   projects: ProjectApprovable[];
   channels: Map<string, VersionSlim> | Record<string, VersionSlim>;
+  projectNoFossByKey: Record<string, boolean>;
   isGroup: boolean;
   noFOSS: boolean;
   fossVersion: 'default' | 'legacy';
@@ -42,6 +43,7 @@ const {t} = useI18n();
       <GridSPDXList
         :projects="props.projects"
         :channels="props.channels"
+        :project-no-foss-by-key="props.projectNoFossByKey"
         :do-filter="props.doFilter"
         :filter-is-f-o-s-s="!props.noFOSS"
         :foss-version="props.fossVersion"

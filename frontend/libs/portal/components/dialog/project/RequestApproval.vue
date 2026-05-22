@@ -74,6 +74,7 @@ const {
   tab,
   projectModel,
   channels,
+  projectNoFossByKey,
   countApprovables,
   stats,
   isFutureFossEnabled,
@@ -329,6 +330,7 @@ defineExpose({open});
             :show-red-warn-denied-decisions-message="approvableInfo.hasDeniedDecisions"
             :projects="approvableInfo.projects ?? []"
             :channels="projectModel.versions"
+            :project-no-foss-by-key="projectNoFossByKey"
             :is-group="projectModel.isGroup"
             :no-f-o-s-s="noFOSS"
             :foss-version="fossVersion"

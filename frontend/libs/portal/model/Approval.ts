@@ -9,7 +9,6 @@ import {ComponentStats} from './VersionDetails';
 export class ProjectApprovable {
   public projectKey = '';
   public projectName = '';
-  public isNonFoss = false;
   public spdxname = '';
   public spdxtag = '';
   public spdxUploaded = '';

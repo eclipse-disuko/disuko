@@ -66,6 +66,19 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
     return res;
   });
 
+  const projectNoFossByKey = computed<Record<string, boolean>>(() => {
+    const childProjects = Array.isArray(projectModel.value.projectChildren?.projects)
+      ? projectModel.value.projectChildren.projects
+      : [];
+
+    return childProjects.reduce<Record<string, boolean>>((acc, project) => {
+      acc[project._key] = project.isNoFoss;
+      return acc;
+    }, {});
+  });
+
+  const isProjectNoFoss = (projectKey: string) => projectNoFossByKey.value[projectKey] ?? projectModel.value.isNoFoss;
+
   const countApprovables = computed(() => {
     if (!Array.isArray(approvableInfo.value.projects)) {
       return 0;
@@ -131,7 +144,7 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
 
     if (fossVersion.value === 'legacy') {
       selectedProjects.value = approvableInfo.value.projects
-        .filter((p) => p.isNonFoss === noFOSS.value)
+        .filter((p) => isProjectNoFoss(p.projectKey) === noFOSS.value)
         .map((p) => p.projectKey);
     } else {
       selectedProjects.value = approvableInfo.value.projects.map((p) => p.projectKey);
@@ -141,7 +154,7 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
   const checkFossMixedStatus = () => {
     if (projectModel.value.isGroup && fossVersion.value === 'legacy') {
       for (const project of approvableInfo.value.projects) {
-        if (project.isNonFoss !== projectModel.value.isNoFoss) {
+        if (isProjectNoFoss(project.projectKey) !== projectModel.value.isNoFoss) {
           mixedFOSS.value = true;
           return;
         }
@@ -270,6 +283,7 @@ export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
     tab,
     projectModel,
     channels,
+    projectNoFossByKey,
     countApprovables,
     stats,
     isFutureFossEnabled,
