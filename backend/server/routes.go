@@ -432,6 +432,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	s.r.Group(func(r chi.Router) {
 		r.Use(s.patAuthMW.Authenticator)
 		r.Route("/api/internal", func(r chi.Router) {
+			r.Get("/projects", s.handlers.project.ListAllInternal)
 			r.Get("/report", s.handlers.analytics.InternalReport)
 			r.Get("/customlicenses", s.handlers.licenses.CustomLicenses)
 		})

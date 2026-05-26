@@ -367,6 +367,38 @@ func (projectHandler *ProjectHandler) ProjectGetAllHandler(w http.ResponseWriter
 	render.JSON(w, r, result)
 }
 
+func (projectHandler *ProjectHandler) ListAllInternal(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	user := extractPATUser(r.Context())
+	if user == nil {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	prs := projectHandler.ProjectRepository.FindAllForUser(requestSession, user.User)
+
+	var result project.ListAllInternalRes
+	var docDep *department.Department
+	var docMissing bool
+	var custDep *department.Department
+	var custMissing bool
+	dummyLabel := getDummyLabel(requestSession, projectHandler.LabelRepository)
+	for _, pr := range prs {
+		parent := findParent(pr.Parent, prs)
+
+		if parent == nil {
+			docDep, docMissing, custDep, custMissing = projectHandler.getDeps(requestSession, pr)
+		} else {
+			docDep, docMissing, custDep, custMissing = projectHandler.getDeps(requestSession, parent)
+		}
+		slimDto := pr.ToSlimInternalDto(docDep, docMissing, custDep, custMissing, hasDummyLabel(pr, dummyLabel))
+
+		result.Projects = append(result.Projects, slimDto)
+	}
+
+	render.JSON(w, r, result)
+}
+
 func (projectHandler *ProjectHandler) GetAllDisclosures(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	username := roles.GetUsernameFromRequest(requestSession, r)
