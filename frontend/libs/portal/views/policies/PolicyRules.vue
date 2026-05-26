@@ -365,7 +365,7 @@ const headers = computed((): DataTableHeader[] => [
           <template #[`item.denied`]="{item}">
             {{ item.componentsDeny.length }}
           </template>
-          <template #[`item.Total`]="{item}">
+          <template #[`item.total`]="{item}">
             {{ item.componentsAllow.length + item.componentsDeny.length + item.componentsWarn.length }}
           </template>
           <template #[`item.description`]="{item}">
