@@ -1,6 +1,6 @@
 module github.com/eclipse-disuko/disuko
 
-go 1.26.2
+go 1.26.3
 
 require (
 	github.com/adhocore/gronx v1.20.0
