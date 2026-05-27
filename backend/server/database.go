@@ -17,6 +17,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/internalToken"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/newsbox"
+	policyruleclassification "github.com/eclipse-disuko/disuko/infra/repository/policyruleclassification"
 	reviewremarks2 "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 	"github.com/eclipse-disuko/disuko/infra/service/startup"
 
@@ -81,8 +82,9 @@ type dbRepos struct {
 	projectRepository    projectRepo.IProjectRepository
 	checklist            checklist.IChecklistRepository
 	newsbox              newsbox.IRepo
-	userstats            userstatsRepo.IUserStatsRepository
-	policyDecisions      policydecisions.IPolicyDecisionsRepository
+	userstats                 userstatsRepo.IUserStatsRepository
+	policyDecisions           policydecisions.IPolicyDecisionsRepository
+	policyRuleClassification  policyruleclassification.IPolicyRuleClassificationRepository
 }
 
 func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
@@ -120,8 +122,9 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		projectRepository:    projectRepo.NewProjectRepository(requestSession),
 		checklist:            checklist.NewLabelsRepository(requestSession),
 		newsbox:              newsbox.NewNewsboxRepository(requestSession),
-		userstats:            userstatsRepo.NewUsersRepository(requestSession),
-		policyDecisions:      policydecisions.NewPolicyDecisionsRepository(requestSession),
+		userstats:                userstatsRepo.NewUsersRepository(requestSession),
+		policyDecisions:          policydecisions.NewPolicyDecisionsRepository(requestSession),
+		policyRuleClassification: policyruleclassification.NewPolicyRuleClassificationRepository(requestSession),
 	}
 	err := s.repos.seedDb(requestSession)
 	if err != nil {

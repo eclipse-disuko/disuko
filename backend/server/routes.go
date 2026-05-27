@@ -286,6 +286,13 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Put("/{id}", s.handlers.newsbox.UpdateHandler)    // test missing
 					r.Delete("/{id}", s.handlers.newsbox.DeleteHandler) // test missing
 				})
+				r.Route("/policyruleclassifications", func(r chi.Router) {
+					r.Get("/", s.handlers.policyRuleClassification.GetAllHandler)
+					r.Get("/matrix", s.handlers.policyRuleClassification.GetMatrixHandler)
+					r.Post("/", s.handlers.policyRuleClassification.CreateHandler)
+					r.Put("/{id}", s.handlers.policyRuleClassification.UpdateHandler)
+					r.Delete("/{id}", s.handlers.policyRuleClassification.DeleteHandler)
+				})
 				r.Route("/schemas", func(r chi.Router) {
 					r.Get("/", s.handlers.schema.SchemaGetAllHandler)
 					r.Post("/", s.handlers.schema.SchemaUploadHandler)

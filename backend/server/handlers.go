@@ -42,8 +42,9 @@ type handlers struct {
 	template      rest.TemplateHandler
 	cap           rest.CapabilitiesHandler
 	basicauth     rest.InternalTokenHandler
-	customid      rest.CustomidHandler
-	publicAuth    rest.PublicAuthHandler
+	customid                 rest.CustomidHandler
+	publicAuth               rest.PublicAuthHandler
+	policyRuleClassification rest.PolicyRuleClassificationHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -258,6 +259,10 @@ func (s *Server) setupHandlers() {
 	}
 	s.handlers.newsbox = rest.NewsboxHandler{
 		NewsboxRepo: s.repos.newsbox,
+	}
+	s.handlers.policyRuleClassification = rest.PolicyRuleClassificationHandler{
+		PolicyRuleClassificationRepo: s.repos.policyRuleClassification,
+		ObligationRepo:               s.repos.obligation,
 	}
 	s.handlers.publicAuth = rest.PublicAuthHandler{
 		ProjectRepo: s.repos.project,
