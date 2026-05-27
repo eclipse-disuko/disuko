@@ -20,10 +20,12 @@ import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/typ
 import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const {info} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 const userDialogVisible = ref(false);
 const confirmationDialogVisible = ref(false);
@@ -47,9 +49,9 @@ const userHeaders = computed((): DataTableHeader[] => [
     ? [
         {
           title: t('COL_ACTIONS'),
-          align: 'center',
+          align: 'start',
           value: 'actions',
-          width: 160,
+          width: sliderWidth.value,
           sortable: false,
         } as DataTableHeader,
       ]
@@ -283,7 +285,7 @@ onBeforeMount(async () => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableUserManagement" class="fill-height">
+      <div ref="tableUserManagement" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           :items-per-page="100"
@@ -319,7 +321,7 @@ onBeforeMount(async () => {
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="actionButtons"
               @edit="showEditUserDialog(item)"
               @remove="showDeleteUserDialog(item)" />

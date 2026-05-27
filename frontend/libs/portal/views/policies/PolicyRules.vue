@@ -22,6 +22,7 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
 import {useUrls} from '@shared/composables/useUrls';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
@@ -29,6 +30,7 @@ const {info} = useSnackbar();
 const router = useRouter();
 const policyRulesUtils = usePolicyRulesUtils();
 const {openUrl} = useUrls();
+const {sliderWidth} = useTableActionSlider();
 
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
@@ -232,9 +234,9 @@ onMounted(async () => {
 const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
+    align: 'start',
     value: 'actions',
-    width: 80,
+    width: sliderWidth.value,
     sortable: false,
   },
   {
@@ -370,10 +372,10 @@ const headers = computed((): DataTableHeader[] => [
           </template>
           <template #[`item.description`]="{item}">
             <v-tooltip :text="item.description" width="320" location="bottom" content-class="dpTooltip">
-              <template #activator="{props}"
-                ><span v-bind="props">{{ getStrWithMaxLength(95, item.description) }}</span>
-              </template></v-tooltip
-            >
+              <template #activator="{props}">
+                <span v-bind="props">{{ getStrWithMaxLength(95, item.description) }}</span>
+              </template>
+            </v-tooltip>
           </template>
           <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated" />
@@ -383,7 +385,7 @@ const headers = computed((): DataTableHeader[] => [
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="editPolicyRule(item)"
               @delete="showDeletionConfirmationDialog(item as PolicyRule)"

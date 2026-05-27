@@ -15,10 +15,12 @@ import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/typ
 import _ from 'lodash';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const {info} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 const tokenGrid = ref<HTMLElement | null>(null);
 const tokens = ref<Token[]>([]);
@@ -37,9 +39,9 @@ const renewed = ref(false);
 const tokenHeaders = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
+    align: 'start',
     value: 'actions',
-    width: 120,
+    width: sliderWidth.value,
     sortable: false,
   },
   {
@@ -204,7 +206,7 @@ const getActionButtons = (item: Token): TableActionButtonsProps['buttons'] => {
       </CreateTokenDialog>
     </template>
     <template #table>
-      <div ref="tokenGrid" class="fill-height">
+      <div ref="tokenGrid" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           :loading="!dataAreLoaded"
@@ -236,7 +238,7 @@ const getActionButtons = (item: Token): TableActionButtonsProps['buttons'] => {
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @renew="renew(item)"
               @revoke="revoke(item)" />

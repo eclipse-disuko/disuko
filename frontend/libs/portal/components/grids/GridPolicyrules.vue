@@ -17,12 +17,14 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {DataTableHeader} from '@shared/types/table';
 import {openUrlInNewTab} from '@shared/utils/url';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const router = useRouter();
 const breadcrumbs = useBreadcrumbsStore();
 const {copyToClipboard} = useClipboard();
+const {sliderWidth} = useTableActionSlider();
 
 const search = ref('');
 const rules = ref<PolicyRuleDto[]>([]);
@@ -32,8 +34,8 @@ const headers = computed((): DataTableHeader[] => {
     {
       title: t('COL_ACTIONS'),
       sortable: false,
-      align: 'center',
-      width: 120,
+      align: 'start',
+      width: sliderWidth.value,
       value: 'actions',
     },
     {
@@ -145,7 +147,7 @@ watch(projectModel, async (value) => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tablePolicyRules" class="fill-height">
+      <div ref="tablePolicyRules" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           fixed-header
@@ -159,7 +161,7 @@ watch(projectModel, async (value) => {
           :item-class="getCssClassForReadonlyRow">
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="actionButtons"
               @copy="copyRuleToClipboard(item)"
               @open="openRule(item)" />
