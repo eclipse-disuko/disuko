@@ -34,45 +34,55 @@ type Database struct {
 }
 
 func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes [][]string) {
-	var uri string
-	if conf.Config.Database.User == "" {
-		uri = fmt.Sprintf(
-			"mongodb://%s:%d",
-			conf.Config.Database.Host,
-			conf.Config.Database.Port,
-		)
-	} else {
-		uri = fmt.Sprintf(
-			"mongodb://%s:%s@%s:%d/?tls=true",
+	host := fmt.Sprintf(
+		"%s:%d",
+		conf.Config.Database.Host,
+		conf.Config.Database.Port,
+	)
+
+	credentials := ""
+	if conf.Config.Database.User != "" {
+		credentials = fmt.Sprintf(
+			"%s:%s@",
 			conf.Config.Database.User,
 			conf.Config.Database.Password,
-			conf.Config.Database.Host,
-			conf.Config.Database.Port,
 		)
 	}
 
+	uri := fmt.Sprintf(
+		"mongodb://%s%s",
+		credentials,
+		host,
+	)
+
+	var args []string
+	if conf.Config.Database.Tls {
+		args = append(args, "tls=true")
+	}
 	if conf.Config.Database.AdditionalArgs != "" {
-		uri += "&" + conf.Config.Database.AdditionalArgs
+		args = append(args, conf.Config.Database.AdditionalArgs)
 	}
 
-	var tlsConfig tls.Config
-	if conf.Config.Database.Tls == true {
-		tlsConfig = tls.Config{
+	if len(args) > 0 {
+		uri += "/?" + strings.Join(args, "&")
+	}
+
+	opts := options.Client().ApplyURI(uri)
+
+	if conf.Config.Database.Tls {
+		tlsConfig := &tls.Config{
 			InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
 		}
 		if conf.Config.Database.CAFile != "" {
 			certs, err := os.ReadFile(conf.Config.Database.CAFile)
 			exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
+
 			tlsConfig.RootCAs = x509.NewCertPool()
 			if ok := tlsConfig.RootCAs.AppendCertsFromPEM(certs); !ok {
 				exception.HandleErrorServerMessage(errors.New("failed parsing ca file"), message.GetI18N(message.DatabaseConnection))
 			}
 		}
-	}
-
-	opts := options.Client().ApplyURI(uri)
-	if conf.Config.Database.Tls == true {
-		opts.SetTLSConfig(&tlsConfig)
+		opts.SetTLSConfig(tlsConfig)
 	}
 	client, err := mongo.Connect(opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
