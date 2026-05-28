@@ -22,6 +22,7 @@ import (
 )
 
 type DeletionService struct {
+	SpdxRetriever          approvalService.SpdxRetriever
 	UserRepository         userRepo.IUsersRepository
 	ProjectRepository      projectRepo.IProjectRepository
 	ApprovalListRepository approvallist.IApprovalListRepository
@@ -104,6 +105,7 @@ func (d *deletion) abortApproval(appUuid, prKey string) {
 	s := approvalService.ApprovalService{
 		RequestSession:   d.rs,
 		UserRepo:         d.service.UserRepository,
+		SpdxRetriever:    d.service.SpdxRetriever,
 		SBOMListRepo:     d.service.SbomListRepository,
 		AuditLogListRepo: d.service.AuditLogListRepository,
 	}

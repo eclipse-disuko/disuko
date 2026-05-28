@@ -259,4 +259,7 @@ func (s *Server) setupHandlers() {
 	s.handlers.publicAuth = rest.PublicAuthHandler{
 		ProjectRepo: s.repos.project,
 	}
+
+	// TODO: quick fix, move spdx retriever into service
+	s.services.deletionService.SpdxRetriever = &s.handlers.project
 }
