@@ -25,6 +25,7 @@ interface RuntimeConfig {
    */
   useFutureIt?: boolean;
   enforceFOSSOfficeConfirmation?: boolean;
+  useNewApprovalDialogs?: boolean;
   useWinterTheme?: boolean;
   personalAccessToken?: boolean;
 }
@@ -42,6 +43,7 @@ let config = {
   useFutureProduct: import.meta.env.VITE_USE_FUTURE_PRODUCT === 'true',
   useFutureIt: import.meta.env.VITE_USE_FUTURE_IT === 'true',
   enforceFOSSOfficeConfirmation: false,
+  useNewApprovalDialogs: import.meta.env.VITE_USE_NEW_APPROVAL_DIALOGS === 'true',
   useWinterTheme: false,
   personalAccessToken: import.meta.env.VITE_PERSONAL_ACCESS_TOKEN === 'true',
 } satisfies RuntimeConfig;
@@ -85,6 +87,7 @@ export const setup = async () => {
       useFutureProduct: runtimeConfig.data.VITE_USE_FUTURE_PRODUCT,
       useFutureIt: runtimeConfig.data.VITE_USE_FUTURE_IT,
       enforceFOSSOfficeConfirmation: runtimeConfig.data.ENFORCE_CONFIRMATION,
+      useNewApprovalDialogs: runtimeConfig.data.VITE_USE_NEW_APPROVAL_DIALOGS,
       useWinterTheme: false,
       personalAccessToken: runtimeConfig.data.PERSONAL_ACCESS_TOKEN ?? true,
     };

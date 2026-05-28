@@ -284,9 +284,15 @@ watch(
 
   <template>
     <AddChildrenErrorDialog ref="addChildrenErrorDialog" @open-settings="openSettingsDialog"></AddChildrenErrorDialog>
-    <RequestFOSSDD ref="reqfoss"></RequestFOSSDD>
+    <template v-if="config.useNewApprovalDialogs">
+      <FossDdDialog ref="reqfoss"></FossDdDialog>
+      <InternalApprovalDialog ref="reqapproval"></InternalApprovalDialog>
+    </template>
+    <template v-else>
+      <RequestFOSSDD ref="reqfoss"></RequestFOSSDD>
+      <RequestApproval ref="reqapproval"></RequestApproval>
+    </template>
     <RequestReview ref="reqreview"></RequestReview>
-    <RequestApproval ref="reqapproval"></RequestApproval>
     <ConfirmationDialog
       v-model:showDialog="confirmDialogVisible"
       :config="confirmConfig"
