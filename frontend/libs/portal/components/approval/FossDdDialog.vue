@@ -35,7 +35,7 @@ const {
   dd,
   isDeniedOrUnasserted,
   isEnterpriseOrMobileOrOther,
-  isRdConfirmationMissing,
+  isFossOfficeConfirmationMissing,
   showRedWarnDeniedDecisionsMessage,
   loadSBOMHist,
   loadStats,
@@ -78,12 +78,12 @@ defineExpose({open});
 
             <section
               id="warning"
-              v-if="isDeniedOrUnasserted || isEnterpriseOrMobileOrOther || noFOSS || isRdConfirmationMissing">
+              v-if="isDeniedOrUnasserted || isEnterpriseOrMobileOrOther || noFOSS || isFossOfficeConfirmationMissing">
               <v-alert color="warning" type="warning">
                 <span v-if="isDeniedOrUnasserted">
                   {{ t('DENIED_OR_UNASSARETED_MESSAGE') }}
                 </span>
-                <span v-else-if="isRdConfirmationMissing">
+                <span v-else-if="isFossOfficeConfirmationMissing">
                   {{ t('CONFIRMATION_MISSING') }}
                 </span>
                 <span v-else-if="isEnterpriseOrMobileOrOther">

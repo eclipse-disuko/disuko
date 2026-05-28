@@ -78,7 +78,7 @@ export function useFossDdForm(externalHooks: Partial<ApprovalFormHooks> = {}) {
     }
   });
 
-  const isRdConfirmationMissing = computed(() => {
+  const isFossOfficeConfirmationMissing = computed(() => {
     if (!vehicle.value) {
       return false;
     }
@@ -198,7 +198,7 @@ export function useFossDdForm(externalHooks: Partial<ApprovalFormHooks> = {}) {
       return;
     }
 
-    if (isRdConfirmationMissing.value && config.enforceFOSSOfficeConfirmation) {
+    if (isFossOfficeConfirmationMissing.value && config.enforceFOSSOfficeConfirmation) {
       return;
     }
 
@@ -259,7 +259,7 @@ export function useFossDdForm(externalHooks: Partial<ApprovalFormHooks> = {}) {
     allChannelSboms,
     activePanel,
     dd,
-    isRdConfirmationMissing,
+    isFossOfficeConfirmationMissing,
     isDeniedOrUnasserted,
     isEnterpriseOrMobileOrOther,
     showRedWarnDeniedDecisionsMessage,
