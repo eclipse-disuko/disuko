@@ -26,6 +26,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
@@ -33,6 +34,7 @@ const route = useRoute();
 const {t} = useI18n();
 const {info: snack} = useSnackbar();
 const {copyToClipboard} = useClipboard();
+const {sliderWidth} = useTableActionSlider();
 
 const {
   confirmCloseConfig,
@@ -133,9 +135,9 @@ const possibleStatus = computed((): DataTableHeaderFilterItems[] => {
 const headers: DataTableHeader[] = [
   {
     title: 'COL_ACTIONS',
-    align: 'center',
-    width: 120,
-    value: 'actions',
+    align: 'start',
+    width: sliderWidth.value,
+    key: 'actions',
   },
   {
     title: 'COL_LEVEL',
@@ -555,124 +557,129 @@ onMounted(() => {
           :hint="selected.length > 0 ? t('TT_BULK_CANCEL_REMARK') : t('TT_BULK_CANCEL_SELECT_REMARK')">
         </DCActionButton>
       </Stack>
-
       <DSearchField v-model="search" />
     </div>
 
-    <v-data-table
-      v-model="selected"
-      :loading="loading"
-      item-key="key"
-      :items="filteredList"
-      :headers="filteredHeaders"
-      :search="search"
-      :custom-filter="customFilter"
-      :height="tableHeight"
-      density="compact"
-      fixed-header
-      class="striped-table my-0 h-full py-0"
-      :sort-by="sortItems"
-      sort-desc
-      show-select
-      single-select
-      return-object
-      items-per-page="100"
-      @click:row="rowClick"
-      @update:modelValue="(val) => (selected = val || [])">
-      <template #[`header.actions`]="{column}">
-        <HeaderSettings :column="column" :grid-name="tableName" :show-borders="false" />
-        <span>{{ column.title }}</span>
-      </template>
-      <template #[`header.level`]="{column, getSortIcon, toggleSort}">
-        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
-          <template #filter>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterLevel"
-              :column="column"
-              :label="t('Lbl_filter_status')"
-              :allItems="possibleLevel">
-            </GridHeaderFilterIcon>
-          </template>
-        </GridFilterHeader>
-      </template>
-      <template #[`header.status`]="{column, getSortIcon, toggleSort}">
-        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
-          <template #filter>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterStatus"
-              :column="column"
-              :label="t('Lbl_filter_status')"
-              :allItems="possibleStatus">
-            </GridHeaderFilterIcon>
-          </template>
-        </GridFilterHeader>
-      </template>
-      <template #[`header.sbomName`]="{column, getSortIcon, toggleSort}">
-        <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
-          <template #filter>
-            <GridHeaderFilterIcon
-              v-model="selectedFilterSbom"
-              :column="column"
-              :label="t('Lbl_filter_sbom')"
-              :allItems="possibleSbom">
-            </GridHeaderFilterIcon>
-          </template>
-        </GridFilterHeader>
-      </template>
-      <template #[`item.level`]="{item}">
-        <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom content-class="dpTooltip">
-          <template #activator="{}">
-            <v-icon v-on="on" :color="getIconColorReviewRemarkLevel(item.level)">
-              {{ getIconReviewRemarkLevel(item.level) }}
-            </v-icon>
-          </template>
-          <span>{{ t('REMARK_LEVEL_' + item.level) }}</span>
-        </v-tooltip>
-      </template>
-      <template #[`item.status`]="{item}">
-        <span>{{ t('REMARK_STATUS_' + item.status) }}</span>
-      </template>
-      <template #[`item.title`]="{item}">
-        <span>{{ item.title }}</span>
-      </template>
-      <template #[`item.components`]="{item}">
-        <Truncated>
-          {{
-            item.components ? item.components.map((c) => `${c.componentName} (${c.componentVersion})`).join(';\n') : ''
-          }}
-        </Truncated>
-      </template>
-      <template #[`item.sbomName`]="{item}">
-        <div class="d-flex flex-column">
-          <span>{{ item.sbomName }}</span>
-          <DDateCellWithTooltip v-if="item.sbomName && item.sbomUploaded" :value="item.sbomUploaded.toString()">
-          </DDateCellWithTooltip>
-        </div>
-      </template>
-      <template #[`item.licenses`]="{item}">
-        <Truncated>
-          {{
-            item.licenses
-              ? item.licenses
-                  .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
-                  .join(';\n')
-              : ''
-          }}
-        </Truncated>
-      </template>
-      <template #[`item.created`]="{item}">
-        <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
-      </template>
-      <template #[`item.updated`]="{item}">
-        <DDateCellWithTooltip :value="item.updated"></DDateCellWithTooltip>
-      </template>
-      <template #[`item.closed`]="{item}">
-        <DDateCellWithTooltip :value="item.closed" v-if="item.closed"></DDateCellWithTooltip>
-      </template>
-      <template #[`item.actions`]="{item}">
-        <Stack direction="row" justify="center" align="center" class="gap-0">
+    <div class="fill-height action-slider-table">
+      <v-data-table
+        v-model="selected"
+        :loading="loading"
+        item-key="key"
+        :items="filteredList"
+        :headers="filteredHeaders"
+        :search="search"
+        :custom-filter="customFilter"
+        :height="tableHeight"
+        density="compact"
+        fixed-header
+        class="striped-table my-0 h-full py-0"
+        :sort-by="sortItems"
+        sort-desc
+        show-select
+        single-select
+        return-object
+        items-per-page="100"
+        @click:row="rowClick"
+        @update:modelValue="(val) => (selected = val || [])">
+        <template #[`header.actions`]="{column}">
+          <GridFilterHeader :column="column">
+            <template #settings>
+              <HeaderSettings :column="column" :grid-name="tableName" :show-borders="false" />
+            </template>
+          </GridFilterHeader>
+        </template>
+        <template #[`header.level`]="{column, getSortIcon, toggleSort}">
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedFilterLevel"
+                :column="column"
+                :label="t('Lbl_filter_status')"
+                :allItems="possibleLevel">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
+        </template>
+        <template #[`header.status`]="{column, getSortIcon, toggleSort}">
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedFilterStatus"
+                :column="column"
+                :label="t('Lbl_filter_status')"
+                :allItems="possibleStatus">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
+        </template>
+        <template #[`header.sbomName`]="{column, getSortIcon, toggleSort}">
+          <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
+            <template #filter>
+              <GridHeaderFilterIcon
+                v-model="selectedFilterSbom"
+                :column="column"
+                :label="t('Lbl_filter_sbom')"
+                :allItems="possibleSbom">
+              </GridHeaderFilterIcon>
+            </template>
+          </GridFilterHeader>
+        </template>
+        <template #[`item.level`]="{item}">
+          <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom content-class="dpTooltip">
+            <template #activator="{}">
+              <v-icon v-on="on" :color="getIconColorReviewRemarkLevel(item.level)">
+                {{ getIconReviewRemarkLevel(item.level) }}
+              </v-icon>
+            </template>
+            <span>{{ t('REMARK_LEVEL_' + item.level) }}</span>
+          </v-tooltip>
+        </template>
+        <template #[`item.status`]="{item}">
+          <span>{{ t('REMARK_STATUS_' + item.status) }}</span>
+        </template>
+        <template #[`item.title`]="{item}">
+          <span>{{ item.title }}</span>
+        </template>
+        <template #[`item.components`]="{item}">
+          <Truncated>
+            {{
+              item.components
+                ? item.components.map((c) => `${c.componentName} (${c.componentVersion})`).join(';\n')
+                : ''
+            }}
+          </Truncated>
+        </template>
+        <template #[`item.sbomName`]="{item}">
+          <div class="d-flex flex-column">
+            <span>{{ item.sbomName }}</span>
+            <DDateCellWithTooltip v-if="item.sbomName && item.sbomUploaded" :value="item.sbomUploaded.toString()">
+            </DDateCellWithTooltip>
+          </div>
+        </template>
+        <template #[`item.licenses`]="{item}">
+          <Truncated>
+            {{
+              item.licenses
+                ? item.licenses
+                    .map((l) => (l.licenseName ? `${l.licenseName} (${l.licenseId})` : l.licenseId))
+                    .join(';\n')
+                : ''
+            }}
+          </Truncated>
+        </template>
+        <template #[`item.created`]="{item}">
+          <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
+        </template>
+        <template #[`item.updated`]="{item}">
+          <DDateCellWithTooltip :value="item.updated"></DDateCellWithTooltip>
+        </template>
+        <template #[`item.closed`]="{item}">
+          <DDateCellWithTooltip :value="item.closed" v-if="item.closed"></DDateCellWithTooltip>
+        </template>
+        <template #[`item.actions`]="{item}">
           <TableActionButtons
-            variant="compact"
+            class="pl-4"
+            variant="slider"
             :buttons="getActionButtons(item)"
             @view="viewRemark(item)"
             @edit="openReviewRemarkDialog(item)"
@@ -680,9 +687,9 @@ onMounted(() => {
             @close="openCloseRemarkDialog(item)"
             @cancel="openCancelRemarkDialog(item)"
             @reopen="openReopenRemarkDialog(item)" />
-        </Stack>
-      </template>
-    </v-data-table>
+        </template>
+      </v-data-table>
+    </div>
   </div>
   <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reload"></ReviewRemarkDialog>
   <ConfirmationDialog v-model:showDialog="closeVisible" :config="confirmCloseConfig" @confirm="doCloseRemark">
