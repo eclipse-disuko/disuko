@@ -18,7 +18,7 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
-import {useTableActionSlider} from "@shared/composables/useTableActionSlider";
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
