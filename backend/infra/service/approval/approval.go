@@ -36,7 +36,7 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
-type spdxRetriever interface {
+type SpdxRetriever interface {
 	RetrieveSbomListAndFile(*logy.RequestSession, string, string) (*sbomlist.SbomList, *project.SpdxFileBase)
 }
 
@@ -54,7 +54,7 @@ type ApprovalService struct {
 	LicenseRulesRepo    licenserules.ILicenseRulesRepository
 	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
 
-	SpdxRetriever spdxRetriever
+	SpdxRetriever SpdxRetriever
 
 	WizardService        *projectService.WizardService
 	ProjectLabelService  *projectLabelService.ProjectLabelService
