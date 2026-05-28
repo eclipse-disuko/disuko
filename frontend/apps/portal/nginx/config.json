@@ -5,5 +5,6 @@
   "VITE_PUBLIC_API_ENDPOINT": "https://localhost:3009/api/public/v1",
   "VITE_SERVER_URL": "https://localhost:3009",
   "VITE_USE_FUTURE_IT": true,
-  "VITE_USE_FUTURE_PRODUCT": true
+  "VITE_USE_FUTURE_PRODUCT": true,
+  "PERSONAL_ACCESS_TOKEN": true
 }
