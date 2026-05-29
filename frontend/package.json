@@ -12,7 +12,7 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "build": "cd ./apps/portal && vue-tsc --noEmit && vite build --mode $MODE",
-    "build-ignore-errors": "cd ./apps/portal && VITE_COMMIT=$(git log --pretty=format:%h -n 1) vite build --mode prod",
+    "build-ignore-errors": "cd ./apps/portal && VITE_COMMIT=$(git log --pretty=format:%h -n 1) vite build --mode $MODE",
     "preview:portal": "cd ./apps/portal && VITE_COMMIT=$(git log --pretty=format:%h -n 1) vite preview --port 3000",
     "test": "vitest",
     "test:ui": "vitest --ui",
