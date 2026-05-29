@@ -12,15 +12,17 @@ import TextArea from '@shared/components/disco/TextArea.vue';
 import TextField from '@shared/components/disco/TextField.vue';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {DataTableHeader} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
 const newsboxStore = useNewsboxStore();
+const {sliderWidth} = useTableActionSlider();
 
 const form = ref({
   title: '',
@@ -37,46 +39,38 @@ const isEditMode = ref(false);
 const search = ref('');
 const formNewsboxDialog = ref<VForm | null>(null);
 const editingItem = ref<NewsboxItem | null>(null);
-const menuImageFilter = ref(false);
-const menuLinkFilter = ref(false);
-const menuStatusFilter = ref(false);
 const selectedFilterImage = ref<string[]>([]);
 const selectedFilterLink = ref<string[]>([]);
 const selectedFilterStatus = ref<string[]>([]);
-const sortBy = [{key: 'expiry', order: 'asc'}];
+const sortBy = [{key: 'expiry', order: 'asc'} as SortItem];
 const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 
-const headers = computed<DataTableHeader[]>(() => [
-  {title: t('COL_ACTIONS'), align: 'center', value: 'actions', width: 80, sortable: false, class: 'tableHeaderCell'},
-  {title: t('TITLE'), align: 'start', value: 'title', width: 250, sortable: true, class: 'tableHeaderCell'},
-  {title: t('DESCRIPTION'), align: 'start', value: 'description', width: 300, sortable: true, class: 'tableHeaderCell'},
-  {title: t('TITLE_GERMAN'), align: 'start', value: 'titleDE', width: 200, sortable: true, class: 'tableHeaderCell'},
+const headers = computed((): DataTableHeader[] => [
+  {title: t('COL_ACTIONS'), align: 'start', value: 'actions', width: sliderWidth.value, sortable: false},
+  {title: t('TITLE'), align: 'start', value: 'title', width: 250, sortable: true},
+  {title: t('DESCRIPTION'), align: 'start', value: 'description', width: 300, sortable: true},
+  {title: t('TITLE_GERMAN'), align: 'start', value: 'titleDE', width: 200, sortable: true},
   {
     title: t('DESCRIPTION_GERMAN'),
     align: 'start',
     value: 'descriptionDE',
     width: 200,
     sortable: true,
-    class: 'tableHeaderCell',
   },
   {
     title: t('HAS_IMAGE'),
     align: 'center',
     value: 'image',
-    width: 120,
+    width: 160,
     sortable: false,
-    filterable: true,
-    class: 'tableHeaderCell',
   },
   {
     title: t('HAS_LINK'),
     align: 'center',
     value: 'link',
-    width: 120,
+    width: 160,
     sortable: false,
-    filterable: true,
-    class: 'tableHeaderCell',
   },
   {
     title: t('STATUS'),
@@ -84,8 +78,6 @@ const headers = computed<DataTableHeader[]>(() => [
     value: 'expiry',
     width: 120,
     sortable: true,
-    filterable: true,
-    class: 'tableHeaderCell',
   },
 ]);
 
@@ -252,7 +244,7 @@ const dialogConfig = computed(() => ({
   secondaryButton: t('BTN_CANCEL'),
 }));
 
-const getActionButtons = (item: NewsboxItem): TableActionButtonsProps['buttons'] => {
+const getActionButtons = (_: NewsboxItem): TableActionButtonsProps['buttons'] => {
   return [
     {
       icon: 'mdi-pencil',
@@ -288,7 +280,7 @@ onMounted(() => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div class="fill-height">
+      <div class="fill-height action-slider-table">
         <v-data-table
           v-model:search="search"
           density="comfortable"
@@ -300,228 +292,93 @@ onMounted(() => {
           item-value="_key"
           :sort-by="sortBy"
           :cell-props="{class: 'py-3'}">
-          <template v-slot:header.image="{column, getSortIcon, toggleSort}">
-            <div class="v-data-table-header__content">
-              <span>{{ column.title }}</span>
-              <v-menu :close-on-content-click="false" v-model="menuImageFilter">
-                <template v-slot:activator="{props}">
-                  <DIconButton
-                    :parentProps="props"
-                    icon="mdi-filter-variant"
-                    :hint="t('TT_SHOW_FILTER')"
-                    :color="selectedFilterImage.length > 0 ? 'primary' : 'default'"
-                    location="top" />
-                </template>
-                <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex ma-1 mr-2 justify-end">
-                    <DIconButton icon="mdi-close" @clicked="menuImageFilter = false" color="default" />
-                  </v-row>
-                  <v-select
-                    v-model="selectedFilterImage"
-                    :items="[
-                      {text: t('HAS_IMAGE'), value: 'true'},
-                      {text: t('NO_IMAGE'), value: 'false'},
-                    ]"
-                    class="pa-2 mx-2 pb-4"
-                    :label="t('Lbl_filter_on_type')"
-                    clearable
-                    multiple
-                    item-title="text"
-                    item-value="value"
-                    variant="outlined"
-                    density="compact"
-                    menu
-                    transition="scale-transition"
-                    persistent-clear
-                    :list-props="{class: 'striped-filter-dd py-0'}">
-                    <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="px-2 py-0">
-                        <template v-slot:prepend="{isSelected}">
-                          <v-checkbox hide-details :model-value="isSelected" />
-                        </template>
-                        <template v-slot:title="{title}">
-                          <span class="pFilterEntry">
-                            {{ title }}
-                          </span>
-                        </template>
-                      </v-list-item>
-                    </template>
-                    <template v-slot:selection="{item, index}">
-                      <div v-if="index === 0" class="d-flex align-center">
-                        <span class="pFilterEntry">{{ item.title }}</span>
-                      </div>
-                      <span v-if="index === 1" class="pAdditionalFilter">
-                        +{{ selectedFilterImage.length - 1 }} others
-                      </span>
-                    </template>
-                  </v-select>
-                </div>
-              </v-menu>
-              <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-            </div>
+          <template #[`header.image`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :toggleSort="toggleSort" :getSortIcon="getSortIcon">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterImage"
+                  :column="column"
+                  :label="t('HAS_IMAGE')"
+                  :allItems="[
+                    {text: t('ACTIVE'), value: 'false'},
+                    {text: t('EXPIRED'), value: 'true'},
+                  ]">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
 
           <!-- Custom Header with Filter for HAS_LINK -->
-          <template v-slot:header.link="{column, getSortIcon, toggleSort}">
-            <div class="v-data-table-header__content">
-              <span>{{ column.title }}</span>
-              <v-menu :close-on-content-click="false" v-model="menuLinkFilter">
-                <template v-slot:activator="{props}">
-                  <DIconButton
-                    :parentProps="props"
-                    icon="mdi-filter-variant"
-                    :hint="t('TT_SHOW_FILTER')"
-                    :color="selectedFilterLink.length > 0 ? 'primary' : 'default'"
-                    location="top" />
-                </template>
-                <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex ma-1 mr-2 justify-end">
-                    <DIconButton icon="mdi-close" @clicked="menuLinkFilter = false" color="default" />
-                  </v-row>
-                  <v-select
-                    v-model="selectedFilterLink"
-                    :items="[
-                      {text: t('HAS_LINK'), value: 'true'},
-                      {text: t('NO_LINK'), value: 'false'},
-                    ]"
-                    class="pa-2 mx-2 pb-4"
-                    :label="t('Lbl_filter_on_type')"
-                    clearable
-                    multiple
-                    item-title="text"
-                    item-value="value"
-                    variant="outlined"
-                    density="compact"
-                    menu
-                    transition="scale-transition"
-                    persistent-clear
-                    :list-props="{class: 'striped-filter-dd py-0'}">
-                    <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="px-2 py-0">
-                        <template v-slot:prepend="{isSelected}">
-                          <v-checkbox hide-details :model-value="isSelected" />
-                        </template>
-                        <template v-slot:title="{title}">
-                          <span class="pFilterEntry">
-                            {{ title }}
-                          </span>
-                        </template>
-                      </v-list-item>
-                    </template>
-                    <template v-slot:selection="{item, index}">
-                      <div v-if="index === 0" class="d-flex align-center">
-                        <span class="pFilterEntry">{{ item.title }}</span>
-                      </div>
-                      <span v-if="index === 1" class="pAdditionalFilter">
-                        +{{ selectedFilterLink.length - 1 }} others
-                      </span>
-                    </template>
-                  </v-select>
-                </div>
-              </v-menu>
-              <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-            </div>
+          <template #[`header.link`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :toggleSort="toggleSort" :getSortIcon="getSortIcon">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterLink"
+                  :column="column"
+                  :label="t('HAS_LINK')"
+                  :allItems="[
+                    {text: t('HAS_LINK'), value: 'true'},
+                    {text: t('NO_LINK'), value: 'false'},
+                  ]">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
 
           <!-- Custom Header with Filter for STATUS -->
-          <template v-slot:header.expiry="{column, getSortIcon, toggleSort}">
-            <div class="v-data-table-header__content">
-              <span>{{ column.title }}</span>
-              <v-menu :close-on-content-click="false" v-model="menuStatusFilter">
-                <template v-slot:activator="{props}">
-                  <DIconButton
-                    :parentProps="props"
-                    icon="mdi-filter-variant"
-                    :hint="t('TT_SHOW_FILTER')"
-                    :color="selectedFilterStatus.length > 0 ? 'primary' : 'default'"
-                    location="top" />
-                </template>
-                <div class="bg-background" style="width: 280px">
-                  <v-row class="d-flex ma-1 mr-2 justify-end">
-                    <DIconButton icon="mdi-close" @clicked="menuStatusFilter = false" color="default" />
-                  </v-row>
-                  <v-select
-                    v-model="selectedFilterStatus"
-                    :items="[
-                      {text: t('ACTIVE'), value: 'false'},
-                      {text: t('EXPIRED'), value: 'true'},
-                    ]"
-                    class="pa-2 mx-2 pb-4"
-                    :label="t('Lbl_filter_on_type')"
-                    clearable
-                    multiple
-                    item-title="text"
-                    item-value="value"
-                    variant="outlined"
-                    density="compact"
-                    menu
-                    transition="scale-transition"
-                    persistent-clear
-                    :list-props="{class: 'striped-filter-dd py-0'}">
-                    <template v-slot:item="{props}">
-                      <v-list-item v-bind="props" class="px-2 py-0">
-                        <template v-slot:prepend="{isSelected}">
-                          <v-checkbox hide-details :model-value="isSelected" />
-                        </template>
-                        <template v-slot:title="{title}">
-                          <span class="pFilterEntry">
-                            {{ title }}
-                          </span>
-                        </template>
-                      </v-list-item>
-                    </template>
-                    <template v-slot:selection="{item, index}">
-                      <div v-if="index === 0" class="d-flex align-center">
-                        <span class="pFilterEntry">{{ item.title }}</span>
-                      </div>
-                      <span v-if="index === 1" class="pAdditionalFilter">
-                        +{{ selectedFilterStatus.length - 1 }} others
-                      </span>
-                    </template>
-                  </v-select>
-                </div>
-              </v-menu>
-              <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
-            </div>
+          <template #[`header.expiry`]="{column, getSortIcon, toggleSort}">
+            <GridFilterHeader :column="column" :toggleSort="toggleSort" :getSortIcon="getSortIcon">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedFilterLink"
+                  :column="column"
+                  :label="t('STATUS')"
+                  :allItems="[
+                    {text: t('ACTIVE'), value: 'false'},
+                    {text: t('EXPIRED'), value: 'true'},
+                  ]">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
 
-          <template v-slot:[`item.description`]="{item}">
+          <template #[`item.description`]="{item}">
             <div class="text-truncate" style="max-width: 300px" :title="item.description">
               {{ item.description }}
             </div>
           </template>
 
-          <template v-slot:[`item.titleDE`]="{item}">
+          <template #[`item.titleDE`]="{item}">
             <div class="text-truncate" style="max-width: 200px" :title="item.titleDE">
               {{ item.titleDE || '-' }}
             </div>
           </template>
 
-          <template v-slot:[`item.descriptionDE`]="{item}">
+          <template #[`item.descriptionDE`]="{item}">
             <div class="text-truncate" style="max-width: 200px" :title="item.descriptionDE">
               {{ item.descriptionDE || '-' }}
             </div>
           </template>
 
-          <template v-slot:[`item.image`]="{item}">
+          <template #[`item.image`]="{item}">
             <v-icon v-if="item.image" color="success">mdi-check</v-icon>
             <v-icon v-else color="grey">mdi-minus</v-icon>
           </template>
 
-          <template v-slot:[`item.link`]="{item}">
+          <template #[`item.link`]="{item}">
             <v-icon v-if="item.link" color="success">mdi-check</v-icon>
             <v-icon v-else color="grey">mdi-minus</v-icon>
           </template>
 
-          <template v-slot:[`item.expiry`]="{item}">
+          <template #[`item.expiry`]="{item}">
             <v-chip :color="isExpired(item.expiry) ? 'error' : 'success'" size="small">
               {{ isExpired(item.expiry) ? t('EXPIRED') : t('ACTIVE') }}
             </v-chip>
           </template>
 
-          <template v-slot:[`item.actions`]="{item}">
+          <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="openEditDialog(item)"
               @delete="showConfirmDelete(item)" />
@@ -558,7 +415,7 @@ onMounted(() => {
             :rules="[(value: string) => !value || isURL(value) || t('VALIDATION_url')]"
             hint="Optional: External link URL" />
           <TextField v-if="isEditMode" v-model="form.expiry" :label="t('EXPIRY_DATE')" type="date">
-            <template v-slot:append-inner>
+            <template #[`append-inner`]>
               <v-btn
                 v-if="form.expiry"
                 icon="mdi-close"

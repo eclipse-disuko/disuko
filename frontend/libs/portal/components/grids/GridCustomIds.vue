@@ -14,12 +14,14 @@ import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const customIdStore = useCustomIdStore();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
 const {info: snack} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 const dialog = ref<InstanceType<typeof CustomIdDialog>>();
 const confirmVisible = ref(false);
@@ -39,8 +41,8 @@ const reload = async () => {
 const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 120,
+    align: 'start',
+    width: sliderWidth.value,
     value: 'actions',
   },
   {
@@ -136,33 +138,36 @@ onMounted(async () => {
         class="mx-2" />
     </template>
     <template #table>
-      <v-data-table
-        density="compact"
-        class="striped-table fill-height"
-        :loading="!loaded"
-        item-key="_key"
-        :items="items"
-        :headers="headers"
-        :items-per-page="50"
-        fixed-header
-        :sort-by="sortBy"
-        sort-desc>
-        <template #[`item.created`]="{item}">
-          <DDateCellWithTooltip :value="item.created" />
-        </template>
-        <template #[`item.updated`]="{item}">
-          <DDateCellWithTooltip :value="item.updated" />
-        </template>
-        <template #[`item.actions`]="{item}">
-          <TableActionButtons
-            :buttons="[
-              {icon: 'mdi-pencil', event: 'edit'},
-              {icon: 'mdi-delete', event: 'delete'},
-            ]"
-            @edit="dialog?.open(item)"
-            @delete="showConfirm(item)" />
-        </template>
-      </v-data-table>
+      <div class="fill-height action-slider-table">
+        <v-data-table
+          density="compact"
+          class="striped-table fill-height"
+          :loading="!loaded"
+          item-key="_key"
+          :items="items"
+          :headers="headers"
+          :items-per-page="50"
+          fixed-header
+          :sort-by="sortBy"
+          sort-desc>
+          <template #[`item.created`]="{item}">
+            <DDateCellWithTooltip :value="item.created" />
+          </template>
+          <template #[`item.updated`]="{item}">
+            <DDateCellWithTooltip :value="item.updated" />
+          </template>
+          <template #[`item.actions`]="{item}">
+            <TableActionButtons
+              variant="slider"
+              :buttons="[
+                {icon: 'mdi-pencil', event: 'edit'},
+                {icon: 'mdi-delete', event: 'delete'},
+              ]"
+              @edit="dialog?.open(item)"
+              @delete="showConfirm(item)" />
+          </template>
+        </v-data-table>
+      </div>
     </template>
   </TableLayout>
   <CustomIdDialog ref="dialog" @reload="reload" />

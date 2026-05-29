@@ -14,12 +14,14 @@ import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const checklistsStore = useChecklistsStore();
 const {info: snack} = useSnackbar();
 const labelStore = useLabelStore();
+const {sliderWidth} = useTableActionSlider();
 
 const checklist = computed(() => checklistsStore.checklist!);
 
@@ -45,17 +47,16 @@ const initBreadcrumbs = () => {
   ]);
 };
 
-const headers = computed<DataTableHeader[]>(() => [
+const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 120,
+    align: 'start',
+    width: sliderWidth.value,
     value: 'actions',
   },
   {
     title: t('CD_NAME'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'name',
     width: 140,
     sortable: true,
@@ -63,7 +64,6 @@ const headers = computed<DataTableHeader[]>(() => [
   {
     title: t('LBL_CHECKLIST_TEMPLATE'),
     align: 'start',
-    class: 'tableHeaderCell',
     value: 'targetTemplateName',
     width: 140,
     sortable: true,
@@ -149,30 +149,32 @@ watch(
     </template>
 
     <template #table>
-      <v-data-table
-        density="compact"
-        class="striped-table fill-height"
-        item-key="_key"
-        :items="checklist.items"
-        :headers="headers"
-        :items-per-page="50"
-        fixed-header
-        :sort-by="sortBy"
-        sort-desc>
-        <template v-slot:[`item.created`]="{item}">
-          <DDateCellWithTooltip :value="item.created" />
-        </template>
-        <template v-slot:[`item.updated`]="{item}">
-          <DDateCellWithTooltip :value="item.updated" />
-        </template>
-        <template v-slot:[`item.actions`]="{item}">
-          <TableActionButtons
-            :buttons="getActionButtons()"
-            variant="normal"
-            @edit="dialogItem?.open(item)"
-            @delete="showConfirm(item)" />
-        </template>
-      </v-data-table>
+      <div class="fill-height action-slider-table">
+        <v-data-table
+          density="compact"
+          class="striped-table fill-height"
+          item-key="_key"
+          :items="checklist.items"
+          :headers="headers"
+          :items-per-page="50"
+          fixed-header
+          :sort-by="sortBy"
+          sort-desc>
+          <template #[`item.created`]="{item}">
+            <DDateCellWithTooltip :value="item.created" />
+          </template>
+          <template #[`item.updated`]="{item}">
+            <DDateCellWithTooltip :value="item.updated" />
+          </template>
+          <template #[`item.actions`]="{item}">
+            <TableActionButtons
+              variant="slider"
+              :buttons="getActionButtons()"
+              @edit="dialogItem?.open(item)"
+              @delete="showConfirm(item)" />
+          </template>
+        </v-data-table>
+      </div>
     </template>
   </TableLayout>
 

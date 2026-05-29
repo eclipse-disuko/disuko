@@ -449,8 +449,8 @@ const tableName = 'License';
 const headerSettings = useHeaderSettings({tableName, headers: headers.value});
 const {filteredHeaders} = headerSettings;
 
-const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: string[] = [], exclude: string[] = []) => {
-  return possibleItems
+const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: string[] = [], exclude: string[] = []) =>
+  possibleItems
     .filter((item) => {
       const value = item.value;
       const shouldInclude = include.includes(value);
@@ -458,7 +458,6 @@ const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: stri
       return shouldInclude || !shouldExclude;
     })
     .map((item) => item.value);
-};
 
 const filterForCondition = (condition: FilterCondition) => {
   switch (condition.field) {

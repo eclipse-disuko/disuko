@@ -145,14 +145,16 @@ onMounted(async () => {
             <DDateCellWithTooltip :value="item.when" />
           </template>
           <template #[`header.content.changeType`]="{column, toggleSort, getSortIcon}">
-            <span class="mr-1">{{ column.title }}</span>
-            <GridHeaderFilterIcon
-              v-model="selectedAttributeFilters"
-              :column="column"
-              :label="t('ANNOUNCEMENTS_COL_ATTRIBUTE')"
-              :allItems="possibleAttributeFilters">
-            </GridHeaderFilterIcon>
-            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+            <GridFilterHeader :column="column" :toggleSort="toggleSort" :getSortIcon="getSortIcon">
+              <template #filter>
+                <GridHeaderFilterIcon
+                  v-model="selectedAttributeFilters"
+                  :column="column"
+                  :label="t('ANNOUNCEMENTS_COL_ATTRIBUTE')"
+                  :allItems="possibleAttributeFilters">
+                </GridHeaderFilterIcon>
+              </template>
+            </GridFilterHeader>
           </template>
 
           <template #[`item.content.changeType`]="{item}">
