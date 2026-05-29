@@ -284,9 +284,9 @@ watch(
 
   <template>
     <AddChildrenErrorDialog ref="addChildrenErrorDialog" @open-settings="openSettingsDialog"></AddChildrenErrorDialog>
-    <template v-if="config.useNewApprovalDialogs">
-      <FossDdDialog ref="reqfoss"></FossDdDialog>
-      <InternalApprovalDialog ref="reqapproval"></InternalApprovalDialog>
+    <template v-if="config.useRefactoredApproval">
+      <RequestFOSSDDV2 ref="reqfoss"></RequestFOSSDDV2>
+      <RequestApprovalV2 ref="reqapproval"></RequestApprovalV2>
     </template>
     <template v-else>
       <RequestFOSSDD ref="reqfoss"></RequestFOSSDD>

@@ -6,18 +6,20 @@
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import config from '@shared/utils/config';
 import {useI18n} from 'vue-i18n';
 
-defineProps<{
+interface Props {
   channels: VersionSlim[];
   sboms: SpdxFile[];
   noFOSS: boolean;
-  isVehicle?: boolean;
+  isVehicle: boolean;
   approvableSpdxKey: string;
-}>();
+}
 
-const selectedChannel = defineModel<VersionSlim | null | undefined>('selectedChannel');
-const selectedSbom = defineModel<SpdxFile | null>('selectedSbom');
+const props = defineProps<Props>();
+const selectedChannel = defineModel<VersionSlim | null>('selectedChannel', {default: null});
+const selectedSbom = defineModel<SpdxFile | null>('selectedSbom', {default: null});
 
 const {t} = useI18n();
 const {isAudited} = useApprovalCheck();
@@ -30,30 +32,32 @@ const {isAudited} = useApprovalCheck();
       variant="outlined"
       item-title="name"
       return-object
-      autocomplete="off"
       :label="t('SELECT_VERSION')"
-      :items="channels"
-      :disabled="noFOSS"
-      hide-details />
+      :items="props.channels"
+      :disabled="props.noFOSS"
+      hide-details
+      autocomplete="off" />
     <v-autocomplete
       v-model="selectedSbom"
+      :disabled="props.noFOSS"
       variant="outlined"
       item-title="name"
-      autocomplete="off"
       :label="t('SELECT_SBOM_DELIVERY')"
-      :items="sboms"
-      :disabled="noFOSS"
-      hide-details>
-      <template v-slot:item="{item, props}">
-        <v-list-item v-bind="props" title="">
+      hide-details
+      autocomplete="off"
+      :items="props.sboms">
+      <template v-slot:item="{item, props: itemProps}">
+        <v-list-item v-bind="itemProps" title="">
           <div class="d-flex">
-            <v-icon color="primary" v-if="approvableSpdxKey == item.raw._key" size="small" class="pb-1">
-              mdi-star
-            </v-icon>
+            <div>
+              <v-icon color="primary" v-if="approvableSpdxKey === item.raw._key" size="small" class="pb-1"
+                >mdi-star</v-icon
+              >
+            </div>
             <div>
               <v-icon
                 color="green"
-                v-if="isVehicle && isAudited(selectedChannel ?? null, item?.raw?._key)"
+                v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, item?.raw?._key)"
                 size="small"
                 class="ml-1 pb-1"
                 >mdi-clipboard-check-outline</v-icon
@@ -71,12 +75,12 @@ const {isAudited} = useApprovalCheck();
       </template>
       <template v-slot:selection="{item}">
         <div style="min-width: 13px">
-          <v-icon color="primary" v-if="approvableSpdxKey == item.raw._key" size="small" class="pb-1">mdi-star</v-icon>
+          <v-icon color="primary" v-if="approvableSpdxKey === item.raw._key" size="small" class="pb-1">mdi-star</v-icon>
         </div>
         <div>
           <v-icon
             color="green"
-            v-if="isVehicle && isAudited(selectedChannel ?? null, item?.raw?._key)"
+            v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, item?.raw?._key)"
             size="small"
             class="ml-1 pb-1"
             >mdi-clipboard-check-outline</v-icon

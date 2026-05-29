@@ -3,59 +3,50 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ExpansionPanel from '@shared/components/disco/ExpansionPanel.vue';
 import {useI18n} from 'vue-i18n';
 
-withDefaults(
-  defineProps<{
-    noFOSS: boolean;
-    isVehicle?: boolean;
-  }>(),
-  {
-    isVehicle: false,
-  },
-);
+interface Props {
+  noFOSS: boolean;
+}
 
-const c1 = defineModel<boolean>('c1');
-const c2 = defineModel<boolean>('c2');
-const c3 = defineModel<boolean>('c3');
-const c4 = defineModel<boolean>('c4');
-const c5 = defineModel<boolean>('c5');
-const radioGroup = defineModel<number>('radioGroup', {default: 0});
+const props = defineProps<Props>();
+const c1 = defineModel<boolean>('c1', {default: false});
+const c2 = defineModel<boolean>('c2', {default: false});
+const c3 = defineModel<boolean>('c3', {default: false});
+const c4 = defineModel<boolean>('c4', {default: false});
+const c5 = defineModel<boolean>('c5', {default: false});
 
 const {t} = useI18n();
 </script>
 
 <template>
-  <div>
-    <Stack direction="row" align="center">
-      <v-icon v-if="noFOSS" size="small">mdi-alert</v-icon>
-      <span class="d-block" v-if="noFOSS">{{ t('NO_FOSS_WARNING') }}</span>
+  <Stack class="gap-1">
+    <Stack v-if="props.noFOSS" direction="row" align="center">
+      <v-icon size="small" color="warning">mdi-alert</v-icon>
+      <span class="d-block">{{ t('NO_FOSS_WARNING') }}</span>
     </Stack>
-    <v-switch :model-value="noFOSS" color="primary" :label="t('NO_FOSS_MARKER')" hide-details disabled></v-switch>
+    <Stack direction="row" align="center">
+      <v-icon size="small" color="warning">mdi-alert</v-icon>
+      <span class="d-block">{{ t('NO_FOSS_DISABLED_TOOLTIP') }}</span>
+    </Stack>
+    <v-switch
+      class="ml-2"
+      :model-value="props.noFOSS"
+      color="primary"
+      density="compact"
+      :label="t('NO_FOSS_MARKER')"
+      hide-details
+      disabled></v-switch>
+  </Stack>
 
-    <ExpansionPanel :title="t('SBOM_APPROVAL_ATTRIBUTES')">
-      <template #body>
-        <Stack v-if="!isVehicle" class="gap-2">
-          <v-checkbox v-model="c1" color="primary" :label="t('SBOM_APPROVAL_CHECK1')" hide-details density="compact" />
-          <v-checkbox v-model="c2" color="primary" :label="t('SBOM_APPROVAL_CHECK2')" hide-details density="compact" />
-          <v-checkbox v-model="c3" color="primary" :label="t('SBOM_APPROVAL_CHECK3')" hide-details density="compact" />
-          <v-checkbox v-model="c4" color="primary" :label="t('SBOM_APPROVAL_CHECK4')" hide-details density="compact" />
-          <v-checkbox v-model="c5" color="primary" :label="t('SBOM_APPROVAL_CHECK5')" hide-details density="compact" />
-          <v-checkbox
-            :model-value="noFOSS"
-            color="primary"
-            :label="t('SBOM_APPROVAL_CHECK6')"
-            hide-details
-            density="compact"
-            disabled />
-        </Stack>
-        <!-- [FORK] -->
-        <v-radio-group v-else v-model="radioGroup" hide-details>
-          <v-radio :label="t('SBOM_APPROVAL_VEHICLE_CHECK2')" :value="2"></v-radio>
-          <v-radio :label="t('SBOM_APPROVAL_VEHICLE_CHECK3')" :value="3"></v-radio>
-        </v-radio-group>
-      </template>
-    </ExpansionPanel>
-  </div>
+  <ExpansionPanel :title="t('SBOM_APPROVAL_ATTRIBUTES')">
+    <template #body>
+      <v-checkbox v-model="c1" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK1')" hide-details />
+      <v-checkbox v-model="c2" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK2')" hide-details />
+      <v-checkbox v-model="c3" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK3')" hide-details />
+      <v-checkbox v-model="c4" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK4')" hide-details />
+      <v-checkbox v-model="c5" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK5')" hide-details />
+      <v-checkbox :model-value="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK6')" disabled></v-checkbox>
+    </template>
+  </ExpansionPanel>
 </template>
