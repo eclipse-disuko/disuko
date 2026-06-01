@@ -41,7 +41,7 @@ const headers = computed<DataTableHeader[]>(() => {
     {
       title: t('COL_ACTIONS'),
       align: 'start',
-      width: sliderWidth.value,
+      width: 40 + sliderWidth.value,
       value: 'actions',
       sortable: false,
     },
@@ -252,7 +252,7 @@ onMounted(async () => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableGridJobs" class="fill-height">
+      <div ref="tableGridJobs" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           class="striped-table custom-data-table fill-height"
@@ -278,7 +278,7 @@ onMounted(async () => {
           </template>
           <template v-slot:expanded-row="{item}">
             <tr>
-              <td colspan="9" class="px-0">
+              <td :colspan="headers.length" class="px-0">
                 <v-data-table
                   :headers="innerHeaders"
                   :items="item.log"
