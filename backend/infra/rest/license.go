@@ -20,7 +20,6 @@ import (
 	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/eclipse-disuko/disuko/domain/internalToken"
 	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
 
 	"github.com/eclipse-disuko/disuko/domain/search"
@@ -1062,8 +1061,8 @@ func (licensesHandler *LicensesHandler) LicenseCompareHandler(w http.ResponseWri
 func (licensesHandler *LicensesHandler) CustomLicenses(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 
-	auth := extractInternalToken(r.Context())
-	if !slices.Contains(auth.Capabilities, internalToken.CustomLicenses) {
+	user := extractPATUser(r.Context())
+	if user == nil || !slices.Contains(user.Roles, roles.DomainAdmin) {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 

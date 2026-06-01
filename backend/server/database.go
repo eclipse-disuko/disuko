@@ -14,7 +14,8 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/checklist"
 	"github.com/eclipse-disuko/disuko/infra/repository/customid"
 	filtersets "github.com/eclipse-disuko/disuko/infra/repository/filterset"
-	"github.com/eclipse-disuko/disuko/infra/repository/internalToken"
+	i18nRepo "github.com/eclipse-disuko/disuko/infra/repository/i18n"
+
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/newsbox"
 	policyruleclassification "github.com/eclipse-disuko/disuko/infra/repository/policyruleclassification"
@@ -77,14 +78,14 @@ type dbRepos struct {
 	changeLogList        changeloglist.IChangeLogListRepository
 	changeLogs           changelogs.IChangeLogsRepository
 	licenseRules         licenserules.ILicenseRulesRepository
-	basicauth            internalToken.IRepo
 	customid             customid.ICustomIdRepository
 	projectRepository    projectRepo.IProjectRepository
-	checklist            checklist.IChecklistRepository
-	newsbox              newsbox.IRepo
-	userstats                 userstatsRepo.IUserStatsRepository
-	policyDecisions           policydecisions.IPolicyDecisionsRepository
-	policyRuleClassification  policyruleclassification.IPolicyRuleClassificationRepository
+	checklist                checklist.IChecklistRepository
+	newsbox                  newsbox.IRepo
+	userstats                userstatsRepo.IUserStatsRepository
+	policyDecisions          policydecisions.IPolicyDecisionsRepository
+	policyRuleClassification policyruleclassification.IPolicyRuleClassificationRepository
+	i18nLocale               i18nRepo.II18nRepository
 }
 
 func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
@@ -117,14 +118,14 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		changeLogList:        changeloglist.NewChangeLogListRepository(requestSession),
 		changeLogs:           changelogs.NewChangeLogsRepository(requestSession),
 		licenseRules:         licenserules.NewLicenseRulesRepository(requestSession),
-		basicauth:            internalToken.NewRepo(requestSession),
 		customid:             customid.NewLabelsRepository(requestSession),
 		projectRepository:    projectRepo.NewProjectRepository(requestSession),
-		checklist:            checklist.NewLabelsRepository(requestSession),
-		newsbox:              newsbox.NewNewsboxRepository(requestSession),
+		checklist:                checklist.NewLabelsRepository(requestSession),
+		newsbox:                  newsbox.NewNewsboxRepository(requestSession),
 		userstats:                userstatsRepo.NewUsersRepository(requestSession),
 		policyDecisions:          policydecisions.NewPolicyDecisionsRepository(requestSession),
 		policyRuleClassification: policyruleclassification.NewPolicyRuleClassificationRepository(requestSession),
+		i18nLocale:               i18nRepo.NewI18nRepository(requestSession),
 	}
 	err := s.repos.seedDb(requestSession)
 	if err != nil {

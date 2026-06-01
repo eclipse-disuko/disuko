@@ -9,9 +9,14 @@ import sharedEN from '@shared/i18n/locales/en.json';
 import de from './locales/de.json';
 import en from './locales/en.json';
 
+const storedLang = localStorage.getItem('appLanguage');
+const supportedLocales = ['en', 'de'] as const;
+const normalizedStoredLang = supportedLocales.includes(storedLang as 'en' | 'de') ? storedLang : null;
+const browserLang = navigator.language.toLowerCase().startsWith('de') ? 'de' : 'en';
+
 const i18n = createI18n({
   legacy: false,
-  locale: localStorage.getItem('appLanguage') || navigator.language.includes('en') ? 'en' : navigator.language || 'en',
+  locale: normalizedStoredLang || browserLang,
   fallbackLocale: 'en',
   messages: {
     en: {

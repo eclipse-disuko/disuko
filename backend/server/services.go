@@ -11,6 +11,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/export"
 	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
 	"github.com/eclipse-disuko/disuko/infra/service/locks"
+	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	"github.com/eclipse-disuko/disuko/infra/service/policy"
 	"github.com/eclipse-disuko/disuko/infra/service/project"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
@@ -35,6 +36,7 @@ type services struct {
 	overallReview       project.OverallReviewService
 	deletionService     *userService.DeletionService
 	userService         *userService.Service
+	patAuthService      *patauth.Service
 }
 
 func (s *Server) setupServices(rs *logy.RequestSession) {
@@ -143,5 +145,8 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 			AuditLogListRepository: s.repos.auditLogList,
 		},
 		userService: userServ,
+		patAuthService: &patauth.Service{
+			Repo: s.repos.user,
+		},
 	}
 }

@@ -24,6 +24,7 @@ import {useRouter} from 'vue-router';
 import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 import {getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
 import {useUrls} from '@shared/composables/useUrls';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const {info} = useSnackbar();
@@ -33,6 +34,8 @@ const {openUrl} = useUrls();
 const appStore = useAppStore();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
+const {sliderWidth} = useTableActionSlider();
+
 const currentProject = computed(() => projectStore.currentProject!);
 const labelTools = computed(() => appStore.getLabelsTools);
 
@@ -57,8 +60,8 @@ const headers = computed((): DataTableHeader[] => [
         {
           title: t('COL_ACTIONS'),
           key: 'actions',
-          align: 'center',
-          width: 100,
+          align: 'start',
+          width: sliderWidth.value,
           sortable: false,
         } as DataTableHeader,
       ]
@@ -267,7 +270,7 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableVersions" class="fill-height">
+      <div ref="tableVersions" class="fill-height action-slider-table">
         <v-data-table
           fixed-header
           :sort-by="updatedSort"
@@ -311,7 +314,7 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="actionButtons"
               @copy="copyVersionToClipboard(item)"
               @edit="editVersion(item)"

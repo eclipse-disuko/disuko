@@ -35,6 +35,7 @@ import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 type DataTableItems = DataTabelIndex & VersionSbomsFlat;
 
@@ -56,6 +57,7 @@ const idle = useIdleStore();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
 const {copyToClipboard} = useClipboard();
+const {sliderWidth} = useTableActionSlider();
 
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
@@ -85,9 +87,9 @@ const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
     sortable: false,
-    align: 'center',
+    align: 'start',
     value: 'actions',
-    width: 100,
+    width: sliderWidth.value,
   },
   {
     title: t('COL_SPDX_FILENAME'),
@@ -488,7 +490,7 @@ onMounted(async () => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableSbomDeliveries" class="fill-height">
+      <div ref="tableSbomDeliveries" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           fixed-header
@@ -583,7 +585,7 @@ onMounted(async () => {
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @toggleLock="isOwnerOrDomainAdmin ? toggleLock(item) : undefined"
               @setApprovable="setApprovable(item)"

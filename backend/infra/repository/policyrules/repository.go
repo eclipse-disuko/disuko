@@ -53,6 +53,23 @@ func (repository *policyRulesRepositoryStruct) FindByName(requestSession *logy.R
 
 func (repository *policyRulesRepositoryStruct) FindPolicyRulesForLabel(requestSession *logy.RequestSession, labels []string) []*license.PolicyRules {
 	all := repository.FindAll(requestSession, false)
+	return FilterPolicyRulesForLabel(all, labels)
+}
+
+func (repository *policyRulesRepositoryStruct) ExistsByLabel(requestSession *logy.RequestSession, label string) bool {
+	all := repository.FindAll(requestSession, false)
+	for _, r := range all {
+		for _, s := range r.LabelSets {
+			if !helper.Contains(label, s) {
+				continue
+			}
+			return true
+		}
+	}
+	return false
+}
+
+func FilterPolicyRulesForLabel(all []*license.PolicyRules, labels []string) []*license.PolicyRules {
 	var res []*license.PolicyRules
 	for _, r := range all {
 		if !r.Active {
@@ -71,17 +88,4 @@ func (repository *policyRulesRepositoryStruct) FindPolicyRulesForLabel(requestSe
 		}
 	}
 	return res
-}
-
-func (repository *policyRulesRepositoryStruct) ExistsByLabel(requestSession *logy.RequestSession, label string) bool {
-	all := repository.FindAll(requestSession, false)
-	for _, r := range all {
-		for _, s := range r.LabelSets {
-			if !helper.Contains(label, s) {
-				continue
-			}
-			return true
-		}
-	}
-	return false
 }

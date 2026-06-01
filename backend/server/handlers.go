@@ -41,10 +41,10 @@ type handlers struct {
 	filterSet     rest.FilterSetHandler
 	template      rest.TemplateHandler
 	cap           rest.CapabilitiesHandler
-	basicauth     rest.InternalTokenHandler
 	customid                 rest.CustomidHandler
 	publicAuth               rest.PublicAuthHandler
 	policyRuleClassification rest.PolicyRuleClassificationHandler
+	i18n                     rest.I18nHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -110,6 +110,7 @@ func (s *Server) setupHandlers() {
 		FOSSddService:                 &s.services.fossdd,
 		PolicyDecisionsRepository:     s.repos.policyDecisions,
 		UserService:                   s.services.userService,
+		PATAuthService:                s.services.patAuthService,
 	}
 
 	s.handlers.schema = rest.SchemaHandler{SchemaRepository: s.repos.schema, LabelRepository: s.repos.label}
@@ -121,7 +122,7 @@ func (s *Server) setupHandlers() {
 		PolicyRulesService:      s.services.policyRules,
 		SbomListRepository:      s.repos.sbomList,
 		ChangeLogListRepository: s.repos.changeLogList,
-		UserRepository:          s.repos.user,
+		PATAuthService:          s.services.patAuthService,
 	}
 	s.handlers.licenses = rest.LicensesHandler{
 		PolicyRulesRepository: s.repos.policyRules,
@@ -163,7 +164,7 @@ func (s *Server) setupHandlers() {
 		SbomRetainedService:       s.services.sbomRetained,
 		ProjectLabelService:       &s.services.projectLabelService,
 		PolicyDecisionsRepository: s.repos.policyDecisions,
-		UserRepository:            s.repos.user,
+		PATAuthService:            s.services.patAuthService,
 	}
 	s.handlers.job = rest.JobHandler{JobRepository: s.repos.job}
 	s.handlers.application = rest.ApplicationHandler{
@@ -246,9 +247,6 @@ func (s *Server) setupHandlers() {
 	s.handlers.cap = rest.CapabilitiesHandler{
 		ApplicationConnector: s.connectors.application,
 	}
-	s.handlers.basicauth = rest.InternalTokenHandler{
-		InternalTokenRepo: s.repos.basicauth,
-	}
 	s.handlers.customid = rest.CustomidHandler{
 		Repo:        s.repos.customid,
 		ProjectRepo: s.repos.project,
@@ -267,4 +265,10 @@ func (s *Server) setupHandlers() {
 	s.handlers.publicAuth = rest.PublicAuthHandler{
 		ProjectRepo: s.repos.project,
 	}
+	s.handlers.i18n = rest.I18nHandler{
+		I18nRepository: s.repos.i18nLocale,
+	}
+
+	// TODO: quick fix, move spdx retriever into service
+	s.services.deletionService.SpdxRetriever = &s.handlers.project
 }

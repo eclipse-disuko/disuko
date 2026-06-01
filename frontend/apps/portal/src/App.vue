@@ -4,8 +4,10 @@
 
 <script setup lang="ts">
 import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import i18nService from '@disclosure-portal/services/i18n.service';
 import DHTTPError from '@shared/types/DHTTPError';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
+import i18n from '@disclosure-portal/i18n';
 import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
@@ -21,7 +23,7 @@ import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
 import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const route = useRoute();
 const userStore = useUserStore();
 const appStore = useAppStore();
@@ -135,6 +137,25 @@ onUnmounted(() => {
   window.removeEventListener('resize', onResizeWindow);
 });
 
+const loadI18nLocale = async (code: string) => {
+  const res = await i18nService.getLocale(code);
+  if (res.data?.entries) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    i18n.global.setLocaleMessage(code, res.data.entries as any);
+  }
+};
+
+const loadLocales = async () => {
+  const list = await i18nService.getLocales();
+  const locales = list.data || [];
+  await Promise.all(locales.map((item) => loadI18nLocale(item.localeCode)));
+  return locales.map((item) => ({
+    code: item.localeCode,
+    displayName: item.displayName,
+    nativeName: item.nativeName,
+  }));
+};
+
 onMounted(async () => {
   eventBus.on('on-api-error', showAPIError);
   eventBus.on('on-error', showError);
@@ -143,7 +164,13 @@ onMounted(async () => {
   languageStore.initializeLanguage();
   eventKeyStore.initEventKeyStore();
 
-  const simpleProfileData = await profileService.getProfileData();
+  const [simpleProfileData, locales] = await Promise.all([
+    profileService.getProfileData(),
+    loadLocales(),
+  ]);
+
+  appStore.setPublishedLanguages(locales);
+  locale.value = appStore.getAppLanguage;
 
   await appStore.fetchLabelsTools();
   await labelStore.fetchAllLabels();

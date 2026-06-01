@@ -16,9 +16,6 @@ type ProjectTest struct {
 }
 
 func main() {
-	// db := mongo.Database{}
-	// db.Init(nil, "projects", nil)
-
 	ctx := context.Background()
 	server.StartServer(ctx)
 }

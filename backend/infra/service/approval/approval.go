@@ -36,7 +36,7 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
-type spdxRetriever interface {
+type SpdxRetriever interface {
 	RetrieveSbomListAndFile(*logy.RequestSession, string, string) (*sbomlist.SbomList, *project.SpdxFileBase)
 }
 
@@ -54,7 +54,7 @@ type ApprovalService struct {
 	LicenseRulesRepo    licenserules.ILicenseRulesRepository
 	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
 
-	SpdxRetriever spdxRetriever
+	SpdxRetriever SpdxRetriever
 
 	WizardService        *projectService.WizardService
 	ProjectLabelService  *projectLabelService.ProjectLabelService
@@ -123,6 +123,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 	} else {
 		projects = []string{targetProject.Key}
 	}
+	policyRulesAll := s.PolicyRulesRepo.FindAll(s.RequestSession, false)
 	for _, prKey := range projects {
 		pr := s.ProjectRepo.FindByKeyWithDeleted(s.RequestSession, prKey, false)
 		if pr == nil {
@@ -167,7 +168,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 		}
 
 		compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, pr.ApprovableSPDX.VersionKey, sbom)
-		rules := s.PolicyRulesRepo.FindPolicyRulesForLabel(s.RequestSession, pr.PolicyLabels)
+		rules := policyrules.FilterPolicyRulesForLabel(policyRulesAll, pr.PolicyLabels)
 		policyDecisions := s.PolicyDecisionsRepo.FindByKey(s.RequestSession, pr.Key, false)
 		isVehicle := s.ProjectLabelService.HasVehiclePlatformLabel(s.RequestSession, pr)
 		evalRes := compsInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, sbom.Uploaded, sbom.Key)
