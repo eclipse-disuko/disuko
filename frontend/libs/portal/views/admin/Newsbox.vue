@@ -300,8 +300,8 @@ onMounted(() => {
                   :column="column"
                   :label="t('HAS_IMAGE')"
                   :allItems="[
-                    {text: t('ACTIVE'), value: 'false'},
-                    {text: t('EXPIRED'), value: 'true'},
+                    {text: t('HAS_IMAGE'), value: 'true'},
+                    {text: t('NO_IMAGE'), value: 'false'},
                   ]">
                 </GridHeaderFilterIcon>
               </template>
