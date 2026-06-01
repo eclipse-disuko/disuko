@@ -15,7 +15,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/customid"
 	filtersets "github.com/eclipse-disuko/disuko/infra/repository/filterset"
 	i18nRepo "github.com/eclipse-disuko/disuko/infra/repository/i18n"
-	"github.com/eclipse-disuko/disuko/infra/repository/internalToken"
+
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/newsbox"
 	reviewremarks2 "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
@@ -77,7 +77,6 @@ type dbRepos struct {
 	changeLogList        changeloglist.IChangeLogListRepository
 	changeLogs           changelogs.IChangeLogsRepository
 	licenseRules         licenserules.ILicenseRulesRepository
-	basicauth            internalToken.IRepo
 	customid             customid.ICustomIdRepository
 	projectRepository    projectRepo.IProjectRepository
 	checklist            checklist.IChecklistRepository
@@ -117,7 +116,6 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		changeLogList:        changeloglist.NewChangeLogListRepository(requestSession),
 		changeLogs:           changelogs.NewChangeLogsRepository(requestSession),
 		licenseRules:         licenserules.NewLicenseRulesRepository(requestSession),
-		basicauth:            internalToken.NewRepo(requestSession),
 		customid:             customid.NewLabelsRepository(requestSession),
 		projectRepository:    projectRepo.NewProjectRepository(requestSession),
 		checklist:            checklist.NewLabelsRepository(requestSession),

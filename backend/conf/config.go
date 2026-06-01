@@ -163,7 +163,9 @@ var Config = struct {
 		RefreshSecret               string
 		AccessTokenExpiresInMinutes int `default:"30"`
 		RefreshTokenExpiresInHours  int `default:"12"`
-		UserTokenSigningKey         string
+	}
+	PATAuth struct {
+		SigningKey string
 	}
 	Server   Server
 	Database struct {
@@ -175,6 +177,7 @@ var Config = struct {
 		CAFile             string       `default:""`
 		User               string       `default:""`
 		Password           string
+		Tls                bool   `default:"true"`
 		DatabaseName       string `default:"disuko"`
 		MigrateOnly        bool   `default:"false"`
 		ShardReplica       int    `default:"3"`
@@ -229,9 +232,6 @@ var Config = struct {
 			Port   int
 		}
 	}
-	BasicAuth struct {
-		Pepper string
-	}
 }{}
 
 func init() {
@@ -269,6 +269,7 @@ func checkEnvironmentVariables() {
 	Config.Database.Port = getEnvVariableInt("DATABASE_PORT", Config.Database.Port)
 	Config.Database.User = getEnvVariable("DATABASE_USER", Config.Database.User)
 	Config.Database.Password = getEnvVariable("DATABASE_PASSWORD", Config.Database.Password)
+	Config.Database.Tls = getEnvVariableBoolean("DATABASE_TLS", Config.Database.Tls)
 	Config.Database.InsecureSkipVerify = getEnvVariableBoolean("DATABASE_SKIP_VERIFY", Config.Database.InsecureSkipVerify)
 	Config.Database.CAFile = getEnvVariable("DATABASE_CA_FILE", Config.Database.CAFile)
 	Config.Database.ShardReplica = getEnvVariableInt("DATABASE_SHARD_REPLICA", Config.Database.ShardReplica)
@@ -309,7 +310,8 @@ func checkEnvironmentVariables() {
 
 	Config.Auth.AccessSecret = getEnvVariable("AUTH_ACCESS_SECRET", Config.Auth.AccessSecret)
 	Config.Auth.RefreshSecret = getEnvVariable("AUTH_REFRESH_SECRET", Config.Auth.RefreshSecret)
-	Config.Auth.UserTokenSigningKey = getEnvVariable("AUTH_USER_TOKEN_SIGNING_KEY", Config.Auth.UserTokenSigningKey)
+
+	Config.PATAuth.SigningKey = getEnvVariable("PAT_SIGNING_KEY", Config.PATAuth.SigningKey)
 
 	Config.S3.IsEnabled = getEnvVariableBoolean("S3_ENABLED", Config.S3.IsEnabled)
 	Config.S3.IsRestApiEnabled = getEnvVariableBoolean("S3_REST_API_ENABLED", Config.S3.IsRestApiEnabled)
@@ -349,8 +351,6 @@ func checkEnvironmentVariables() {
 	Config.Connector.Department.Scheme = getEnvVariable("DEPARTMENT_SCHEME", Config.Connector.Department.Scheme)
 	Config.Connector.Department.Host = getEnvVariable("DEPARTMENT_HOST", Config.Connector.Department.Host)
 	Config.Connector.Department.Port = getEnvVariableInt("DEPARTMENT_PORT", Config.Connector.Department.Port)
-
-	Config.BasicAuth.Pepper = getEnvVariable("BASICAUTH_PEPPER", Config.BasicAuth.Pepper)
 
 	Config.Smtp.Host = getEnvVariable("SMTP_HOST", Config.Smtp.Host)
 	Config.Smtp.Port = getEnvVariable("SMTP_PORT", Config.Smtp.Port)

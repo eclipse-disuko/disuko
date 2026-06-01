@@ -12,6 +12,7 @@ import profileService from '@disclosure-portal/services/profile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
 import {formatDate} from '@disclosure-portal/utils/View';
+import config from '@shared/utils/config';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -113,7 +114,7 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
             <v-tab value="tasks">
               {{ t('TASKS') }}
             </v-tab>
-            <v-tab value="personalTokens" v-if="!hasUsersAccess">
+            <v-tab value="personalTokens" v-if="!hasUsersAccess && config.personalAccessToken">
               {{ t('PERSONAL_TOKENS') }}
             </v-tab>
             <v-tab value="auditLog" v-if="hasUsersAccess">
@@ -265,7 +266,7 @@ const applyNewUserRoles = async (user: UserDto, forceNonInternal: boolean) => {
                 :readOnly="hasUsersAccess"
                 :in-own-view="false" />
             </v-tabs-window-item>
-            <v-tabs-window-item value="personalTokens" v-if="!hasUsersAccess">
+            <v-tabs-window-item value="personalTokens" v-if="!hasUsersAccess && config.personalAccessToken">
               <GridPersonalToken />
             </v-tabs-window-item>
             <v-tabs-window-item value="auditLog" v-if="hasUsersAccess">

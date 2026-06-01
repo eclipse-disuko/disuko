@@ -14,7 +14,7 @@ import (
 
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
-	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 	"go.uber.org/zap/zapcore"
 
@@ -73,7 +73,7 @@ type SPDXHandler struct {
 	SbomRetainedService       *sbomLockRetained.Service
 	ProjectLabelService       *projectLabelService.ProjectLabelService
 	PolicyDecisionsRepository policydecisions.IPolicyDecisionsRepository
-	UserRepository            user.IUsersRepository
+	PATAuthService            *patauth.Service
 }
 
 func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.RequestSession, currentProject *project.Project, version *project.ProjectVersion, origin string, uploader string, w http.ResponseWriter, r *http.Request, isPublic bool) {

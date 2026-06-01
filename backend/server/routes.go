@@ -364,12 +364,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Get("/", s.handlers.notification.NotificationGetHandler)  // test missing
 					r.Post("/", s.handlers.notification.NotificationSetHandler) // test missing
 				})
-				r.Route("/internaltoken", func(r chi.Router) {
-					r.Get("/", s.handlers.basicauth.List)
-					r.Post("/", s.handlers.basicauth.Create)
-					r.Put("/{uuid}", s.handlers.basicauth.Renew)
-					r.Delete("/{uuid}", s.handlers.basicauth.Revoke)
-				})
 				r.Route("/customid", func(r chi.Router) {
 					r.Get("/", s.handlers.customid.List)
 					r.Post("/", s.handlers.customid.Create)
@@ -447,8 +441,9 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	})
 
 	s.r.Group(func(r chi.Router) {
-		r.Use(s.basicauthMW.Authenticator)
+		r.Use(s.patAuthMW.Authenticator)
 		r.Route("/api/internal", func(r chi.Router) {
+			r.Get("/projects", s.handlers.project.ListAllInternal)
 			r.Get("/report", s.handlers.analytics.InternalReport)
 			r.Get("/customlicenses", s.handlers.licenses.CustomLicenses)
 		})

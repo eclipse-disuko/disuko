@@ -15,13 +15,13 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/message"
 	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
-	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 )
 
-func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, userRepo userRepo.IUsersRepository, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
-	currentProject, origin := retrieveProjectFromPublicRequest(rs, prRepo, userRepo, r, true, true)
+func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, patAuthService *patauth.Service, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
+	currentProject, origin := retrieveProjectFromPublicRequest(rs, prRepo, patAuthService, r, true, true)
 
 	versionEscaped := chi.URLParam(r, "version")
 	versionName, err := url.QueryUnescape(versionEscaped)
@@ -44,7 +44,7 @@ func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo 
 	return currentProject, version, origin
 }
 
-func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, userRepo userRepo.IUsersRepository, r *http.Request, withVersions bool, denyDeprecated bool) (*project.Project, string) {
+func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, patAuthService *patauth.Service, r *http.Request, withVersions bool, denyDeprecated bool) (*project.Project, string) {
 	prID := extractProjectKeyFromRequest(r)
 	pr := prRepo.FindByKey(rs, prID, !withVersions)
 	if pr == nil {
@@ -80,7 +80,7 @@ func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.I
 		return pr, projectTokenAuth(rs, prRepo, pr, assertTokenUUID(authHeader, DiscoBearer)).Origin()
 	}
 	if s[0] == Bearer {
-		return pr, patAuth(rs, pr, prRepo, userRepo, s[1])
+		return pr, patAuthService.ValidateForProject(rs, pr, s[1])
 	}
 	exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid disco token"), "Malformed token provided")
 	return nil, ""
@@ -155,19 +155,19 @@ func (p *ProjectHandler) retrieveSbomListAndLatestFile(requestSession *logy.Requ
 }
 
 func (p *ProjectHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
-	return retrieveProjectAndVersionFromPublicRequest(rs, p.ProjectRepository, p.UserRepository, r)
+	return retrieveProjectAndVersionFromPublicRequest(rs, p.ProjectRepository, p.PATAuthService, r)
 }
 
 func (h *ProjectHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.UserRepository, r, withVersions, true)
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true)
 }
 
 func (h *PolicyRulesHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.UserRepository, r, withVersions, true)
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true)
 }
 
 func (s *SPDXHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
-	return retrieveProjectAndVersionFromPublicRequest(rs, s.ProjectRepository, s.UserRepository, r)
+	return retrieveProjectAndVersionFromPublicRequest(rs, s.ProjectRepository, s.PATAuthService, r)
 }
 
 func (p *ProjectHandler) retrieveProjectAndVersion2(r *http.Request) (*project.Project, *project.ProjectVersion, *logy.RequestSession) {

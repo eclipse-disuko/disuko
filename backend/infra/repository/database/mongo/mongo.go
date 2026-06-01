@@ -34,31 +34,56 @@ type Database struct {
 }
 
 func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes [][]string) {
-	uri := fmt.Sprintf(
-		"mongodb://%s:%s@%s:%d/?tls=true",
-		conf.Config.Database.User,
-		conf.Config.Database.Password,
+	host := fmt.Sprintf(
+		"%s:%d",
 		conf.Config.Database.Host,
 		conf.Config.Database.Port,
 	)
 
+	credentials := ""
+	if conf.Config.Database.User != "" {
+		credentials = fmt.Sprintf(
+			"%s:%s@",
+			conf.Config.Database.User,
+			conf.Config.Database.Password,
+		)
+	}
+
+	uri := fmt.Sprintf(
+		"mongodb://%s%s",
+		credentials,
+		host,
+	)
+
+	var args []string
+	if conf.Config.Database.Tls {
+		args = append(args, "tls=true")
+	}
 	if conf.Config.Database.AdditionalArgs != "" {
-		uri += "&" + conf.Config.Database.AdditionalArgs
+		args = append(args, conf.Config.Database.AdditionalArgs)
 	}
 
-	tlsConfig := tls.Config{
-		InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
+	if len(args) > 0 {
+		uri += "/?" + strings.Join(args, "&")
 	}
-	if conf.Config.Database.CAFile != "" {
-		certs, err := os.ReadFile(conf.Config.Database.CAFile)
-		exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
-		tlsConfig.RootCAs = x509.NewCertPool()
-		if ok := tlsConfig.RootCAs.AppendCertsFromPEM(certs); !ok {
-			exception.HandleErrorServerMessage(errors.New("failed parsing ca file"), message.GetI18N(message.DatabaseConnection))
+
+	opts := options.Client().ApplyURI(uri)
+
+	if conf.Config.Database.Tls {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: conf.Config.Database.InsecureSkipVerify,
 		}
-	}
+		if conf.Config.Database.CAFile != "" {
+			certs, err := os.ReadFile(conf.Config.Database.CAFile)
+			exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
 
-	opts := options.Client().ApplyURI(uri).SetTLSConfig(&tlsConfig)
+			tlsConfig.RootCAs = x509.NewCertPool()
+			if ok := tlsConfig.RootCAs.AppendCertsFromPEM(certs); !ok {
+				exception.HandleErrorServerMessage(errors.New("failed parsing ca file"), message.GetI18N(message.DatabaseConnection))
+			}
+		}
+		opts.SetTLSConfig(tlsConfig)
+	}
 	client, err := mongo.Connect(opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.DatabaseConnection))
 
