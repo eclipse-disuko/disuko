@@ -73,7 +73,7 @@ func (h *PolicyRuleClassificationHandler) GetMatrixHandler(w http.ResponseWriter
 func (h *PolicyRuleClassificationHandler) CreateHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !rights.AllowTools.Create {
+	if !rights.AllowLicense.Create {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
@@ -89,7 +89,7 @@ func (h *PolicyRuleClassificationHandler) CreateHandler(w http.ResponseWriter, r
 func (h *PolicyRuleClassificationHandler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !rights.AllowTools.Update {
+	if !rights.AllowLicense.Update {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
@@ -107,7 +107,7 @@ func (h *PolicyRuleClassificationHandler) UpdateHandler(w http.ResponseWriter, r
 func (h *PolicyRuleClassificationHandler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !rights.AllowTools.Delete {
+	if !rights.AllowLicense.Delete {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
