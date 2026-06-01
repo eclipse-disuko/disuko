@@ -37,7 +37,6 @@ const CheckList = () => import('@disclosure-portal/views/admin/checklist/Checkli
 const CheckListMain = () => import('@disclosure-portal/views/admin/checklist/ChecklistMain.vue');
 const SchemaMain = () => import('@disclosure-portal/views/admin/schema/SchemaMain.vue');
 const AdminProjects = () => import('@disclosure-portal/views/admin/AdminProjects.vue');
-const InternalToken = () => import('@disclosure-portal/views/admin/InternalToken.vue');
 const Newsbox = () => import('@disclosure-portal/views/admin/Newsbox.vue');
 const FeatureFlags = () => import('@disclosure-portal/views/admin/FeatureFlags.vue');
 const UpcomingDeletions = () => import('@disclosure-portal/views/admin/UpcomingDeletions.vue');
@@ -472,17 +471,6 @@ const routes: RouteRecordRaw[] = [
           title: {
             en: 'Checklist Details',
             de: 'Checkliste Details',
-          },
-        },
-      },
-      {
-        path: 'admin/internaltoken',
-        name: 'InternalToken',
-        component: InternalToken,
-        meta: {
-          title: {
-            en: 'Internal Token',
-            de: 'Interner Token',
           },
         },
       },

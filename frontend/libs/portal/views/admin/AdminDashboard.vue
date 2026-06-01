@@ -143,18 +143,6 @@ const tiles = computed<ITile[]>(() => {
       expand: false,
     });
   }
-  if (RightsUtils.isApplicationAdmin()) {
-    res.push({
-      color: 'primary',
-      cnt: -1,
-      visible: true,
-      title: 'INTERNAL_TOKEN',
-      url: '/dashboard/admin/internaltoken',
-      icon: 'mdi-shield-lock',
-      expandGroup: false,
-      expand: false,
-    });
-  }
 
   if (RightsUtils.isDomainAdmin() || RightsUtils.isFOSSOffice()) {
     res.push({
