@@ -76,25 +76,33 @@ const pageTitle = computed(() => {
 const pageDescription = computed(() => t('ADMIN_I18N_DETAIL_PAGE_DESCRIPTION'));
 const importResultHasErrors = computed(() => (importResult.value?.errors?.length || 0) > 0);
 
-const addEntryDialogConfig = computed((): DialogLayoutConfig => ({
-  title: `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}`,
-  primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
-  secondaryButton: {text: t('BTN_CANCEL')},
-}));
+const addEntryDialogConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}`,
+    primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
+    secondaryButton: {text: t('BTN_CANCEL')},
+  }),
+);
 
-const deleteDialogConfig = computed((): DialogLayoutConfig => ({
-  title: t('DLG_CONFIRMATION_TITLE'),
-}));
+const deleteDialogConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: t('DLG_CONFIRMATION_TITLE'),
+  }),
+);
 
-const importDialogConfig = computed((): DialogLayoutConfig => ({
-  title: t('BTN_UPLOAD_JSON'),
-  primaryButton: {text: t('BTN_UPLOAD_JSON'), disabled: isImporting.value},
-  secondaryButton: {text: t('BTN_CANCEL')},
-}));
+const importDialogConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: t('BTN_UPLOAD_JSON'),
+    primaryButton: {text: t('BTN_UPLOAD_JSON'), disabled: isImporting.value},
+    secondaryButton: {text: t('BTN_CANCEL')},
+  }),
+);
 
-const importResultDialogConfig = computed((): DialogLayoutConfig => ({
-  title: t('ADMIN_I18N_IMPORT_RESULT_TITLE'),
-}));
+const importResultDialogConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: t('ADMIN_I18N_IMPORT_RESULT_TITLE'),
+  }),
+);
 
 const normalizeValue = (value: unknown): string => {
   if (value === null || value === undefined) {
@@ -119,7 +127,7 @@ const getRowTranslation = (item: {raw?: LocaleEntry} | LocaleEntry): string => {
 };
 
 const getRow = (item: {raw?: LocaleEntry} | LocaleEntry): LocaleEntry => {
-  return 'raw' in item && item.raw ? item.raw : item as LocaleEntry;
+  return 'raw' in item && item.raw ? item.raw : (item as LocaleEntry);
 };
 
 const isEditingRow = (item: {raw?: LocaleEntry} | LocaleEntry): boolean => {
@@ -178,7 +186,7 @@ const exportAsJson = async () => {
   isExporting.value = true;
   actionError.value = '';
   try {
-		const response = await i18nService.exportLocale(localeCode.value);
+    const response = await i18nService.exportLocale(localeCode.value);
 
     const fileName = `locale.${localeCode.value}.json`;
     const url = URL.createObjectURL(response.data);
@@ -314,17 +322,20 @@ const addEntry = async () => {
 
     if (addEntryToAllLocales.value) {
       const localeResponse = await i18nService.getLocales();
-      targetLocales = Array.from(new Set((localeResponse.data || [])
-        .map((item) => String(item.localeCode || '').toLowerCase())
-        .filter((code) => !!code)));
+      targetLocales = Array.from(
+        new Set(
+          (localeResponse.data || [])
+            .map((item) => String(item.localeCode || '').toLowerCase())
+            .filter((code) => !!code),
+        ),
+      );
       if (!targetLocales.includes(localeCode.value)) {
         targetLocales.push(localeCode.value);
       }
     }
 
     await Promise.all(
-      targetLocales.map((targetLocale) =>
-        i18nService.upsertTranslation(targetLocale, key, newEntryTranslation.value)),
+      targetLocales.map((targetLocale) => i18nService.upsertTranslation(targetLocale, key, newEntryTranslation.value)),
     );
   } catch {
     addEntryError.value = t('ERROR_500_TITLE');
@@ -384,9 +395,7 @@ const onDeleteConfirm = async () => {
     : [localeCode.value];
 
   const deleteResults = await Promise.allSettled(
-    targetLocales.map((targetLocale) =>
-      i18nService.deleteTranslation(targetLocale, keyToDelete),
-    ),
+    targetLocales.map((targetLocale) => i18nService.deleteTranslation(targetLocale, keyToDelete)),
   );
 
   const currentLocaleIndex = targetLocales.findIndex((code) => code === localeCode.value);
@@ -558,17 +567,12 @@ watch(
                 density="compact"
                 variant="outlined"
                 hide-details />
-              <v-text-field
-                v-else
-                v-model="draftTranslation"
-                density="compact"
-                variant="outlined"
-                hide-details />
+              <v-text-field v-else v-model="draftTranslation" density="compact" variant="outlined" hide-details />
             </div>
             <span v-else class="text-body-2" style="white-space: pre-wrap">{{ getRowTranslation(item) }}</span>
           </template>
           <template #[`item.actions`]="{item}">
-            <div class="d-flex justify-center ga-1">
+            <div class="d-flex ga-1 justify-center">
               <template v-if="isEditingRow(item)">
                 <DIconButton icon="mdi-check" color="success" @clicked="saveEdit" />
                 <DIconButton icon="mdi-close" color="secondary" @clicked="cancelEdit" />
@@ -635,7 +639,10 @@ watch(
         <v-btn size="small" variant="flat" color="error" @click="onDeleteConfirm">{{ t('BTN_DELETE') }}</v-btn>
       </template>
       <Stack>
-        <span>{{ t('DLG_CONFIRMATION_DESCRIPTION') }}<strong>{{ deleteEntryKey }}</strong>?</span>
+        <span
+          >{{ t('DLG_CONFIRMATION_DESCRIPTION') }}<strong>{{ deleteEntryKey }}</strong
+          >?</span
+        >
         <v-checkbox
           v-model="deleteGlobally"
           density="compact"
@@ -672,12 +679,24 @@ watch(
   <v-dialog v-model="showImportResultDialog" max-width="800px">
     <DialogLayout :config="importResultDialogConfig" @close="resetImportResultDialog">
       <Stack>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_LOCALE') }}:</strong> {{ importResult?.locale }}</p>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_FILES') }}:</strong> {{ importResult?.filesProcessed ?? 0 }}</p>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_KEYS') }}:</strong> {{ importResult?.totalKeysParsed ?? 0 }}</p>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_APPENDED') }}:</strong> {{ importResult?.appended ?? 0 }}</p>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UPDATED') }}:</strong> {{ importResult?.updated ?? 0 }}</p>
-        <p class="mb-2"><strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UNCHANGED') }}:</strong> {{ importResult?.unchanged ?? 0 }}</p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_LOCALE') }}:</strong> {{ importResult?.locale }}
+        </p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_FILES') }}:</strong> {{ importResult?.filesProcessed ?? 0 }}
+        </p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_KEYS') }}:</strong> {{ importResult?.totalKeysParsed ?? 0 }}
+        </p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_APPENDED') }}:</strong> {{ importResult?.appended ?? 0 }}
+        </p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UPDATED') }}:</strong> {{ importResult?.updated ?? 0 }}
+        </p>
+        <p class="mb-2">
+          <strong>{{ t('ADMIN_I18N_IMPORT_RESULT_UNCHANGED') }}:</strong> {{ importResult?.unchanged ?? 0 }}
+        </p>
         <v-alert
           v-if="importResultHasErrors"
           type="error"
@@ -685,7 +704,9 @@ watch(
           class="mt-4"
           :title="t('ADMIN_I18N_IMPORT_RESULT_ERROR_TITLE')">
           <ul class="mb-0 pl-4">
-            <li v-for="(issue, index) in importResult?.errors || []" :key="`${issue.fileName}-${issue.key || ''}-${index}`">
+            <li
+              v-for="(issue, index) in importResult?.errors || []"
+              :key="`${issue.fileName}-${issue.key || ''}-${index}`">
               {{ issue.fileName }}
               <span v-if="issue.key"> ({{ issue.key }})</span>
               : {{ issue.message }}

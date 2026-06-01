@@ -164,10 +164,7 @@ onMounted(async () => {
   languageStore.initializeLanguage();
   eventKeyStore.initEventKeyStore();
 
-  const [simpleProfileData, locales] = await Promise.all([
-    profileService.getProfileData(),
-    loadLocales(),
-  ]);
+  const [simpleProfileData, locales] = await Promise.all([profileService.getProfileData(), loadLocales()]);
 
   appStore.setPublishedLanguages(locales);
   locale.value = appStore.getAppLanguage;

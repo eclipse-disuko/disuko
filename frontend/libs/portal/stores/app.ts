@@ -146,7 +146,9 @@ export const useAppStore = defineStore('app', () => {
     localStorage.setItem('appLanguage', state.appLanguage);
   };
 
-  const setPublishedLanguages = (languages: Array<string | {code: string; displayName?: string; nativeName?: string}>) => {
+  const setPublishedLanguages = (
+    languages: Array<string | {code: string; displayName?: string; nativeName?: string}>,
+  ) => {
     const normalizedObjects = (languages || [])
       .map((item) => {
         if (typeof item === 'string') {

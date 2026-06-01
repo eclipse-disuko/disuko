@@ -155,7 +155,11 @@ onMounted(async () => {
           </template>
           <template #[`item.name`]="{item}">
             <div class="font-weight-medium">{{ item.name }}</div>
-            <div v-if="item.nativeName.toLowerCase() !== item.name.toLowerCase()" class="text-caption text-medium-emphasis">{{ item.nativeName }}</div>
+            <div
+              v-if="item.nativeName.toLowerCase() !== item.name.toLowerCase()"
+              class="text-caption text-medium-emphasis">
+              {{ item.nativeName }}
+            </div>
           </template>
         </v-data-table>
       </div>
