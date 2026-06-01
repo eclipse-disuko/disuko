@@ -330,7 +330,7 @@ onMounted(() => {
             <GridFilterHeader :column="column" :toggleSort="toggleSort" :getSortIcon="getSortIcon">
               <template #filter>
                 <GridHeaderFilterIcon
-                  v-model="selectedFilterLink"
+                  v-model="selectedFilterStatus"
                   :column="column"
                   :label="t('STATUS')"
                   :allItems="[
