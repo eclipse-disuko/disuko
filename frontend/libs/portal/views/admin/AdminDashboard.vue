@@ -209,18 +209,6 @@ const tiles = computed<ITile[]>(() => {
       color: 'primary',
       cnt: -1,
       visible: true,
-      title: 'TAB_ADMIN_USER_MANAGEMENT',
-      url: '/dashboard/admin/userManagement',
-      icon: 'mdi-account-cog-outline',
-      expandGroup: false,
-      expand: false,
-    });
-  }
-  if (RightsUtils.isDomainAdmin()) {
-    res.push({
-      color: 'primary',
-      cnt: -1,
-      visible: true,
       title: 'UPCOMING_DELETIONS',
       url: '/dashboard/admin/deletions',
       icon: 'mdi-delete-clock-outline',
