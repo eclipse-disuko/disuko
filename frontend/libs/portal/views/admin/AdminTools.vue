@@ -23,6 +23,7 @@ const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/tools', [
   'analytics',
   'accessRights',
+  'classificationMatrix',
   'export_import',
   'storageConsistency',
   'sampleData',
@@ -75,6 +76,9 @@ defineExpose({
             <v-tab v-if="rights.hasToolsAccess()" value="accessRights" :to="tabUrl.accessRights">
               {{ t('TAB_ADMIN_ACCESS_RIGHTS') }}
             </v-tab>
+            <v-tab v-if="rights.hasToolsAccess()" value="classificationMatrix" :to="tabUrl.classificationMatrix">
+              {{ t('TAB_ADMIN_CLASSIFICATION_MATRIX') }}
+            </v-tab>
             <v-tab v-if="rights.hasToolsAccess()" value="export_import" :to="tabUrl.export_import">
               {{ t('TAB_ADMIN_EXPORT_IMPORT') }}
             </v-tab>
@@ -101,6 +105,9 @@ defineExpose({
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="accessRights">
               <AccessRights ref="accessRights"></AccessRights>
+            </v-tabs-window-item>
+            <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
+              <ClassificationMatrix ref="classificationMatrix"></ClassificationMatrix>
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="export_import">
               <ExportImportTools ref="export_import"></ExportImportTools>

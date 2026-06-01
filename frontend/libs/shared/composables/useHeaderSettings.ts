@@ -120,6 +120,10 @@ export const useHeaderSettings = (props: UseHeaderSettingsParams) => {
       });
     }
 
+    if (newProps.initiallyHiddenList) {
+      headerSettingsStore.$state[tableName.value].hideInitially = newProps.initiallyHiddenList;
+    }
+
     const headersBefore = [...(headerSettingsStore.$state[tableName.value].headers ?? [])];
 
     if (newProps.headers) {

@@ -263,6 +263,11 @@ const routes: RouteRecordRaw[] = [
             component: Tools,
           },
           {
+            path: 'classificationMatrix',
+            name: 'AdminClassificationMatrix',
+            component: Tools,
+          },
+          {
             path: 'export_import',
             name: 'AdminExportImport',
             component: Tools,
