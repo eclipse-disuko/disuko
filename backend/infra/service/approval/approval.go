@@ -180,24 +180,16 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 
 		licenseRulesHash := licenseRules.GenHash(s.RequestSession)
 		policyDecisionsHash := policyDecisions.GenHash(s.RequestSession)
-		totalHash := hash.Hash(s.RequestSession, fmt.Sprintf(
+		currentTotalStatsHash := new(hash.Hash(s.RequestSession, fmt.Sprintf(
 			"%s|%s|%s|%s",
 			projectPolicyRulesHash,
 			licenseRefsHash,
 			licenseRulesHash,
 			policyDecisionsHash,
-		))
-
-		currentHashes := &project.Hashes{
-			ProjectPolicyRulesHash: projectPolicyRulesHash,
-			LicenseRefsHash:        licenseRefsHash,
-			LicenseRulesHash:       licenseRulesHash,
-			PolicyDecisionsHash:    policyDecisionsHash,
-			TotalHash:              totalHash,
-		}
+		)))
 
 		var sbomStats components.ComponentStats
-		if sbom.Hashes != nil && sbom.Hashes.TotalHash == totalHash {
+		if sbom.TotalStatsHash != nil && *sbom.TotalStatsHash == *currentTotalStatsHash {
 			sbomStats = sbom.Stats
 		} else {
 			compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, pr.ApprovableSPDX.VersionKey, sbom)
@@ -206,7 +198,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 
 			sbomStats = evalRes.Stats
 			sbom.Stats = sbomStats
-			sbom.Hashes = currentHashes
+			sbom.TotalStatsHash = currentTotalStatsHash
 			s.SBOMListRepo.Update(s.RequestSession, sbomList)
 		}
 		res.CompStats.AddStats(sbomStats)

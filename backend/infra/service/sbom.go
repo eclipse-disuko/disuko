@@ -193,19 +193,20 @@ func UploadSbom(requestSession *logy.RequestSession, currentProject *project.Pro
 		licenseRefs := holder.LicenseRepository.GetLicenseRefs(requestSession)
 		licenseRules := holder.LicenseRulesRepository.FindByKey(requestSession, currentProject.Key, false)
 
-		spdxFile.Hashes = &project.Hashes{
-			ProjectPolicyRulesHash: prl.GenHash(requestSession),
-			LicenseRefsHash:        licenseRefs.GenHash(requestSession),
-			LicenseRulesHash:       licenseRules.GenHash(requestSession),
-			PolicyDecisionsHash:    policyDecisions.GenHash(requestSession),
-		}
-		spdxFile.Hashes.TotalHash = hash.Hash(requestSession, fmt.Sprintf(
+		projectPolicyRulesHash := prl.GenHash(requestSession)
+		licenseRefsHash := licenseRefs.GenHash(requestSession)
+		licenseRulesHash := licenseRules.GenHash(requestSession)
+		policyDecisionsHash := policyDecisions.GenHash(requestSession)
+
+		totalStatsHash := new(hash.Hash(requestSession, fmt.Sprintf(
 			"%s|%s|%s|%s",
-			spdxFile.Hashes.ProjectPolicyRulesHash,
-			spdxFile.Hashes.LicenseRefsHash,
-			spdxFile.Hashes.LicenseRulesHash,
-			spdxFile.Hashes.PolicyDecisionsHash,
-		))
+			projectPolicyRulesHash,
+			licenseRefsHash,
+			licenseRulesHash,
+			policyDecisionsHash,
+		)))
+
+		spdxFile.TotalStatsHash = totalStatsHash
 
 		addSbomUpload(holder.SBOMListRepository, requestSession, versionKey, spdxFile)
 		currentProject = holder.ProjectRepository.FindByKey(requestSession, currentProject.Key, false)

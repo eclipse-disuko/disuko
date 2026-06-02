@@ -21,15 +21,6 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type Hashes struct {
-	ProjectPolicyRulesHash string
-	LicenseRefsHash        string
-	LicenseRulesHash       string
-	PolicyDecisionsHash    string
-
-	TotalHash string
-}
-
 type SpdxFileBase struct {
 	domain.ChildEntity `bson:",inline"`
 	Hash               string // sha256
@@ -51,8 +42,8 @@ type SpdxFileBase struct {
 	IsInUse  bool // store in DB
 	IsLocked bool // store in DB
 
-	Stats  components.ComponentStats
-	Hashes *Hashes
+	Stats          components.ComponentStats
+	TotalStatsHash *string
 
 	// Deprecated
 	IsToDelete bool // do not store in DB, only for Frontend, based on conditions
