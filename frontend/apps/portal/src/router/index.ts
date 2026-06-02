@@ -920,13 +920,6 @@ router.beforeEach((to, from, next) => {
         return next({path: '/dashboard/home'});
       }
     }
-    if (to.path.includes('admin/userManagement')) {
-      if (rights.isDomainAdmin()) {
-        return next();
-      } else {
-        return next({path: '/dashboard/home'});
-      }
-    }
     if (to.path.includes('admin/tools')) {
       if (rights.hasToolsAccess() || rights.hasSampleDataAccess() || rights.hasUsersAccess()) {
         return next();
