@@ -5,9 +5,12 @@
 package policydecisions
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type PolicyDecision struct {
@@ -35,4 +38,16 @@ type PolicyDecisions struct {
 	domain.SoftDelete `bson:",inline"`
 
 	Decisions []*PolicyDecision
+}
+
+func (pd *PolicyDecisions) GenHash(requestSession *logy.RequestSession) string {
+	if pd == nil {
+		return ""
+	}
+	ruleStr, err := json.Marshal(pd)
+	if err != nil {
+		logy.Warnf(requestSession, "Error marshalling policy decisions: %s", pd.Key)
+		return ""
+	}
+	return hash.Hash(requestSession, ruleStr)
 }

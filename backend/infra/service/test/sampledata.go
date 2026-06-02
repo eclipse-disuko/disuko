@@ -12,8 +12,11 @@ import (
 
 	dpconfig2 "github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain"
@@ -36,15 +39,18 @@ import (
 )
 
 type SampleDataHandler struct {
-	DpConfigRepo          *dpconfig2.DBConfigRepository
-	ProjectRepository     project2.IProjectRepository
-	LicensesRepository    license.ILicensesRepository
-	PolicyRulesRepository policyrules.IPolicyRulesRepository
-	ObligationRepository  obligation.IObligationRepository
-	SchemaRepository      schema.ISchemaRepository
-	LabelRepository       labels.ILabelRepository
-	SbomListRepository    sbomlist.ISbomListRepository
-	SpdxService           *spdx.Service
+	DpConfigRepo              *dpconfig2.DBConfigRepository
+	ProjectRepository         project2.IProjectRepository
+	LicensesRepository        license.ILicensesRepository
+	PolicyRulesRepository     policyrules.IPolicyRulesRepository
+	ObligationRepository      obligation.IObligationRepository
+	SchemaRepository          schema.ISchemaRepository
+	LabelRepository           labels.ILabelRepository
+	SbomListRepository        sbomlist.ISbomListRepository
+	SpdxService               *spdx.Service
+	PolicyDecisionsRepository policydecisions.IPolicyDecisionsRepository
+	ProjectLabelService       *projectLabelService.ProjectLabelService
+	LicenseRulesRepository    licenserules.ILicenseRulesRepository
 }
 
 func (handler *SampleDataHandler) GetStateCreateSampleDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -232,10 +238,15 @@ func (handler *SampleDataHandler) uploadSbom(requestSession *logy.RequestSession
 	sWFile.Start()
 
 	holder := projectService.RepositoryHolder{
-		ProjectRepository:  handler.ProjectRepository,
-		LicenseRepository:  handler.LicensesRepository,
-		SBOMListRepository: handler.SbomListRepository,
-		SchemaRepository:   handler.SchemaRepository,
+		ProjectRepository:         handler.ProjectRepository,
+		LicenseRepository:         handler.LicensesRepository,
+		SBOMListRepository:        handler.SbomListRepository,
+		SchemaRepository:          handler.SchemaRepository,
+		PolicyRulesRepository:     handler.PolicyRulesRepository,
+		SpdxService:               handler.SpdxService,
+		PolicyDecisionsRepository: handler.PolicyDecisionsRepository,
+		ProjectLabelService:       handler.ProjectLabelService,
+		LicenseRulesRepository:    handler.LicenseRulesRepository,
 	}
 	service.UploadSbom(requestSession, newProject,
 		versionKey, project.OriginServer,

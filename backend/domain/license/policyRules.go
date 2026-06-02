@@ -5,10 +5,13 @@
 package license
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type PolicyRules struct {
@@ -32,6 +35,20 @@ type PolicyRules struct {
 	DeprecatedDate   time.Time
 }
 
+type PolicyRulesList []*PolicyRules
+
+func (r *PolicyRulesList) GenHash(requestSession *logy.RequestSession) string {
+	if r == nil {
+		return ""
+	}
+	prStr, err := json.Marshal(r)
+	if err != nil {
+		logy.Warnf(requestSession, "Error marshalling slice of policy rules")
+		return ""
+	}
+	return hash.Hash(requestSession, prStr)
+}
+
 type BucketDefinition struct {
 	DeniedClassifications  []string `json:"deniedClassifications" validate:"dive,gte=1,lte=80"`
 	WarnedClassifications  []string `json:"warnedClassifications" validate:"dive,gte=1,lte=80"`
@@ -39,7 +56,7 @@ type BucketDefinition struct {
 }
 
 type CalculatedPolicyConfig struct {
-	BucketDefinition *BucketDefinition      `json:"bucketDefinition"`
+	BucketDefinition *BucketDefinition     `json:"bucketDefinition"`
 	LicenseScope     CalculatedPolicyScope `json:"licenseScope"`
 }
 
