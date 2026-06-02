@@ -16,6 +16,7 @@ import {useJobStore} from '@disclosure-portal/stores/jobs';
 import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import config from '@shared/utils/config';
+import dayjs from 'dayjs';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -30,7 +31,6 @@ const dd = ref();
 const vehicle = ref(false);
 const radioGroup = ref(0);
 const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
-const allChannelSboms = ref<Map<string, SpdxFile[]>>(new Map());
 
 const {
   isVisible,
@@ -72,10 +72,47 @@ const {
   resetExtraState: () => {
     radioGroup.value = 0;
     childProjectChannels.value.clear();
-    allChannelSboms.value.clear();
   },
   fetchFlat: true,
 });
+
+const markedApprovableSpdx = computed(() => projectModel.value.approvablespdx);
+
+const getChannelSboms = (versionKey: string): SpdxFile[] => {
+  const versionEntry = sbomStore.getAllSBOMs.find((entry) => entry.versionKey === versionKey);
+  return (versionEntry?.spdxFileHistory ?? []).map((sbom, index) => ({...sbom, isRecent: index === 0}));
+};
+
+const getSelectableSbom = (versionKey: string, sbomKey: string) => {
+  const visibleSbom = sboms.value.find((sbom) => sbom._key === sbomKey);
+  if (visibleSbom) {
+    return visibleSbom;
+  }
+
+  const channelSboms = getChannelSboms(versionKey);
+  const exactSbom = channelSboms.find((sbom) => sbom._key === sbomKey) ?? null;
+  if (exactSbom) {
+    sboms.value = channelSboms;
+  }
+
+  return exactSbom;
+};
+
+const selectChannelAndSbom = async (versionKey: string, sbomKey: string) => {
+  selectedChannel.value = channels.value.find((channel) => channel._key === versionKey) ?? null;
+  if (!selectedChannel.value) {
+    return false;
+  }
+
+  await loadSBOMHist();
+  selectedSbom.value = getSelectableSbom(versionKey, sbomKey);
+  if (!selectedSbom.value) {
+    return false;
+  }
+
+  await loadStats();
+  return true;
+};
 
 const isRdConfirmationMissing = computed(() => {
   if (!vehicle.value) {
@@ -83,7 +120,7 @@ const isRdConfirmationMissing = computed(() => {
   }
 
   if (!projectModel.value.isGroup) {
-    const approvableSpdx = approvableInfo.value.projects?.[0]?.approvablespdx;
+    const approvableSpdx = markedApprovableSpdx.value;
     const sbomKey = selectedSbom.value?._key || approvableSpdx?.spdxkey;
     const channelKey = selectedChannel.value?._key || approvableSpdx?.versionkey;
 
@@ -141,6 +178,48 @@ watch(radioGroup, () => {
 
 const commentRule = longText(t('TAD_COMMENT'));
 
+const smartAutoSelect = async () => {
+  if (sbomStore.selectedSBOMKey) {
+    await autoSelect();
+    if (selectedChannel.value && selectedSbom.value) {
+      selectedSbom.value = getSelectableSbom(selectedChannel.value._key, selectedSbom.value._key) ?? selectedSbom.value;
+    }
+    return;
+  }
+
+  if (noFOSS.value) return;
+
+  await sbomStore.fetchAllSBOMsFlat();
+
+  const markedVersionKey = markedApprovableSpdx.value.versionkey;
+  const markedSbomKey = markedApprovableSpdx.value.spdxkey;
+  if (markedVersionKey && markedSbomKey && (await selectChannelAndSbom(markedVersionKey, markedSbomKey))) {
+    return;
+  }
+
+  if (vehicle.value) {
+    const candidates: {channel: VersionSlim; sbomId: string; reviewUpdated: string}[] = [];
+    for (const channel of channels.value) {
+      for (const review of channel.overallReviews ?? []) {
+        if (review.state === OverallReviewState.AUDITED) {
+          candidates.push({channel, sbomId: review.sbomId, reviewUpdated: review.updated});
+        }
+      }
+    }
+    candidates.sort((a, b) => (dayjs(a.reviewUpdated).isBefore(b.reviewUpdated) ? 1 : -1));
+    if (candidates[0]) {
+      await selectChannelAndSbom(candidates[0].channel._key, candidates[0].sbomId);
+    }
+    return;
+  }
+
+  const sortedFlat = [...sbomStore.getAllSBOMsFlat].sort((a, b) => (dayjs(a.updated).isBefore(b.updated) ? 1 : -1));
+  const best = sortedFlat[0];
+  if (best) {
+    await selectChannelAndSbom(best.versionKey, best._key);
+  }
+};
+
 const open = async (isVehicle: boolean) => {
   idle.showIdle = true;
   approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
@@ -159,15 +238,7 @@ const open = async (isVehicle: boolean) => {
 
   updateSelectedProjects();
 
-  await autoSelect();
-
-  if (!projectModel.value.isGroup) {
-    allChannelSboms.value.clear();
-    for (const channel of channels.value) {
-      const versionEntry = sbomStore.getAllSBOMs.find((v) => v.versionKey === channel._key);
-      allChannelSboms.value.set(channel._key, versionEntry?.spdxFileHistory ?? []);
-    }
-  }
+  await smartAutoSelect();
 
   if (projectModel.value.isGroup && approvableInfo.value.projects) {
     childProjectChannels.value.clear();
