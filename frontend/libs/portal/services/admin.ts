@@ -399,34 +399,6 @@ class AdminService {
     return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/internaltoken/${user}`);
   }
 
-  public executeDryRun(username: string) {
-    return api.get<DeletePersonalDataResponse>(`/api/v1/${modelName}/users/delete-personal-data?username=${username}`);
-  }
-
-  public getPersonalDetails(username: string, entity: string) {
-    return api.get<{
-      success: boolean;
-      message: string;
-      data: Array<{
-        entityID: string;
-        entityType: string;
-        entityStatus?: string;
-        entityName: string;
-        disableDeleteReason?: string;
-      }>;
-    }>(`/api/v1/${modelName}/users/get-personal-details/${username}?entity=${entity}`);
-  }
-
-  public deletePersonalDataByEntity(username: string, entity: string) {
-    return api.delete<ISuccessRsponse>(
-      `/api/v1/${modelName}/users/delete-personal-data/${entity}?username=${username}`,
-    );
-  }
-
-  public deletePersonalDataByEntityId(entity: string, id: string) {
-    return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/users/delete-personal-data/${entity}/${id}`);
-  }
-
   public getUpcomingDeletions() {
     return api.get<UpcomingDeletion[]>(`/api/v1/${modelName}/users/upcomingDeletions`);
   }

@@ -151,13 +151,6 @@ export const createNavItemsGroup = function () {
         condition: rights.isApplicationAdmin(),
         active: false,
       } as INavItem,
-      {
-        title: 'TAB_ADMIN_USER_MANAGEMENT',
-        path: '/dashboard/admin/userManagement',
-        iconName: 'mdi-account-cog-outline',
-        condition: rights.isDomainAdmin(),
-        active: false,
-      } as INavItem,
     );
   }
 

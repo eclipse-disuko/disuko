@@ -249,7 +249,6 @@ declare module 'vue' {
     Truncated: typeof import('./../../libs/shared/components/disco/Truncated.vue')['default']
     UpcomingDeletions: typeof import('./../../libs/portal/views/admin/UpcomingDeletions.vue')['default']
     UserMain: typeof import('./../../libs/portal/components/user/UserMain.vue')['default']
-    UserManagement: typeof import('./../../libs/portal/views/admin/tools/UserManagement.vue')['default']
     UserProfile: typeof import('./../../libs/portal/views/user/UserProfile.vue')['default']
     Users: typeof import('./../../libs/portal/views/admin/Users.vue')['default']
     VersionDialogForm: typeof import('./../../libs/portal/components/dialog/VersionDialogForm.vue')['default']
