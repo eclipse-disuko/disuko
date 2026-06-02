@@ -8,13 +8,15 @@ import InternalTokenDialog from '@disclosure-portal/components/dialog/InternalTo
 import {InternalToken} from '@disclosure-portal/model/InternalToken';
 import adminService from '@disclosure-portal/services/admin';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {SortItem} from '@shared/types/table';
+import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-const isLoading = ref(false);
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
+const {sliderWidth} = useTableActionSlider();
 
+const isLoading = ref(false);
 const dialog = ref<InstanceType<typeof InternalTokenDialog>>();
 const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -52,49 +54,45 @@ const getStatus = (item: InternalToken) => {
   return {text: t('STATUS_ACTIVE'), color: 'success', icon: 'mdi-check-circle'};
 };
 
-const headers = computed(() => {
-  return [
-    {
-      title: t('COL_ACTIONS'),
-      align: 'center' as const,
-      width: 120,
-      value: 'actions',
-    },
-    {
-      title: t('COL_NAME'),
-      align: 'start' as const,
-      class: 'tableHeaderCell',
-      value: 'name',
-      width: 180,
-      sortable: true,
-    },
-    {
-      title: t('COL_DESCRIPTION'),
-      align: 'start' as const,
-      class: 'tableHeaderCell',
-      value: 'description',
-      sortable: true,
-    },
-    {
-      title: t('COL_STATUS'),
-      key: 'status',
-      align: 'start' as const,
-      width: 160,
-    },
-    {
-      title: t('COL_EXPIRY'),
-      key: 'expiry',
-      align: 'start' as const,
-      width: 160,
-    },
-    {
-      title: t('COL_CREATED'),
-      key: 'created',
-      align: 'start' as const,
-      width: 160,
-    },
-  ];
-});
+const headers = computed((): DataTableHeader[] => [
+  {
+    title: t('COL_ACTIONS'),
+    align: 'start',
+    width: sliderWidth.value,
+    value: 'actions',
+  },
+  {
+    title: t('COL_NAME'),
+    align: 'start',
+    value: 'name',
+    width: 180,
+    sortable: true,
+  },
+  {
+    title: t('COL_DESCRIPTION'),
+    align: 'start',
+    value: 'description',
+    sortable: true,
+  },
+  {
+    title: t('COL_STATUS'),
+    key: 'status',
+    align: 'start',
+    width: 160,
+  },
+  {
+    title: t('COL_EXPIRY'),
+    key: 'expiry',
+    align: 'start',
+    width: 160,
+  },
+  {
+    title: t('COL_CREATED'),
+    key: 'created',
+    align: 'start',
+    width: 160,
+  },
+]);
 
 onMounted(async () => {
   await reload();
@@ -153,49 +151,52 @@ const showConfirm = async (item: InternalToken) => {
         class="mx-2" />
     </template>
     <template #table>
-      <v-data-table
-        density="compact"
-        class="striped-table fill-height"
-        :loading="isLoading"
-        item-key="_key"
-        :items="items"
-        :headers="headers"
-        :items-per-page="50"
-        fixed-header
-        :sort-by="sortBy"
-        sort-desc>
-        <template v-slot:[`item.created`]="{item}">
-          <DDateCellWithTooltip :value="item.created" />
-        </template>
-        <template v-slot:[`item.updated`]="{item}">
-          <DDateCellWithTooltip :value="item.updated" />
-        </template>
-        <template v-slot:[`item.expiry`]="{item}">
-          <DDateCellWithTooltip :value="item.expiry" />
-        </template>
-        <template v-slot:[`item.status`]="{item}">
-          <v-chip :color="getStatus(item).color" size="small" :prepend-icon="getStatus(item).icon">
-            {{ getStatus(item)?.text }}
-          </v-chip>
-        </template>
-        <template v-slot:[`item.actions`]="{item}">
-          <TableActionButtons
-            :buttons="[
-              {
-                icon: 'mdi-refresh',
-                event: 'renew',
-                show: !item.revoked && !!item.expiry && new Date(item.expiry) > new Date(),
-              },
-              {
-                icon: 'mdi-delete',
-                event: 'revoke',
-                show: !item.revoked && (!item.expiry || new Date(item.expiry) > new Date()),
-              },
-            ]"
-            @renew="showRenewConfirm(item)"
-            @revoke="showConfirm(item)" />
-        </template>
-      </v-data-table>
+      <div class="fill-height action-slider-table">
+        <v-data-table
+          density="compact"
+          class="striped-table fill-height"
+          :loading="isLoading"
+          item-key="_key"
+          :items="items"
+          :headers="headers"
+          :items-per-page="50"
+          fixed-header
+          :sort-by="sortBy"
+          sort-desc>
+          <template #[`item.created`]="{item}">
+            <DDateCellWithTooltip :value="item.created" />
+          </template>
+          <template #[`item.updated`]="{item}">
+            <DDateCellWithTooltip :value="item.updated" />
+          </template>
+          <template #[`item.expiry`]="{item}">
+            <DDateCellWithTooltip :value="item.expiry" />
+          </template>
+          <template #[`item.status`]="{item}">
+            <v-chip :color="getStatus(item).color" size="small" :prepend-icon="getStatus(item).icon">
+              {{ getStatus(item)?.text }}
+            </v-chip>
+          </template>
+          <template #[`item.actions`]="{item}">
+            <TableActionButtons
+              variant="slider"
+              :buttons="[
+                {
+                  icon: 'mdi-refresh',
+                  event: 'renew',
+                  show: !item.revoked && !!item.expiry && new Date(item.expiry) > new Date(),
+                },
+                {
+                  icon: 'mdi-delete',
+                  event: 'revoke',
+                  show: !item.revoked && (!item.expiry || new Date(item.expiry) > new Date()),
+                },
+              ]"
+              @renew="showRenewConfirm(item)"
+              @revoke="showConfirm(item)" />
+          </template>
+        </v-data-table>
+      </div>
     </template>
   </TableLayout>
   <InternalTokenDialog ref="dialog" @reload="reload" />

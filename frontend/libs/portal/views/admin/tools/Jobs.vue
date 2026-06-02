@@ -21,13 +21,14 @@ import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const {info} = useSnackbar();
 const breadcrumbs = useBreadcrumbsStore();
+const {sliderWidth} = useTableActionSlider();
 
 const selectedFilterExecution = ref<string[]>([]);
-
 const jobs = ref<JobDto[]>([]);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmOnetimeConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -39,13 +40,11 @@ const headers = computed<DataTableHeader[]>(() => {
   return [
     {
       title: t('COL_ACTIONS'),
-      align: 'center',
-      width: 120,
-      maxWidth: 130,
+      align: 'start',
+      width: 40 + sliderWidth.value,
       value: 'actions',
       sortable: false,
     },
-    {title: '', value: 'data-table-expand', width: 53, maxWidth: 53, align: 'center'},
     {
       title: t('CD_NAME'),
       align: 'start',
@@ -253,7 +252,7 @@ onMounted(async () => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableGridJobs" class="fill-height">
+      <div ref="tableGridJobs" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           class="striped-table custom-data-table fill-height"
@@ -279,7 +278,7 @@ onMounted(async () => {
           </template>
           <template v-slot:expanded-row="{item}">
             <tr>
-              <td colspan="9" class="px-0">
+              <td :colspan="headers.length" class="px-0">
                 <v-data-table
                   :headers="innerHeaders"
                   :items="item.log"
@@ -314,18 +313,20 @@ onMounted(async () => {
           <template #[`item.nextScheduledExecution`]="{item}">
             <DDateCellWithTooltip :value="item.nextScheduledExecution" />
           </template>
-          <template #[`item.data-table-expand`]="{item}">
-            <v-icon color="primary" @click.stop="toggleExpand(item)">
-              {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-            </v-icon>
-          </template>
           <template #[`item.actions`]="{item}">
-            <TableActionButtons
-              variant="compact"
-              :buttons="getActionButtons(item)"
-              @start="showConfirm(item)"
-              @startOnetime="showOnetimeConfirm(item)"
-              @config="configDialog?.open(item.config)" />
+            <div class="flex h-[100%] items-center justify-start">
+              <DIconButton
+                :icon="isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                color="primary"
+                class="size-10"
+                @clicked="toggleExpand(item)" />
+              <TableActionButtons
+                variant="slider"
+                :buttons="getActionButtons(item)"
+                @start="showConfirm(item)"
+                @startOnetime="showOnetimeConfirm(item)"
+                @config="configDialog?.open(item.config)" />
+            </div>
           </template>
         </v-data-table>
       </div>

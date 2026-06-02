@@ -15,6 +15,7 @@ import {useRouter} from 'vue-router';
 import {refDebounced} from '@vueuse/core';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
 import {useUrls} from '@shared/composables/useUrls';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const router = useRouter();
@@ -22,6 +23,7 @@ const projectsUtils = useProjectUtils();
 const {openProjectUrlByKey} = useUrls();
 const projectStore = useProjectStore();
 const {projects, projectsCount, loading, projectPossibleStatuses} = storeToRefs(projectStore);
+const {sliderWidth} = useTableActionSlider();
 
 const abort = ref<AbortController | null>(null);
 const search = ref('');
@@ -45,11 +47,10 @@ const options = computed(
   }),
 );
 
-const headers = computed<DataTableHeader[]>(() => [
-  {title: '', value: 'data-table-expand', width: '38'},
-  {title: t('COL_ACTIONS'), align: 'center', width: 80, value: 'actions', sortable: false},
-  {title: t('COL_STATUS'), sortable: true, value: 'status', width: '155'},
-  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: '120'},
+const headers = computed((): DataTableHeader[] => [
+  {title: t('COL_ACTIONS'), align: 'start', width: sliderWidth.value, value: 'actions', sortable: false},
+  {title: t('COL_STATUS'), sortable: true, value: 'status', width: 155},
+  {title: t('COL_GROUP'), align: 'center', sortable: true, value: 'isGroup', width: 120},
   {title: t('COL_NAME'), align: 'start', value: 'name', width: 270, sortable: true},
   {
     title: t('COL_DEVELOPER_COMPANY'),
@@ -117,7 +118,7 @@ onMounted(() => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div class="table-wrapper fill-height">
+      <div class="table-wrapper fill-height action-slider-table">
         <v-data-table-server
           :loading="loading"
           density="compact"
@@ -167,7 +168,14 @@ onMounted(() => {
             <v-icon icon="mdi-check" class="mr-2" :color="item.isGroup ? 'primary' : 'tableBorderColor'" />
           </template>
           <template #[`item.actions`]="{item}">
-            <ProjectsTableAction :item="item" @reload="reload()"></ProjectsTableAction>
+            <div class="flex h-[100%] items-center justify-start">
+              <DIconButton
+                :icon="isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                color="primary"
+                class="size-10"
+                @clicked="toggleExpand(item)" />
+              <ProjectsTableAction :item="item" @reload="reload()" />
+            </div>
           </template>
           <template #[`item.company`]="{item}">
             <span v-if="!item.missing">{{ item.company }}</span>
@@ -189,11 +197,6 @@ onMounted(() => {
               <v-icon class="pr-2" color="warning" icon="mdi-alert" small></v-icon>
               <span>{{ t('WARNING_MISSING_DEPT') }}</span>
             </div>
-          </template>
-          <template #[`item.data-table-expand`]="{item}">
-            <v-icon color="primary" @click.stop="toggleExpand(item)">
-              {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-            </v-icon>
           </template>
 
           <template #expanded-row="{item}">

@@ -25,6 +25,7 @@ import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const viewTools = useViewTools();
@@ -34,18 +35,19 @@ const snackbar = useSnackbar();
 const {getTextOfLevel, getTextOfType} = useView();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
+const {sliderWidth} = useTableActionSlider();
 
 const items = ref<IObligation[]>([]);
 const search = ref('');
 const classificationDlg = ref();
 const auditDialogOpen = ref<((key: string, name: string) => void) | null>(null);
 
-const headers = computed<DataTableHeader[]>(() => {
+const headers = computed((): DataTableHeader[] => {
   return [
     {
       title: t('COL_ACTIONS'),
-      align: 'center',
-      width: 80,
+      align: 'start',
+      width: sliderWidth.value,
       value: 'actions',
       sortable: false,
     },
@@ -253,7 +255,7 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableGridClassifications" class="fill-height">
+      <div ref="tableGridClassifications" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           class="striped-table fill-height"
@@ -319,7 +321,7 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
                 {{ ((auditDialogOpen = open), '') }}
               </template>
               <TableActionButtons
-                variant="compact"
+                variant="slider"
                 :buttons="getActionButtons(item)"
                 @edit="openDialog(item)"
                 @audit="open(item._key, viewTools.getNameForLanguage(item))"
