@@ -6,6 +6,8 @@ package license
 
 import (
 	"encoding/json"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -35,18 +37,52 @@ type PolicyRules struct {
 	DeprecatedDate   time.Time
 }
 
+type PolicyRuleHashEntry struct {
+	Key             string
+	ComponentsAllow []string
+	ComponentsDeny  []string
+	ComponentsWarn  []string
+}
+
 type PolicyRulesList []*PolicyRules
 
 func (r *PolicyRulesList) GenHash(requestSession *logy.RequestSession) string {
 	if r == nil {
 		return ""
 	}
-	prStr, err := json.Marshal(r)
+
+	entries := make([]PolicyRuleHashEntry, 0, len(*r))
+	for _, rule := range *r {
+		if rule == nil {
+			continue
+		}
+		entries = append(entries, PolicyRuleHashEntry{
+			Key:             rule.Key,
+			ComponentsAllow: normalizeAndSort(rule.ComponentsAllow),
+			ComponentsDeny:  normalizeAndSort(rule.ComponentsDeny),
+			ComponentsWarn:  normalizeAndSort(rule.ComponentsWarn),
+		})
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
+
+	prStr, err := json.Marshal(entries)
 	if err != nil {
-		logy.Warnf(requestSession, "Error marshalling slice of policy rules")
+		logy.Warnf(requestSession, "Error marshalling slice of policy rule hash entries")
 		return ""
 	}
 	return hash.Hash(requestSession, prStr)
+}
+
+func normalizeAndSort(values []string) []string {
+	res := make([]string, 0, len(values))
+	for _, v := range values {
+		res = append(res, strings.ToLower(strings.TrimSpace(v)))
+	}
+	sort.Strings(res)
+	return res
 }
 
 type BucketDefinition struct {

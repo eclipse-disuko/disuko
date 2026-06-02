@@ -6,6 +6,7 @@ package policydecisions
 
 import (
 	"encoding/json"
+	"sort"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -40,13 +41,45 @@ type PolicyDecisions struct {
 	Decisions []*PolicyDecision
 }
 
+type PolicyDecisionHashEntry struct {
+	Key    string
+	Active bool
+}
+
+type PolicyDecisionsHash struct {
+	Key       string
+	Decisions []PolicyDecisionHashEntry
+}
+
 func (pd *PolicyDecisions) GenHash(requestSession *logy.RequestSession) string {
 	if pd == nil {
 		return ""
 	}
-	ruleStr, err := json.Marshal(pd)
+
+	entries := make([]PolicyDecisionHashEntry, 0, len(pd.Decisions))
+
+	for _, decision := range pd.Decisions {
+		if decision == nil {
+			continue
+		}
+		entries = append(entries, PolicyDecisionHashEntry{
+			Key:    decision.Key,
+			Active: decision.Active,
+		})
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
+
+	hashData := PolicyDecisionsHash{
+		Key:       pd.Key,
+		Decisions: entries,
+	}
+
+	ruleStr, err := json.Marshal(hashData)
 	if err != nil {
-		logy.Warnf(requestSession, "Error marshalling policy decisions: %s", pd.Key)
+		logy.Warnf(requestSession, "Error marshalling policy decisions hash data: %s", pd.Key)
 		return ""
 	}
 	return hash.Hash(requestSession, ruleStr)
