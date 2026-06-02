@@ -119,10 +119,15 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 	})
 
 	holder := projectService.RepositoryHolder{
-		ProjectRepository:  spdxHandler.ProjectRepository,
-		LicenseRepository:  spdxHandler.LicensesRepository,
-		SBOMListRepository: spdxHandler.SbomListRepository,
-		SchemaRepository:   spdxHandler.SchemaRepository,
+		ProjectRepository:         spdxHandler.ProjectRepository,
+		LicenseRepository:         spdxHandler.LicensesRepository,
+		SBOMListRepository:        spdxHandler.SbomListRepository,
+		SchemaRepository:          spdxHandler.SchemaRepository,
+		PolicyRulesRepository:     spdxHandler.PolicyRuleRepository,
+		SpdxService:               spdxHandler.SpdxService,
+		PolicyDecisionsRepository: spdxHandler.PolicyDecisionsRepository,
+		ProjectLabelService:       spdxHandler.ProjectLabelService,
+		LicenseRulesRepository:    spdxHandler.LicenseRulesRepository,
 	}
 
 	spdxFile, validateFailedMsg := service.UploadSbom(requestSession, currentProject,

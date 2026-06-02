@@ -40,7 +40,6 @@ const AdminProjects = () => import('@disclosure-portal/views/admin/AdminProjects
 const Newsbox = () => import('@disclosure-portal/views/admin/Newsbox.vue');
 const FeatureFlags = () => import('@disclosure-portal/views/admin/FeatureFlags.vue');
 const UpcomingDeletions = () => import('@disclosure-portal/views/admin/UpcomingDeletions.vue');
-const UserManagement = () => import('@disclosure-portal/views/admin/tools/UserManagement.vue');
 const I18nAdmin = () => import('@disclosure-portal/views/admin/i18n/I18n.vue');
 const I18nLocaleDetails = () => import('@disclosure-portal/views/admin/i18n/LocaleDetails.vue');
 
@@ -353,17 +352,6 @@ const routes: RouteRecordRaw[] = [
           title: {
             en: 'Jobs',
             de: 'Jobs',
-          },
-        },
-      },
-      {
-        path: 'admin/userManagement',
-        name: 'AdminUserManagement',
-        component: UserManagement,
-        meta: {
-          title: {
-            en: 'User Management',
-            de: 'Benutzerverwaltung',
           },
         },
       },
@@ -915,13 +903,6 @@ router.beforeEach((to, from, next) => {
     }
     if (to.path.includes('admin/schemas')) {
       if (rights.hasSchemaAccess()) {
-        return next();
-      } else {
-        return next({path: '/dashboard/home'});
-      }
-    }
-    if (to.path.includes('admin/userManagement')) {
-      if (rights.isDomainAdmin()) {
         return next();
       } else {
         return next({path: '/dashboard/home'});

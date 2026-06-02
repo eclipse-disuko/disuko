@@ -6,12 +6,15 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/domain/project/components"
 	sbomlist2 "github.com/eclipse-disuko/disuko/domain/project/sbomlist"
+	"github.com/eclipse-disuko/disuko/helper/hash"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
 
@@ -177,6 +180,34 @@ func UploadSbom(requestSession *logy.RequestSession, currentProject *project.Pro
 			UsedLicenseRulesHash: "",
 			ComponentInfos:       ci,
 		})
+
+		compsInfo := holder.SpdxService.GetComponentInfos(requestSession, currentProject, currentProject.ApprovableSPDX.VersionKey, spdxFile)
+
+		rules := holder.PolicyRulesRepository.FindPolicyRulesForLabel(requestSession, currentProject.PolicyLabels)
+		policyDecisions := holder.PolicyDecisionsRepository.FindByKey(requestSession, currentProject.Key, false)
+		isVehicle := holder.ProjectLabelService.HasVehiclePlatformLabel(requestSession, currentProject)
+		evalRes := compsInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, spdxFile.Uploaded, spdxFile.Key)
+		spdxFile.Stats = evalRes.Stats
+
+		prl := license.PolicyRulesList(rules)
+		licenseRefs := holder.LicenseRepository.GetLicenseRefs(requestSession)
+		licenseRules := holder.LicenseRulesRepository.FindByKey(requestSession, currentProject.Key, false)
+
+		projectPolicyRulesHash := prl.GenHash(requestSession)
+		licenseRefsHash := licenseRefs.GenHash(requestSession)
+		licenseRulesHash := licenseRules.GenHash(requestSession)
+		policyDecisionsHash := policyDecisions.GenHash(requestSession)
+
+		totalStatsHash := new(hash.Hash(requestSession, fmt.Sprintf(
+			"%s|%s|%s|%s",
+			projectPolicyRulesHash,
+			licenseRefsHash,
+			licenseRulesHash,
+			policyDecisionsHash,
+		)))
+
+		spdxFile.TotalStatsHash = totalStatsHash
+
 		addSbomUpload(holder.SBOMListRepository, requestSession, versionKey, spdxFile)
 		currentProject = holder.ProjectRepository.FindByKey(requestSession, currentProject.Key, false)
 		version := currentProject.GetVersion(versionKey)

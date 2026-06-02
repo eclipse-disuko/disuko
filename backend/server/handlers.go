@@ -197,15 +197,18 @@ func (s *Server) setupHandlers() {
 		PolicyDecisionsRepo:           s.repos.policyDecisions,
 	}
 	s.handlers.sampleData = test.SampleDataHandler{
-		PolicyRulesRepository: s.repos.policyRules,
-		DpConfigRepo:          s.repos.dpConfig,
-		ProjectRepository:     s.repos.project,
-		LicensesRepository:    s.repos.licenses,
-		ObligationRepository:  s.repos.obligation,
-		SchemaRepository:      s.repos.schema,
-		LabelRepository:       s.repos.label,
-		SbomListRepository:    s.repos.sbomList,
-		SpdxService:           s.services.spdx,
+		PolicyRulesRepository:     s.repos.policyRules,
+		DpConfigRepo:              s.repos.dpConfig,
+		ProjectRepository:         s.repos.project,
+		LicensesRepository:        s.repos.licenses,
+		ObligationRepository:      s.repos.obligation,
+		SchemaRepository:          s.repos.schema,
+		LabelRepository:           s.repos.label,
+		SbomListRepository:        s.repos.sbomList,
+		SpdxService:               s.services.spdx,
+		PolicyDecisionsRepository: s.repos.policyDecisions,
+		ProjectLabelService:       &s.services.projectLabelService,
+		LicenseRulesRepository:    s.repos.licenseRules,
 	}
 	s.handlers.statistic = rest.StatisticHandler{
 		PolicyRulesRepository: s.repos.policyRules,

@@ -5,6 +5,8 @@
 package license
 
 import (
+	"sort"
+
 	"github.com/eclipse-disuko/disuko/domain/audit"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -127,6 +129,37 @@ func (lt TypeOfLicenses) Value() string {
 	return string(lt)
 }
 
+type LicenseRefHashEntry struct {
+	RefKey        string
+	ID            string
+	Family        FamilyOfLicense
+	ApprovalState ApprovalStatus
+}
+
 func (l *LicenseRefs) GenHash(requestSession *logy.RequestSession) string {
-	return hash.Hash(requestSession, l)
+
+	if l == nil || *l == nil {
+		return hash.Hash(requestSession, "")
+	}
+
+	keys := make([]string, 0, len(*l))
+	for key := range *l {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	entries := make([]LicenseRefHashEntry, 0, len(keys))
+	for _, key := range keys {
+		ref := (*l)[key]
+
+		entries = append(entries, LicenseRefHashEntry{
+			RefKey:        key,
+			ID:            ref.ID,
+			Family:        ref.Family,
+			ApprovalState: ref.ApprovalState,
+		})
+	}
+
+	return hash.Hash(requestSession, entries)
 }

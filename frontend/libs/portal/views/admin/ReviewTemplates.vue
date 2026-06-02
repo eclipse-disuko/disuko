@@ -21,49 +21,50 @@ import {AxiosResponse} from 'axios';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const {calculateHeight} = useDimensions();
 const {submitForm} = useFormSubmission();
 const {info} = useSnackbar();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
+const {sliderWidth} = useTableActionSlider();
 
-const headers = computed<DataTableHeader[]>(() => {
-  return [
-    {title: t('COL_ACTIONS'), align: 'center', width: 80, maxWidth: 100, value: 'actions'},
-    {title: t('NPV_DIALOG_TF_TITLE'), align: 'start', value: 'title', width: 200, minWidth: 200, sortable: true},
-    {
-      title: t('COL_LEVEL'),
-      align: 'start',
-      value: 'level',
-      width: 130,
-      minWidth: 130,
-      maxWidth: 140,
-      sortable: true,
-      sort: compareRRLevel,
-    },
-    {
-      title: t('NP_DIALOG_TF_DESCRIPTION'),
-      align: 'start',
-      width: 130,
-      minWidth: 130,
-      maxWidth: 180,
-      value: 'description',
-      sortable: true,
-    },
-    {
-      title: t('NPV_DIALOG_TF_SOURCE'),
-      align: 'start',
-      width: 130,
-      minWidth: 130,
-      maxWidth: 180,
-      value: 'source',
-      sortable: true,
-    },
-    {title: t('COL_UPDATED'), sortable: true, align: 'start', width: 110, maxWidth: 120, value: 'updated'},
-    {title: t('COL_CREATED'), sortable: true, align: 'start', width: 110, maxWidth: 120, value: 'created'},
-  ];
-});
+const headers = computed((): DataTableHeader[] => [
+  {title: t('COL_ACTIONS'), align: 'start', width: sliderWidth.value, value: 'actions'},
+  {title: t('NPV_DIALOG_TF_TITLE'), align: 'start', value: 'title', width: 200, minWidth: 200, sortable: true},
+  {
+    title: t('COL_LEVEL'),
+    align: 'start',
+    value: 'level',
+    width: 130,
+    minWidth: 130,
+    maxWidth: 140,
+    sortable: true,
+    sort: compareRRLevel,
+  },
+  {
+    title: t('NP_DIALOG_TF_DESCRIPTION'),
+    align: 'start',
+    width: 130,
+    minWidth: 130,
+    maxWidth: 180,
+    value: 'description',
+    sortable: true,
+  },
+  {
+    title: t('NPV_DIALOG_TF_SOURCE'),
+    align: 'start',
+    width: 130,
+    minWidth: 130,
+    maxWidth: 180,
+    value: 'source',
+    sortable: true,
+  },
+  {title: t('COL_UPDATED'), sortable: true, align: 'start', width: 110, maxWidth: 120, value: 'updated'},
+  {title: t('COL_CREATED'), sortable: true, align: 'start', width: 110, maxWidth: 120, value: 'created'},
+]);
+
 const dialogVisible = ref(false);
 const formMode = ref<'create' | 'edit'>('create');
 const errorMessage = ref<string | undefined>();
@@ -222,7 +223,7 @@ onUnmounted(() => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="dataTableAsElement" class="fill-height">
+      <div ref="dataTableAsElement" class="fill-height action-slider-table">
         <v-data-table
           class="striped-table fill-height"
           density="compact"
@@ -267,7 +268,7 @@ onUnmounted(() => {
           </template>
           <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="normal"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="openDialog('edit', item._key)"
               @delete="showConfirmDelete(item)" />

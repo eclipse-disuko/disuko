@@ -46,10 +46,6 @@ onMounted(async () => {
   await reloadLabels();
 });
 
-function close() {
-  router.push('/dashboard/schemas');
-}
-
 async function activate() {
   const response = (await AdminService.activate(itemId.value)).data;
   item.value.active = true;
