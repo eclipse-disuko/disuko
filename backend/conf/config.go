@@ -265,6 +265,7 @@ func setServerBasePath(err error) {
 func checkEnvironmentVariables() {
 	Config.Database.Type = DatabaseType(getEnvVariable("DATABASE_TYPE", string(Config.Database.Type)))
 	Config.Database.Scheme = getEnvVariable("DATABASE_SCHEME", Config.Database.Scheme)
+	Config.Database.DatabaseName = getEnvVariable("DATABASE_NAME", Config.Database.DatabaseName)
 	Config.Database.Host = getEnvVariable("DATABASE_HOST", Config.Database.Host)
 	Config.Database.Port = getEnvVariableInt("DATABASE_PORT", Config.Database.Port)
 	Config.Database.User = getEnvVariable("DATABASE_USER", Config.Database.User)
