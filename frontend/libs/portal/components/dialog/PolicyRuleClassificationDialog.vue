@@ -3,16 +3,18 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {
-  PolicyRuleClassificationDto,
-  PolicyRuleClassificationRequestDto,
-  RuleStatus,
-} from '@disclosure-portal/model/PolicyRuleClassification';
+import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import IObligation from '@disclosure-portal/model/IObligation';
 import adminService from '@disclosure-portal/services/admin';
-import policyRuleClassificationService from '@disclosure-portal/services/policyruleclassification';
-import {statusConfig} from '@disclosure-portal/utils/classificationStatus';
+import {
+  toBucketDefinition,
+  toRuleStatusMap,
+  RuleStatus,
+  statusConfig,
+} from '@disclosure-portal/utils/calculatedPolicyRule';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
+
+type StatusColumn = {key: RuleStatus | null; label: string; icon: string | null; color: string | null};
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, onMounted, ref} from 'vue';
@@ -25,30 +27,47 @@ const {minMax} = useRules();
 const emit = defineEmits(['reload']);
 
 const isVisible = ref(false);
-const isEdit = ref(false);
 const saving = ref(false);
 const dialog = ref<DiscoForm | null>(null);
 const obligations = ref<IObligation[]>([]);
 
 const name = ref('');
-const itemKey = ref('');
 const rules = ref<Record<string, RuleStatus>>({});
+const originalItem = ref<PolicyRule | null>(null);
 
-const statusColumns = (['allowed', 'warned', 'denied', 'forbidden'] as const).map((key) => ({
-  key,
-  label: statusConfig[key].labelKey,
-  icon: statusConfig[key].icon,
-  color: statusConfig[key].color,
-}));
+const buildDto = (base: PolicyRule): Partial<PolicyRule> => ({
+  _key: base._key,
+  name: name.value,
+  description: base.description,
+  labelSets: base.labelSets,
+  auxiliary: base.auxiliary,
+  active: base.active,
+  applyToAll: base.applyToAll,
+  calculated: true,
+  calculatedConfig: {
+    bucketDefinition: toBucketDefinition(rules.value),
+    licenseScope: base.calculatedConfig.licenseScope,
+  },
+});
+
+const statusColumns: StatusColumn[] = [
+  ...(['allowed', 'warned', 'denied', 'forbidden'] as const).map((key) => ({
+    key,
+    label: statusConfig[key].labelKey,
+    icon: statusConfig[key].icon,
+    color: statusConfig[key].color,
+  })),
+  {key: null, label: 'MATRIX_STATUS_NOT_SET', icon: null, color: null},
+];
 
 const validationRules = {
   name: minMax(t('PRC_DIALOG_TF_NAME'), 1, 200, false),
 };
 
 const dialogConfig = computed(() => ({
-  title: t(isEdit.value ? 'PRC_DIALOG_TITLE_EDIT' : 'PRC_DIALOG_TITLE_ADD'),
+  title: t('PRC_DIALOG_TITLE_EDIT'),
   primaryButton: {
-    text: t(isEdit.value ? 'NP_DIALOG_BTN_EDIT' : 'NP_DIALOG_BTN_CREATE'),
+    text: t('NP_DIALOG_BTN_EDIT'),
     loading: saving.value,
   },
   secondaryButton: {
@@ -56,24 +75,16 @@ const dialogConfig = computed(() => ({
   },
 }));
 
-const open = (existing?: PolicyRuleClassificationDto) => {
-  if (existing) {
-    isEdit.value = true;
-    itemKey.value = existing._key;
-    name.value = existing.name;
-    rules.value = {...existing.rules};
-  } else {
-    isEdit.value = false;
-    itemKey.value = '';
-    name.value = '';
-    rules.value = {};
-  }
+const open = (existing: PolicyRule & {rules?: Record<string, RuleStatus>}) => {
+  name.value = existing.name;
+  rules.value = existing.rules ? {...existing.rules} : toRuleStatusMap(existing);
+  originalItem.value = existing;
   dialog.value?.reset();
   isVisible.value = true;
 };
 
-const setRule = (obligationKey: string, status: RuleStatus | 'forbidden') => {
-  if (status && status !== 'forbidden') {
+const setRule = (obligationKey: string, status: RuleStatus | undefined) => {
+  if (status) {
     rules.value[obligationKey] = status;
   } else {
     delete rules.value[obligationKey];
@@ -84,17 +95,12 @@ const doDialogAction = async () => {
   await nextTick();
   const info = await dialog.value?.validate();
   if (!info?.valid) return;
+  if (!originalItem.value) return;
 
   saving.value = true;
   try {
-    const dto: PolicyRuleClassificationRequestDto = {name: name.value, rules: {...rules.value}};
-    if (isEdit.value) {
-      await policyRuleClassificationService.update(itemKey.value, dto);
-      snack(t('DIALOG_prc_update_success'));
-    } else {
-      await policyRuleClassificationService.create(dto);
-      snack(t('DIALOG_prc_create_success'));
-    }
+    await adminService.putPolicyRule(buildDto(originalItem.value) as PolicyRule);
+    snack(t('DIALOG_prc_update_success'));
     emit('reload');
     isVisible.value = false;
   } catch {
@@ -122,21 +128,21 @@ defineExpose({open});
       <v-form ref="dialog" @submit.prevent="doDialogAction">
         <Stack>
           <v-text-field
-            class="required"
             v-model="name"
             :rules="validationRules.name"
             :label="t('PRC_DIALOG_TF_NAME')"
             autofocus
+            autocomplete="off"
             variant="outlined"
             density="compact" />
 
           <v-table density="compact" class="striped-table mt-4" fixed-header height="400">
             <thead>
               <tr>
-                <th class="text-left" style="width: 250px">{{ t('COL_CLASSIFICATION') }}</th>
-                <th v-for="col in statusColumns" :key="col.key" class="text-center" style="width: 80px">
-                  <div class="d-flex flex-column align-center">
-                    <v-icon :color="col.color" size="small">{{ col.icon }}</v-icon>
+                <th class="w-[250px] text-left">{{ t('COL_CLASSIFICATION') }}</th>
+                <th v-for="col in statusColumns" :key="col.key ?? 'not-set'" class="w-[80px] text-center">
+                  <div class="flex items-center justify-center gap-1">
+                    <v-icon v-if="col.icon" :icon="col.icon" :color="col.color ?? undefined" size="small" />
                     <span class="text-caption">{{ t(col.label) }}</span>
                   </div>
                 </th>
@@ -144,12 +150,12 @@ defineExpose({open});
             </thead>
             <tbody>
               <tr v-for="ob in obligations" :key="ob._key">
-                <td style="width: 250px">{{ ob.name }}</td>
-                <td v-for="col in statusColumns" :key="col.key" class="text-center" style="width: 80px">
+                <td class="w-[250px]">{{ ob.name }}</td>
+                <td v-for="col in statusColumns" :key="col.key ?? 'not-set'" class="w-[80px] text-center">
                   <v-radio
-                    :model-value="rules[ob._key]"
+                    :model-value="rules[ob._key] ?? null"
                     :value="col.key"
-                    @click="setRule(ob._key, col.key)"
+                    @click="setRule(ob._key, col.key ?? undefined)"
                     density="compact"
                     hide-details
                     class="d-flex justify-center" />
