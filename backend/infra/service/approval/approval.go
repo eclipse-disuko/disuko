@@ -143,7 +143,18 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			logy.Warnf(s.RequestSession, "Child project is marked as deprecated, uuid: %s parent: %s", prKey, pr.Key)
 			continue
 		}
-		if pr.ApprovableSPDX.SpdxKey == "" || pr.ApprovableSPDX.VersionKey == "" || (!includeNoFOSS && pr.IsNoFoss) {
+
+		var supplier *project.ProjectMemberEntity
+		for _, u := range pr.UserManagement.Users {
+			if u.UserType == project.SUPPLIER {
+				supplier = u
+				break
+			}
+		}
+		var supplierUserId *string
+		if supplier != nil {
+			supplierUserId = &supplier.UserId
+		}
 
 		approvableSPDX := &pr.ApprovableSPDX
 		var sbomList *sbomlist.SbomList
@@ -159,6 +170,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 				ProjectName:     pr.Name,
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
+				Supplier:        supplierUserId,
 			})
 			continue
 		}
@@ -171,6 +183,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 				ProjectName:     pr.Name,
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
+				Supplier:        supplierUserId,
 			})
 			continue
 		}
@@ -220,7 +233,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			ProjectName:     pr.Name,
 			CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 			SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
-			ApprovableSPDX:  pr.ApprovableSPDX,
+			Supplier:        supplierUserId,
 			ApprovableSPDX:  *approvableSPDX,
 			SpdxName:        sbom.MetaInfo.Name,
 			SpdxTag:         sbom.Tag,
