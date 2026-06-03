@@ -286,13 +286,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Put("/{id}", s.handlers.newsbox.UpdateHandler)    // test missing
 					r.Delete("/{id}", s.handlers.newsbox.DeleteHandler) // test missing
 				})
-				r.Route("/policyruleclassifications", func(r chi.Router) {
-					r.Get("/", s.handlers.policyRuleClassification.GetAllHandler)
-					r.Get("/matrix", s.handlers.policyRuleClassification.GetMatrixHandler)
-					r.Post("/", s.handlers.policyRuleClassification.CreateHandler)
-					r.Put("/{id}", s.handlers.policyRuleClassification.UpdateHandler)
-					r.Delete("/{id}", s.handlers.policyRuleClassification.DeleteHandler)
-				})
 				r.Route("/schemas", func(r chi.Router) {
 					r.Get("/", s.handlers.schema.SchemaGetAllHandler)
 					r.Post("/", s.handlers.schema.SchemaUploadHandler)
@@ -359,12 +352,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 				r.Route("/notification", func(r chi.Router) {
 					r.Get("/", s.handlers.notification.NotificationGetHandler)  // test missing
 					r.Post("/", s.handlers.notification.NotificationSetHandler) // test missing
-				})
-				r.Route("/internaltoken", func(r chi.Router) {
-					r.Get("/", s.handlers.basicauth.List)
-					r.Post("/", s.handlers.basicauth.Create)
-					r.Put("/{uuid}", s.handlers.basicauth.Renew)
-					r.Delete("/{uuid}", s.handlers.basicauth.Revoke)
 				})
 				r.Route("/customid", func(r chi.Router) {
 					r.Get("/", s.handlers.customid.List)
@@ -443,7 +430,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	})
 
 	s.r.Group(func(r chi.Router) {
-		r.Use(s.basicauthMW.Authenticator)
+		r.Use(s.patAuthMW.Authenticator)
 		r.Route("/api/internal", func(r chi.Router) {
 			r.Get("/report", s.handlers.analytics.InternalReport)
 			r.Get("/customlicenses", s.handlers.licenses.CustomLicenses)

@@ -14,10 +14,8 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/checklist"
 	"github.com/eclipse-disuko/disuko/infra/repository/customid"
 	filtersets "github.com/eclipse-disuko/disuko/infra/repository/filterset"
-	"github.com/eclipse-disuko/disuko/infra/repository/internalToken"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/newsbox"
-	policyruleclassification "github.com/eclipse-disuko/disuko/infra/repository/policyruleclassification"
 	reviewremarks2 "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 	"github.com/eclipse-disuko/disuko/infra/service/startup"
 
@@ -77,14 +75,12 @@ type dbRepos struct {
 	changeLogList        changeloglist.IChangeLogListRepository
 	changeLogs           changelogs.IChangeLogsRepository
 	licenseRules         licenserules.ILicenseRulesRepository
-	basicauth            internalToken.IRepo
 	customid             customid.ICustomIdRepository
 	projectRepository    projectRepo.IProjectRepository
 	checklist            checklist.IChecklistRepository
 	newsbox              newsbox.IRepo
-	userstats                 userstatsRepo.IUserStatsRepository
-	policyDecisions           policydecisions.IPolicyDecisionsRepository
-	policyRuleClassification  policyruleclassification.IPolicyRuleClassificationRepository
+	userstats            userstatsRepo.IUserStatsRepository
+	policyDecisions      policydecisions.IPolicyDecisionsRepository
 }
 
 func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
@@ -117,14 +113,12 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		changeLogList:        changeloglist.NewChangeLogListRepository(requestSession),
 		changeLogs:           changelogs.NewChangeLogsRepository(requestSession),
 		licenseRules:         licenserules.NewLicenseRulesRepository(requestSession),
-		basicauth:            internalToken.NewRepo(requestSession),
 		customid:             customid.NewLabelsRepository(requestSession),
 		projectRepository:    projectRepo.NewProjectRepository(requestSession),
 		checklist:            checklist.NewLabelsRepository(requestSession),
 		newsbox:              newsbox.NewNewsboxRepository(requestSession),
-		userstats:                userstatsRepo.NewUsersRepository(requestSession),
-		policyDecisions:          policydecisions.NewPolicyDecisionsRepository(requestSession),
-		policyRuleClassification: policyruleclassification.NewPolicyRuleClassificationRepository(requestSession),
+		userstats:            userstatsRepo.NewUsersRepository(requestSession),
+		policyDecisions:      policydecisions.NewPolicyDecisionsRepository(requestSession),
 	}
 	err := s.repos.seedDb(requestSession)
 	if err != nil {
