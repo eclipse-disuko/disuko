@@ -30,7 +30,7 @@ func (s *ApprovalService) CreateInternalApproval(pr *project.Project, req approv
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	info := s.getApprovalInfo(pr, nil, false)
+	info := s.getApprovalInfo(pr, nil, false, false)
 	if len(info.Projects) == 0 {
 		exception.ThrowExceptionBadRequestResponse()
 	}

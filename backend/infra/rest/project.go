@@ -461,7 +461,9 @@ func (projectHandler *ProjectHandler) ProjectGetApprovableInfo(w http.ResponseWr
 		PolicyDecisionsRepo: projectHandler.PolicyDecisionsRepository,
 	}
 
-	res := as.GetApprovalInfo(pr)
+	takeLatestSbom := len(r.URL.Query().Get("latestSbom")) > 0
+
+	res := as.GetApprovalInfo(pr, takeLatestSbom)
 	dto := res.ToDto()
 
 	for _, appPr := range dto.Projects {

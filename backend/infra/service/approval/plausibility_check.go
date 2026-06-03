@@ -27,7 +27,7 @@ import (
 )
 
 func (s *ApprovalService) CreatePlausibilityCheck(pr *project.Project, req approval.RequestPlausibilityCheckDto, creator string) string {
-	info := s.getApprovalInfo(pr, nil, true)
+	info := s.getApprovalInfo(pr, nil, true, false)
 	appr := approval.Approval{
 		ChildEntity: domain.SetChildEntity(uuid.New().String()),
 		Type:        approval.TypePlausibility,
