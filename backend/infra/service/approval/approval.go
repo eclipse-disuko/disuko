@@ -156,7 +156,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			supplierUserId = &supplier.UserId
 		}
 
-		approvableSPDX := pr.ApprovableSPDX
+		approvableSPDX := &pr.ApprovableSPDX
 		var sbomList *sbomlist.SbomList
 		var sbom *project.SpdxFileBase
 
@@ -234,7 +234,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 			SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
 			Supplier:        supplierUserId,
-			ApprovableSPDX:  approvableSPDX,
+			ApprovableSPDX:  *approvableSPDX,
 			SpdxName:        sbom.MetaInfo.Name,
 			SpdxTag:         sbom.Tag,
 			ApprovableStats: sbomStats,
@@ -245,7 +245,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 	return res
 }
 
-func (s *ApprovalService) findLatestSpdx(pr *project.Project) (approvable.ApprovableSPDX, *sbomlist.SbomList, *project.SpdxFileBase) {
+func (s *ApprovalService) findLatestSpdx(pr *project.Project) (*approvable.ApprovableSPDX, *sbomlist.SbomList, *project.SpdxFileBase) {
 	var latest *project.SpdxFileBase
 	var latestSBOMList *sbomlist.SbomList
 	var latestVersionKey string
@@ -272,10 +272,10 @@ func (s *ApprovalService) findLatestSpdx(pr *project.Project) (approvable.Approv
 	}
 
 	if latest == nil {
-		return approvable.ApprovableSPDX{}, nil, nil
+		return nil, nil, nil
 	}
 
-	approvableSpdx := approvable.ApprovableSPDX{
+	approvableSpdx := &approvable.ApprovableSPDX{
 		SpdxKey:     latest.Key,
 		VersionKey:  latestVersionKey,
 		VersionName: latestVersionName,
