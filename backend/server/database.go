@@ -14,6 +14,8 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/checklist"
 	"github.com/eclipse-disuko/disuko/infra/repository/customid"
 	filtersets "github.com/eclipse-disuko/disuko/infra/repository/filterset"
+	i18nRepo "github.com/eclipse-disuko/disuko/infra/repository/i18n"
+
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/newsbox"
 	reviewremarks2 "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
@@ -81,6 +83,7 @@ type dbRepos struct {
 	newsbox              newsbox.IRepo
 	userstats            userstatsRepo.IUserStatsRepository
 	policyDecisions      policydecisions.IPolicyDecisionsRepository
+	i18nLocale           i18nRepo.II18nRepository
 }
 
 func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
@@ -119,6 +122,7 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		newsbox:              newsbox.NewNewsboxRepository(requestSession),
 		userstats:            userstatsRepo.NewUsersRepository(requestSession),
 		policyDecisions:      policydecisions.NewPolicyDecisionsRepository(requestSession),
+		i18nLocale:           i18nRepo.NewI18nRepository(requestSession),
 	}
 	err := s.repos.seedDb(requestSession)
 	if err != nil {

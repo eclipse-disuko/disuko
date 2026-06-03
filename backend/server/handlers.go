@@ -43,6 +43,7 @@ type handlers struct {
 	cap           rest.CapabilitiesHandler
 	customid      rest.CustomidHandler
 	publicAuth    rest.PublicAuthHandler
+	i18n          rest.I18nHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -196,15 +197,18 @@ func (s *Server) setupHandlers() {
 		PolicyDecisionsRepo:           s.repos.policyDecisions,
 	}
 	s.handlers.sampleData = test.SampleDataHandler{
-		PolicyRulesRepository: s.repos.policyRules,
-		DpConfigRepo:          s.repos.dpConfig,
-		ProjectRepository:     s.repos.project,
-		LicensesRepository:    s.repos.licenses,
-		ObligationRepository:  s.repos.obligation,
-		SchemaRepository:      s.repos.schema,
-		LabelRepository:       s.repos.label,
-		SbomListRepository:    s.repos.sbomList,
-		SpdxService:           s.services.spdx,
+		PolicyRulesRepository:     s.repos.policyRules,
+		DpConfigRepo:              s.repos.dpConfig,
+		ProjectRepository:         s.repos.project,
+		LicensesRepository:        s.repos.licenses,
+		ObligationRepository:      s.repos.obligation,
+		SchemaRepository:          s.repos.schema,
+		LabelRepository:           s.repos.label,
+		SbomListRepository:        s.repos.sbomList,
+		SpdxService:               s.services.spdx,
+		PolicyDecisionsRepository: s.repos.policyDecisions,
+		ProjectLabelService:       &s.services.projectLabelService,
+		LicenseRulesRepository:    s.repos.licenseRules,
 	}
 	s.handlers.statistic = rest.StatisticHandler{
 		PolicyRulesRepository: s.repos.policyRules,
@@ -259,4 +263,10 @@ func (s *Server) setupHandlers() {
 	s.handlers.publicAuth = rest.PublicAuthHandler{
 		ProjectRepo: s.repos.project,
 	}
+	s.handlers.i18n = rest.I18nHandler{
+		I18nRepository: s.repos.i18nLocale,
+	}
+
+	// TODO: quick fix, move spdx retriever into service
+	s.services.deletionService.SpdxRetriever = &s.handlers.project
 }
