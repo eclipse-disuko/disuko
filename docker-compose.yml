@@ -47,19 +47,19 @@ services:
       timeout: 5s
       retries: 5
   db:
-    image: couchdb
-    environment:
-      - COUCHDB_USER=admin
-      - COUCHDB_PASSWORD=password
+    image: ghcr.io/documentdb/documentdb/documentdb-local:latest
     ports:
-      - 5984:5984
+      - 10260:10260
+    command:
+      ["--skip-init-data", "--username", "disuko", "--password", "disuko"]
     volumes:
-      - couchdb_data:/opt/couchdb/data
+      - documentdb_data:/data
     healthcheck:
-      test: curl db:5984/_up
-      interval: 1s
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 9712 -U documentdb -d postgres"]
+      interval: 30s
       timeout: 10s
-      retries: 10
+      start_period: 30s
+      retries: 5
   client:
     build:
       context: ./frontend
@@ -102,12 +102,13 @@ services:
       keycloak:
         condition: service_healthy
     environment:
-      - DATABASE_TYPE=CouchDB
+      - DATABASE_TYPE=MongoDB
       - DATABASE_HOST=db
-      - DATABASE_PORT=5984
+      - DATABASE_PORT=10260
       - DATABASE_SCHEME=http
-      - DATABASE_USER=admin
-      - DATABASE_PASSWORD=password
+      - DATABASE_USER=disuko
+      - DATABASE_PASSWORD=disuko
+      - DATABASE_SKIP_VERIFY=true
       - CACHE_HOST=valkey
       - DISUKO_HOST=https://localhost:3009
       - SERVER_PORT=3009
@@ -134,5 +135,5 @@ services:
       retries: 25
 
 volumes:
-  couchdb_data:
+  documentdb_data:
   keycloak_data:
