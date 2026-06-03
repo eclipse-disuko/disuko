@@ -58,6 +58,111 @@ type ProjectChildrenCombiDto struct {
 	HasProjectReadAccess bool            `json:"hasProjectReadAccess"`
 }
 
+type ProjectSlimInternalDto struct {
+	Key               string               `json:"_key"`
+	Rev               string               `json:"_rev"`
+	Name              string               `json:"name"`
+	Description       string               `json:"description"`
+	ApplicationId     *string              `json:"applicationId"`
+	SchemaLabel       string               `json:"schemaLabel"`
+	PolicyLabels      []string             `json:"policyLabels"`
+	ProjectLabels     []string             `json:"projectLabels"`
+	FreeLabels        []string             `json:"freeLabels"`
+	Children          []string             `json:"children"`
+	IsGroup           bool                 `json:"isGroup"`
+	Parent            string               `json:"parent"`
+	ParentName        string               `json:"parentName"`
+	Status            ProjectStatusType    `json:"status"`
+	Updated           time.Time            `json:"updated,omitempty"`
+	Created           time.Time            `json:"created,omitempty"`
+	IsDeleted         bool                 `json:"isDeleted"`
+	Supplier          string               `json:"supplier"`
+	SupplierMissing   bool                 `json:"supplierMissing"`
+	Company           string               `json:"company"`
+	Department        string               `json:"department"`
+	DepartmentMissing bool                 `json:"missing"`
+	IsNoFoss          bool                 `json:"isNoFoss"`
+	ApplicationMeta   ApplicationMetaDto   `json:"applicationMeta"`
+	IsInGroupApproval bool                 `json:"isInGroupApproval"`
+	Responsible       string               `json:"responsible"`
+	CustomIds         []ProjectCustomIdDto `json:"customIds"`
+	IsDummy           bool                 `json:"isDummy"`
+	HasApproval       bool                 `json:"hasApproval"`
+	HasChildren       bool                 `json:"hasChildren"`
+	HasSBOMToRetain   bool                 `json:"hasSBOMToRetain"`
+}
+
+func (entity *Project) ToSlimInternalDto(docDep *department.Department, docMissing bool, custDep *department.Department, custMissing bool, isDummy bool) ProjectSlimInternalDto {
+	departmentStr := ""
+	companyStr := ""
+	supplier := ""
+	if entity.SupplierExtraData.External {
+		supplier = entity.DocumentMeta.SupplierName
+	} else if docDep != nil {
+		supplier = docDep.CompanyName + " [" + docDep.CompanyCode + "]"
+	}
+
+	if custDep != nil {
+		departmentStr = custDep.OrgAbbreviation + " " + custDep.DescriptionEnglish + " [" + custDep.Key + "]"
+		companyStr = custDep.CompanyName + " [" + custDep.CompanyCode + "]"
+	}
+	applicationId := ""
+	if entity.ApplicationMeta.Id != "" {
+		applicationId = entity.ApplicationMeta.Name
+		if entity.ApplicationMeta.SecondaryId != "" {
+			applicationId += " (" + entity.ApplicationMeta.SecondaryId + ")"
+		}
+	}
+	if len(applicationId) == 0 && entity.ApplicationId != nil && *entity.ApplicationId != "" {
+		applicationId = *entity.ApplicationId
+	}
+	responsible := ""
+	if ru := entity.ProjectResponsible(); ru != nil {
+		responsible = ru.UserId
+	}
+	customIds := make([]ProjectCustomIdDto, 0)
+	for _, c := range entity.CustomIds {
+		customIds = append(customIds, ProjectCustomIdDto{
+			Key:         c.Key,
+			TechnicalId: c.TechnicalId,
+			Value:       c.Value,
+		})
+	}
+
+	return ProjectSlimInternalDto{
+		Key:               entity.Key,
+		Rev:               entity.Rev,
+		Name:              entity.Name,
+		ApplicationId:     &applicationId,
+		Description:       entity.Description,
+		SchemaLabel:       entity.SchemaLabel,
+		PolicyLabels:      entity.PolicyLabels,
+		ProjectLabels:     entity.ToProjectLabelsDto(),
+		FreeLabels:        entity.FreeLabels,
+		Children:          entity.Children,
+		Parent:            entity.Parent,
+		ParentName:        entity.ParentName,
+		Updated:           entity.Updated,
+		Created:           entity.Created,
+		Status:            entity.Status,
+		IsGroup:           entity.IsGroup,
+		IsDeleted:         entity.Deleted,
+		Supplier:          supplier,
+		SupplierMissing:   !entity.SupplierExtraData.External && docMissing,
+		Department:        departmentStr,
+		DepartmentMissing: custMissing,
+		Company:           companyStr,
+		IsNoFoss:          entity.IsNoFoss,
+		Responsible:       responsible,
+		ApplicationMeta:   entity.ApplicationMeta.ToDto(),
+		CustomIds:         customIds,
+		IsDummy:           isDummy,
+		HasChildren:       entity.HasChildren,
+		HasApproval:       entity.HasApproval,
+		HasSBOMToRetain:   entity.HasSBOMToRetain,
+	}
+}
+
 // ProjectSlimDto used as DTO for Project representation in projects list where only small amount of the entire Project structure is needed.
 type ProjectSlimDto struct {
 	Key                  string                     `json:"_key"`

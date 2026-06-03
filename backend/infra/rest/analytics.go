@@ -14,7 +14,6 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/analytics"
 	da "github.com/eclipse-disuko/disuko/domain/analytics"
-	"github.com/eclipse-disuko/disuko/domain/internalToken"
 	license2 "github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/roles"
@@ -74,8 +73,8 @@ func (handler *AnalyticsHandler) Report(w http.ResponseWriter, r *http.Request) 
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 
-	auth := extractInternalToken(r.Context())
-	if !slices.Contains(auth.Capabilities, internalToken.StatisticsCSV) {
+	user := extractPATUser(r.Context())
+	if user == nil || !slices.Contains(user.Roles, roles.DomainAdmin) {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 

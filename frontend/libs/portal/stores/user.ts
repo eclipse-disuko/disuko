@@ -145,10 +145,10 @@ export const createNavItemsGroup = function () {
         active: false,
       } as INavItem,
       {
-        title: 'TAB_ADMIN_USER_MANAGEMENT',
-        path: '/dashboard/admin/userManagement',
-        iconName: 'mdi-account-cog-outline',
-        condition: rights.isDomainAdmin(),
+        title: 'ADMIN_I18N_PAGE_TITLE',
+        path: '/dashboard/admin/i18n',
+        iconName: 'mdi-translate',
+        condition: rights.isApplicationAdmin(),
         active: false,
       } as INavItem,
     );

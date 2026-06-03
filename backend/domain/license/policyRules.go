@@ -5,10 +5,15 @@
 package license
 
 import (
+	"encoding/json"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/audit"
+	"github.com/eclipse-disuko/disuko/helper/hash"
+	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type PolicyRules struct {
@@ -32,6 +37,54 @@ type PolicyRules struct {
 	DeprecatedDate   time.Time
 }
 
+type PolicyRuleHashEntry struct {
+	Key             string
+	ComponentsAllow []string
+	ComponentsDeny  []string
+	ComponentsWarn  []string
+}
+
+type PolicyRulesList []*PolicyRules
+
+func (r *PolicyRulesList) GenHash(requestSession *logy.RequestSession) string {
+	if r == nil {
+		return ""
+	}
+
+	entries := make([]PolicyRuleHashEntry, 0, len(*r))
+	for _, rule := range *r {
+		if rule == nil {
+			continue
+		}
+		entries = append(entries, PolicyRuleHashEntry{
+			Key:             rule.Key,
+			ComponentsAllow: normalizeAndSort(rule.ComponentsAllow),
+			ComponentsDeny:  normalizeAndSort(rule.ComponentsDeny),
+			ComponentsWarn:  normalizeAndSort(rule.ComponentsWarn),
+		})
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
+
+	prStr, err := json.Marshal(entries)
+	if err != nil {
+		logy.Warnf(requestSession, "Error marshalling slice of policy rule hash entries")
+		return ""
+	}
+	return hash.Hash(requestSession, prStr)
+}
+
+func normalizeAndSort(values []string) []string {
+	res := make([]string, 0, len(values))
+	for _, v := range values {
+		res = append(res, strings.ToLower(strings.TrimSpace(v)))
+	}
+	sort.Strings(res)
+	return res
+}
+
 type BucketDefinition struct {
 	DeniedClassifications  []string `json:"deniedClassifications" validate:"dive,gte=1,lte=80"`
 	WarnedClassifications  []string `json:"warnedClassifications" validate:"dive,gte=1,lte=80"`
@@ -39,7 +92,7 @@ type BucketDefinition struct {
 }
 
 type CalculatedPolicyConfig struct {
-	BucketDefinition *BucketDefinition      `json:"bucketDefinition"`
+	BucketDefinition *BucketDefinition     `json:"bucketDefinition"`
 	LicenseScope     CalculatedPolicyScope `json:"licenseScope"`
 }
 

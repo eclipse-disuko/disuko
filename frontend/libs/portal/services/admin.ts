@@ -7,7 +7,6 @@ import {ChangeLogResponse} from '@disclosure-portal/model/ChangeLog';
 import {Checklist, ChecklistItem} from '@disclosure-portal/model/Checklist';
 import {ICountResponse, ISuccessRsponse} from '@disclosure-portal/model/Common';
 import {CustomId, CustomIdUsage} from '@disclosure-portal/model/CustomId';
-import {InternalToken} from '@disclosure-portal/model/InternalToken';
 import IObligation from '@disclosure-portal/model/IObligation';
 import {JobDto, SetConfigDto} from '@disclosure-portal/model/Job';
 import Label from '@disclosure-portal/model/Label';
@@ -381,50 +380,6 @@ class AdminService {
 
   public customIdUsage(id: string) {
     return api.get<CustomIdUsage>(`/api/v1/${modelName}/customid/${id}/usage`);
-  }
-
-  public getInternalTokens(): Promise<AxiosResponse<InternalToken[]>> {
-    return api.get<InternalToken[]>(`/api/v1/${modelName}/internaltoken`);
-  }
-
-  public createInternalToken(user: InternalToken) {
-    return api.post<ISuccessRsponse>(`/api/v1/${modelName}/internaltoken/`, user);
-  }
-
-  public renewInternalToken(tokenId: string) {
-    return api.put<InternalToken>(`/api/v1/${modelName}/internaltoken/${tokenId}`);
-  }
-
-  public revokeInternalToken(user: string) {
-    return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/internaltoken/${user}`);
-  }
-
-  public executeDryRun(username: string) {
-    return api.get<DeletePersonalDataResponse>(`/api/v1/${modelName}/users/delete-personal-data?username=${username}`);
-  }
-
-  public getPersonalDetails(username: string, entity: string) {
-    return api.get<{
-      success: boolean;
-      message: string;
-      data: Array<{
-        entityID: string;
-        entityType: string;
-        entityStatus?: string;
-        entityName: string;
-        disableDeleteReason?: string;
-      }>;
-    }>(`/api/v1/${modelName}/users/get-personal-details/${username}?entity=${entity}`);
-  }
-
-  public deletePersonalDataByEntity(username: string, entity: string) {
-    return api.delete<ISuccessRsponse>(
-      `/api/v1/${modelName}/users/delete-personal-data/${entity}?username=${username}`,
-    );
-  }
-
-  public deletePersonalDataByEntityId(entity: string, id: string) {
-    return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/users/delete-personal-data/${entity}/${id}`);
   }
 
   public getUpcomingDeletions() {

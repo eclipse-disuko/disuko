@@ -6,6 +6,7 @@ package licenserules
 
 import (
 	"encoding/json"
+	"sort"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -38,13 +39,45 @@ type LicenseRules struct {
 	Rules []*LicenseRule
 }
 
+type LicenseRulesHashEntry struct {
+	Key    string
+	Active bool
+}
+
+type LicenseRulesHash struct {
+	Key   string
+	Rules []LicenseRulesHashEntry
+}
+
 func (r *LicenseRules) GenHash(requestSession *logy.RequestSession) string {
 	if r == nil {
 		return ""
 	}
-	ruleStr, err := json.Marshal(r)
+
+	entries := make([]LicenseRulesHashEntry, 0, len(r.Rules))
+
+	for _, rule := range r.Rules {
+		if rule == nil {
+			continue
+		}
+		entries = append(entries, LicenseRulesHashEntry{
+			Key:    rule.Key,
+			Active: rule.Active,
+		})
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Key < entries[j].Key
+	})
+
+	hashData := LicenseRulesHash{
+		Key:   r.Key,
+		Rules: entries,
+	}
+
+	ruleStr, err := json.Marshal(hashData)
 	if err != nil {
-		logy.Warnf(requestSession, "Error marshalling license rules: %s", r.Key)
+		logy.Warnf(requestSession, "Error marshalling license rules hash data: %s", r.Key)
 		return ""
 	}
 	return hash.Hash(requestSession, ruleStr)

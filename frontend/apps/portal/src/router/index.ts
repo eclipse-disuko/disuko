@@ -37,11 +37,11 @@ const CheckList = () => import('@disclosure-portal/views/admin/checklist/Checkli
 const CheckListMain = () => import('@disclosure-portal/views/admin/checklist/ChecklistMain.vue');
 const SchemaMain = () => import('@disclosure-portal/views/admin/schema/SchemaMain.vue');
 const AdminProjects = () => import('@disclosure-portal/views/admin/AdminProjects.vue');
-const InternalToken = () => import('@disclosure-portal/views/admin/InternalToken.vue');
 const Newsbox = () => import('@disclosure-portal/views/admin/Newsbox.vue');
 const FeatureFlags = () => import('@disclosure-portal/views/admin/FeatureFlags.vue');
 const UpcomingDeletions = () => import('@disclosure-portal/views/admin/UpcomingDeletions.vue');
-const UserManagement = () => import('@disclosure-portal/views/admin/tools/UserManagement.vue');
+const I18nAdmin = () => import('@disclosure-portal/views/admin/i18n/I18n.vue');
+const I18nLocaleDetails = () => import('@disclosure-portal/views/admin/i18n/LocaleDetails.vue');
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -361,17 +361,6 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'admin/userManagement',
-        name: 'AdminUserManagement',
-        component: UserManagement,
-        meta: {
-          title: {
-            en: 'User Management',
-            de: 'Benutzerverwaltung',
-          },
-        },
-      },
-      {
         path: 'admin/templates/:tab?',
         name: 'ReviewTemplates',
         component: ReviewTemplates,
@@ -479,17 +468,6 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'admin/internaltoken',
-        name: 'InternalToken',
-        component: InternalToken,
-        meta: {
-          title: {
-            en: 'Internal Token',
-            de: 'Interner Token',
-          },
-        },
-      },
-      {
         path: 'admin/newsbox',
         name: 'Newsbox',
         component: Newsbox,
@@ -508,6 +486,28 @@ const routes: RouteRecordRaw[] = [
           title: {
             en: 'Feature Flags',
             de: 'Feature Flags',
+          },
+        },
+      },
+      {
+        path: 'admin/i18n',
+        name: 'I18nAdmin',
+        component: I18nAdmin,
+        meta: {
+          title: {
+            en: 'Internationalization',
+            de: 'Internationalisierung',
+          },
+        },
+      },
+      {
+        path: 'admin/i18n/:localeCode',
+        name: 'I18nLocaleDetails',
+        component: I18nLocaleDetails,
+        meta: {
+          title: {
+            en: 'I18n Locale Details',
+            de: 'I18n Locale Details',
           },
         },
       },
@@ -908,13 +908,6 @@ router.beforeEach((to, from, next) => {
     }
     if (to.path.includes('admin/schemas')) {
       if (rights.hasSchemaAccess()) {
-        return next();
-      } else {
-        return next({path: '/dashboard/home'});
-      }
-    }
-    if (to.path.includes('admin/userManagement')) {
-      if (rights.isDomainAdmin()) {
         return next();
       } else {
         return next({path: '/dashboard/home'});

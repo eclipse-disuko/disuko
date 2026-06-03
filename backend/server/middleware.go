@@ -36,5 +36,5 @@ func (s *Server) setupMW() {
 
 	s.r.Use(middleware.Timeout(3 * time.Minute))
 
-	s.basicauthMW = middlewareDisco.InitInternalTokenMW(s.repos.basicauth)
+	s.patAuthMW = middlewareDisco.InitPATAuthMW(s.services.patAuthService)
 }

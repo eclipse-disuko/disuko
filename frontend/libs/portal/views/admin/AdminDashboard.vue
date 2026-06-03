@@ -87,7 +87,7 @@ const tiles = computed<ITile[]>(() => {
       color: 'primary',
       cnt: -1,
       visible: true,
-      title: 'Tools',
+      title: 'TOOLS',
       url: '/dashboard/admin/tools/analytics',
       icon: 'mdi-hammer-screwdriver',
       expandGroup: false,
@@ -123,7 +123,7 @@ const tiles = computed<ITile[]>(() => {
       color: 'primary',
       cnt: -1,
       visible: true,
-      title: 'Analytics',
+      title: 'ANALYTICS',
       url: '/dashboard/analytics/overview',
       icon: 'mdi-chart-box-outline',
       expandGroup: false,
@@ -136,21 +136,9 @@ const tiles = computed<ITile[]>(() => {
       color: 'primary',
       cnt: -1,
       visible: true,
-      title: 'Custom IDs',
+      title: 'CUSTOMIDS',
       url: '/dashboard/admin/customids',
       icon: 'mdi-identifier',
-      expandGroup: false,
-      expand: false,
-    });
-  }
-  if (RightsUtils.isApplicationAdmin()) {
-    res.push({
-      color: 'primary',
-      cnt: -1,
-      visible: true,
-      title: 'Internal Token',
-      url: '/dashboard/admin/internaltoken',
-      icon: 'mdi-shield-lock',
       expandGroup: false,
       expand: false,
     });
@@ -193,15 +181,13 @@ const tiles = computed<ITile[]>(() => {
       expandGroup: false,
       expand: false,
     });
-  }
-  if (RightsUtils.isDomainAdmin()) {
     res.push({
       color: 'primary',
       cnt: -1,
       visible: true,
-      title: 'TAB_ADMIN_USER_MANAGEMENT',
-      url: '/dashboard/admin/userManagement',
-      icon: 'mdi-account-cog-outline',
+      title: 'ADMIN_I18N_PAGE_TITLE',
+      url: '/dashboard/admin/i18n',
+      icon: 'mdi-translate',
       expandGroup: false,
       expand: false,
     });

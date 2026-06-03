@@ -20,6 +20,7 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const {calculateHeight} = useDimensions();
@@ -27,6 +28,7 @@ const {info} = useSnackbar();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/labels', ['schema', 'policy', 'project']);
 const userStore = useUserStore();
+const {sliderWidth} = useTableActionSlider();
 
 const dialogNewLabelVisible = ref(false);
 const schemaLabels = ref<Label[]>([]);
@@ -38,11 +40,11 @@ const projectLabelSearch = ref('');
 const rights = ref<Rights>({} as Rights);
 const icons = Icons;
 
-const headers = computed<DataTableHeader[]>(() => [
+const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 120,
+    align: 'start',
+    width: sliderWidth.value,
     value: 'actions',
   },
   {
@@ -248,36 +250,39 @@ const updateTableHeight = () => {
                   <DSearchField v-model="schemaLabelSearch" />
                 </template>
                 <template #table>
-                  <v-data-table
-                    class="striped-table fill-height"
-                    density="compact"
-                    fixed-header
-                    :headers="headers"
-                    :sort-by="sortItems"
-                    :items="schemaLabels"
-                    :items-per-page="-1"
-                    :custom-filter="customFilterTable"
-                    :item-class="getCssClassForTableRow"
-                    :search="schemaLabelSearch">
-                    <template #[`item.name`]="{item}">
-                      <DLabel v-if="item.name" :labelName="item.name" :iconName="icons.SCHEMA" class="mt-1"></DLabel>
-                    </template>
+                  <div class="fill-height action-slider-table">
+                    <v-data-table
+                      class="striped-table fill-height"
+                      density="compact"
+                      fixed-header
+                      :headers="headers"
+                      :sort-by="sortItems"
+                      :items="schemaLabels"
+                      :items-per-page="-1"
+                      :custom-filter="customFilterTable"
+                      :item-class="getCssClassForTableRow"
+                      :search="schemaLabelSearch">
+                      <template #[`item.name`]="{item}">
+                        <DLabel v-if="item.name" :labelName="item.name" :iconName="icons.SCHEMA" class="mt-1"></DLabel>
+                      </template>
 
-                    <template #[`item.description`]="{item}">
-                      <Truncated>{{ item.description }}</Truncated>
-                    </template>
+                      <template #[`item.description`]="{item}">
+                        <Truncated>{{ item.description }}</Truncated>
+                      </template>
 
-                    <template #[`item.created`]="{item}">
-                      <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
-                    </template>
+                      <template #[`item.created`]="{item}">
+                        <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
+                      </template>
 
-                    <template #[`item.actions`]="{item}">
-                      <TableActionButtons
-                        :buttons="labelButtons"
-                        @edit="showEditLabelDialog(item)"
-                        @delete="showConfirm(item)" />
-                    </template>
-                  </v-data-table>
+                      <template #[`item.actions`]="{item}">
+                        <TableActionButtons
+                          variant="slider"
+                          :buttons="labelButtons"
+                          @edit="showEditLabelDialog(item)"
+                          @delete="showConfirm(item)" />
+                      </template>
+                    </v-data-table>
+                  </div>
                 </template>
               </TableLayout>
             </v-tabs-window-item>
@@ -304,37 +309,40 @@ const updateTableHeight = () => {
                   <DSearchField v-model="policyLabelSearch" />
                 </template>
                 <template #table>
-                  <v-data-table
-                    class="striped-table fill-height"
-                    density="compact"
-                    fixed-header
-                    :headers="headers"
-                    :sort-by="sortItems"
-                    :custom-filter="customFilterTable"
-                    :items-per-page="-1"
-                    :items="policyLabels"
-                    :search="policyLabelSearch"
-                    :item-class="getCssClassForTableRow"
-                    :height="tableHeight">
-                    <template #[`item.name`]="{item}">
-                      <DLabel v-if="item.name" :iconName="icons.POLICY" :labelName="item.name" class="mt-1"></DLabel>
-                    </template>
+                  <div class="fill-height action-slider-table">
+                    <v-data-table
+                      class="striped-table fill-height"
+                      density="compact"
+                      fixed-header
+                      :headers="headers"
+                      :sort-by="sortItems"
+                      :custom-filter="customFilterTable"
+                      :items-per-page="-1"
+                      :items="policyLabels"
+                      :search="policyLabelSearch"
+                      :item-class="getCssClassForTableRow"
+                      :height="tableHeight">
+                      <template #[`item.name`]="{item}">
+                        <DLabel v-if="item.name" :iconName="icons.POLICY" :labelName="item.name" class="mt-1"></DLabel>
+                      </template>
 
-                    <template #[`item.created`]="{item}">
-                      <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
-                    </template>
+                      <template #[`item.created`]="{item}">
+                        <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
+                      </template>
 
-                    <template #[`item.actions`]="{item}">
-                      <TableActionButtons
-                        :buttons="labelButtons"
-                        @edit="showEditLabelDialog(item)"
-                        @delete="showConfirm(item)" />
-                    </template>
+                      <template #[`item.actions`]="{item}">
+                        <TableActionButtons
+                          variant="slider"
+                          :buttons="labelButtons"
+                          @edit="showEditLabelDialog(item)"
+                          @delete="showConfirm(item)" />
+                      </template>
 
-                    <template #[`item.description`]="{item}">
-                      <Truncated>{{ item.description }}</Truncated>
-                    </template>
-                  </v-data-table>
+                      <template #[`item.description`]="{item}">
+                        <Truncated>{{ item.description }}</Truncated>
+                      </template>
+                    </v-data-table>
+                  </div>
                 </template>
               </TableLayout>
             </v-tabs-window-item>
@@ -360,41 +368,44 @@ const updateTableHeight = () => {
                   <DSearchField v-model="projectLabelSearch" />
                 </template>
                 <template #table>
-                  <v-data-table
-                    class="striped-table fill-height"
-                    density="compact"
-                    fixed-header
-                    :headers="headers"
-                    :sort-by="sortItems"
-                    :custom-filter="customFilterTable"
-                    :items-per-page="-1"
-                    :items="projectLabels"
-                    :search="projectLabelSearch"
-                    :item-class="getCssClassForTableRow"
-                    :height="tableHeight">
-                    <template #[`item.name`]="{item}">
-                      <DLabel
-                        v-if="item.name"
-                        :iconName="icons.PROJECT_LABEL"
-                        :labelName="item.name"
-                        class="mt-1"></DLabel>
-                    </template>
+                  <div class="fill-height action-slider-table">
+                    <v-data-table
+                      class="striped-table fill-height"
+                      density="compact"
+                      fixed-header
+                      :headers="headers"
+                      :sort-by="sortItems"
+                      :custom-filter="customFilterTable"
+                      :items-per-page="-1"
+                      :items="projectLabels"
+                      :search="projectLabelSearch"
+                      :item-class="getCssClassForTableRow"
+                      :height="tableHeight">
+                      <template #[`item.name`]="{item}">
+                        <DLabel
+                          v-if="item.name"
+                          :iconName="icons.PROJECT_LABEL"
+                          :labelName="item.name"
+                          class="mt-1"></DLabel>
+                      </template>
 
-                    <template #[`item.created`]="{item}">
-                      <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
-                    </template>
+                      <template #[`item.created`]="{item}">
+                        <DDateCellWithTooltip :value="item.created"></DDateCellWithTooltip>
+                      </template>
 
-                    <template #[`item.actions`]="{item}">
-                      <TableActionButtons
-                        :buttons="labelButtons"
-                        @edit="showEditLabelDialog(item)"
-                        @delete="showConfirm(item)" />
-                    </template>
+                      <template #[`item.actions`]="{item}">
+                        <TableActionButtons
+                          variant="slider"
+                          :buttons="labelButtons"
+                          @edit="showEditLabelDialog(item)"
+                          @delete="showConfirm(item)" />
+                      </template>
 
-                    <template #[`item.description`]="{item}">
-                      <Truncated>{{ item.description }}</Truncated>
-                    </template>
-                  </v-data-table>
+                      <template #[`item.description`]="{item}">
+                        <Truncated>{{ item.description }}</Truncated>
+                      </template>
+                    </v-data-table>
+                  </div>
                 </template>
               </TableLayout>
             </v-tabs-window-item>

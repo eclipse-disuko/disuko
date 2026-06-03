@@ -25,6 +25,7 @@
     "*.ntvs*",
     "*.njsproj",
     "*.sln",
-    "*.sw?"
+    "*.sw?",
+    "**/tailwind.css"
   ]
 }

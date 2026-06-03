@@ -15,11 +15,13 @@ import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {openUrlInNewTab} from '@shared/utils/url';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const router = useRouter();
 const route = useRoute();
 const {t} = useI18n();
 const {info, error} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 interface Props {
   hideEditAction?: boolean;
@@ -65,8 +67,8 @@ const sortType = (a: TaskDto, b: TaskDto) => {
   return t(`TASK_TYPE_${b.approvalType}_${b.type}`).localeCompare(t(`TASK_TYPE_${a.approvalType}_${a.type}`));
 };
 
-const headers: DataTableHeader[] = [
-  {title: 'COL_ACTIONS', align: 'center', value: 'actions', width: 120},
+const headers = computed((): DataTableHeader[] => [
+  {title: 'COL_ACTIONS', align: 'start', value: 'actions', width: sliderWidth.value},
   {title: 'COL_STATUS', sortable: true, align: 'start', width: 120, value: 'status'},
   {title: 'TYPE', sortable: true, sortRaw: sortType, align: 'start', width: 250, value: 'approvalType'},
   {title: 'COL_CREATOR', sortable: true, align: 'start', width: 180, value: 'creator'},
@@ -76,26 +78,11 @@ const headers: DataTableHeader[] = [
   {title: 'COL_RESULT', sortable: true, align: 'start', width: 160, value: 'resultStatus'},
   {title: 'COL_UPDATED', sortable: true, align: 'start', width: 110, value: 'updated'},
   {title: 'COL_CREATED', sortable: true, align: 'start', width: 110, value: 'created'},
-];
+]);
 
 const tableName = 'TasksGrid';
-const headerSettings = useHeaderSettings({tableName, headers});
+const headerSettings = useHeaderSettings({tableName, headers: headers.value});
 const {filteredHeaders} = headerSettings;
-
-watch(
-  () => route.params.id,
-  async (newId) => {
-    if (newId && (!selectedRow.value || selectedRow.value.id !== newId)) {
-      const id = Array.isArray(newId) ? newId[0] : newId;
-      const task = await Profile.getTask(id);
-      if (task) {
-        selectedRow.value = task;
-        taskApprovalVisible.value = true;
-      }
-    }
-  },
-  {immediate: true, deep: true},
-);
 
 function closeTaskApprovalDialog(value: boolean) {
   if (!value) {
@@ -206,6 +193,25 @@ const customFilter = (value: any, query: string, item?: any) => {
   return searchableFields.some((field) => field?.toLowerCase().includes(searchLower));
 };
 
+watch(headers, () => {
+  headerSettings.resetHeaderSettings({tableName, headers: headers.value});
+});
+
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId && (!selectedRow.value || selectedRow.value.id !== newId)) {
+      const id = Array.isArray(newId) ? newId[0] : newId;
+      const task = await Profile.getTask(id);
+      if (task) {
+        selectedRow.value = task;
+        taskApprovalVisible.value = true;
+      }
+    }
+  },
+  {immediate: true, deep: true},
+);
+
 onMounted(async () => {
   await reload();
 });
@@ -226,7 +232,7 @@ onMounted(async () => {
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableGridTasks" class="fill-height">
+      <div ref="tableGridTasks" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
           class="striped-table custom-data-table fill-height"
@@ -243,14 +249,14 @@ onMounted(async () => {
           :items="filteredList"
           item-value="_key"
           @click:row="(_: Event, dataItem: DataTableItem<TaskDto>) => showTaskApprovalDialog(dataItem.item)">
-          <template v-slot:[`header.actions`]="{column}">
+          <template #[`header.actions`]="{column}">
             <GridFilterHeader :column="column">
               <template #settings>
                 <HeaderSettings :column="column" :grid-name="tableName" />
               </template>
             </GridFilterHeader>
           </template>
-          <template v-slot:[`header.status`]="{column, toggleSort, getSortIcon}">
+          <template #[`header.status`]="{column, toggleSort, getSortIcon}">
             <GridFilterHeader :column="column" :getSortIcon="getSortIcon" :toggleSort="toggleSort">
               <template #filter>
                 <GridHeaderFilterIcon
@@ -263,37 +269,38 @@ onMounted(async () => {
               </template>
             </GridFilterHeader>
           </template>
-          <template v-slot:[`item.created`]="{item}">
+          <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />
           </template>
-          <template v-slot:[`item.updated`]="{item}">
+          <template #[`item.updated`]="{item}">
             <DDateCellWithTooltip :value="item.updated" />
           </template>
-          <template v-slot:[`item.approvalType`]="{item}">
+          <template #[`item.approvalType`]="{item}">
             {{ t(`TASK_TYPE_${item.approvalType}_${item.type}`) }}
           </template>
-          <template v-slot:[`item.resultStatus`]="{item}">
+          <template #[`item.resultStatus`]="{item}">
             {{ t(`COL_APPROVAL_STATUS_${item.approvalType}_${item.resultStatus}`) }}
           </template>
-          <template v-slot:[`item.creator`]="{item}">
+          <template #[`item.creator`]="{item}">
             <span>{{ item.creatorFullName }} ({{ item.creator }})</span>
           </template>
-          <template v-slot:[`item.creatorDepartment`]="{item}">
+          <template #[`item.creatorDepartment`]="{item}">
             <span v-if="item.creatorDepartmentDescription && item.creatorDepartment"
               >{{ item.creatorDepartmentDescription }} ({{ item.creatorDepartment }})</span
             >
             <span v-else>-</span>
           </template>
-          <template v-slot:[`item.delegatedTo`]="{item}">
+          <template #[`item.delegatedTo`]="{item}">
             <span v-if="item.delegatedToFullName">{{ item.delegatedToFullName }} ({{ item.delegatedTo }})</span>
             <span v-else>-</span>
           </template>
-          <template v-slot:[`item.projectName`]="{item}">
+          <template #[`item.projectName`]="{item}">
             {{ `Project: ${item.projectName}` }}
           </template>
-          <template v-slot:[`item.actions`]="{item}">
+          <template #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              class="pl-4"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="showTaskApprovalDialog(item)"
               @openReference="openProject(item)"

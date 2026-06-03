@@ -204,6 +204,11 @@ type ProjectsResponse struct {
 	Count    int              `json:"count"`
 }
 
+type ListAllInternalRes struct {
+	Projects []ProjectSlimInternalDto `json:"projects"`
+	Count    int                      `json:"count"`
+}
+
 type ProjectsChildren struct {
 	List     []ProjectChildrenCombiDto `json:"list"`
 	Projects []ProjectSlimDto          `json:"projects"`

@@ -5,10 +5,13 @@
 package approval
 
 import (
+	"fmt"
 	"slices"
 	"sort"
 	"time"
 
+	license2 "github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/helper/hash"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 
@@ -36,7 +39,7 @@ import (
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
-type spdxRetriever interface {
+type SpdxRetriever interface {
 	RetrieveSbomListAndFile(*logy.RequestSession, string, string) (*sbomlist.SbomList, *project.SpdxFileBase)
 }
 
@@ -54,7 +57,7 @@ type ApprovalService struct {
 	LicenseRulesRepo    licenserules.ILicenseRulesRepository
 	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
 
-	SpdxRetriever spdxRetriever
+	SpdxRetriever SpdxRetriever
 
 	WizardService        *projectService.WizardService
 	ProjectLabelService  *projectLabelService.ProjectLabelService
@@ -123,6 +126,9 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 	} else {
 		projects = []string{targetProject.Key}
 	}
+	policyRulesAll := s.PolicyRulesRepo.FindAll(s.RequestSession, false)
+	licenseRefs := s.LicenseRepo.GetLicenseRefs(s.RequestSession)
+	licenseRefsHash := licenseRefs.GenHash(s.RequestSession)
 	for _, prKey := range projects {
 		pr := s.ProjectRepo.FindByKeyWithDeleted(s.RequestSession, prKey, false)
 		if pr == nil {
@@ -166,12 +172,37 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			isSpdxRecent = true
 		}
 
-		compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, pr.ApprovableSPDX.VersionKey, sbom)
-		rules := s.PolicyRulesRepo.FindPolicyRulesForLabel(s.RequestSession, pr.PolicyLabels)
+		rules := policyrules.FilterPolicyRulesForLabel(policyRulesAll, pr.PolicyLabels)
+		prl := license2.PolicyRulesList(rules)
+		licenseRules := s.LicenseRulesRepo.FindByKey(s.RequestSession, pr.Key, false)
 		policyDecisions := s.PolicyDecisionsRepo.FindByKey(s.RequestSession, pr.Key, false)
-		isVehicle := s.ProjectLabelService.HasVehiclePlatformLabel(s.RequestSession, pr)
-		evalRes := compsInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, sbom.Uploaded, sbom.Key)
-		res.CompStats.AddStats(evalRes.Stats)
+		projectPolicyRulesHash := prl.GenHash(s.RequestSession)
+
+		licenseRulesHash := licenseRules.GenHash(s.RequestSession)
+		policyDecisionsHash := policyDecisions.GenHash(s.RequestSession)
+		currentTotalStatsHash := new(hash.Hash(s.RequestSession, fmt.Sprintf(
+			"%s|%s|%s|%s",
+			projectPolicyRulesHash,
+			licenseRefsHash,
+			licenseRulesHash,
+			policyDecisionsHash,
+		)))
+
+		var sbomStats components.ComponentStats
+		if sbom.TotalStatsHash != nil && *sbom.TotalStatsHash == *currentTotalStatsHash {
+			sbomStats = sbom.Stats
+		} else {
+			compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, pr.ApprovableSPDX.VersionKey, sbom)
+			isVehicle := s.ProjectLabelService.HasVehiclePlatformLabel(s.RequestSession, pr)
+			evalRes := compsInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, sbom.Uploaded, sbom.Key)
+
+			sbomStats = evalRes.Stats
+			sbom.Stats = sbomStats
+			sbom.TotalStatsHash = currentTotalStatsHash
+			s.SBOMListRepo.Update(s.RequestSession, sbomList)
+		}
+		res.CompStats.AddStats(sbomStats)
+
 		res.Projects = append(res.Projects, approval.ProjectApprovable{
 			ProjectKey:      pr.Key,
 			ProjectName:     pr.Name,
@@ -180,7 +211,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			ApprovableSPDX:  pr.ApprovableSPDX,
 			SpdxName:        sbom.MetaInfo.Name,
 			SpdxTag:         sbom.Tag,
-			ApprovableStats: evalRes.Stats,
+			ApprovableStats: sbomStats,
 			SpdxUploaded:    sbom.Uploaded,
 			IsSpdxRecent:    isSpdxRecent,
 		})

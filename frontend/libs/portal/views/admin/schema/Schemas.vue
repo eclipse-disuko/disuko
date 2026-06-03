@@ -27,62 +27,60 @@ const breadcrumbs = useBreadcrumbsStore();
 const {openUrl} = useUrls();
 
 const items = ref<SchemaModel[]>([]);
-const headers = computed<DataTableHeader[]>(() => {
-  return [
-    {
-      title: t('COL_STATUS'),
-      align: 'center',
-      value: 'active',
-      width: 100,
-      maxWidth: 120,
-    },
-    {
-      title: t('COL_NAME'),
-      align: 'start',
-      value: 'name',
-      width: 240,
-      minWidth: 100,
-      sortable: true,
-    },
-    {
-      title: t('COL_DESCRIPTION'),
-      align: 'start',
-      width: 200,
-      minWidth: 200,
-      value: 'description',
-    },
-    {
-      title: t('COL_SCHEMA_VERSION'),
-      align: 'start',
-      value: 'version',
-      width: 100,
-      sortable: true,
-    },
-    {
-      title: t('COL_LABEL'),
-      align: 'start',
-      width: 180,
-      maxWidth: 180,
-      value: 'label',
-    },
-    {
-      title: t('CREATED'),
-      align: 'start',
-      value: 'created',
-      width: 120,
-      maxWidth: 120,
-      sortable: true,
-    },
-    {
-      title: t('UPDATED'),
-      align: 'start',
-      value: 'updated',
-      width: 120,
-      maxWidth: 120,
-      sortable: true,
-    },
-  ];
-});
+const headers = computed((): DataTableHeader[] => [
+  {
+    title: t('COL_STATUS'),
+    align: 'start',
+    value: 'active',
+    width: 100,
+    maxWidth: 120,
+  },
+  {
+    title: t('COL_NAME'),
+    align: 'start',
+    value: 'name',
+    width: 240,
+    minWidth: 100,
+    sortable: true,
+  },
+  {
+    title: t('COL_DESCRIPTION'),
+    align: 'start',
+    width: 200,
+    minWidth: 200,
+    value: 'description',
+  },
+  {
+    title: t('COL_SCHEMA_VERSION'),
+    align: 'start',
+    value: 'version',
+    width: 100,
+    sortable: true,
+  },
+  {
+    title: t('COL_LABEL'),
+    align: 'start',
+    width: 180,
+    maxWidth: 180,
+    value: 'label',
+  },
+  {
+    title: t('CREATED'),
+    align: 'start',
+    value: 'created',
+    width: 120,
+    maxWidth: 120,
+    sortable: true,
+  },
+  {
+    title: t('UPDATED'),
+    align: 'start',
+    value: 'updated',
+    width: 120,
+    maxWidth: 120,
+    sortable: true,
+  },
+]);
 const search = ref('');
 const schemaLabels = ref<Label[]>([]);
 const labelsMap = ref<IMap<Label>>({});

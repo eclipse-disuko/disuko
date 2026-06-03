@@ -33,6 +33,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {useUrls} from '@shared/composables/useUrls';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 interface FilterCondition {
   field: string;
@@ -48,6 +49,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const viewTools = useViewTools();
 const {openUrl} = useUrls();
+const {sliderWidth} = useTableActionSlider();
 
 const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
@@ -345,8 +347,8 @@ const headers = computed((): DataTableHeader[] => [
     ? [
         {
           title: 'COL_ACTIONS',
-          align: 'center',
-          width: 120,
+          align: 'start',
+          width: sliderWidth.value,
           value: 'actions',
         } as DataTableHeader,
       ]
@@ -447,8 +449,8 @@ const tableName = 'License';
 const headerSettings = useHeaderSettings({tableName, headers: headers.value});
 const {filteredHeaders} = headerSettings;
 
-const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: string[] = [], exclude: string[] = []) => {
-  return possibleItems
+const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: string[] = [], exclude: string[] = []) =>
+  possibleItems
     .filter((item) => {
       const value = item.value;
       const shouldInclude = include.includes(value);
@@ -456,7 +458,6 @@ const filterAndMap = (possibleItems: DataTableHeaderFilterItems[], include: stri
       return shouldInclude || !shouldExclude;
     })
     .map((item) => item.value);
-};
 
 const filterForCondition = (condition: FilterCondition) => {
   switch (condition.field) {
@@ -722,7 +723,7 @@ onMounted(async () => {
         return-object></v-select>
     </template>
     <template #table>
-      <div ref="dataGridLicenses" class="table-wrapper fill-height">
+      <div ref="dataGridLicenses" class="table-wrapper fill-height action-slider-table">
         <v-data-table-server
           :headers="filteredHeaders"
           fixed-header
@@ -861,7 +862,8 @@ onMounted(async () => {
           </template>
           <template v-if="allowActions" #[`item.actions`]="{item}">
             <TableActionButtons
-              variant="compact"
+              class="pl-4"
+              variant="slider"
               :buttons="getActionButtons(item)"
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"

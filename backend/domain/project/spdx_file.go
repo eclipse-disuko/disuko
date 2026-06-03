@@ -42,6 +42,9 @@ type SpdxFileBase struct {
 	IsInUse  bool // store in DB
 	IsLocked bool // store in DB
 
+	Stats          components.ComponentStats
+	TotalStatsHash *string
+
 	// Deprecated
 	IsToDelete bool // do not store in DB, only for Frontend, based on conditions
 	// Deprecated

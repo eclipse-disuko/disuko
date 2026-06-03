@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -77,6 +78,60 @@ func (db *dbRepos) seedDb(requestSession *logy.RequestSession) error {
 			return err
 		}
 	}
+
+	if err := db.seedI18n(requestSession); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) error {
+	if db.i18nLocale.GetLocaleCount(requestSession) > 0 {
+		return nil
+	}
+
+	const i18nSeedPath = "./conf/dbseeds/i18n/"
+	matches, err := filepath.Glob(i18nSeedPath + "*.json")
+	if err != nil {
+		return fmt.Errorf("i18n seed glob: %w", err)
+	}
+	if len(matches) == 0 {
+		logy.Debugf(requestSession, "no i18n seed files found, skipping")
+		return nil
+	}
+
+	localeDisplayNames := map[string][2]string{
+		"en": {"English", "English"},
+		"de": {"German", "Deutsch"},
+	}
+
+	for _, filePath := range matches {
+		fileName := filepath.Base(filePath)
+		parts := strings.Split(strings.TrimSuffix(fileName, ".json"), ".")
+		localeCode := parts[len(parts)-1]
+
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return fmt.Errorf("i18n seed read %s: %w", filePath, err)
+		}
+		var entries map[string]string
+		if err := json.Unmarshal(raw, &entries); err != nil {
+			return fmt.Errorf("i18n seed parse %s: %w", filePath, err)
+		}
+
+		displayName, nativeName := localeCode, localeCode
+		if names, ok := localeDisplayNames[localeCode]; ok {
+			displayName, nativeName = names[0], names[1]
+		}
+		isDefault := strings.EqualFold(localeCode, "en")
+		db.i18nLocale.UpsertLocaleMetadata(requestSession, localeCode, displayName, nativeName, isDefault, "portal")
+		for k, v := range entries {
+			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "Seeded from JSON", "SYSTEM")
+		}
+		logy.Debugf(requestSession, "i18n seed: loaded %d keys for locale %s from %s", len(entries), localeCode, fileName)
+	}
+
 	return nil
 }
 

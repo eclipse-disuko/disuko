@@ -15,6 +15,7 @@ import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const router = useRouter();
@@ -22,17 +23,18 @@ const checklistsStore = useChecklistsStore();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
 const {info: snack} = useSnackbar();
+const {sliderWidth} = useTableActionSlider();
 
 const dialog = ref();
 const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const sortBy: SortItem[] = [{key: 'updated', order: 'desc'}];
 
-const headers = computed<DataTableHeader[]>(() => [
+const headers = computed((): DataTableHeader[] => [
   {
     title: t('COL_ACTIONS'),
-    align: 'center',
-    width: 80,
+    align: 'start',
+    width: sliderWidth.value,
     value: 'actions',
   },
   {
@@ -135,41 +137,43 @@ const getActionButtons = (item: Checklist): TableActionButtonsProps['buttons'] =
     </template>
 
     <template #table>
-      <v-data-table
-        density="compact"
-        class="striped-table fill-height"
-        :loading="checklistsStore.isLoading"
-        item-key="_key"
-        :items="checklistsStore.checklists"
-        :headers="headers"
-        :items-per-page="50"
-        fixed-header
-        :sort-by="sortBy"
-        @click:row="openItem"
-        sort-desc>
-        <template v-slot:[`item.active`]="{item}">
-          <v-icon icon="mdi-check" class="mr-2" :color="item.active ? 'primary' : 'tableBorderColor'"></v-icon>
-        </template>
-        <template v-slot:[`item.description`]="{item}">
-          <Truncated>{{ item.description }}</Truncated>
-        </template>
-        <template v-slot:[`item.descriptionDE`]="{item}">
-          <Truncated>{{ item.descriptionDE }}</Truncated>
-        </template>
-        <template v-slot:[`item.created`]="{item}">
-          <DDateCellWithTooltip :value="item.created" />
-        </template>
-        <template v-slot:[`item.updated`]="{item}">
-          <DDateCellWithTooltip :value="item.updated" />
-        </template>
-        <template v-slot:[`item.actions`]="{item}">
-          <TableActionButtons
-            :buttons="getActionButtons(item)"
-            variant="normal"
-            @edit="dialog?.open(item)"
-            @delete="showConfirm(item)" />
-        </template>
-      </v-data-table>
+      <div class="fill-height action-slider-table">
+        <v-data-table
+          density="compact"
+          class="striped-table fill-height"
+          :loading="checklistsStore.isLoading"
+          item-key="_key"
+          :items="checklistsStore.checklists"
+          :headers="headers"
+          :items-per-page="50"
+          fixed-header
+          :sort-by="sortBy"
+          @click:row="openItem"
+          sort-desc>
+          <template v-slot:[`item.active`]="{item}">
+            <v-icon icon="mdi-check" class="mr-2" :color="item.active ? 'primary' : 'tableBorderColor'"></v-icon>
+          </template>
+          <template v-slot:[`item.description`]="{item}">
+            <Truncated>{{ item.description }}</Truncated>
+          </template>
+          <template v-slot:[`item.descriptionDE`]="{item}">
+            <Truncated>{{ item.descriptionDE }}</Truncated>
+          </template>
+          <template v-slot:[`item.created`]="{item}">
+            <DDateCellWithTooltip :value="item.created" />
+          </template>
+          <template v-slot:[`item.updated`]="{item}">
+            <DDateCellWithTooltip :value="item.updated" />
+          </template>
+          <template v-slot:[`item.actions`]="{item}">
+            <TableActionButtons
+              variant="slider"
+              :buttons="getActionButtons(item)"
+              @edit="dialog?.open(item)"
+              @delete="showConfirm(item)" />
+          </template>
+        </v-data-table>
+      </div>
     </template>
   </TableLayout>
 

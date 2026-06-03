@@ -26,6 +26,8 @@ interface RuntimeConfig {
   useFutureIt?: boolean;
   enforceFOSSOfficeConfirmation?: boolean;
   useWinterTheme?: boolean;
+  personalAccessToken?: boolean;
+  useRefactoredApproval?: boolean;
 }
 // This configuration is used for local development, usually to run directly in dev machine
 let config = {
@@ -42,6 +44,8 @@ let config = {
   useFutureIt: import.meta.env.VITE_USE_FUTURE_IT === 'true',
   enforceFOSSOfficeConfirmation: false,
   useWinterTheme: false,
+  personalAccessToken: import.meta.env.VITE_PERSONAL_ACCESS_TOKEN === 'true',
+  useRefactoredApproval: import.meta.env.VITE_USE_REFACTORED_APPROVAL === 'true',
 } satisfies RuntimeConfig;
 
 /**
@@ -84,6 +88,8 @@ export const setup = async () => {
       useFutureIt: runtimeConfig.data.VITE_USE_FUTURE_IT,
       enforceFOSSOfficeConfirmation: runtimeConfig.data.ENFORCE_CONFIRMATION,
       useWinterTheme: false,
+      personalAccessToken: runtimeConfig.data.PERSONAL_ACCESS_TOKEN ?? true,
+      useRefactoredApproval: runtimeConfig.data.VITE_USE_REFACTORED_APPROVAL,
     };
   }
 };

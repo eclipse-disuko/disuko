@@ -40,7 +40,7 @@ type Server struct {
 
 	mailClient mail.Client
 
-	basicauthMW *middlewareDisco.InternalTokenMW
+	patAuthMW *middlewareDisco.PATAuthMW
 }
 
 func StartServer(ctx context.Context) {

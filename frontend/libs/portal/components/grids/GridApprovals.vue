@@ -18,12 +18,14 @@ import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const userStore = useUserStore();
 const {info} = useSnackbar();
 const route = useRoute();
+const {sliderWidth} = useTableActionSlider();
 
 const items = ref<Approval[]>([]);
 const clickedApp = ref<Approval>({} as Approval);
@@ -48,7 +50,7 @@ const headers = computed((): DataTableHeader[] => {
     {
       title: t('COL_ACTIONS'),
       align: 'center',
-      width: 80,
+      width: sliderWidth.value,
       value: 'actions',
       sortable: false,
     },
@@ -298,7 +300,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
       <DSearchField v-model="search" />
     </template>
     <template #table>
-      <div ref="tableApprovals" class="fill-height">
+      <div ref="tableApprovals" class="fill-height action-slider-table">
         <v-data-table
           :loading="!dataAreLoaded"
           item-value="key"
@@ -358,7 +360,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
           <template #[`item.actions`]="{item}">
             <Stack direction="row" class="gap-0">
               <TableActionButtons
-                variant="compact"
+                variant="slider"
                 :buttons="getActionButtons(item)"
                 @fill="openFillDialog(item)"
                 @abort="abort(item)" />

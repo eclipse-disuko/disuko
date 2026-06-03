@@ -31,6 +31,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/cache"
 	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	checklistService "github.com/eclipse-disuko/disuko/infra/service/checklist"
+	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	"golang.org/x/text/language"
 
 	"github.com/eclipse-disuko/disuko/domain/job"
@@ -148,6 +149,7 @@ type ProjectHandler struct {
 	OverallReviewService          *projectService.OverallReviewService
 	PolicyDecisionsRepository     policydecisions.IPolicyDecisionsRepository
 	UserService                   *userService.Service
+	PATAuthService                *patauth.Service
 }
 
 func (projectHandler *ProjectHandler) ProjectDeprecateHandler(w http.ResponseWriter, r *http.Request) {
@@ -359,6 +361,38 @@ func (projectHandler *ProjectHandler) ProjectGetAllHandler(w http.ResponseWriter
 
 		// enrich with access rights
 		slimDto.AccessRights = *rights
+		result.Projects = append(result.Projects, slimDto)
+	}
+
+	render.JSON(w, r, result)
+}
+
+func (projectHandler *ProjectHandler) ListAllInternal(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	user := extractPATUser(r.Context())
+	if user == nil {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	prs := projectHandler.ProjectRepository.FindAllForUser(requestSession, user.User)
+
+	var result project.ListAllInternalRes
+	var docDep *department.Department
+	var docMissing bool
+	var custDep *department.Department
+	var custMissing bool
+	dummyLabel := getDummyLabel(requestSession, projectHandler.LabelRepository)
+	for _, pr := range prs {
+		parent := findParent(pr.Parent, prs)
+
+		if parent == nil {
+			docDep, docMissing, custDep, custMissing = projectHandler.getDeps(requestSession, pr)
+		} else {
+			docDep, docMissing, custDep, custMissing = projectHandler.getDeps(requestSession, parent)
+		}
+		slimDto := pr.ToSlimInternalDto(docDep, docMissing, custDep, custMissing, hasDummyLabel(pr, dummyLabel))
+
 		result.Projects = append(result.Projects, slimDto)
 	}
 
@@ -2237,7 +2271,7 @@ func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.Res
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.UserRepository, r, true, false)
+	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.PATAuthService, r, true, false)
 	projectHandler.HandleProjectStatus(requestSession, currentProject, w, r)
 }
 
