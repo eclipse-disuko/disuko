@@ -37,3 +37,12 @@ export interface CalculatedRuleConfigType {
   classificationOptions: IDefaultSelectItem[];
   scopeConfig: ScopeFilterConfig;
 }
+
+export type PolicyRuleStatus = 'allowed' | 'warned' | 'denied' | 'forbidden';
+
+export interface PolicyRuleStatusColumn {
+  key: PolicyRuleStatus | null;
+  label: string;
+  icon: string | null;
+  color: string | null;
+}

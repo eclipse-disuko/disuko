@@ -13,8 +13,7 @@ import {
   statusConfig,
 } from '@disclosure-portal/utils/calculatedPolicyRule';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-
-type StatusColumn = {key: RuleStatus | null; label: string; icon: string | null; color: string | null};
+import {PolicyRuleStatusColumn} from '@disclosure-portal/model/PolicyRuleClassification';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, onMounted, ref} from 'vue';
@@ -50,7 +49,7 @@ const buildDto = (base: PolicyRule): Partial<PolicyRule> => ({
   },
 });
 
-const statusColumns: StatusColumn[] = [
+const statusColumns: PolicyRuleStatusColumn[] = [
   ...(['allowed', 'warned', 'denied', 'forbidden'] as const).map((key) => ({
     key,
     label: statusConfig[key].labelKey,

@@ -107,7 +107,7 @@ defineExpose({
               <AccessRights ref="accessRights"></AccessRights>
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
-              <ClassificationMatrix ref="classificationMatrix"></ClassificationMatrix>
+              <PolicyRuleClassificationMatrix ref="classificationMatrix"></PolicyRuleClassificationMatrix>
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="export_import">
               <ExportImportTools ref="export_import"></ExportImportTools>
