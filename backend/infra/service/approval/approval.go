@@ -10,24 +10,24 @@ import (
 	"sort"
 	"time"
 
-	license2 "github.com/eclipse-disuko/disuko/domain/license"
-	"github.com/eclipse-disuko/disuko/helper/hash"
-	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
-	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
-
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/audit"
+	license2 "github.com/eclipse-disuko/disuko/domain/license"
 	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/project/approvable"
 	"github.com/eclipse-disuko/disuko/domain/project/components"
 	"github.com/eclipse-disuko/disuko/domain/project/sbomlist"
 	user2 "github.com/eclipse-disuko/disuko/domain/user"
 	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
 	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/hash"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
 	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 	sbomListRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
@@ -91,8 +91,8 @@ func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId
 	return targetApproval
 }
 
-func (s *ApprovalService) GetApprovalInfo(targetProject *project.Project) approval.Info {
-	return s.getApprovalInfo(targetProject, nil, false)
+func (s *ApprovalService) GetApprovalInfo(targetProject *project.Project, takeLatestSbom bool) approval.Info {
+	return s.getApprovalInfo(targetProject, nil, false, takeLatestSbom)
 }
 
 func (s *ApprovalService) AdminAbortRandomApproval(pr *project.Project, app *approval.Approval) {
@@ -106,7 +106,7 @@ func (s *ApprovalService) AdminAbortRandomApproval(pr *project.Project, app *app
 	}
 }
 
-func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projectFilter *[]string, includeNoFOSS bool) approval.Info {
+func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projectFilter *[]string, includeNoFOSS bool, takeLatestSbom bool) approval.Info {
 	res := approval.Info{
 		CompStats: &components.ComponentStats{},
 	}
@@ -143,22 +143,47 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			logy.Warnf(s.RequestSession, "Child project is marked as deprecated, uuid: %s parent: %s", prKey, pr.Key)
 			continue
 		}
-		if pr.ApprovableSPDX.SpdxKey == "" || pr.ApprovableSPDX.VersionKey == "" || (!includeNoFOSS && pr.IsNoFoss) {
+
+		var supplier *project.ProjectMemberEntity
+		for _, u := range pr.UserManagement.Users {
+			if u.UserType == project.SUPPLIER {
+				supplier = u
+				break
+			}
+		}
+		var supplierUserId *string
+		if supplier != nil {
+			supplierUserId = &supplier.UserId
+		}
+
+		approvableSPDX := pr.ApprovableSPDX
+		var sbomList *sbomlist.SbomList
+		var sbom *project.SpdxFileBase
+
+		if takeLatestSbom {
+			approvableSPDX, sbomList, sbom = s.findLatestSpdx(pr)
+		}
+
+		if approvableSPDX.SpdxKey == "" || approvableSPDX.VersionKey == "" || (!includeNoFOSS && pr.IsNoFoss) {
 			res.Projects = append(res.Projects, approval.ProjectApprovable{
 				ProjectKey:      pr.Key,
 				ProjectName:     pr.Name,
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
+				Supplier:        supplierUserId,
 			})
 			continue
 		}
-		sbomList, sbom := s.SpdxRetriever.RetrieveSbomListAndFile(s.RequestSession, pr.ApprovableSPDX.VersionKey, pr.ApprovableSPDX.SpdxKey)
-		if sbom == nil {
+		if !takeLatestSbom {
+			sbomList, sbom = s.SpdxRetriever.RetrieveSbomListAndFile(s.RequestSession, approvableSPDX.VersionKey, approvableSPDX.SpdxKey)
+		}
+		if sbom == nil || sbomList == nil {
 			res.Projects = append(res.Projects, approval.ProjectApprovable{
 				ProjectKey:      pr.Key,
 				ProjectName:     pr.Name,
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
+				Supplier:        supplierUserId,
 			})
 			continue
 		}
@@ -192,7 +217,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 		if sbom.TotalStatsHash != nil && *sbom.TotalStatsHash == *currentTotalStatsHash {
 			sbomStats = sbom.Stats
 		} else {
-			compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, pr.ApprovableSPDX.VersionKey, sbom)
+			compsInfo := s.SpdxService.GetComponentInfos(s.RequestSession, pr, approvableSPDX.VersionKey, sbom)
 			isVehicle := s.ProjectLabelService.HasVehiclePlatformLabel(s.RequestSession, pr)
 			evalRes := compsInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, sbom.Uploaded, sbom.Key)
 
@@ -208,7 +233,8 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			ProjectName:     pr.Name,
 			CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 			SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
-			ApprovableSPDX:  pr.ApprovableSPDX,
+			Supplier:        supplierUserId,
+			ApprovableSPDX:  approvableSPDX,
 			SpdxName:        sbom.MetaInfo.Name,
 			SpdxTag:         sbom.Tag,
 			ApprovableStats: sbomStats,
@@ -217,6 +243,44 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 		})
 	}
 	return res
+}
+
+func (s *ApprovalService) findLatestSpdx(pr *project.Project) (approvable.ApprovableSPDX, *sbomlist.SbomList, *project.SpdxFileBase) {
+	var latest *project.SpdxFileBase
+	var latestSBOMList *sbomlist.SbomList
+	var latestVersionKey string
+	var latestVersionName string
+
+	for _, version := range pr.Versions {
+		if version.Deleted {
+			continue
+		}
+
+		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, version.Key, false)
+		if sbomList == nil {
+			continue
+		}
+
+		for _, spdx := range sbomList.SpdxFileHistory {
+			if latest == nil || spdx.Uploaded.After(*latest.Uploaded) {
+				latest = spdx
+				latestSBOMList = sbomList
+				latestVersionKey = version.Key
+				latestVersionName = version.Name
+			}
+		}
+	}
+
+	if latest == nil {
+		return approvable.ApprovableSPDX{}, nil, nil
+	}
+
+	approvableSpdx := approvable.ApprovableSPDX{
+		SpdxKey:     latest.Key,
+		VersionKey:  latestVersionKey,
+		VersionName: latestVersionName,
+	}
+	return approvableSpdx, latestSBOMList, latest
 }
 
 func (s *ApprovalService) setTaskDone(username string, app *approval.Approval, taskType user2.TaskType, taskStatus user2.TaskStatus) {

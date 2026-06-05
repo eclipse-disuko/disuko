@@ -106,6 +106,8 @@ type ProjectApprovable struct {
 	SpdxTag         string
 	SpdxUploaded    *time.Time
 	IsSpdxRecent    bool
+
+	Supplier *string
 }
 
 type Info struct {

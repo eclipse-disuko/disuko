@@ -73,6 +73,7 @@ func (p *ProjectApprovable) ToDto() ProjectApprovableDto {
 		SpdxTag:         p.SpdxTag,
 		SpdxUploaded:    p.SpdxUploaded,
 		IsSpdxRecent:    p.IsSpdxRecent,
+		Supplier:        p.Supplier,
 	}
 }
 
@@ -87,6 +88,7 @@ type ProjectApprovableDto struct {
 	SpdxTag         string                       `json:"spdxtag"`
 	SpdxUploaded    *time.Time                   `json:"spdxUploaded"`
 	IsSpdxRecent    bool                         `json:"isSpdxRecent"`
+	Supplier        *string                      `json:"supplier"`
 }
 
 type ApproveStateDto struct {
@@ -102,14 +104,14 @@ func (s *ApproveState) ToDto() ApproveStateDto {
 }
 
 type ExternalApprovalDto struct {
-	Vehicel        bool      `json:"vehicle"`
+	Vehicle        bool      `json:"vehicle"`
 	State          StateInfo `json:"state"`
 	ApproveComment string    `json:"comment"`
 }
 
 func (ea *ExternalApproval) ToDto() ExternalApprovalDto {
 	return ExternalApprovalDto{
-		Vehicel:        ea.Vehicle,
+		Vehicle:        ea.Vehicle,
 		State:          ea.State,
 		ApproveComment: ea.Comment,
 	}
