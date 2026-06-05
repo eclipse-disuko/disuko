@@ -11,9 +11,9 @@ import {
   toRuleStatusMap,
   RuleStatus,
   statusConfig,
-} from '@disclosure-portal/utils/calculatedPolicyRule';
+} from '@disclosure-portal/utils/PolicyRuleClassification';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import {PolicyRuleStatusColumn} from '@disclosure-portal/model/PolicyRuleClassification';
+import {PolicyRuleStatusColumn} from '@disclosure-portal/model/CalculatedPolicyRules';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, onMounted, ref} from 'vue';

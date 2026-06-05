@@ -23,13 +23,13 @@ const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/tools', [
   'analytics',
   'accessRights',
-  'classificationMatrix',
   'export_import',
   'storageConsistency',
   'sampleData',
   'termsOfUseManagement',
   'mail',
   'notificationBar',
+  'classificationMatrix',
 ]);
 
 onMounted(() => {
@@ -76,9 +76,6 @@ defineExpose({
             <v-tab v-if="rights.hasToolsAccess()" value="accessRights" :to="tabUrl.accessRights">
               {{ t('TAB_ADMIN_ACCESS_RIGHTS') }}
             </v-tab>
-            <v-tab v-if="rights.hasToolsAccess()" value="classificationMatrix" :to="tabUrl.classificationMatrix">
-              {{ t('TAB_ADMIN_CLASSIFICATION_MATRIX') }}
-            </v-tab>
             <v-tab v-if="rights.hasToolsAccess()" value="export_import" :to="tabUrl.export_import">
               {{ t('TAB_ADMIN_EXPORT_IMPORT') }}
             </v-tab>
@@ -97,6 +94,9 @@ defineExpose({
             <v-tab v-if="rights.hasToolsAccess()" value="notificationBar" :to="tabUrl.notificationBar">
               {{ t('TAB_ADMIN_NOTIFICATION_BAR') }}
             </v-tab>
+            <v-tab v-if="rights.hasToolsAccess()" value="classificationMatrix" :to="tabUrl.classificationMatrix">
+              {{ t('TAB_ADMIN_CLASSIFICATION_MATRIX') }}
+            </v-tab>
           </v-tabs>
 
           <v-tabs-window v-model="selectedTab">
@@ -105,9 +105,6 @@ defineExpose({
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="accessRights">
               <AccessRights ref="accessRights"></AccessRights>
-            </v-tabs-window-item>
-            <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
-              <PolicyRuleClassificationMatrix ref="classificationMatrix"></PolicyRuleClassificationMatrix>
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="export_import">
               <ExportImportTools ref="export_import"></ExportImportTools>
@@ -126,6 +123,9 @@ defineExpose({
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="notificationBar">
               <NotificationBarManagement ref="notificationBar"></NotificationBarManagement>
+            </v-tabs-window-item>
+            <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
+              <PolicyRuleClassificationMatrix ref="classificationMatrix"></PolicyRuleClassificationMatrix>
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>

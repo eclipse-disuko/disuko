@@ -15,7 +15,8 @@ import {
   getStatusIcon,
   getStatusLabel,
   toRuleStatusMap,
-} from '@disclosure-portal/utils/calculatedPolicyRule';
+} from '@disclosure-portal/utils/PolicyRuleClassification';
+import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -31,11 +32,19 @@ const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>();
 const isLoading = ref(false);
 const search = ref('');
+const isPolicyManager = ref(false);
 const classifications = ref<IObligation[]>([]);
 const policyRules = ref<PolicyRule[]>([]);
+const actionHeader: DataTableHeader = {
+  title: 'COL_ACTIONS',
+  align: 'center',
+  width: 100,
+  value: 'actions',
+  sortable: false,
+};
 
 const headers = computed<DataTableHeader[]>(() => [
-  {title: 'COL_ACTIONS', align: 'center', width: 100, value: 'actions', sortable: false},
+  ...(isPolicyManager.value ? [actionHeader] : []),
   {title: 'COL_USE_CASE', align: 'start', width: 150, value: 'name', sortable: true},
   ...classifications.value.map((c) => ({
     key: c._key,
@@ -120,7 +129,10 @@ const doDelete = async (config: IConfirmationDialogConfig) => {
   await loadMatrix();
 };
 
-onMounted(loadMatrix);
+onMounted(() => {
+  isPolicyManager.value = RightsUtils.isPolicyManager();
+  loadMatrix();
+});
 </script>
 
 <template>
@@ -144,7 +156,7 @@ onMounted(loadMatrix);
           :items-per-page="-1"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :sort-by="[{key: 'name', order: 'asc'}]">
-          <template #[`header.actions`]="{column}">
+          <template v-if="isPolicyManager" #[`header.actions`]="{column}">
             <GridFilterHeader :column="column">
               <template #settings>
                 <HeaderSettings :grid-name="tableName" :column="column" />
@@ -156,7 +168,7 @@ onMounted(loadMatrix);
               <span class="inline-block max-w-[150px] truncate">{{ column.title }}</span>
             </Tooltip>
           </template>
-          <template #[`item.actions`]="{item}">
+          <template v-if="isPolicyManager" #[`item.actions`]="{item}">
             <TableActionButtons
               variant="normal"
               :buttons="actionButtons"
