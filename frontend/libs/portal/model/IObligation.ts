@@ -66,3 +66,14 @@ export default class Obligation extends ObligationDTO {
     Object.assign(this, dto);
   }
 }
+
+export const DEFAULT_CLASSIFICATION_NAMES = new Set<string>([
+  'Permissive',
+  'Copyleft (weak)',
+  'Copyleft (strong)',
+  'Copyleft (network protective)',
+  'Anti-Tivoization',
+  'Severe patent retaliation',
+  'Doing Business with US',
+  'Unclear or Ambiguous',
+]);
