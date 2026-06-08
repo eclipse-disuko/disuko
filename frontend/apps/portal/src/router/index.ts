@@ -304,6 +304,11 @@ const routes: RouteRecordRaw[] = [
             name: 'AdminMail',
             component: Tools,
           },
+          {
+            path: 'classificationMatrix',
+            name: 'AdminClassificationMatrix',
+            component: Tools,
+          },
         ],
       },
       {

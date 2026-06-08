@@ -29,6 +29,7 @@ const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/tools', [
   'termsOfUseManagement',
   'mail',
   'notificationBar',
+  'classificationMatrix',
 ]);
 
 onMounted(() => {
@@ -93,6 +94,9 @@ defineExpose({
             <v-tab v-if="rights.hasToolsAccess()" value="notificationBar" :to="tabUrl.notificationBar">
               {{ t('TAB_ADMIN_NOTIFICATION_BAR') }}
             </v-tab>
+            <v-tab v-if="rights.hasToolsAccess()" value="classificationMatrix" :to="tabUrl.classificationMatrix">
+              {{ t('TAB_ADMIN_CLASSIFICATION_MATRIX') }}
+            </v-tab>
           </v-tabs>
 
           <v-tabs-window v-model="selectedTab">
@@ -119,6 +123,9 @@ defineExpose({
             </v-tabs-window-item>
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="notificationBar">
               <NotificationBarManagement ref="notificationBar"></NotificationBarManagement>
+            </v-tabs-window-item>
+            <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
+              <PolicyRuleClassificationMatrix ref="classificationMatrix"></PolicyRuleClassificationMatrix>
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>
