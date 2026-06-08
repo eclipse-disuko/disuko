@@ -736,7 +736,34 @@ func (projectHandler *ProjectHandler) ProjectDeleteHandler(w http.ResponseWriter
 		// Hard delete dummy project
 		projectHandler.ProjectRepository.DeleteHard(requestSession, currentProject.Key)
 
-		// Hard delete auditlogs
+		if currentProject.HasParent() {
+			parentProject := projectHandler.ProjectRepository.FindByKey(requestSession, currentProject.Parent, false)
+			if parentProject != nil {
+				filteredChildren := make([]string, 0, len(parentProject.Children))
+				removed := false
+
+				oldParentProject := project.Project{}
+				copier.Copy(&oldParentProject, parentProject)
+
+				for _, childKey := range parentProject.Children {
+					if childKey == currentProject.Key {
+						removed = true
+						continue
+					}
+					filteredChildren = append(filteredChildren, childKey)
+				}
+
+				if removed {
+					parentProject.Children = filteredChildren
+					parentProject.HasChildren = len(filteredChildren) > 0
+
+					projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, parentProject.Key, username, message.ProjectUpdated, cmp.Diff, parentProject, &oldParentProject)
+
+					projectHandler.ProjectRepository.Update(requestSession, parentProject)
+				}
+			}
+		}
+
 		projectHandler.AuditLogListRepository.DeleteHard(requestSession, currentProject.Key)
 
 		w.WriteHeader(200)
@@ -753,7 +780,6 @@ func (projectHandler *ProjectHandler) ProjectDeleteHandler(w http.ResponseWriter
 		if existingFlag != parentProject.HasChildren {
 			projectHandler.ProjectRepository.Update(requestSession, parentProject)
 		}
-
 	}
 
 	w.WriteHeader(200)

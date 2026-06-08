@@ -60,6 +60,10 @@ func (s *ProjectLabelService) AllChildrenHaveLabel(requestSession *logy.RequestS
 	}
 	for _, cId := range pr.Children {
 		c := s.ProjectRepo.FindByKeyWithDeleted(requestSession, cId, true)
+		if c == nil {
+			logy.Errorf(requestSession, "Child project '%s' referenced by project '%s' not found. Potentially hard deleted dummy sub-project.", cId, pr.Key)
+			continue
+		}
 		if c.Deleted {
 			continue
 		}
