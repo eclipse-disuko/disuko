@@ -160,7 +160,9 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 		var sbomList *sbomlist.SbomList
 		var sbom *project.SpdxFileBase
 
-		if takeLatestSbom {
+		hasProjectApprovable := approvableSPDX.SpdxKey != "" && approvableSPDX.VersionKey != ""
+
+		if takeLatestSbom && !hasProjectApprovable {
 			approvableSPDX, sbomList, sbom = s.findLatestSpdx(pr)
 		}
 
@@ -174,7 +176,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			})
 			continue
 		}
-		if !takeLatestSbom {
+		if sbom == nil || sbomList == nil {
 			sbomList, sbom = s.SpdxRetriever.RetrieveSbomListAndFile(s.RequestSession, approvableSPDX.VersionKey, approvableSPDX.SpdxKey)
 		}
 		if sbom == nil || sbomList == nil {

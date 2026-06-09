@@ -1748,7 +1748,6 @@
   "WIZARD_OWNER_description": "Bitte geben Sie die Informationen des Projekteigentümers ein",
   "ERROR_PROJECT_DECOUPLING": "Projekt Entkoppelung",
   "CHILD_PROJECT_UNDER_APPROVE": "Das Projekt wurde in einem Freigabe- und/oder Prüfungsantrag der Gruppe verwendet.",
-  "USE_LATEST_SBOM": "Neueste SBOM verwenden",
   "SBOM_LATEST": "neueste",
   "SBOM_FORMER": "vorige",
   "COL_COUNT": "Anzahl",

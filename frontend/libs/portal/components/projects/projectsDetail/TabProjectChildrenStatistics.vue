@@ -9,12 +9,9 @@ import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
-import {useI18n} from 'vue-i18n';
 const projectStore = useProjectStore();
-const {t} = useI18n();
 
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
-const useLatestSbom = ref(false);
 const search = ref<string | null>('');
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
 
@@ -37,7 +34,7 @@ const filteredProjects = computed(() => {
 async function reload() {
   idle.showIdle = true;
 
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key, useLatestSbom.value);
+  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key, true);
 
   // childProjectChannels.value.clear();
   // const versionFetchPromises = approvableInfo.value.projects
@@ -68,14 +65,6 @@ onMounted(async () => {
     <template #table>
       <div ref="tableUserManagement" class="fill-height">
         <div class="mb-2 flex flex-wrap items-center gap-2">
-          <v-checkbox
-            v-model="useLatestSbom"
-            :label="t('USE_LATEST_SBOM')"
-            @change="reload"
-            density="compact"
-            hide-details
-            class="my-0">
-          </v-checkbox>
           <v-spacer></v-spacer>
           <DSearchField v-model="search" class="ml-auto" />
         </div>

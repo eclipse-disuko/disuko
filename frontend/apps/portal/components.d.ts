@@ -31,7 +31,6 @@ declare module 'vue' {
     ChecklistExecuteDialog: typeof import('./../../libs/portal/components/dialog/checklist/ChecklistExecuteDialog.vue')['default']
     ChecklistItemDialog: typeof import('./../../libs/portal/components/dialog/checklist/ChecklistItemDialog.vue')['default']
     ChecklistMain: typeof import('./../../libs/portal/views/admin/checklist/ChecklistMain.vue')['default']
-    ClassificationMatrix: typeof import('./../../libs/portal/views/admin/tools/ClassificationMatrix.vue')['default']
     ClassificationsPerLicenseDialog: typeof import('./../../libs/portal/components/dialog/ClassificationsPerLicenseDialog.vue')['default']
     CloneProjectDialog: typeof import('./../../libs/portal/components/dialog/CloneProjectDialog.vue')['default']
     ComponentCompareDialog: typeof import('./../../libs/portal/components/dialog/ComponentCompareDialog.vue')['default']
