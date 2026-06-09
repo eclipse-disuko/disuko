@@ -17,6 +17,7 @@ export class ProjectApprovable {
   public supplierdiff = false;
   public stats: ComponentStats = {} as ComponentStats;
   public approvablespdx: ApprovableSPDXDto = {} as ApprovableSPDXDto;
+  public supplier = '';
 }
 
 export class ApprovableInfo {

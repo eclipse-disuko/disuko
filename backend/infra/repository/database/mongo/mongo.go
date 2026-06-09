@@ -13,10 +13,12 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/stopwatch"
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/logy"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -24,6 +26,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
+
+var printThreshold = time.Millisecond * 10
 
 type Database struct {
 	rs         *logy.RequestSession
@@ -34,6 +38,7 @@ type Database struct {
 }
 
 func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes [][]string) {
+	db.rs = rs
 	host := fmt.Sprintf(
 		"%s:%d",
 		conf.Config.Database.Host,
@@ -109,7 +114,17 @@ func (db *Database) Init(rs *logy.RequestSession, collectionName string, indexes
 
 func (db *Database) QueryQB(qc *database.QueryConfig, createResult func() interface{}) []interface{} {
 	filter, opts := buildQuery(qc)
+
+	sw := stopwatch.StopWatch{}
+	sw.Start()
+
 	cursor, err := db.collection.Find(context.Background(), filter, opts)
+
+	sw.Stop()
+	if sw.DiffTime > printThreshold {
+		logy.Infof(db.rs, "Collection: %s Filter: %v Time: %s", db.collection.Name(), filter, sw.DiffTime)
+	}
+
 	if err != nil {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbRead, filter.String()), err.Error()+" query:"+filter.String())
 	}

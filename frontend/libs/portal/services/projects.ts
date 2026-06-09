@@ -105,9 +105,12 @@ class ProjectService {
     return (await api.get<ProjectChildren>(`/api/v1/${modelName}/${projectUid}/children`)).data;
   }
 
-  public async getApprovableInfo(projectUid: string) {
+  public async getApprovableInfo(projectUid: string, latestSbom: boolean = false) {
     projectUid = encodeURIComponent('' + projectUid).replace(/\./g, '%2E');
-    return (await api.get<ApprovableInfo>(`/api/v1/${modelName}/${projectUid}/approvableinfo`)).data;
+    const url = latestSbom
+      ? `/api/v1/${modelName}/${projectUid}/approvableinfo?latestSbom=true`
+      : `/api/v1/${modelName}/${projectUid}/approvableinfo`;
+    return (await api.get<ApprovableInfo>(url)).data;
   }
 
   public async getAllApprovals(projectUid: string) {

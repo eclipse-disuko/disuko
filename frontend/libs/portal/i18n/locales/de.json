@@ -725,6 +725,8 @@
   "TITLE_APPLICATION_PLACEHOLDER": "Name",
   "TITLE_PROJECT": "Projekt",
   "TAB_PROJECT_OVERVIEW": "Übersicht",
+  "COL_SUPPLIER": "Lieferant ",
+  "NO_SUPPLIER_INFORMATION": "Keine Lieferanteninformationen verfügbar",
   "TAB_PROJECT_CHILDREN": "Teilprojekte",
   "TAB_PROJECT_VERSION": "Kanäle",
   "TAB_PROJECT_USERMANAGEMENT": "Benutzer-Verwaltung",

@@ -164,7 +164,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			approvableSPDX, sbomList, sbom = s.findLatestSpdx(pr)
 		}
 
-		if approvableSPDX.SpdxKey == "" || approvableSPDX.VersionKey == "" || (!includeNoFOSS && pr.IsNoFoss) {
+		if approvableSPDX.SpdxKey == "" || approvableSPDX.VersionKey == "" || (!takeLatestSbom && !includeNoFOSS && pr.IsNoFoss) {
 			res.Projects = append(res.Projects, approval.ProjectApprovable{
 				ProjectKey:      pr.Key,
 				ProjectName:     pr.Name,

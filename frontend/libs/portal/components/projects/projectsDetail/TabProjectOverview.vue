@@ -12,6 +12,7 @@ import {createReusableTemplate} from '@vueuse/core';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import ProjectLabel from '../ProjectLabel.vue';
+import config from '@shared/utils/config';
 
 const projectStore = useProjectStore();
 const labelStore = useLabelStore();
@@ -28,6 +29,8 @@ const deleteDate = computed(() => formatDate(currentProject.value?.dummyDeletion
 const uuidLabel = computed(() => {
   return currentProject.value.isGroup ? t('GROUP_IDENTIFIER_UUID') : t('APPLICATION_UUID');
 });
+
+const isProd = computed(() => config.isProd);
 </script>
 
 <template>
@@ -106,7 +109,10 @@ const uuidLabel = computed(() => {
   <GridVersions v-if="currentProject && !currentProject.isGroup" ref="projectVersions">
     <ReuseTemplate></ReuseTemplate>
   </GridVersions>
-  <GridChildren v-if="currentProject && currentProject.isGroup" ref="groupChildren">
+  <TabProjectChildrenStatistics v-if="currentProject && currentProject.isGroup && !isProd" ref="childrenStatistics">
+    <ReuseTemplate></ReuseTemplate>
+  </TabProjectChildrenStatistics>
+  <GridChildren v-if="currentProject && currentProject.isGroup && isProd" ref="groupChildren">
     <ReuseTemplate></ReuseTemplate>
   </GridChildren>
 </template>

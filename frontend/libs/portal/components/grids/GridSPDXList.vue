@@ -35,6 +35,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    showSupplier: {
+      type: Boolean,
+      default: false,
+    },
     filterIsFOSS: {
       type: Boolean,
       default: false,
@@ -57,20 +61,33 @@ export default defineComponent({
       emit('update:selectedProjects', selectedKeys);
     }
 
-    const headers: DataTableHeader[] = [
-      {
-        title: t('COL_APPROVABLE_SPDX'),
-        value: 'spdxname',
-        align: 'start',
-        width: 420,
-      },
-      {
-        title: t('COL_STATS'),
-        value: 'stats',
-        width: 250,
-      },
-      {title: '', key: 'data-table-group', align: 'start'},
-    ];
+    const headers = computed<DataTableHeader[]>(() => {
+      const tableHeaders: DataTableHeader[] = [
+        {
+          title: t('COL_APPROVABLE_SPDX'),
+          value: 'spdxname',
+          align: 'start',
+          width: 420,
+        },
+        {
+          title: t('COL_STATS'),
+          value: 'stats',
+          width: 250,
+        },
+      ];
+
+      if (props.showSupplier) {
+        tableHeaders.push({
+          title: t('COL_SUPPLIER'),
+          value: 'supplier',
+          align: 'start',
+          width: 250,
+        });
+      }
+
+      tableHeaders.push({title: '', key: 'data-table-group', align: 'start'});
+      return tableHeaders;
+    });
 
     const onRowClick = (event: Event, item: DataTableItem<ApprovableDto>) => {
       openSpdx(item.item);
@@ -187,7 +204,7 @@ export default defineComponent({
             if (!isGroupOpen(item)) toggleGroup(item);
           }
         "></template>
-      <th colspan="3" class="text-caption expand-header p-1 px-3 text-start">
+      <th :colspan="showSupplier ? 4 : 3" class="text-caption expand-header p-1 px-3 text-start">
         <span @click="openProject(item.items[0].raw.projectKey)" class="cursor-pointer">
           <span class="font-color-table">{{ t('PROJECT') }}:</span>
           {{ item.items[0].raw.projectName }}
@@ -237,6 +254,9 @@ export default defineComponent({
           </span>
         </v-col>
       </v-row>
+    </template>
+    <template v-if="showSupplier" v-slot:[`item.supplier`]="{item}">
+      {{ item.supplier ? item.supplier : t('NO_SUPPLIER_INFORMATION') }}
     </template>
     <template v-slot:[`item.stats`]="{item}">
       <div v-if="item.spdxname != ''">

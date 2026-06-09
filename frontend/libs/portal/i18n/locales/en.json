@@ -698,6 +698,8 @@
   "TITLE_APPLICATION_PLACEHOLDER": "Name",
   "TITLE_PROJECT": "Project",
   "TAB_PROJECT_OVERVIEW": "Overview",
+  "COL_SUPPLIER": "Supplier",
+  "NO_SUPPLIER_INFORMATION": "No supplier information available",
   "TAB_PROJECT_CHILDREN": "Children",
   "TAB_PROJECT_VERSION": "Channels",
   "TAB_PROJECT_USERMANAGEMENT": "User Management",
