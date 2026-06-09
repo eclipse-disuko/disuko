@@ -107,7 +107,8 @@ type ProjectApprovable struct {
 	SpdxUploaded    *time.Time
 	IsSpdxRecent    bool
 
-	Supplier *string
+	Supplier     *string
+	IsApprovable bool
 }
 
 type Info struct {

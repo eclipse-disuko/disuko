@@ -242,6 +242,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			ApprovableStats: sbomStats,
 			SpdxUploaded:    sbom.Uploaded,
 			IsSpdxRecent:    isSpdxRecent,
+			IsApprovable:    hasProjectApprovable,
 		})
 	}
 	return res

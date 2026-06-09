@@ -74,6 +74,7 @@ func (p *ProjectApprovable) ToDto() ProjectApprovableDto {
 		SpdxUploaded:    p.SpdxUploaded,
 		IsSpdxRecent:    p.IsSpdxRecent,
 		Supplier:        p.Supplier,
+		IsApprovable:    p.IsApprovable,
 	}
 }
 
@@ -89,6 +90,7 @@ type ProjectApprovableDto struct {
 	SpdxUploaded    *time.Time                   `json:"spdxUploaded"`
 	IsSpdxRecent    bool                         `json:"isSpdxRecent"`
 	Supplier        *string                      `json:"supplier"`
+	IsApprovable    bool                         `json:"isApprovable"`
 }
 
 type ApproveStateDto struct {

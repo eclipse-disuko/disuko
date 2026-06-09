@@ -253,7 +253,10 @@ export default defineComponent({
       <span v-if="item.spdxname == ''">{{ t('NO_APPROVABLE_SPDX') }}</span>
       <v-row class="align-center pl-2" v-else>
         <v-col cols="auto" class="pa-0">
-          <v-icon v-if="showSbomExtras" color="primary" size="small" class="pb-1">mdi-star</v-icon>
+          <v-icon v-if="showSbomExtras && item.isApprovable" color="primary" size="small" class="pb-1">mdi-star</v-icon>
+          <v-icon v-if="showSbomExtras && !item.isApprovable" color="primary" size="small" class="pb-1"
+            >mdi-star-outline</v-icon
+          >
         </v-col>
         <v-col cols="auto" class="pa-0">
           <v-icon v-if="isApproved(item)" color="green" size="small" class="ml-1 pb-1">
