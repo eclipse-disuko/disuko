@@ -228,6 +228,7 @@ declare module 'vue' {
     TabOverview: typeof import('./../../libs/portal/components/projects/projectsVersions/charts/TabOverview.vue')['default']
     TabPolicyrules: typeof import('./../../libs/portal/components/projects/projectsDetail/TabPolicyrules.vue')['default']
     TabProjectApprovals: typeof import('./../../libs/portal/components/projects/projectsDetail/TabProjectApprovals.vue')['default']
+    TabProjectChildrenStatistics: typeof import('./../../libs/portal/components/projects/projectsDetail/TabProjectChildrenStatistics.vue')['default']
     TabProjectChildrenUserManagement: typeof import('./../../libs/portal/components/projects/projectsDetail/TabProjectChildrenUserManagement.vue')['default']
     TabProjectOverview: typeof import('./../../libs/portal/components/projects/projectsDetail/TabProjectOverview.vue')['default']
     TabProjectTokenManagement: typeof import('./../../libs/portal/components/projects/projectsDetail/TabProjectTokenManagement.vue')['default']
