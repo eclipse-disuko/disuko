@@ -15,7 +15,7 @@ const {t} = useI18n();
 
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const useLatestSbom = ref(false);
-const search = ref('');
+const search = ref<string | null>('');
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
 
 const idle = useIdleStore();
@@ -23,7 +23,7 @@ const idle = useIdleStore();
 const projectModel = computed(() => projectStore.currentProject!);
 const filteredProjects = computed(() => {
   const projects = approvableInfo.value.projects ?? [];
-  const normalizedSearch = search.value.trim().toLowerCase();
+  const normalizedSearch = (search.value ?? '').trim().toLowerCase();
 
   if (!normalizedSearch) {
     return projects;
