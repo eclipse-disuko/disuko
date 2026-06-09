@@ -1736,6 +1736,7 @@
   "WIZARD_OWNER_description": "Please enter project's owner's information",
   "ERROR_PROJECT_DECOUPLING": "Project decoupling",
   "CHILD_PROJECT_UNDER_APPROVE": "The Project is used in approval or/and review request of the Group.",
+  "USE_LATEST_SBOM": "Use latest SBOM",
   "SBOM_LATEST": "latest",
   "SBOM_FORMER": "former",
   "TT_OPEN_TASK": "open task",

@@ -9,15 +9,30 @@ import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
+import {useI18n} from 'vue-i18n';
 const projectStore = useProjectStore();
+const {t} = useI18n();
 
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const useLatestSbom = ref(false);
+const search = ref('');
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
 
 const idle = useIdleStore();
 
 const projectModel = computed(() => projectStore.currentProject!);
+const filteredProjects = computed(() => {
+  const projects = approvableInfo.value.projects ?? [];
+  const normalizedSearch = search.value.trim().toLowerCase();
+
+  if (!normalizedSearch) {
+    return projects;
+  }
+
+  return projects.filter((project) => {
+    return [project.projectName, project.supplier].some((value) => value?.toLowerCase().includes(normalizedSearch));
+  });
+});
 
 async function reload() {
   idle.showIdle = true;
@@ -52,17 +67,19 @@ onMounted(async () => {
     </template>
     <template #table>
       <div ref="tableUserManagement" class="fill-height">
-        <v-checkbox v-model="useLatestSbom" label="Use Latest SBOM" @change="reload" density="compact"> </v-checkbox>
-        <!--        <GridSPDXList-->
-        <!--          :projects="approvableInfo.projects"-->
-        <!--          :channels="childProjectChannels"-->
-        <!--          showSbomExtras-->
-        <!--          showSupplier />-->
-        <GridSPDXList
-          :projects="approvableInfo.projects"
-          :channels="projectModel.versions"
-          showSbomExtras
-          showSupplier />
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+          <v-checkbox
+            v-model="useLatestSbom"
+            :label="t('USE_LATEST_SBOM')"
+            @change="reload"
+            density="compact"
+            hide-details
+            class="my-0">
+          </v-checkbox>
+          <v-spacer></v-spacer>
+          <DSearchField v-model="search" class="ml-auto" />
+        </div>
+        <GridSPDXList :projects="filteredProjects" :channels="projectModel.versions" showSbomExtras showSupplier />
       </div>
     </template>
   </TableLayout>
