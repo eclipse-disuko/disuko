@@ -78,6 +78,8 @@ const {
 
 const markedApprovableSpdx = computed(() => projectModel.value.approvablespdx);
 
+const noSbomSelected = computed(() => !projectModel.value.isGroup && selectedSbom.value === null);
+
 const getChannelSboms = (versionKey: string): SpdxFile[] => {
   const versionEntry = sbomStore.getAllSBOMs.find((entry) => entry.versionKey === versionKey);
   return (versionEntry?.spdxFileHistory ?? []).map((sbom, index) => ({...sbom, isRecent: index === 0}));
@@ -442,6 +444,7 @@ defineExpose({open});
               :c3="c3"
               :c4="c4"
               :c5="c5"
+              @update:noFOSS="noFOSS = $event"
               @update:c1="c1 = $event"
               @update:c2="c2 = $event"
               @update:c3="c3 = $event"
@@ -465,6 +468,7 @@ defineExpose({open});
             v-if="!isDeniedOrUnasserted"
             size="small"
             variant="flat"
+            :disabled="noSbomSelected && !noFOSS"
             @click="doDialogAction"
             :text="t('BTN_GENERATE_FOSS_DD')" />
 

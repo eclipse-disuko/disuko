@@ -36,6 +36,7 @@ const {isAudited} = useApprovalCheck();
       :items="props.channels"
       :disabled="props.noFOSS"
       hide-details
+      clearable
       autocomplete="off" />
     <v-autocomplete
       v-model="selectedSbom"
@@ -44,6 +45,7 @@ const {isAudited} = useApprovalCheck();
       item-title="name"
       :label="t('SELECT_SBOM_DELIVERY')"
       hide-details
+      clearable
       autocomplete="off"
       :items="props.sboms">
       <template v-slot:item="{item, props: itemProps}">
