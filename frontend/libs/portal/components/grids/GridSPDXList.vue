@@ -8,7 +8,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import {ProjectApprovable} from '@disclosure-portal/model/Approval';
 import {ApprovableDto} from '@disclosure-portal/model/Project';
 import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
-import {createReusableTemplate} from '@vueuse/core';
+import StatsItem from './StatsItem.vue';
 import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@disclosure-portal/utils/Table';
 import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
@@ -16,18 +16,10 @@ import {PropType, computed, defineComponent, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {openUrlInNewTab} from '@shared/utils/url';
 
-const [DefineStatsItem, ReuseStatsItem] = createReusableTemplate<{
-  icon: string;
-  value: number;
-  color?: string;
-  nowrap?: boolean;
-}>();
-
 export default defineComponent({
   name: 'GridSPDXList',
   components: {
-    DefineStatsItem,
-    ReuseStatsItem,
+    StatsItem,
   },
   props: {
     projects: {
@@ -190,14 +182,6 @@ export default defineComponent({
 </script>
 
 <template>
-  <DefineStatsItem v-slot="{icon, value, color, nowrap}">
-    <div class="flex flex-col items-center justify-center">
-      <v-icon size="small" :color="color">{{ icon }}</v-icon>
-      <div :class="['pt-1', 'text-center', {'text-gray-500': value === 0, 'text-no-wrap': nowrap}]">
-        {{ value }}
-      </div>
-    </div>
-  </DefineStatsItem>
   <v-data-table
     density="compact"
     fixed-header
@@ -284,28 +268,28 @@ export default defineComponent({
     <template v-slot:[`item.stats`]="{item}">
       <div v-if="item.spdxname != ''">
         <div class="flex flex-row justify-between">
-          <ReuseStatsItem icon="mdi-layers" :value="item.stats.total" :nowrap="true" />
-          <ReuseStatsItem
+          <StatsItem icon="mdi-layers" :value="item.stats.total" />
+          <StatsItem
             icon="mdi-minus-circle"
             :value="item.stats.denied"
             :color="item.stats.denied > 0 ? 'policyStatusDeniedColor' : ''" />
-          <ReuseStatsItem
+          <StatsItem
             icon="mdi-lightning-bolt-circle"
             :value="item.stats.noAssertion"
             :color="item.stats.noAssertion > 0 ? 'policyStatusUnassertedColor' : ''" />
-          <ReuseStatsItem
+          <StatsItem
             icon="mdi-alert"
             :value="item.stats.warned"
             :color="item.stats.warned > 0 ? 'policyStatusWarnedColor' : ''" />
-          <ReuseStatsItem
+          <StatsItem
             icon="mdi-help-circle"
             :value="item.stats.questioned"
             :color="item.stats.questioned > 0 ? 'green' : ''" />
-          <ReuseStatsItem
+          <StatsItem
             icon="mdi-check-circle"
             :value="item.stats.allowed"
             :color="item.stats.allowed > 0 ? 'green' : ''"
-            :nowrap="true" />
+            nowrap />
         </div>
       </div>
     </template>
