@@ -29,8 +29,6 @@ const deleteDate = computed(() => formatDate(currentProject.value?.dummyDeletion
 const uuidLabel = computed(() => {
   return currentProject.value.isGroup ? t('GROUP_IDENTIFIER_UUID') : t('APPLICATION_UUID');
 });
-
-const isProd = computed(() => config.isProd);
 </script>
 
 <template>
@@ -109,10 +107,7 @@ const isProd = computed(() => config.isProd);
   <GridVersions v-if="currentProject && !currentProject.isGroup" ref="projectVersions">
     <ReuseTemplate></ReuseTemplate>
   </GridVersions>
-  <TabProjectChildrenStatistics v-if="currentProject && currentProject.isGroup && !isProd" ref="childrenStatistics">
+  <TabProjectChildrenStatistics v-if="currentProject && currentProject.isGroup" ref="childrenStatistics">
     <ReuseTemplate></ReuseTemplate>
   </TabProjectChildrenStatistics>
-  <GridChildren v-if="currentProject && currentProject.isGroup && isProd" ref="groupChildren">
-    <ReuseTemplate></ReuseTemplate>
-  </GridChildren>
 </template>
