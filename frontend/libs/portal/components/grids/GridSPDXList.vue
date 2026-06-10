@@ -186,7 +186,7 @@ export default defineComponent({
     density="compact"
     fixed-header
     sort-desc
-    class="striped-table"
+    class="striped-table fill-height"
     hide-default-footer
     :headers="headers"
     :items="projects"
