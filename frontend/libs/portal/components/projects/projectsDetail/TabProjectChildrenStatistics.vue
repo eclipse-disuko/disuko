@@ -9,8 +9,10 @@ import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
+import {useI18n} from 'vue-i18n';
 const projectStore = useProjectStore();
 
+const {t} = useI18n();
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const search = ref<string | null>('');
 const dataAreLoaded = ref(false);
@@ -78,7 +80,8 @@ onMounted(async () => {
           showSbomExtras
           showSupplier
           showLoading
-          :loading="!dataAreLoaded" />
+          :loading="!dataAreLoaded"
+          :missingSbomText="t('NO_SPDX')" />
       </div>
     </template>
   </TableLayout>

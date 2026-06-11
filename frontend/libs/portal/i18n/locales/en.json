@@ -1547,6 +1547,7 @@
   "APPROVALS_USE_PARENT_TEXT_POST": "of the corresponding parent project.",
   "COL_DOCUMENT": "Document",
   "NO_APPROVABLE_SPDX": "No approvable SBOM set. Please mark an SBOM in SBOM Deliveries tab with a star.",
+  "NO_SPDX": "No SBOM present for the project.",
   "BTN_REQUEST": "Request",
   "DOWNLOAD_INITIAL_DOCUMENT": "The Disclosure Document for the selected scope has been generated and can now be used. ",
   "TT_REQUEST_VEHICLE_PLATFORM": "approval requests for 'product platform' projects are currently disabled",

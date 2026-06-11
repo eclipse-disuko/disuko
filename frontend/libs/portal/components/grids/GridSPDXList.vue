@@ -51,6 +51,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    missingSbomText: {
+      type: String,
+      default: '',
+    },
     filterIsFOSS: {
       type: Boolean,
       default: false,
@@ -243,7 +247,7 @@ export default defineComponent({
       </th>
     </template>
     <template v-slot:[`item.spdxname`]="{item}">
-      <span v-if="item.spdxname == ''">{{ t('NO_APPROVABLE_SPDX') }}</span>
+      <span v-if="item.spdxname == ''">{{ missingSbomText !== '' ? missingSbomText : t('NO_APPROVABLE_SPDX') }}</span>
       <v-row class="align-center pl-2" v-else>
         <v-col cols="auto" class="pa-0">
           <v-icon v-if="showSbomExtras && item.isApprovable" color="primary" size="small" class="pb-1">mdi-star</v-icon>
