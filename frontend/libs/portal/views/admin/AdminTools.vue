@@ -94,7 +94,10 @@ defineExpose({
             <v-tab v-if="rights.hasToolsAccess()" value="notificationBar" :to="tabUrl.notificationBar">
               {{ t('TAB_ADMIN_NOTIFICATION_BAR') }}
             </v-tab>
-            <v-tab v-if="rights.hasToolsAccess()" value="classificationMatrix" :to="tabUrl.classificationMatrix">
+            <v-tab
+              v-if="!isProd && rights.hasToolsAccess()"
+              value="classificationMatrix"
+              :to="tabUrl.classificationMatrix">
               {{ t('TAB_ADMIN_CLASSIFICATION_MATRIX') }}
             </v-tab>
           </v-tabs>
@@ -124,7 +127,7 @@ defineExpose({
             <v-tabs-window-item v-if="rights.hasToolsAccess()" value="notificationBar">
               <NotificationBarManagement ref="notificationBar"></NotificationBarManagement>
             </v-tabs-window-item>
-            <v-tabs-window-item v-if="rights.hasToolsAccess()" value="classificationMatrix">
+            <v-tabs-window-item v-if="!isProd && rights.hasToolsAccess()" value="classificationMatrix">
               <PolicyRuleClassificationMatrix ref="classificationMatrix"></PolicyRuleClassificationMatrix>
             </v-tabs-window-item>
           </v-tabs-window>
