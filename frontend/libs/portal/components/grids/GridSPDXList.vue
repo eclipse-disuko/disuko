@@ -43,6 +43,14 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    showLoading: {
+      type: Boolean,
+      default: false,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
     filterIsFOSS: {
       type: Boolean,
       default: false,
@@ -200,7 +208,8 @@ export default defineComponent({
     v-model="selectedItems"
     @click:row="onRowClick"
     @update:model-value="handleSelectionChange"
-    v-if="projects">
+    v-if="projects"
+    :loading="showLoading && loading">
     <template v-slot:group-header="{item, isGroupOpen, toggleGroup}">
       <template
         :ref="

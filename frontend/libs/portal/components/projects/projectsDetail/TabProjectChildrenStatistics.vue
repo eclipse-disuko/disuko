@@ -13,6 +13,7 @@ const projectStore = useProjectStore();
 
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const search = ref<string | null>('');
+const dataAreLoaded = ref(false);
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
 
 const idle = useIdleStore();
@@ -32,6 +33,7 @@ const filteredProjects = computed(() => {
 });
 
 async function reload() {
+  dataAreLoaded.value = false;
   idle.showIdle = true;
 
   approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key, true);
@@ -50,6 +52,7 @@ async function reload() {
   // await Promise.all(versionFetchPromises);
 
   idle.showIdle = false;
+  dataAreLoaded.value = true;
 }
 
 onMounted(async () => {
@@ -73,7 +76,9 @@ onMounted(async () => {
           :projects="filteredProjects"
           :channels="projectModel.versions"
           showSbomExtras
-          showSupplier />
+          showSupplier
+          showLoading
+          :loading="!dataAreLoaded" />
       </div>
     </template>
   </TableLayout>
