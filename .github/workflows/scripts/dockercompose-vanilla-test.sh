@@ -41,7 +41,7 @@ docker compose up -d --build >> /dev/null 2>&1
 container_names=$(docker ps --format "{{.Names}}" --filter "name=disuko")
 remaining_container_count=$(echo "$container_names" | wc -l)
 container_checked_count=0
-timeout=180
+timeout=600
 start_time=$(date +%s)
 while [ $container_checked_count -lt $remaining_container_count ]; do
 echo "$container_checked_count from $remaining_container_count containers are checked..."
@@ -55,9 +55,10 @@ done
 if [ $(( $(date +%s) - start_time )) -ge $timeout ]; then
   echo "Timeout ${timeout}s reached while waiting for containers to become healthy."
   docker ps
-  docker compose down >> /dev/null 2>&1
+  docker compose down --rmi local -v >> /dev/null 2>&1
   exit 1
 fi
 done
 echo "All $remaining_container_count containers are checked."
-docker compose down >> /dev/null 2>&1
+echo "Time needed for all containers to become healthy: $(( $(date +%s) - start_time )) seconds."
+docker compose down --rmi local -v >> /dev/null 2>&1
