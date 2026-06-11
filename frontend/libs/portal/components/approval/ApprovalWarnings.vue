@@ -54,7 +54,7 @@ const {t} = useI18n();
     </v-alert>
   </section>
 
-  <section v-if="props.noFOSS && props.fossVersion === 'legacy'">
+  <section v-if="props.noFOSS">
     <v-alert color="warning" type="warning">
       {{ t('NO_FOSS_MESSAGE') }}
     </v-alert>

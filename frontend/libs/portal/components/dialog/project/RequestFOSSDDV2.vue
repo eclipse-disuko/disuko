@@ -80,6 +80,10 @@ const markedApprovableSpdx = computed(() => projectModel.value.approvablespdx);
 
 const noSbomSelected = computed(() => !projectModel.value.isGroup && selectedSbom.value === null);
 
+const effectiveNoFOSS = computed(
+  () => noFOSS.value || (!vehicle.value && !projectModel.value.isGroup && !selectedSbom.value),
+);
+
 const getChannelSboms = (versionKey: string): SpdxFile[] => {
   const versionEntry = sbomStore.getAllSBOMs.find((entry) => entry.versionKey === versionKey);
   return (versionEntry?.spdxFileHistory ?? []).map((sbom, index) => ({...sbom, isRecent: index === 0}));
@@ -291,6 +295,10 @@ const doDialogAction = async () => {
   }
   metaDoc.c6 = noFOSS.value;
 
+  if (!vehicle.value && !projectModel.value.isGroup && !selectedSbom.value) {
+    metaDoc.c6 = true;
+  }
+
   let determinedFossVersion: 'default' | 'legacy' | 'vehicle-legacy';
 
   if (config.useFutureFoss && !vehicle.value) {
@@ -399,7 +407,7 @@ defineExpose({open});
               :is-rd-confirmation-missing="isRdConfirmationMissing"
               :is-enterprise-or-mobile-or-other="isEnterpriseOrMobileOrOther"
               :mixed-f-o-s-s="mixedFOSS"
-              :no-f-o-s-s="noFOSS"
+              :no-f-o-s-s="effectiveNoFOSS"
               :foss-version="fossVersion"
               :selected-projects-contain-empty-sbom="selectedProjectsContainEmptySbom" />
 
@@ -468,7 +476,6 @@ defineExpose({open});
             v-if="!isDeniedOrUnasserted"
             size="small"
             variant="flat"
-            :disabled="noSbomSelected && !noFOSS"
             @click="doDialogAction"
             :text="t('BTN_GENERATE_FOSS_DD')" />
 
