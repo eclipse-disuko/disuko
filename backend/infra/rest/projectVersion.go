@@ -2093,12 +2093,17 @@ func (projectHandler *ProjectHandler) CreateProjectSPDXExternCheck(requestSessio
 	components := make([]project.SpdxStatusComponent, 0)
 	for _, compRes := range evalRes.Results {
 		componentInfoElement := compRes.Component
+
 		statusComponent := project.SpdxStatusComponent{
 			SpdxId:  componentInfoElement.SpdxId,
 			License: componentInfoElement.GetLicenseEffective(),
 			Name:    componentInfoElement.Name,
 			Version: componentInfoElement.Version,
+			Type:    componentInfoElement.Type,
 		}
+
+		usedPolicyRule, _ := compRes.GetUsedPolicyRule()
+		statusComponent.PrStatus = usedPolicyRule
 
 		if compRes.Status != nil {
 			policyRuleStatus := make([]project.SpdxStatusPolicy, 0)

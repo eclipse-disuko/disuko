@@ -467,6 +467,8 @@ type SpdxStatusComponent struct {
 	License          string                     `json:"license" example:"MIT"`
 	Name             string                     `json:"name" example:"@some/component"`
 	Version          string                     `json:"version" example:"7.19.6"`
+	PrStatus         string                     `json:"prStatus" example:"noassertion"`
+	Type             components.ComponentType   `json:"type" example:"Package"`
 	ScanRemarks      []SpdxStatusScanRemarks    `json:"scanRemarks"`
 	LicenseRemarks   []SpdxStatusLicenseRemarks `json:"licenseRemarks"`
 	PolicyRuleStatus []SpdxStatusPolicy         `json:"policyRuleStatus"`
