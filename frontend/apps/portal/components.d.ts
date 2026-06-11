@@ -207,6 +207,7 @@ declare module 'vue' {
     Stack: typeof import('./../../libs/shared/layouts/Stack.vue')['default']
     Statistics: typeof import('./../../libs/portal/views/admin/tools/Statistics.vue')['default']
     Stats: typeof import('./../../libs/portal/views/analytics/Stats.vue')['default']
+    StatsItem: typeof import('./../../libs/portal/components/grids/StatsItem.vue')['default']
     Step: typeof import('./../../libs/portal/components/new-wizard/Step.vue')['default']
     Stepper: typeof import('./../../libs/portal/components/new-wizard/Stepper.vue')['default']
     SubNavItem: typeof import('./../../libs/shared/components/sidebar/SubNavItem.vue')['default']

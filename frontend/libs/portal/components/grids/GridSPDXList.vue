@@ -271,27 +271,14 @@ export default defineComponent({
       <div v-if="item.spdxname != ''">
         <div class="flex flex-row justify-between">
           <StatsItem icon="mdi-layers" :value="item.stats.total" />
-          <StatsItem
-            icon="mdi-minus-circle"
-            :value="item.stats.denied"
-            :color="item.stats.denied > 0 ? 'policyStatusDeniedColor' : ''" />
+          <StatsItem icon="mdi-minus-circle" :value="item.stats.denied" color="policyStatusDeniedColor" />
           <StatsItem
             icon="mdi-lightning-bolt-circle"
             :value="item.stats.noAssertion"
-            :color="item.stats.noAssertion > 0 ? 'policyStatusUnassertedColor' : ''" />
-          <StatsItem
-            icon="mdi-alert"
-            :value="item.stats.warned"
-            :color="item.stats.warned > 0 ? 'policyStatusWarnedColor' : ''" />
-          <StatsItem
-            icon="mdi-help-circle"
-            :value="item.stats.questioned"
-            :color="item.stats.questioned > 0 ? 'green' : ''" />
-          <StatsItem
-            icon="mdi-check-circle"
-            :value="item.stats.allowed"
-            :color="item.stats.allowed > 0 ? 'green' : ''"
-            nowrap />
+            color="policyStatusUnassertedColor" />
+          <StatsItem icon="mdi-alert" :value="item.stats.warned" color="policyStatusWarnedColor" />
+          <StatsItem icon="mdi-help-circle" :value="item.stats.questioned" color="green" />
+          <StatsItem icon="mdi-check-circle" :value="item.stats.allowed" color="green" nowrap />
         </div>
       </div>
     </template>
