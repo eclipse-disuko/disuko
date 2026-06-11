@@ -22,7 +22,8 @@ import packageInfo from '../../package.json';
 import {generateTailwindColors} from './generate-tailwind-colors.mjs';
 
 export default defineConfig(({mode}) => {
-  process.env.VITE_BUILD_DATE = new Date().toLocaleDateString('de-DE');
+  const _d = new Date();
+  process.env.VITE_BUILD_DATE = `${String(_d.getDate()).padStart(2, '0')}.${String(_d.getMonth() + 1).padStart(2, '0')}.${_d.getFullYear()}`;
   process.env.VITE_VERSION = packageInfo.version || 'n/a';
   process.env.VITE_COMMIT = process.env.VITE_COMMIT || 'Local Build';
   process.env.VITE_BRANCH = process.env.VITE_BRANCH || 'n/a';
