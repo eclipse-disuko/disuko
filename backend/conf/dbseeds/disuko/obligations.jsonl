@@ -43,3 +43,218 @@
   "type": "obligation",
   "warnLevel": "INFORMATION"
 }
+{
+  "_key": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+  "_id": "obligations/9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+  "Created": "2026-05-28T12:10:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:10:00Z",
+  "autoApproved": false,
+  "description": "The licensed material may be modified.",
+  "descriptionDe": "Das lizenzierte Material darf verändert werden.",
+  "name": "Modification",
+  "nameDe": "Modifikation",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "b3f9d6a7-4e2c-4f9a-9e2b-7c3d5f1a2b6c",
+  "_id": "obligations/b3f9d6a7-4e2c-4f9a-9e2b-7c3d5f1a2b6c",
+  "Created": "2026-05-28T12:05:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:05:00Z",
+  "autoApproved": false,
+  "description": "The licensed material may be distributed.",
+  "descriptionDe": "Das lizenzierte Material darf verbreitet werden.",
+  "name": "Distribution",
+  "nameDe": "Verbreitung",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "6f1a3b2c-9d4e-4b8a-a1c2-3d4e5f6a7b8c",
+  "_id": "obligations/6f1a3b2c-9d4e-4b8a-a1c2-3d4e5f6a7b8c",
+  "Created": "2026-05-28T12:00:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:00:00Z",
+  "autoApproved": false,
+  "description": "The licensed material and derivatives may be used for commercial purposes.",
+  "descriptionDe": "Das lizenzierte Material und davon abgeleitete Werke dürfen für kommerzielle Zwecke verwendet werden.",
+  "name": "Commercial use",
+  "nameDe": "Kommerzielle Nutzung",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
+  "_id": "obligations/a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
+  "Created": "2026-05-28T12:20:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:20:00Z",
+  "autoApproved": false,
+  "description": "The licensed material may be used and modified in private.",
+  "descriptionDe": "Das lizenzierte Material darf privat verwendet und verändert werden.",
+  "name": "Private use",
+  "nameDe": "Private Nutzung",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "c1d2e3f4-5678-90ab-cdef-1234567890ab",
+  "_id": "obligations/c1d2e3f4-5678-90ab-cdef-1234567890ab",
+  "Created": "2026-05-28T12:40:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:40:00Z",
+  "autoApproved": false,
+  "description": "Users who interact with the licensed material via network are given the right to receive a copy of the source code.",
+  "descriptionDe": "Benutzer, die über ein Netzwerk mit dem lizenzierten Material interagieren, erhalten das Recht, eine Kopie des Quellcodes zu erhalten.",
+  "name": "Network use is distribution",
+  "nameDe": "Netzwerknutzung gilt als Verbreitung",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "e5f6a7b8-2c3d-4e5f-6a7b-8c9d0e1f2345",
+  "_id": "obligations/e5f6a7b8-2c3d-4e5f-6a7b-8c9d0e1f2345",
+  "Created": "2026-05-28T12:30:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:30:00Z",
+  "autoApproved": false,
+  "description": "A copy of the license and copyright notice must be included with the licensed material in source form, but is not required for binaries.",
+  "descriptionDe": "Eine Kopie der Lizenz sowie des Copyright-Hinweises muss dem lizenzierten Material in Quellcodeform beigefügt werden, ist jedoch für Binärdateien nicht erforderlich.",
+  "name": "License and copyright notice for source",
+  "nameDe": "Lizenz- und Copyright-Hinweis für Quellcode",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "f0e1d2c3-b4a5-6789-0abc-def123456789",
+  "_id": "obligations/f0e1d2c3-b4a5-6789-0abc-def123456789",
+  "Created": "2026-05-28T12:50:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:50:00Z",
+  "autoApproved": false,
+  "description": "Modifications must be released under the same license when distributing the licensed material. In some cases a similar or related license may be used.",
+  "descriptionDe": "Änderungen müssen bei der Verbreitung des lizenzierten Materials unter derselben Lizenz veröffentlicht werden. In einigen Fällen darf eine ähnliche oder verwandte Lizenz verwendet werden.",
+  "name": "Same license",
+  "nameDe": "Gleiche Lizenz",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "0a1b2c3d-4e5f-6789-0abc-def012345678",
+  "_id": "obligations/0a1b2c3d-4e5f-6789-0abc-def012345678",
+  "Created": "2026-05-28T12:55:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:55:00Z",
+  "autoApproved": false,
+  "description": "Modifications of existing files must be released under the same license when distributing the licensed material. In some cases a similar or related license may be used.",
+  "descriptionDe": "Änderungen an bestehenden Dateien müssen bei der Verbreitung des lizenzierten Materials unter derselben Lizenz veröffentlicht werden. In einigen Fällen darf eine ähnliche oder verwandte Lizenz verwendet werden.",
+  "name": "Same license (file)",
+  "nameDe": "Gleiche Lizenz (Datei)",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "5b6c7d8e-9f01-2345-6789-abcdef012345",
+  "_id": "obligations/5b6c7d8e-9f01-2345-6789-abcdef012345",
+  "Created": "2026-05-28T12:58:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T12:58:00Z",
+  "autoApproved": false,
+  "description": "Modifications must be released under the same license when distributing the licensed material. In some cases a similar or related license may be used, or this condition may not apply to works that use the licensed material as a library.",
+  "descriptionDe": "Änderungen müssen bei der Verbreitung des lizenzierten Materials unter derselben Lizenz veröffentlicht werden. In einigen Fällen darf eine ähnliche oder verwandte Lizenz verwendet werden oder diese Bedingung gilt nicht für Werke, die das lizenzierte Material als Bibliothek verwenden.",
+  "name": "Same license (library)",
+  "nameDe": "Gleiche Lizenz (Bibliothek)",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+{
+  "_key": "7c8d9e0f-1234-5678-9abc-def012345678",
+  "_id": "obligations/7c8d9e0f-1234-5678-9abc-def012345678",
+  "Created": "2026-05-28T13:00:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T13:00:00Z",
+  "autoApproved": false,
+  "description": "Changes made to the licensed material must be documented.",
+  "descriptionDe": "Änderungen am lizenzierten Material müssen dokumentiert werden.",
+  "name": "State changes",
+  "nameDe": "Änderungen kennzeichnen",
+  "type": "obligation",
+  "warnLevel": "INFORMATION"
+}
+
+{
+  "_key": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+  "_id": "obligations/1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+  "Created": "2026-05-28T13:05:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T13:05:00Z",
+  "autoApproved": false,
+  "description": "This license includes a limitation of liability.",
+  "descriptionDe": "Diese Lizenz enthält einen Haftungsausschluss bzw. eine Haftungsbeschränkung.",
+  "name": "Liability",
+  "nameDe": "Haftung",
+  "type": "limitation",
+  "warnLevel": "INFORMATION"
+}
+
+{
+  "_key": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+  "_id": "obligations/2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+  "Created": "2026-05-28T13:06:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T13:06:00Z",
+  "autoApproved": false,
+  "description": "This license explicitly states that it does NOT grant trademark rights, even though licenses without such a statement probably do not grant any implicit trademark rights.",
+  "descriptionDe": "Diese Lizenz legt ausdrücklich fest, dass keine Markenrechte gewährt werden, auch wenn Lizenzen ohne eine solche Klausel wahrscheinlich ebenfalls keine stillschweigenden Markenrechte gewähren.",
+  "name": "Trademark use",
+  "nameDe": "Markennutzung",
+  "type": "limitation",
+  "warnLevel": "INFORMATION"
+}
+
+{
+  "_key": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+  "_id": "obligations/3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+  "Created": "2026-05-28T13:07:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-28T13:07:00Z",
+  "autoApproved": false,
+  "description": "This license explicitly states that it does NOT provide any warranty.",
+  "descriptionDe": "Diese Lizenz legt ausdrücklich fest, dass keinerlei Gewährleistung übernommen wird.",
+  "name": "Warranty",
+  "nameDe": "Gewährleistung",
+  "type": "limitation",
+  "warnLevel": "INFORMATION"
+}
+
+{
+  "_key": "9f2a3b4c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+  "_id": "obligations/9f2a3b4c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+  "Created": "2026-05-29T00:00:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-29T00:00:00Z",
+  "autoApproved": false,
+  "description": "This license provides an express grant of patent rights from contributors.",
+  "descriptionDe": "Diese Lizenz gewährt ausdrücklich Patentrechte der Mitwirkenden.",
+  "name": "Patent use",
+  "nameDe": "Patentnutzung",
+  "type": "right",
+  "warnLevel": "INFORMATION"
+}
+
+{
+  "_key": "8e7d6c5b-4a3f-2e1d-0c9b-8a7f6e5d4c3b",
+  "_id": "obligations/8e7d6c5b-4a3f-2e1d-0c9b-8a7f6e5d4c3b",
+  "Created": "2026-05-29T00:02:00Z",
+  "Deleted": false,
+  "Updated": "2026-05-29T00:02:00Z",
+  "autoApproved": false,
+  "description": "This license explicitly states that it does NOT grant any rights in the patents of contributors.",
+  "descriptionDe": "Diese Lizenz legt ausdrücklich fest, dass keine Rechte an den Patenten der Mitwirkenden gewährt werden.",
+  "name": "Patent use",
+  "nameDe": "Patentnutzung ausgeschlossen",
+  "type": "limitation",
+  "warnLevel": "INFORMATION"
+}
