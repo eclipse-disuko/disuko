@@ -93,12 +93,20 @@ export default defineComponent({
       ];
 
       if (props.showSupplier) {
-        tableHeaders.push({
-          title: t('COL_SUPPLIER'),
-          value: 'supplier',
-          align: 'start',
-          width: 250,
-        });
+        tableHeaders.push(
+          {
+            title: t('COL_SUPPLIER'),
+            value: 'supplier',
+            align: 'start',
+            width: 250,
+          },
+          {
+            title: t('PROJECT_APPROVAL_STATUS'),
+            value: 'hasProjectApproval',
+            align: 'center',
+            width: 120,
+          },
+        );
       }
 
       tableHeaders.push({title: '', key: 'data-table-group', align: 'start'});
@@ -221,7 +229,7 @@ export default defineComponent({
             if (!isGroupOpen(item)) toggleGroup(item);
           }
         "></template>
-      <th :colspan="showSupplier ? 4 : 3" class="text-caption expand-header p-1 px-3 text-start">
+      <th :colspan="showSupplier ? 5 : 3" class="text-caption expand-header p-1 px-3 text-start">
         <span @click="openProject(item.items[0].raw.projectKey)" class="cursor-pointer">
           <span class="font-color-table">{{ t('PROJECT') }}:</span>
           {{ item.items[0].raw.projectName }}
@@ -250,12 +258,14 @@ export default defineComponent({
       <span v-if="item.spdxname == ''">{{ missingSbomText !== '' ? missingSbomText : t('NO_APPROVABLE_SPDX') }}</span>
       <v-row class="align-center pl-2" v-else>
         <v-col cols="auto" class="pa-0">
-          <v-icon v-if="showSbomExtras && item.isApprovable" color="primary" size="small" class="pb-1">mdi-star</v-icon>
-          <Tooltip v-if="showSbomExtras && item.isApprovable" :text="t('TT_approvable_spdx')" />
-          <v-icon v-if="showSbomExtras && !item.isApprovable" color="primary" size="small" class="pb-1"
+          <v-icon v-if="showSbomExtras && item.isSpdxApprovable" color="primary" size="small" class="pb-1"
+            >mdi-star</v-icon
+          >
+          <Tooltip v-if="showSbomExtras && item.isSpdxApprovable" :text="t('TT_approvable_spdx')" />
+          <v-icon v-if="showSbomExtras && !item.isSpdxApprovable" color="primary" size="small" class="pb-1"
             >mdi-star-outline</v-icon
           >
-          <Tooltip v-if="showSbomExtras && !item.isApprovable" :text="t('TT_not_approvable_spdx')" />
+          <Tooltip v-if="showSbomExtras && !item.isSpdxApprovable" :text="t('TT_not_approvable_spdx')" />
         </v-col>
         <v-col cols="auto" class="pa-0">
           <v-icon v-if="isApproved(item)" color="green" size="small" class="ml-1 pb-1">
@@ -279,6 +289,9 @@ export default defineComponent({
     </template>
     <template v-if="showSupplier" v-slot:[`item.supplier`]="{item}">
       {{ item.supplier ? item.supplier : t('NO_SUPPLIER_INFORMATION') }}
+    </template>
+    <template #[`item.hasProjectApproval`]="{item}">
+      <v-icon icon="mdi-check" class="mr-2" :color="item.hasProjectApproval ? 'primary' : 'tableBorderColor'"></v-icon>
     </template>
     <template v-slot:[`item.stats`]="{item}">
       <div v-if="item.spdxname != ''">

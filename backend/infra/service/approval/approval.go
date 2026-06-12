@@ -231,18 +231,19 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 		res.CompStats.AddStats(sbomStats)
 
 		res.Projects = append(res.Projects, approval.ProjectApprovable{
-			ProjectKey:      pr.Key,
-			ProjectName:     pr.Name,
-			CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
-			SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
-			Supplier:        supplierUserId,
-			ApprovableSPDX:  approvableSPDX,
-			SpdxName:        sbom.MetaInfo.Name,
-			SpdxTag:         sbom.Tag,
-			ApprovableStats: sbomStats,
-			SpdxUploaded:    sbom.Uploaded,
-			IsSpdxRecent:    isSpdxRecent,
-			IsApprovable:    hasProjectApprovable,
+			ProjectKey:         pr.Key,
+			ProjectName:        pr.Name,
+			CustomerDiffers:    pr.CustomerMeta.Diff(targetProject.CustomerMeta),
+			SupplierDiffers:    pr.DocumentMeta.Diff(targetProject.DocumentMeta),
+			Supplier:           supplierUserId,
+			ApprovableSPDX:     approvableSPDX,
+			SpdxName:           sbom.MetaInfo.Name,
+			SpdxTag:            sbom.Tag,
+			ApprovableStats:    sbomStats,
+			SpdxUploaded:       sbom.Uploaded,
+			IsSpdxRecent:       isSpdxRecent,
+			IsSpdxApprovable:   hasProjectApprovable,
+			HasProjectApproval: pr.HasApproval,
 		})
 	}
 	return res

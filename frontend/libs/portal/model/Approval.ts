@@ -18,7 +18,8 @@ export class ProjectApprovable {
   public stats: ComponentStats = {} as ComponentStats;
   public approvablespdx: ApprovableSPDXDto = {} as ApprovableSPDXDto;
   public supplier = '';
-  public isApprovable = false;
+  public isSpdxApprovable = false;
+  public hasProjectApproval = false;
 }
 
 export class ApprovableInfo {

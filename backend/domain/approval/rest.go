@@ -63,34 +63,36 @@ type FillCustomerDto struct {
 
 func (p *ProjectApprovable) ToDto() ProjectApprovableDto {
 	return ProjectApprovableDto{
-		ProjectKey:      p.ProjectKey,
-		ProjectName:     p.ProjectName,
-		ApprovableSPDX:  p.ApprovableSPDX.ToDto(),
-		CustomerDiffers: p.CustomerDiffers,
-		SupplierDiffers: p.SupplierDiffers,
-		ApprovableStats: p.ApprovableStats,
-		SpdxName:        p.SpdxName,
-		SpdxTag:         p.SpdxTag,
-		SpdxUploaded:    p.SpdxUploaded,
-		IsSpdxRecent:    p.IsSpdxRecent,
-		Supplier:        p.Supplier,
-		IsApprovable:    p.IsApprovable,
+		ProjectKey:         p.ProjectKey,
+		ProjectName:        p.ProjectName,
+		ApprovableSPDX:     p.ApprovableSPDX.ToDto(),
+		CustomerDiffers:    p.CustomerDiffers,
+		SupplierDiffers:    p.SupplierDiffers,
+		ApprovableStats:    p.ApprovableStats,
+		SpdxName:           p.SpdxName,
+		SpdxTag:            p.SpdxTag,
+		SpdxUploaded:       p.SpdxUploaded,
+		IsSpdxRecent:       p.IsSpdxRecent,
+		Supplier:           p.Supplier,
+		IsSpdxApprovable:   p.IsSpdxApprovable,
+		HasProjectApproval: p.HasProjectApproval,
 	}
 }
 
 type ProjectApprovableDto struct {
-	ProjectKey      string                       `json:"projectKey"`
-	ProjectName     string                       `json:"projectName"`
-	ApprovableSPDX  approvable.ApprovableSPDXDto `json:"approvablespdx"`
-	CustomerDiffers bool                         `json:"customerdiff"`
-	SupplierDiffers bool                         `json:"supplierdiff"`
-	ApprovableStats components.ComponentStats    `json:"stats"`
-	SpdxName        string                       `json:"spdxname"`
-	SpdxTag         string                       `json:"spdxtag"`
-	SpdxUploaded    *time.Time                   `json:"spdxUploaded"`
-	IsSpdxRecent    bool                         `json:"isSpdxRecent"`
-	Supplier        *string                      `json:"supplier"`
-	IsApprovable    bool                         `json:"isApprovable"`
+	ProjectKey         string                       `json:"projectKey"`
+	ProjectName        string                       `json:"projectName"`
+	ApprovableSPDX     approvable.ApprovableSPDXDto `json:"approvablespdx"`
+	CustomerDiffers    bool                         `json:"customerdiff"`
+	SupplierDiffers    bool                         `json:"supplierdiff"`
+	ApprovableStats    components.ComponentStats    `json:"stats"`
+	SpdxName           string                       `json:"spdxname"`
+	SpdxTag            string                       `json:"spdxtag"`
+	SpdxUploaded       *time.Time                   `json:"spdxUploaded"`
+	IsSpdxRecent       bool                         `json:"isSpdxRecent"`
+	Supplier           *string                      `json:"supplier"`
+	IsSpdxApprovable   bool                         `json:"isSpdxApprovable"`
+	HasProjectApproval bool                         `json:"hasProjectApproval"`
 }
 
 type ApproveStateDto struct {
