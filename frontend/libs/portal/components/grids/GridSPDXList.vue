@@ -104,7 +104,7 @@ export default defineComponent({
             title: t('PROJECT_APPROVAL_STATUS'),
             value: 'hasProjectApproval',
             align: 'center',
-            width: 120,
+            width: 130,
           },
         );
       }
