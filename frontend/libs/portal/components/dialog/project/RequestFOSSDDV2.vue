@@ -318,7 +318,7 @@ const doDialogAction = async () => {
     selectedProjects: selectedProjects.value,
   };
 
-  if (!projectModel.value.isGroup && selectedChannel.value !== null && selectedSbom.value === null) {
+  if (vehicle.value && !projectModel.value.isGroup && selectedChannel.value !== null && selectedSbom.value === null) {
     const d = new ErrorDialogConfig();
     d.title = '' + t('TITLE_GENERATE_FOSS_DD');
     d.description = '' + t('BOTH_OR_NONE_CHANNEL_AND_SBOM_ALLOWED_ERROR_MESSAGE');
@@ -476,6 +476,7 @@ defineExpose({open});
             v-if="!isDeniedOrUnasserted"
             size="small"
             variant="flat"
+            :disabled="vehicle && noSbomSelected"
             @click="doDialogAction"
             :text="t('BTN_GENERATE_FOSS_DD')" />
 
