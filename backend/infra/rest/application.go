@@ -8,6 +8,7 @@ import (
 	"html"
 	"net/http"
 	"strings"
+	"unicode"
 
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
@@ -24,10 +25,12 @@ type ApplicationHandler struct {
 
 func (handler *ApplicationHandler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	query := strings.TrimSpace(r.URL.Query().Get("query"))
-	if len(query) < 4 {
+
+	rawQuery := r.URL.Query().Get("query")
+	if strings.TrimSpace(rawQuery) == "" || len(rawQuery) < 3 {
 		exception.ThrowExceptionClient400Message(message.GetI18N(message.RequestApp), "")
 	}
+	query := strings.TrimLeftFunc(rawQuery, unicode.IsSpace)
 
 	response := make([]*project.ApplicationMetaDto, 0)
 	if handler.Connector == nil {
