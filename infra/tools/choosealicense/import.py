@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+# SPDX-FileCopyrightText: 2026 Mercedes-Benz Group AG and Mercedes-Benz AG
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -131,7 +131,7 @@ def family_from_conditions(conditions):
         return "network copyleft"
     if "same-license" in conditions:
         return "strong copyleft"
-    if any(tag in conditions for tag in ["same-license--file", "same-license--library", "disclose-source"]):
+    if any(tag in conditions for tag in ["same-license--file", "same-license--library"]):
         return "weak copyleft"
     return "permissive"
 
