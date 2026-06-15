@@ -8,35 +8,50 @@ import {useI18n} from 'vue-i18n';
 
 interface Props {
   isDeniedOrUnasserted?: boolean;
+  isEitherFutureFoss?: boolean;
   isRdConfirmationMissing?: boolean;
+  isWarned?: boolean;
   isEnterpriseOrMobileOrOther?: boolean;
   noFOSS?: boolean;
   mixedFOSS?: boolean;
   fossVersion?: 'default' | 'legacy';
   selectedProjectsContainEmptySbom?: boolean;
+  isMissingFossAndSbom?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isDeniedOrUnasserted: false,
+  isEitherFutureFoss: false,
   isRdConfirmationMissing: false,
+  isWarned: false,
   isEnterpriseOrMobileOrOther: false,
   noFOSS: false,
   mixedFOSS: false,
   fossVersion: 'legacy',
   selectedProjectsContainEmptySbom: false,
+  isMissingFossAndSbom: false,
 });
 
 const {t} = useI18n();
 </script>
 
 <template>
-  <section v-if="props.isDeniedOrUnasserted || props.isRdConfirmationMissing || props.isEnterpriseOrMobileOrOther">
+  <section
+    v-if="
+      props.isDeniedOrUnasserted ||
+      (props.isEitherFutureFoss && props.isRdConfirmationMissing) ||
+      (props.isEitherFutureFoss && props.isWarned) ||
+      props.isEnterpriseOrMobileOrOther
+    ">
     <v-alert color="warning" type="warning">
       <span v-if="props.isDeniedOrUnasserted">
         {{ t('DENIED_OR_UNASSARETED_MESSAGE') }}
       </span>
-      <span v-else-if="props.isRdConfirmationMissing">
+      <span v-else-if="props.isEitherFutureFoss && props.isRdConfirmationMissing">
         {{ t('CONFIRMATION_MISSING') }}
+      </span>
+      <span v-else-if="props.isEitherFutureFoss && props.isWarned">
+        {{ t('WARNING_MESSAGE') }}
       </span>
       <span v-else-if="props.isEnterpriseOrMobileOrOther">
         {{ t('ENTERPRISE_MOBILE_OTHER_MESSAGE') }}
@@ -54,15 +69,21 @@ const {t} = useI18n();
     </v-alert>
   </section>
 
-  <section v-if="props.noFOSS">
+  <section v-if="props.noFOSS && props.fossVersion === 'legacy'">
     <v-alert color="warning" type="warning">
       {{ t('NO_FOSS_MESSAGE') }}
     </v-alert>
   </section>
 
-  <section v-if="config.useFutureIt && props.selectedProjectsContainEmptySbom">
+  <section v-if="(config.useFutureProduct || config.useFutureIt) && props.selectedProjectsContainEmptySbom">
     <v-alert color="warning" type="warning">
       {{ t('NO_PROJECT_NO_FOSS') }}
+    </v-alert>
+  </section>
+
+  <section v-if="props.isMissingFossAndSbom">
+    <v-alert color="error" type="error">
+      {{ t('MISSING_NO_FOSS_FLAG_AND_SBOM') }}
     </v-alert>
   </section>
 </template>
