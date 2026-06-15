@@ -125,7 +125,7 @@ const selectChannelAndSbom = async (versionKey: string, sbomKey: string) => {
 };
 
 const isRdConfirmationMissing = computed(() => {
-  if (!vehicle.value) {
+  if (!vehicle.value || noFOSS.value) {
     return false;
   }
 
@@ -370,7 +370,12 @@ const isEitherFutureFoss = computed(
 const canGenerateFoss = computed(() => {
   const fossOfficeConfirmationCondition = vehicle.value ? !isRdConfirmationMissing.value : true;
   const futureFossCondition = isEitherFutureFoss.value ? !isWarned.value : true;
-  return !isDeniedOrUnasserted.value && fossOfficeConfirmationCondition && futureFossCondition && selectedProjects.value?.length > 0;
+  return (
+    !isDeniedOrUnasserted.value &&
+    fossOfficeConfirmationCondition &&
+    futureFossCondition &&
+    selectedProjects.value?.length > 0
+  );
 });
 
 const isEnterpriseOrMobileOrOther = computed(() => {

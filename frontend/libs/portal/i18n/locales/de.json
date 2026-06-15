@@ -1442,6 +1442,8 @@
   "NO_FOSS_WARNING": "Sind Sie sicher, dass keinerlei FOSS-Komponenten verwendet wurden?",
   "NO_FOSS_MESSAGE": "Sie haben die Option ausgewählt, dass in diesem Projekt keinerlei FOSS-Komponenten verwendet werden. Deaktivieren Sie die Option, wenn Sie eine SBOM-Lieferung auswählen möchten",
   "MISSING_NO_FOSS_FLAG_AND_SBOM": "Für dieses Projekt ist keine SBOM ausgewählt, und es ist nicht als No-FOSS gekennzeichnet. Bitte wähle eine SBOM aus, um ein Disclosure Document zu generieren.",
+  "NO_PROJECT_NO_FOSS": "Ihre Auswahl enthält ein Projekt ohne ausgewählte SBOM, wofür eine \"Kein FOSS\" Offenlegung erzeugt wird. Wollen Sie fortfahren?",
+  "NO_FOSS_DISABLED_TOOLTIP": "Bitte ändern Sie die Projekteinstellungen, um diese Option zu ändern.",
   "WARNING_MISSING_DEPT": "Abteilungszuweisung ungültig",
   "COL_USER_ACCESS_SCOPE": "Zugriffsbereich",
   "USER_ACCESS_SCOPE": "Zugriffsbereich",

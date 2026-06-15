@@ -1426,6 +1426,8 @@
   "NO_FOSS_WARNING": "Are you sure that no FOSS components are used?",
   "NO_FOSS_MESSAGE": "You have selected the option that no FOSS components are used in this project. Unselect the option if you want to select a SBOM delivery",
   "MISSING_NO_FOSS_FLAG_AND_SBOM": "This project is missing the No-FOSS flag, therefore you must select an SBOM to generate a Disclosure Document.",
+  "NO_PROJECT_NO_FOSS": "Your selection contains a project without any selected SBOM, which will result in a \"No FOSS\" declaration. Do you want to continue?",
+  "NO_FOSS_DISABLED_TOOLTIP": "Please change the project settings to change this option.",
   "WARNING_MISSING_DEPT": "invalid department assigned",
   "COL_USER_ACCESS_SCOPE": "Access Scope",
   "USER_ACCESS_SCOPE": "Access Scope",
