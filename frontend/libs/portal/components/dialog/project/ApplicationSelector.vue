@@ -120,7 +120,7 @@ export default defineComponent({
     });
 
     const search = async () => {
-      if (!searchFieldInput.value || searchFieldInput.value.length < 4) {
+      if (!searchFieldInput.value || searchFieldInput.value.length < 3) {
         return;
       }
       isLoading.value = true;
