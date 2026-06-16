@@ -667,7 +667,7 @@
   "meta": {
     "IsLicenseChart": true,
     "approvalState": "approved",
-    "family": "strong copyleft",
+    "family": "weak copyleft",
     "fsfApproved": false,
     "licenseType": "open source",
     "licenseUrl": "https://choosealicense.com/licenses/epl-1.0",
@@ -679,7 +679,7 @@
       "a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
       "4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
       "5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
-      "f0e1d2c3-b4a5-6789-0abc-def123456789",
+      "0a1b2c3d-4e5f-6789-0abc-def012345678",
       "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
       "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
     ],
@@ -687,7 +687,7 @@
     "reviewDate": "2026-06-03",
     "reviewState": "reviewed",
     "sourceUrl": "https://raw.githubusercontent.com/github/choosealicense.com/gh-pages/_licenses/epl-1.0.txt",
-    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
+    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For this license, the ChooseALicense condition \"Same license\" was manually refined to \"Same license (file)\" to reflect file-level copyleft treatment; this changes the derived license family from \"strong copyleft\" to \"weak copyleft\" in the import logic. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
   },
   "Created": "2026-06-03T09:59:59Z",
   "Deleted": false,
@@ -705,7 +705,7 @@
   "meta": {
     "IsLicenseChart": true,
     "approvalState": "approved",
-    "family": "strong copyleft",
+    "family": "weak copyleft",
     "fsfApproved": false,
     "licenseType": "open source",
     "licenseUrl": "https://choosealicense.com/licenses/epl-2.0",
@@ -717,7 +717,7 @@
       "a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
       "4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
       "5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b",
-      "f0e1d2c3-b4a5-6789-0abc-def123456789",
+      "0a1b2c3d-4e5f-6789-0abc-def012345678",
       "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
       "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
     ],
@@ -725,7 +725,7 @@
     "reviewDate": "2026-06-03",
     "reviewState": "reviewed",
     "sourceUrl": "https://raw.githubusercontent.com/github/choosealicense.com/gh-pages/_licenses/epl-2.0.txt",
-    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
+    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For this license, the ChooseALicense condition \"Same license\" was manually refined to \"Same license (file)\" to reflect file-level copyleft treatment; this changes the derived license family from \"strong copyleft\" to \"weak copyleft\" in the import logic. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
   },
   "Created": "2026-06-03T09:59:59Z",
   "Deleted": false,
