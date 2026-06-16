@@ -475,7 +475,7 @@
   "meta": {
     "IsLicenseChart": true,
     "approvalState": "approved",
-    "family": "network copyleft",
+    "family": "strong copyleft",
     "fsfApproved": false,
     "licenseType": "open source",
     "licenseUrl": "https://choosealicense.com/licenses/cecill-2.1",
@@ -496,7 +496,7 @@
     "reviewDate": "2026-06-03",
     "reviewState": "reviewed",
     "sourceUrl": "https://raw.githubusercontent.com/github/choosealicense.com/gh-pages/_licenses/cecill-2.1.txt",
-    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
+    "legalComments": "Based on data from ChooseALicense.com, © GitHub, Inc. Original content licensed under Creative Commons Attribution 3.0 Unported (CC-BY-3.0). The original content has been translated and adapted for presentation in a different format. For this license, the derived license family was manually adjusted from \"network copyleft\" to \"strong copyleft\" after import. For the full license terms, see https://creativecommons.org/licenses/by/3.0/. This information is provided for informational purposes only and does not constitute legal advice."
   },
   "Created": "2026-06-03T09:59:59Z",
   "Deleted": false,
