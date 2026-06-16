@@ -156,7 +156,7 @@ def family_from_conditions(conditions):
         return "network copyleft"
     if "same-license" in conditions:
         return "strong copyleft"
-    if any(tag in conditions for tag in ["disclose-source", "same-license--file", "same-license--library"]):
+    if any(tag in conditions for tag in ["same-license--file", "same-license--library"]):
         return "weak copyleft"
     return "permissive"
 
