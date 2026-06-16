@@ -16,7 +16,7 @@ interface Props {
   mixedFOSS?: boolean;
   fossVersion?: 'default' | 'legacy';
   selectedProjectsContainEmptySbom?: boolean;
-  isMissingFossAndSbom?: boolean;
+  isNoSbomNoFossWarning?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   mixedFOSS: false,
   fossVersion: 'legacy',
   selectedProjectsContainEmptySbom: false,
-  isMissingFossAndSbom: false,
+  isNoSbomNoFossWarning: false,
 });
 
 const {t} = useI18n();
@@ -81,9 +81,9 @@ const {t} = useI18n();
     </v-alert>
   </section>
 
-  <section v-if="props.isMissingFossAndSbom">
-    <v-alert color="error" type="error">
-      {{ t('MISSING_NO_FOSS_FLAG_AND_SBOM') }}
+  <section v-if="props.isNoSbomNoFossWarning">
+    <v-alert color="warning" type="warning">
+      {{ t('NO_PROJECT_NO_FOSS') }}
     </v-alert>
   </section>
 </template>

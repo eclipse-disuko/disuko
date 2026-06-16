@@ -6,14 +6,12 @@
 import {useApprovalFormBase} from '@disclosure-portal/composables/useApprovalFormBase';
 import {DocumentMeta, ExternalApprovalRequest} from '@disclosure-portal/model/ApprovalRequest';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
-import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {OverallReviewState, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
-import eventBus from '@shared/utils/eventbus';
 import useRules from '@disclosure-portal/utils/Rules';
 import config from '@shared/utils/config';
 import dayjs from 'dayjs';
@@ -78,15 +76,7 @@ const {
 
 const markedApprovableSpdx = computed(() => projectModel.value.approvablespdx);
 
-const noSbomSelected = computed(() => !projectModel.value.isGroup && selectedSbom.value === null);
-
-const isNoFossWithSbomSelected = computed(
-  () => !projectModel.value.isGroup && fossVersion.value === 'legacy' && noFOSS.value && selectedSbom.value !== null,
-);
-
-const isMissingFossAndSbom = computed(
-  () => !projectModel.value.isGroup && fossVersion.value === 'legacy' && !noFOSS.value && selectedSbom.value === null,
-);
+const isNoSbomNoFossWarning = computed(() => !projectModel.value.isGroup && !selectedSbom.value && !noFOSS.value);
 
 const getChannelSboms = (versionKey: string): SpdxFile[] => {
   const versionEntry = sbomStore.getAllSBOMs.find((entry) => entry.versionKey === versionKey);
@@ -126,6 +116,10 @@ const selectChannelAndSbom = async (versionKey: string, sbomKey: string) => {
 
 const isRdConfirmationMissing = computed(() => {
   if (!vehicle.value || noFOSS.value) {
+    return false;
+  }
+
+  if (!projectModel.value.isGroup && !selectedSbom.value) {
     return false;
   }
 
@@ -281,10 +275,6 @@ const doDialogAction = async () => {
     return;
   }
 
-  if (isNoFossWithSbomSelected.value || isMissingFossAndSbom.value) {
-    return;
-  }
-
   if (isRdConfirmationMissing.value && config.enforceFOSSOfficeConfirmation) {
     return;
   }
@@ -303,7 +293,7 @@ const doDialogAction = async () => {
     metaDoc.c4 = c4.value;
     metaDoc.c5 = c5.value;
   }
-  metaDoc.c6 = noFOSS.value;
+  metaDoc.c6 = noFOSS.value || !selectedSbom.value;
 
   let determinedFossVersion: 'default' | 'legacy' | 'vehicle-legacy';
 
@@ -323,14 +313,6 @@ const doDialogAction = async () => {
     fossVersion: determinedFossVersion,
     selectedProjects: selectedProjects.value,
   };
-
-  if (!projectModel.value.isGroup && selectedChannel.value !== null && selectedSbom.value === null) {
-    const d = new ErrorDialogConfig();
-    d.title = '' + t('TITLE_GENERATE_FOSS_DD');
-    d.description = '' + t('BOTH_OR_NONE_CHANNEL_AND_SBOM_ALLOWED_ERROR_MESSAGE');
-    eventBus.emit('on-error', {error: d});
-    return;
-  }
 
   idle.showIdle = true;
 
@@ -361,20 +343,19 @@ const isDeniedOrUnasserted = computed(() => {
   return vehicle.value && (stats.value.denied > 0 || stats.value.noAssertion > 0);
 });
 
-const isWarned = computed(() => vehicle.value && stats.value.warned > 0);
+const isWarned = computed(() => {
+  return vehicle.value && stats.value.warned > 0;
+});
 
-const isEitherFutureFoss = computed(
-  () => (config.useFutureIt && !vehicle.value) || (config.useFutureProduct && vehicle.value),
-);
+const isEitherFutureFoss = computed(() => {
+  return (config.useFutureIt && !vehicle.value) || (config.useFutureProduct && vehicle.value);
+});
 
 const canGenerateFoss = computed(() => {
-  const fossOfficeConfirmationCondition = vehicle.value ? !isRdConfirmationMissing.value : true;
+  const rdConfirmationCondition = vehicle.value ? !isRdConfirmationMissing.value : true;
   const futureFossCondition = isEitherFutureFoss.value ? !isWarned.value : true;
   return (
-    !isDeniedOrUnasserted.value &&
-    fossOfficeConfirmationCondition &&
-    futureFossCondition &&
-    selectedProjects.value?.length > 0
+    !isDeniedOrUnasserted.value && rdConfirmationCondition && futureFossCondition && selectedProjects.value?.length > 0
   );
 });
 
@@ -435,7 +416,7 @@ defineExpose({open});
               :no-f-o-s-s="noFOSS"
               :foss-version="fossVersion"
               :selected-projects-contain-empty-sbom="selectedProjectsContainEmptySbom"
-              :is-missing-foss-and-sbom="isMissingFossAndSbom" />
+              :is-no-sbom-no-foss-warning="isNoSbomNoFossWarning" />
 
             <FossVersionSelector v-model="fossVersion" :disabled="!(config.useFutureProduct && vehicle)" />
 
@@ -496,7 +477,6 @@ defineExpose({open});
             v-if="canGenerateFoss"
             size="small"
             variant="flat"
-            :disabled="(noSbomSelected && !noFOSS) || isNoFossWithSbomSelected || isMissingFossAndSbom"
             @click="doDialogAction"
             :text="t('BTN_GENERATE_FOSS_DD')" />
 

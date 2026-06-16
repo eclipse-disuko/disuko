@@ -7,7 +7,6 @@ import {useI18n} from 'vue-i18n';
 
 interface Props {
   noFOSS: boolean;
-  isVehicle: boolean;
 }
 
 const props = defineProps<Props>();
@@ -16,7 +15,6 @@ const c2 = defineModel<boolean>('c2', {default: false});
 const c3 = defineModel<boolean>('c3', {default: false});
 const c4 = defineModel<boolean>('c4', {default: false});
 const c5 = defineModel<boolean>('c5', {default: false});
-const radioGroup = defineModel<number>('radioGroup', {default: 0});
 
 const {t} = useI18n();
 </script>
@@ -43,31 +41,12 @@ const {t} = useI18n();
 
   <ExpansionPanel :title="t('SBOM_APPROVAL_ATTRIBUTES')">
     <template #body>
-      <template v-if="props.isVehicle">
-        <v-radio-group v-model="radioGroup">
-          <v-radio
-            :label="t('SBOM_APPROVAL_VEHICLE_CHECK2')"
-            :key="2"
-            :value="2"
-            class="py-2"
-            :readonly="props.noFOSS"></v-radio>
-          <v-radio
-            :label="t('SBOM_APPROVAL_VEHICLE_CHECK3')"
-            :key="3"
-            :value="3"
-            class="py-2"
-            :readonly="props.noFOSS"
-            disabled></v-radio>
-        </v-radio-group>
-      </template>
-      <template v-else>
-        <v-checkbox v-model="c1" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK1')" hide-details />
-        <v-checkbox v-model="c2" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK2')" hide-details />
-        <v-checkbox v-model="c3" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK3')" hide-details />
-        <v-checkbox v-model="c4" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK4')" hide-details />
-        <v-checkbox v-model="c5" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK5')" hide-details />
-        <v-checkbox :model-value="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK6')" disabled></v-checkbox>
-      </template>
+      <v-checkbox v-model="c1" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK1')" hide-details />
+      <v-checkbox v-model="c2" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK2')" hide-details />
+      <v-checkbox v-model="c3" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK3')" hide-details />
+      <v-checkbox v-model="c4" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK4')" hide-details />
+      <v-checkbox v-model="c5" :readonly="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK5')" hide-details />
+      <v-checkbox :model-value="props.noFOSS" :label="t('SBOM_APPROVAL_CHECK6')" disabled></v-checkbox>
     </template>
   </ExpansionPanel>
 </template>
