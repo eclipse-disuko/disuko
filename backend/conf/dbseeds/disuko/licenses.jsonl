@@ -860,7 +860,7 @@
   "meta": {
     "IsLicenseChart": true,
     "approvalState": "approved",
-    "family": "weak copyleft",
+    "family": "permissive",
     "fsfApproved": false,
     "licenseType": "open source",
     "licenseUrl": "https://choosealicense.com/licenses/lppl-1.3c",
