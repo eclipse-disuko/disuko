@@ -173,6 +173,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
 				Supplier:        supplierUserId,
+				IsNonFoss:       pr.IsNoFoss,
 			})
 			continue
 		}
@@ -186,6 +187,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 				CustomerDiffers: pr.CustomerMeta.Diff(targetProject.CustomerMeta),
 				SupplierDiffers: pr.DocumentMeta.Diff(targetProject.DocumentMeta),
 				Supplier:        supplierUserId,
+				IsNonFoss:       pr.IsNoFoss,
 			})
 			continue
 		}
@@ -244,6 +246,7 @@ func (s *ApprovalService) getApprovalInfo(targetProject *project.Project, projec
 			IsSpdxRecent:       isSpdxRecent,
 			IsSpdxApprovable:   hasProjectApprovable,
 			HasProjectApproval: pr.HasApproval,
+			IsNonFoss:          pr.IsNoFoss,
 		})
 	}
 	return res

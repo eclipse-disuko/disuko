@@ -20,6 +20,7 @@ export class ProjectApprovable {
   public supplier = '';
   public isSpdxApprovable = false;
   public hasProjectApproval = false;
+  public isNonFoss = false;
 }
 
 export class ApprovableInfo {

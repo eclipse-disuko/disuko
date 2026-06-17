@@ -110,6 +110,7 @@ type ProjectApprovable struct {
 	Supplier           *string
 	IsSpdxApprovable   bool
 	HasProjectApproval bool
+	IsNonFoss          bool
 }
 
 type Info struct {
