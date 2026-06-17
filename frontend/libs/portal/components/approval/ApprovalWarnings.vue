@@ -81,9 +81,15 @@ const {t} = useI18n();
     </v-alert>
   </section>
 
-  <section v-if="props.isNoSbomNoFossWarning">
+  <section v-if="props.isNoSbomNoFossWarning && props.fossVersion === 'default'">
     <v-alert color="warning" type="warning">
       {{ t('NO_PROJECT_NO_FOSS') }}
+    </v-alert>
+  </section>
+
+  <section v-if="props.isNoSbomNoFossWarning && props.fossVersion === 'legacy'">
+    <v-alert color="warning" type="warning">
+      {{ t('MISSING_NO_FOSS_FLAG_AND_SBOM') }}
     </v-alert>
   </section>
 </template>

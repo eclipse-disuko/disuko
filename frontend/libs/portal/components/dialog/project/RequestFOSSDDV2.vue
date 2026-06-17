@@ -354,8 +354,9 @@ const isEitherFutureFoss = computed(() => {
 const canGenerateFoss = computed(() => {
   const rdConfirmationCondition = vehicle.value ? !isRdConfirmationMissing.value : true;
   const futureFossCondition = isEitherFutureFoss.value && fossVersion.value === 'default' ? !isWarned.value : true;
+  const noSbomLegacyCondition = !(isNoSbomNoFossWarning.value && fossVersion.value === 'legacy');
   return (
-    !isDeniedOrUnasserted.value && rdConfirmationCondition && futureFossCondition && selectedProjects.value?.length > 0
+    !isDeniedOrUnasserted.value && rdConfirmationCondition && futureFossCondition && noSbomLegacyCondition && selectedProjects.value?.length > 0
   );
 });
 
