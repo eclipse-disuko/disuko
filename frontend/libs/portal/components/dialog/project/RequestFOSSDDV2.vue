@@ -353,7 +353,7 @@ const isEitherFutureFoss = computed(() => {
 
 const canGenerateFoss = computed(() => {
   const rdConfirmationCondition = vehicle.value ? !isRdConfirmationMissing.value : true;
-  const futureFossCondition = isEitherFutureFoss.value ? !isWarned.value : true;
+  const futureFossCondition = isEitherFutureFoss.value && fossVersion.value === 'default' ? !isWarned.value : true;
   return (
     !isDeniedOrUnasserted.value && rdConfirmationCondition && futureFossCondition && selectedProjects.value?.length > 0
   );
