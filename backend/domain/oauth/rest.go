@@ -533,6 +533,7 @@ func (r *AccessAndRolesRights) SetOwnerRights() {
 	r.AllowProject.Read = true
 	r.AllowProject.Update = true
 	r.AllowProject.Delete = true
+	r.AllowProjectType.setAll(true)
 	r.AllowRequestPlausi.Read = true
 	r.AllowProjectVersion.SetAll(true)
 	r.AllowProjectUserManagement.SetAll(true)
@@ -555,10 +556,7 @@ func (r *AccessAndRolesRights) SetProjectResponsibleRights() {
 	r.AllowRequestPlausi.SetAll(true)
 	r.AllowRequestApproval.SetAll(true)
 
-	r.AllowProjectType.VehiclePlatform.SetAll(true)
-	r.AllowProjectType.MobilePlatform.SetAll(true)
-	r.AllowProjectType.EnterprisePlatform.SetAll(true)
-	r.AllowProjectType.OtherPlatform.SetAll(true)
+	r.AllowProjectType.setAll(true)
 	r.AllowProjectVersion.SetAll(true)
 	r.AllowProjectUserManagement.SetAll(true)
 	r.AllowProjectTokenManagement.SetAll(true)
