@@ -316,12 +316,12 @@ const doDialogAction = async () => {
 
   idle.showIdle = true;
 
-  if (!projectModel.value.isGroup) {
+  if (!projectModel.value.isGroup && selectedSbom.value) {
     const approvableSpdx = {
       spdxkey: '',
       versionkey: '',
     } as ApprovableSPDXDto;
-    approvableSpdx.spdxkey = selectedSbom.value?._key ?? '';
+    approvableSpdx.spdxkey = selectedSbom.value._key;
     approvableSpdx.versionkey = selectedChannel.value?._key ?? '';
     await projectService.updateApprovableSpdx(approvableSpdx, projectModel.value._key);
   }
