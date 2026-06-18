@@ -59,6 +59,9 @@ func GetAccessAndRolesRightsFromClaim(userInfo jwt.TokenData) *oauth.AccessAndRo
 
 	rightSet.Groups = make([]string, 0)
 	for _, group := range groups {
+		if group == ExternalWrite {
+			rightSet.SetForInternal()
+		}
 		if group == FossOfficeUser {
 			rightSet.SetForFOSSOffice()
 			rightSet.Groups = append(rightSet.Groups, oauth.UserFOSSOffice)

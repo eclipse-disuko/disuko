@@ -11,4 +11,5 @@ const (
 	ApplicationAdmin = "FOSSDP.application_admin"
 	DomainAdmin      = "FOSSDP.domain_admin"
 	FossOfficeUser   = "FOSSDP.foss_office_rd"
+	ExternalWrite    = "FOSSDP.external_write"
 )
