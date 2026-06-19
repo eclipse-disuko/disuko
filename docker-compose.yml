@@ -47,19 +47,20 @@ services:
       timeout: 5s
       retries: 5
   db:
-    image: couchdb
-    environment:
-      - COUCHDB_USER=admin
-      - COUCHDB_PASSWORD=password
+    image: mongo:8
     ports:
-      - 5984:5984
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=disuko
+      - MONGO_INITDB_ROOT_PASSWORD=disuko
     volumes:
-      - couchdb_data:/opt/couchdb/data
+      - mongodb_data:/data/db
     healthcheck:
-      test: curl db:5984/_up
-      interval: 1s
+      test: ["CMD", "mongosh", "--username", "disuko", "--password", "disuko", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
       timeout: 10s
-      retries: 10
+      start_period: 30s
+      retries: 5
   client:
     build:
       context: ./frontend
@@ -102,12 +103,12 @@ services:
       keycloak:
         condition: service_healthy
     environment:
-      - DATABASE_TYPE=CouchDB
+      - DATABASE_TYPE=MongoDB
       - DATABASE_HOST=db
-      - DATABASE_PORT=5984
-      - DATABASE_SCHEME=http
-      - DATABASE_USER=admin
-      - DATABASE_PASSWORD=password
+      - DATABASE_PORT=27017
+      - DATABASE_USER=disuko
+      - DATABASE_PASSWORD=disuko
+      - DATABASE_TLS=false
       - CACHE_HOST=valkey
       - DISUKO_HOST=https://localhost:3009
       - SERVER_PORT=3009
@@ -134,5 +135,5 @@ services:
       retries: 25
 
 volumes:
-  couchdb_data:
+  mongodb_data:
   keycloak_data:
