@@ -450,7 +450,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 	})
 
 	//	@title			DISUKO
-	//	@version		1.0.6
+	//	@version		1.0.7
 	//	@description	DISUKO Portal automates and digitizes the process for disclosure of the Free and Open Source Software components, which are included in products and applications. It aims at a more efficient, transparent and digital software supply chain, enabling software suppliers to deliver information on used open source via a technical interface in a standardized exchange format as Software Bill of Materials (SBOM).
 	//	@description
 	//	@description	SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG

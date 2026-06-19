@@ -9,7 +9,7 @@ info:
     SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
     SPDX-License-Identifier: Apache-2.0
   title: DISUKO
-  version: 1.0.6
+  version: 1.0.7
 schemes:
 - https
 securityDefinitions:
@@ -1417,6 +1417,9 @@ definitions:
         items:
           $ref: "#/definitions/SpdxStatusPolicy"
         type: array
+      prStatus:
+        example: noassertion
+        type: string
       scanRemarks:
         items:
           $ref: "#/definitions/SpdxStatusScanRemarks"
@@ -1424,6 +1427,10 @@ definitions:
       spdxId:
         example: dummy-spdx-id----component23456
         type: string
+      type:
+        allOf:
+        - $ref: "#/definitions/components.ComponentType"
+        example: Package
       usedAliases:
         items:
           $ref: "#/definitions/UsedAlias"
@@ -1621,6 +1628,18 @@ definitions:
         example: unreviewed
         type: string
     type: object
+  components.ComponentType:
+    enum:
+    - Package
+    - File
+    - Snippet
+    - Root
+    type: string
+    x-enum-varnames:
+    - PACKAGE
+    - FILE
+    - SNIPPET
+    - ROOT
   license.Alias:
     properties:
       _key:
