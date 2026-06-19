@@ -10,10 +10,10 @@
     "MIT"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later"
+    "AGPL-3.0"
   ],
   "ComponentsWarn": [
-    "GPL-3.0-or-later"
+    "GPL-3.0"
   ],
   "Created": "2025-12-09T14:23:12.694818664Z",
   "Deleted": false,
@@ -97,8 +97,8 @@
     "MIT"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later",
-    "GPL-3.0-or-later"
+    "AGPL-3.0",
+    "GPL-3.0"
   ],
   "ComponentsWarn": [],
   "Created": "2025-12-09T14:01:12.033685817Z",
@@ -126,8 +126,8 @@
     "MIT"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later",
-    "GPL-3.0-or-later"
+    "AGPL-3.0",
+    "GPL-3.0"
   ],
   "ComponentsWarn": [],
   "Created": "2025-12-09T14:10:17.965612398Z",
@@ -184,10 +184,10 @@
   "ApplyToAll": false,
   "Auxiliary": false,
   "ComponentsAllow": [
-    "GPL-3.0-or-later",
+    "GPL-3.0",
     "Apache-2.0",
     "MIT",
-    "AGPL-3.0-or-later"
+    "AGPL-3.0"
   ],
   "ComponentsDeny": [],
   "ComponentsWarn": [],
@@ -231,10 +231,10 @@
     "MIT"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later"
+    "AGPL-3.0"
   ],
   "ComponentsWarn": [
-    "GPL-3.0-or-later"
+    "GPL-3.0"
   ],
   "Created": "2025-12-09T14:13:53.31033918Z",
   "Deleted": false,
@@ -284,12 +284,12 @@
   "ApplyToAll": false,
   "Auxiliary": false,
   "ComponentsAllow": [
-    "GPL-3.0-or-later",
+    "GPL-3.0",
     "Apache-2.0",
     "MIT"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later"
+    "AGPL-3.0"
   ],
   "ComponentsWarn": [],
   "Created": "2025-10-17T07:11:34.451097117Z",
@@ -318,8 +318,8 @@
     "Apache-2.0"
   ],
   "ComponentsDeny": [
-    "AGPL-3.0-or-later",
-    "GPL-3.0-or-later"
+    "AGPL-3.0",
+    "GPL-3.0"
   ],
   "ComponentsWarn": [],
   "Created": "2023-07-27T07:02:40.839478501Z",
