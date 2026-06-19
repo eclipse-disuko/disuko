@@ -1565,6 +1565,8 @@
   "APPROVALS_USE_PARENT_TEXT_POST": "der dazugehörigen Gruppe.",
   "COL_DOCUMENT": "Dokument",
   "NO_APPROVABLE_SPDX": "Keine freigegebene SBOM markiert. Bitte markieren Sie ein SBOM im SBOM-Lieferungen-Tab mit einem Stern.",
+  "FILTER_SBOM_PRESENT": "Hat SBOM",
+  "FILTER_SBOM_MISSING": "Kein SBOM",
   "NO_SPDX": "Keine SBOM-Lieferungen für das Projekt vorhanden.",
   "BTN_REQUEST": "Anfordern",
   "DOWNLOAD_INITIAL_DOCUMENT": "Das Disclosure Dokument für den ausgewählten Umfang wurde generiert und kann nun verwendet werden. ",

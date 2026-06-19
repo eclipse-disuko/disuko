@@ -1552,6 +1552,8 @@
   "APPROVALS_USE_PARENT_TEXT_POST": "of the corresponding parent project.",
   "COL_DOCUMENT": "Document",
   "NO_APPROVABLE_SPDX": "No approvable SBOM set. Please mark an SBOM in SBOM Deliveries tab with a star.",
+  "FILTER_SBOM_PRESENT": "Has SBOM",
+  "FILTER_SBOM_MISSING": "No SBOM",
   "NO_SPDX": "No SBOM present for the project.",
   "BTN_REQUEST": "Request",
   "DOWNLOAD_INITIAL_DOCUMENT": "The Disclosure Document for the selected scope has been generated and can now be used. ",

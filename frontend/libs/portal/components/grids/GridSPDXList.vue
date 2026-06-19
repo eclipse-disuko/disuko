@@ -11,7 +11,8 @@ import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import StatsItem from './StatsItem.vue';
 import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@disclosure-portal/utils/Table';
 import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
-import {DataTableHeader, DataTableItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
+import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {PropType, computed, defineComponent, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {openUrlInNewTab} from '@shared/utils/url';
@@ -63,6 +64,10 @@ export default defineComponent({
       type: [Map, Object] as PropType<Map<string, VersionSlim> | Record<string, VersionSlim>>,
       default: () => new Map(),
     },
+    showSettings: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['update:selectedProjects'],
   setup(props, {emit}) {
@@ -77,6 +82,20 @@ export default defineComponent({
       emit('update:selectedProjects', selectedKeys);
     }
 
+    const FILTER_HAS_SBOM = 'has_sbom';
+    const FILTER_NO_SBOM = 'no_sbom';
+
+    const selectedFilterSbomPresence = ref<string[]>([]);
+
+    const allSbomPresenceItems = computed<DataTableHeaderFilterItems[]>(() => {
+      const items: DataTableHeaderFilterItems[] = [];
+      if (props.projects.some((p) => p.spdxname !== ''))
+        items.push({value: FILTER_HAS_SBOM, text: t('FILTER_SBOM_PRESENT')});
+      if (props.projects.some((p) => p.spdxname === ''))
+        items.push({value: FILTER_NO_SBOM, text: t('FILTER_SBOM_MISSING')});
+      return items;
+    });
+
     const headers = computed<DataTableHeader[]>(() => {
       const tableHeaders: DataTableHeader[] = [
         {
@@ -89,6 +108,7 @@ export default defineComponent({
           title: t('COL_STATS'),
           value: 'stats',
           width: 250,
+          selectable: true,
         },
       ];
 
@@ -99,12 +119,14 @@ export default defineComponent({
             value: 'supplier',
             align: 'start',
             width: 250,
+            selectable: true,
           },
           {
             title: t('PROJECT_APPROVAL_STATUS'),
             value: 'hasProjectApproval',
             align: 'center',
             width: 130,
+            selectable: true,
           },
         );
       }
@@ -168,20 +190,33 @@ export default defineComponent({
     };
 
     const filteredList = computed(() => {
+      let list = props.projects;
       if (props.doFilter) {
-        return props.projects.filter((p) => {
-          if (props.filterIsFOSS) {
-            return !p.isNonFoss;
-          } else {
-            return p.isNonFoss;
-          }
+        list = list.filter((p) => (props.filterIsFOSS ? !p.isNonFoss : p.isNonFoss));
+      }
+      if (selectedFilterSbomPresence.value.length > 0) {
+        list = list.filter((p) => {
+          const hasSbom = p.spdxname !== '';
+          return (
+            (selectedFilterSbomPresence.value.includes(FILTER_HAS_SBOM) && hasSbom) ||
+            (selectedFilterSbomPresence.value.includes(FILTER_NO_SBOM) && !hasSbom)
+          );
         });
       }
-      return props.projects;
+      return list;
     });
 
+    const tableName = 'GridSPDXList';
+    const groupHeader: DataTableHeader = {title: '', key: 'data-table-group', align: 'start'};
+    const {filteredHeaders: settingsFilteredHeaders} = useHeaderSettings({
+      tableName,
+      headers: headers.value.filter((h) => h.key !== 'data-table-group'),
+    });
+    const filteredHeaders = computed(() => [...settingsFilteredHeaders.value, groupHeader]);
+
     return {
-      headers,
+      filteredHeaders,
+      tableName,
       icons,
       openSpdx,
       openProject,
@@ -196,6 +231,8 @@ export default defineComponent({
       isApproved,
       handleSelectionChange,
       selectedItems,
+      selectedFilterSbomPresence,
+      allSbomPresenceItems,
     };
   },
 });
@@ -208,8 +245,8 @@ export default defineComponent({
     sort-desc
     class="striped-table fill-height"
     hide-default-footer
-    :headers="headers"
-    :items="projects"
+    :headers="filteredHeaders"
+    :items="filteredList"
     :items-per-page="-1"
     :item-class="getCssClassForTableRow"
     :group-by="groupBy()"
@@ -222,6 +259,20 @@ export default defineComponent({
     @update:model-value="handleSelectionChange"
     v-if="projects"
     :loading="showLoading && loading">
+    <template v-slot:[`header.spdxname`]="{column}">
+      <GridFilterHeader :column="column">
+        <template v-if="showSettings" #settings>
+          <HeaderSettings :column="column" :grid-name="tableName" />
+        </template>
+        <template #filter>
+          <GridHeaderFilterIcon
+            v-model="selectedFilterSbomPresence"
+            :column="column"
+            :label="t('COL_APPROVABLE_SPDX')"
+            :allItems="allSbomPresenceItems" />
+        </template>
+      </GridFilterHeader>
+    </template>
     <template v-slot:group-header="{item, isGroupOpen, toggleGroup}">
       <template
         :ref="

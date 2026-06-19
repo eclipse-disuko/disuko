@@ -80,6 +80,7 @@ onMounted(async () => {
           showSbomExtras
           showSupplier
           showLoading
+          show-settings
           :loading="!dataAreLoaded"
           :missingSbomText="t('NO_SPDX')" />
       </div>
