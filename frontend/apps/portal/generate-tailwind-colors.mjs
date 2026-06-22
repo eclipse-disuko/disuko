@@ -75,9 +75,11 @@ export function generateTailwindColors() {
     ${breakpoints}
 ${cssColors}
 }`;
-        tailwindContent = tailwindContent.replace(themeRegex, newThemeContent);
-        fs.writeFileSync(tailwindFilePath, tailwindContent, 'utf-8');
-        console.log('✓ Tailwind colors generated from Colors.ts');
+        const newTailwindContent = tailwindContent.replace(themeRegex, newThemeContent);
+        if (newTailwindContent !== tailwindContent) {
+          fs.writeFileSync(tailwindFilePath, newTailwindContent, 'utf-8');
+          console.log('✓ Tailwind colors generated from Colors.ts');
+        }
       } else {
         console.warn('⚠ Could not find @theme block in tailwind.css');
       }
