@@ -134,7 +134,7 @@
   "FOSSDP.application_admin": "Application Administrator",
   "FOSSDP.project_analyst": "Projects Analyst",
   "FOSSDP.foss_office_rd": "FOSS Office",
-  "FOSSDP.external_writer": "External User",
+  "FOSSDP.external_write": "External User",
   "NO_ROLES": "N/A",
   "USER_ROLE_ProjectResponsible": "Project Responsible",
   "USER_ROLE_Owner": "Owner",

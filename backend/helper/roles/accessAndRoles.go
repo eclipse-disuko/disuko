@@ -60,6 +60,7 @@ func GetAccessAndRolesRightsFromClaim(userInfo jwt.TokenData) *oauth.AccessAndRo
 	rightSet.Groups = make([]string, 0)
 	for _, group := range groups {
 		if group == ExternalWrite {
+			rightSet.IsInternal = true
 			rightSet.SetForInternal()
 		}
 		if group == FossOfficeUser {
