@@ -186,9 +186,11 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 		return
 	}
 
-	isInternalEmployee := helper.Contains("dcxInternalEmployee", claims.ObjectClass) || helper.Contains(userInfo.Subject, conf.Config.InternalUsersAllowList)
-
 	userInfoClaims := extractUserInfoWithGroups(userInfo)
+
+	isExternalWrite := helper.Contains(roles.ExternalWrite, userInfoClaims.EntitlementGroup)
+
+	isInternalEmployee := helper.Contains("dcxInternalEmployee", claims.ObjectClass) || helper.Contains(userInfo.Subject, conf.Config.InternalUsersAllowList) || isExternalWrite
 
 	existingUser := handler.UserRepository.FindByUserId(requestSession, userInfo.Subject)
 	metaData := user.NewMetaData(claims.CompanyIdentifier, claims.Department, claims.DepartmentDescription)
