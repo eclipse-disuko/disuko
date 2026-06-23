@@ -761,7 +761,7 @@ func performAsyncParallelDeletion(requestSession *logy.RequestSession, deletionL
 	for i := 0; i < deleteWorkers; i++ {
 		wg.Add(1)
 
-		go func(workerID int) {
+		go func() {
 			defer wg.Done()
 
 			for s3Path := range deletionJobs {
@@ -784,7 +784,7 @@ func performAsyncParallelDeletion(requestSession *logy.RequestSession, deletionL
 					}
 				})
 			}
-		}(i)
+		}()
 	}
 
 	for _, s3Path := range deletionList {
