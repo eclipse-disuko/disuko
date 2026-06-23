@@ -5,14 +5,20 @@
 package startup
 
 import (
+	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/eclipse-disuko/disuko/domain/job"
 	"github.com/eclipse-disuko/disuko/domain/label"
 	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/project/sbomlist"
 	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/jobs"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
@@ -123,6 +129,7 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_SBOM_RETENTION_FOR_DECISIONS", Do: startUpHandler.migrateSbomRetentionForDecisions},
 		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
 		{Name: "MIGRATE_SYNC_PROJECT_AND_SBOM_RETENTION_FLAGS", Do: startUpHandler.migrateSyncProjectAndSbomRetentionFlags},
+		{Name: "MIGRATE_REMOVE_ORPHANED_SBOM_FILES", Do: startUpHandler.migrateRemoveOrphanedSbomFiles},
 	}
 
 	steps = append(steps, ext...)
@@ -687,4 +694,154 @@ func (startUpHandler *StartUpHandler) migrateSyncProjectAndSbomRetentionFlags(re
 	})
 
 	logy.Infof(requestSession, "migrateSyncProjectAndSbomRetentionFlags - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateRemoveOrphanedSbomFiles(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - START")
+
+	allSbomLists := startUpHandler.SbomListRepository.FindAllWithDeleted(requestSession, false)
+	existingSboms := buildExistingSbomSet(allSbomLists)
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Found %d existing (incl. deleted channels) SBOMs in DB", len(existingSboms))
+
+	deletionList := make([]string, 0)
+	uploadPath := conf.Config.Server.GetUploadPath()
+	filesOnS3 := s3Helper.ListObjects(requestSession, uploadPath)
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Start scanning S3 objects under '%s'", uploadPath)
+	sbomsOnS3Count := 0
+	for file := range filesOnS3 {
+		filePath := file.Key
+
+		if len(filePath) < 1 {
+			//ignore ghost files, sometime happens on S3 Mock
+			logy.Errorf(requestSession, "Found file ghost! ")
+			continue
+		}
+
+		versionUUID, sbomUUID, ok := extractVersionAndSbomFromS3Path(filePath)
+		if !ok {
+			continue
+		}
+
+		sbomsOnS3Count++
+		lookupKey := buildSbomLookupKey(versionUUID, sbomUUID)
+		if _, exists := existingSboms[lookupKey]; exists {
+			continue
+		}
+
+		deletionList = append(deletionList, filePath)
+
+		if sbomsOnS3Count%100 == 0 {
+			logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Processed %d SBOMs on S3, found %d to delete", sbomsOnS3Count, len(deletionList))
+		}
+	}
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Found %d SBOMs on S3, %d to delete", sbomsOnS3Count, len(deletionList))
+
+	performAsyncParallelDeletion(requestSession, deletionList)
+
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - END")
+}
+
+func performAsyncParallelDeletion(requestSession *logy.RequestSession, deletionList []string) {
+	const deleteWorkers = 5
+
+	totalToDelete := len(deletionList)
+	if totalToDelete == 0 {
+		logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - No SBOMs to delete from S3")
+		return
+	}
+
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Starting deletion of %d SBOMs from S3 with %d workers", totalToDelete, deleteWorkers)
+
+	deletionJobs := make(chan string)
+	var wg sync.WaitGroup
+	var deletedCount atomic.Int64
+	var failedCount atomic.Int64
+	var processedCount atomic.Int64
+
+	for i := 0; i < deleteWorkers; i++ {
+		wg.Add(1)
+
+		go func(workerID int) {
+			defer wg.Done()
+
+			for s3Path := range deletionJobs {
+				exception.TryCatch(func() {
+					s3Helper.DeleteFile(requestSession, s3Path)
+
+					deleted := deletedCount.Add(1)
+					processed := processedCount.Add(1)
+
+					if processed%100 == 0 {
+						logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Processed deletion %d/%d SBOMs from S3, deleted: %d, failed: %d", processed, totalToDelete, deleted, failedCount.Load())
+					}
+				}, func(exp exception.Exception) {
+					failed := failedCount.Add(1)
+					processed := processedCount.Add(1)
+
+					logy.Errorf(requestSession, "migrateRemoveOrphanedSbomFiles - Failed to delete SBOM from S3: %s, error: %v", s3Path, exp.ToString())
+					if processed%100 == 0 {
+						logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Processed deletion %d/%d SBOMs from S3, deleted: %d, failed: %d", processed, totalToDelete, deletedCount.Load(), failed)
+					}
+				})
+			}
+		}(i)
+	}
+
+	for _, s3Path := range deletionList {
+		deletionJobs <- s3Path
+	}
+
+	close(deletionJobs)
+	wg.Wait()
+
+	logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - Completed deletion of %d SBOMs from S3. Deleted: %d, failed: %d", totalToDelete, deletedCount.Load(), failedCount.Load())
+}
+
+func buildExistingSbomSet(allSbomLists []*sbomlist.SbomList) map[string]struct{} {
+	existingSboms := make(map[string]struct{})
+
+	for _, sbomList := range allSbomLists {
+		if sbomList == nil {
+			continue
+		}
+
+		versionUUID := sbomList.Key
+		if versionUUID == "" {
+			continue
+		}
+
+		for _, sbom := range sbomList.SpdxFileHistory {
+			if sbom == nil || sbom.Key == "" {
+				continue
+			}
+
+			existingSboms[buildSbomLookupKey(versionUUID, sbom.Key)] = struct{}{}
+		}
+	}
+	return existingSboms
+}
+
+func buildSbomLookupKey(versionUUID string, sbomUUID string) string {
+	return versionUUID + "/" + sbomUUID
+}
+
+func extractVersionAndSbomFromS3Path(path string) (versionUUID string, sbomUUID string, ok bool) {
+	parts := strings.Split(path, "/")
+	// Expected pattern for uploaded SBOM: uploads/YYYY/MM/projectUUID/versions/versionUUID/sbom/sbomUUID
+	if len(parts) != 8 {
+		return "", "", false
+	}
+
+	if parts[0] != "uploads" || parts[4] != "versions" || parts[6] != "sbom" {
+		return "", "", false
+	}
+
+	versionUUID = parts[5]
+	sbomUUID = parts[7]
+
+	if versionUUID == "" || sbomUUID == "" {
+		return "", "", false
+	}
+
+	return versionUUID, sbomUUID, true
 }
