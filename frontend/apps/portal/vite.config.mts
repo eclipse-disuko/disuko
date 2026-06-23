@@ -75,10 +75,6 @@ export default defineConfig(({mode}) => {
         deep: true,
       }),
       VueI18nPlugin({
-        include: [
-          path.resolve(__dirname, './../../libs/portal/i18n/locales/**'),
-          path.resolve(__dirname, './../../libs/shared/i18n/locales/**'),
-        ],
         strictMessage: false,
         runtimeOnly: false,
       }),
