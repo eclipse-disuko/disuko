@@ -74,7 +74,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "~0.7.0",
     "jsdom": "^27.2.0",
-    "oxfmt": "^0.46.0",
+    "oxfmt": "^0.55.0",
     "oxlint": "^1.58.0",
     "rollup-plugin-visualizer": "~5.14.0",
     "sass": "~1.89.0",
