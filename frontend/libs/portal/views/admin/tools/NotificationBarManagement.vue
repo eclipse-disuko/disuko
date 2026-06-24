@@ -26,6 +26,7 @@ const open = async () => {
 };
 
 const previewNotification = () => {
+  appStore.dismissedNotificationText = '';
   appStore.notificationMessage = notificationText.value;
   appStore.notificationClosed = false;
 };
@@ -36,6 +37,9 @@ const postNotification = async () => {
     await adminService.setNotification({enabled: enabled.value, text: notificationText.value});
     appStore.notificationMessage = notificationText.value;
     appStore.notificationClosed = !enabled.value;
+    if (enabled.value) {
+      appStore.dismissedNotificationText = '';
+    }
   } finally {
     loading.value = false;
   }
