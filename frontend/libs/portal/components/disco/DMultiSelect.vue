@@ -9,7 +9,6 @@
  * Supports Vuetify v-select with truncation and internationalization.
  */
 import {useAttrs} from 'vue';
-import {useI18n} from 'vue-i18n';
 
 defineOptions({
   inheritAttrs: false,
@@ -42,7 +41,6 @@ const emit = defineEmits<{
   'update:modelValue': [value: SelectValue[]];
 }>();
 
-const {t} = useI18n();
 const attrs = useAttrs();
 
 const multiSelectClass =
@@ -53,7 +51,7 @@ const multiSelectClass =
 </script>
 
 <template>
-  <v-select
+  <v-combobox
     :class="multiSelectClass"
     :model-value="modelValue"
     :items="items"
@@ -67,6 +65,7 @@ const multiSelectClass =
     :color="color"
     :list-props="listProps"
     multiple
+    :return-object="false"
     transition="scale-transition"
     persistent-clear
     v-bind="attrs"
@@ -79,5 +78,5 @@ const multiSelectClass =
         </span>
       </span>
     </template>
-  </v-select>
+  </v-combobox>
 </template>
