@@ -92,6 +92,12 @@ const headers = computed((): DataTableHeader[] => [
     width: sliderWidth.value,
   },
   {
+    title: t('COL_STAR_APPROVABLE'),
+    align: 'center',
+    value: 'star',
+    width: 100,
+  },
+  {
     title: t('COL_SPDX_FILENAME'),
     align: 'start',
     value: 'searchIndex',
@@ -107,14 +113,14 @@ const headers = computed((): DataTableHeader[] => [
   },
   ...(!props.channelView
     ? [
-        {
-          title: t('COL_SBOM_BRANCH'),
-          align: 'start',
-          value: 'versionName',
-          sortable: true,
-          width: 110,
-        } as DataTableHeader,
-      ]
+      {
+        title: t('COL_SBOM_BRANCH'),
+        align: 'start',
+        value: 'versionName',
+        sortable: true,
+        width: 110,
+      } as DataTableHeader,
+    ]
     : []),
   {
     title: t('COL_SBOM_TAG'),
@@ -522,24 +528,24 @@ onMounted(async () => {
             <span>{{ item._key }}</span>
             <br v-if="item.approvalInfo && item.approvalInfo.status" />
             <span class="font-weight-bold" v-if="item.approvalInfo && item.approvalInfo.status">{{
-              t(`SBOM_STATUS_${item.approvalInfo.status}`)
-            }}</span>
+                t(`SBOM_STATUS_${item.approvalInfo.status}`)
+              }}</span>
             <span v-if="item.approvalInfo && item.approvalInfo.status">
               <v-icon
                 small
                 v-if="item.approvalInfo && item.approvalInfo.comment && item.approvalInfo.comment.length > 0"
-                >chevron_right</v-icon
+              >chevron_right</v-icon
               >
               {{ item.approvalInfo.comment }}</span
             >
             <br v-if="item.isToDelete" />
             <span v-if="item.isToDelete" class="font-weight-bold text-[rgb(var(--v-theme-error))]">{{
-              t('SBOM_ABOUT_DELETION_NOTE')
-            }}</span>
+                t('SBOM_ABOUT_DELETION_NOTE')
+              }}</span>
             <br v-if="item.isToRetain" />
             <span v-if="item.isToRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">{{
-              t('SBOM_MARKED_FOR_RETENTION')
-            }}</span>
+                t('SBOM_MARKED_FOR_RETENTION')
+              }}</span>
           </template>
           <template #[`item.overallReview`]="{item}">
             <DOverallStateIcon v-if="item.overallReview" :review="item.overallReview" />
@@ -586,13 +592,18 @@ onMounted(async () => {
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="slider"
-              :buttons="getActionButtons(item)"
+              :buttons="getActionButtons(item).filter(button => button.event !== 'setApprovable')"
               @toggleLock="isOwnerOrDomainAdmin ? toggleLock(item) : undefined"
               @setApprovable="setApprovable(item)"
               @addRemark="openReviewRemarkDialog(item)"
               @copy="copySbomToClipboard(item)"
               @download="downloadFile(item)"
               @delete="showConfirm(item)" />
+          </template>
+          <template #[`item.star`]="{item}">
+            <TableActionButtons
+              :buttons="[getActionButtons(item).find(button => button.event === 'setApprovable')].filter(Boolean)"
+              @setApprovable="setApprovable(item)"/>
           </template>
         </v-data-table>
       </div>
