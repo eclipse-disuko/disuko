@@ -6,7 +6,6 @@ import INavItem, {INavItemGroup} from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
 import sessionService from '@disclosure-portal/services/session';
 import {LabelsTools} from '@disclosure-portal/utils/Labels';
-import {useStorage} from '@vueuse/core';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
 import {useRoute} from 'vue-router';
@@ -54,11 +53,11 @@ export const useAppStore = defineStore('app', () => {
     } as INavItemGroup,
     tokenRefresherIsRunning: false,
     notificationMessage: '',
+    dismissedNotificationText: '',
+    notificationClosed: false,
     dummyDesignMode: false,
     shouldReloadApprovals: false,
   });
-
-  const notificationClosed = useStorage('disco-notification-closed', false, sessionStorage);
 
   // Actions
   const fetchLabelsTools = async () => {
@@ -219,7 +218,6 @@ export const useAppStore = defineStore('app', () => {
   return {
     // State
     ...toRefs(state),
-    notificationClosed,
 
     // Actions
     updateTileCounts,

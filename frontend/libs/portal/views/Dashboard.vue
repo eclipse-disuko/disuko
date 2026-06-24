@@ -28,7 +28,7 @@ const {t} = useI18n();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
 
-const {notificationClosed, notificationMessage, dummyDesignMode} = storeToRefs(appStore);
+const {notificationClosed, notificationMessage, dummyDesignMode, dismissedNotificationText} = storeToRefs(appStore);
 
 const username = ref('');
 const navIsCollapsed = ref(true);
@@ -67,10 +67,14 @@ const openHelp = () => {
 };
 
 const disableNotification = () => {
+  dismissedNotificationText.value = notificationMessage.value;
   notificationClosed.value = true;
 };
 
 const onSetNotification = ({config}: {config: INotificationMeta}) => {
+  if (config.enabled && config.text && config.text !== dismissedNotificationText.value) {
+    notificationClosed.value = false;
+  }
   if (notificationClosed.value) {
     return;
   }
