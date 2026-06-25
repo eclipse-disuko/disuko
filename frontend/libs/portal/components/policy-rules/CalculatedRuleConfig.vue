@@ -29,10 +29,10 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
 
 <template>
   <v-card class="mb-2 w-full basis-full" variant="flat">
-    <Stack v-if="config.calculated" class="gap-6">
-      <v-card variant="flat" class="pa-4">
+    <div v-if="config.calculated" class="flex gap-6">
+      <v-card variant="flat" class="flex-1">
         <div class="d-subtitle-2 mb-5">{{ t('CALCULATED_BUCKETS_TITLE') }}</div>
-        <div class="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="flex flex-col gap-4">
           <DMultiSelect
             :label="t('CALCULATED_DENIED_CLASSIFICATIONS')"
             :items="classificationOptions"
@@ -51,9 +51,9 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
         </div>
       </v-card>
 
-      <v-card variant="flat" class="pa-4">
+      <v-card variant="flat" class="flex-1">
         <div class="d-subtitle-2 mb-5">{{ t('CALCULATED_SCOPE_FILTERS_TITLE') }}</div>
-        <div class="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2">
+        <div class="flex flex-col gap-4">
           <DMultiSelect
             :label="t('CALCULATED_SCOPE_LICENSE_CHART_INCLUDE')"
             :items="config.scopeConfig.isLicenseChart.options"
@@ -85,6 +85,6 @@ const handleScopeUpdate = (filterName: ScopeFilterName, values: unknown) => {
             @update:modelValue="handleScopeUpdate('source', $event)" />
         </div>
       </v-card>
-    </Stack>
+    </div>
   </v-card>
 </template>

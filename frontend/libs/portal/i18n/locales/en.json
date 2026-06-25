@@ -2155,5 +2155,6 @@
   "PERSONAL_TOKEN_CREATED": "Personal token created successfully",
   "PERSONAL_TOKEN_EXPIRED": "Personal token expired successfully",
   "CONFIRM_EXPIRE_PERSONAL_TOKEN_DESCRIPTION": "Are you sure you want to expire this token? The token will not be valid anymore.",
-  "BTN_EXPIRE": "Expire"
+  "BTN_EXPIRE": "Expire",
+  "COL_STAR_APPROVABLE": "Approvable"
 }

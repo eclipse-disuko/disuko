@@ -756,13 +756,20 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                 icon="mdi-calculator-variant"
                 :hint="t('CALCULATED_POLICY_RULE_ENABLED')"
                 @click="handleSetCalculatedEnabled(true)" />
-              <DCActionButton
-                v-else
-                variant="outlined"
-                :text="t('MANUAL_RULES')"
-                icon="mdi-cog-outline"
-                :hint="t('MANUAL_RULES')"
-                @click="handleSetCalculatedEnabled(false)" />
+              <div v-else class="d-flex ga-1">
+                <DCActionButton
+                  v-if="hasChanges && rule.deprecated === false"
+                  :text="t('BTN_SAVE')"
+                  icon="mdi-content-save"
+                  :hint="t('BTN_SAVE')"
+                  @click="saveChanges" />
+                <DCActionButton
+                  variant="outlined"
+                  :text="t('MANUAL_RULES')"
+                  icon="mdi-cog-outline"
+                  :hint="t('MANUAL_RULES')"
+                  @click="handleSetCalculatedEnabled(false)" />
+              </div>
             </template>
           </div>
 
@@ -1517,14 +1524,6 @@ const handleSetCalculatedEnabled = (value: boolean) => {
           <div class="flex h-full flex-col">
             <div v-show="classificationsLoaded" class="overflow-auto">
               <CalculatedRuleConfig />
-              <div class="d-flex mt-6 justify-end pr-4">
-                <DCActionButton
-                  :text="t('BTN_SAVE')"
-                  icon="mdi-content-save"
-                  :hint="t('BTN_SAVE')"
-                  @click="saveChanges"
-                  v-if="hasChanges && rule.deprecated === false" />
-              </div>
             </div>
           </div>
         </v-col>
