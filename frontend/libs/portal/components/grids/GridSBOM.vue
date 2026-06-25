@@ -594,7 +594,6 @@ onMounted(async () => {
               variant="slider"
               :buttons="getActionButtons(item).filter((button) => button.event !== 'setApprovable')"
               @toggleLock="isOwnerOrDomainAdmin ? toggleLock(item) : undefined"
-              @setApprovable="setApprovable(item)"
               @addRemark="openReviewRemarkDialog(item)"
               @copy="copySbomToClipboard(item)"
               @download="downloadFile(item)"
