@@ -15,7 +15,6 @@ const normalizedStoredLang = supportedLocales.includes(storedLang as 'en' | 'de'
 const browserLang = navigator.language.toLowerCase().startsWith('de') ? 'de' : 'en';
 
 const i18n = createI18n({
-  legacy: false,
   locale: normalizedStoredLang || browserLang,
   fallbackLocale: 'en',
   messages: {
