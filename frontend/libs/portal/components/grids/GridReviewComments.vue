@@ -41,7 +41,7 @@
       </template>
       <template v-slot:item.content="{item}">
         <span v-if="item.type === EventType.COMMENT">
-          {{ item.content as Comment }}
+          {{ getCommentContent(item.content) }}
         </span>
         <span v-else-if="item.type === EventType.CHANGED_LEVEL && item.content">
           <i
@@ -125,6 +125,13 @@ const currentComment = ref('');
 const emit = defineEmits<{
   (e: 'comment', content: string): void;
 }>();
+
+const getCommentContent = computed(() => (content: unknown) => {
+  if (content && typeof content === 'object' && 'text' in content) {
+    return (content as {text?: string}).text;
+  }
+  return content;
+});
 
 const comment = async () => {
   if (!(await form.value?.validate())?.valid) {
