@@ -798,6 +798,7 @@ const (
 	ClassificationUpdated      = "Classification Updated"
 	ClassificationDeleted      = "Classification Deleted"
 	ExternalApprovalUpdated    = "External approval updated"
+	ExternalApprovalAborted    = "External Approval aborted"
 	ReviewRemarkCreated        = "Review Remark created"
 	ReviewRemarkChanged        = "Review Remark changed"
 	ReviewRemarkCommented      = "Review Remark commented"
