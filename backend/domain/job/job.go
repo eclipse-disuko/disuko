@@ -61,6 +61,8 @@ const (
 	LabelLoadDb
 	CalculatedPolicyRulesUpdate
 	UserDeletion
+	ApprovalsInactiveMail
+	ApprovalsAbortInactive
 	TypeLimit
 )
 
