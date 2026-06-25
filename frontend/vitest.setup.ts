@@ -14,7 +14,6 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 const i18n = createI18n({
-  legacy: false,
   locale: 'en',
   messages: {
     en: en,
