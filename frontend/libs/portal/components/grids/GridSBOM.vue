@@ -92,6 +92,12 @@ const headers = computed((): DataTableHeader[] => [
     width: sliderWidth.value,
   },
   {
+    title: t('COL_STAR_APPROVABLE'),
+    align: 'center',
+    value: 'star',
+    width: 100,
+  },
+  {
     title: t('COL_SPDX_FILENAME'),
     align: 'start',
     value: 'searchIndex',
@@ -586,13 +592,17 @@ onMounted(async () => {
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="slider"
-              :buttons="getActionButtons(item)"
+              :buttons="getActionButtons(item).filter((button) => button.event !== 'setApprovable')"
               @toggleLock="isOwnerOrDomainAdmin ? toggleLock(item) : undefined"
-              @setApprovable="setApprovable(item)"
               @addRemark="openReviewRemarkDialog(item)"
               @copy="copySbomToClipboard(item)"
               @download="downloadFile(item)"
               @delete="showConfirm(item)" />
+          </template>
+          <template #[`item.star`]="{item}">
+            <TableActionButtons
+              :buttons="[getActionButtons(item).find((button) => button.event === 'setApprovable')].filter(Boolean)"
+              @setApprovable="setApprovable(item)" />
           </template>
         </v-data-table>
       </div>
