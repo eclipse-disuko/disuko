@@ -2148,5 +2148,6 @@
   "PERSONAL_TOKEN_CREATED": "Persönliches Token erfolgreich erstellt",
   "PERSONAL_TOKEN_EXPIRED": "Persönliches Token erfolgreich abgelaufen",
   "CONFIRM_EXPIRE_PERSONAL_TOKEN_DESCRIPTION": "Sind Sie sicher, dass Sie dieses Token ablaufen lassen möchten? Das Token wird danach nicht mehr gültig sein.",
-  "BTN_EXPIRE": "Ablaufen lassen"
+  "BTN_EXPIRE": "Ablaufen lassen",
+  "COL_STAR_APPROVABLE": "Genehmigungsfähig"
 }
