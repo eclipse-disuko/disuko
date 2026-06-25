@@ -143,7 +143,6 @@ declare module 'vue' {
     LocaleDetails: typeof import('./../../libs/portal/views/admin/i18n/LocaleDetails.vue')['default']
     Mail: typeof import('./../../libs/portal/views/admin/tools/Mail.vue')['default']
     Markdown: typeof import('./../../libs/shared/components/Markdown.vue')['default']
-    MarkdownWidget: typeof import('./../../libs/shared/components/widgets/MarkdownWidget.vue')['default']
     MenuItem: typeof import('./../../libs/shared/components/disco/MenuItem.vue')['default']
     NavItem: typeof import('./../../libs/shared/components/sidebar/NavItem.vue')['default']
     NewClassificationDialog: typeof import('./../../libs/portal/components/dialog/NewClassificationDialog.vue')['default']
