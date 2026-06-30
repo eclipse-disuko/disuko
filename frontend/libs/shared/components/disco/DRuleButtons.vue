@@ -102,7 +102,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <span v-if="policies" class="d-flex" data-testid="ruleButtons">
+  <span v-if="policies" class="flex gap-2" data-testid="ruleButtons">
     <v-tooltip
       :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
       location="bottom"
@@ -111,16 +111,15 @@ onMounted(() => {
       content-class="dpTooltip">
       <template v-slot:activator>
         <v-btn
-          :variant="isSelected(policy) ? 'tonal' : 'text'"
+          :variant="isSelected(policy) ? 'tonal' : 'outlined'"
           xcolor="ruleButton"
           size="small"
           v-if="policy"
           :class="[
-            'ma-2 text-none card-border mx-2 my-2',
+            'text-none card-border my-2',
             {active: isSelected(policy)},
             isSelected(policy) ? callbacks.getActiveClassForPolicyFilterBtn(policy) : '',
           ]"
-          :plain="!isSelected(policy)"
           :style="getStyle(policy)"
           @click.stop="handlePolicySelect(policy)"
           :min-width="minWidth"
