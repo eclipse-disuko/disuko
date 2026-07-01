@@ -244,6 +244,11 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 			r.Route("/admin", func(r chi.Router) {
 				r.Get("/system/profile", s.handlers.statistic.GetSystemProfileStats) // test missing
 				r.Post("/mail/send", s.handlers.mail.SendMail)
+				r.Route("/mailtemplates", func(r chi.Router) {
+					r.Get("/", s.handlers.mailTemplate.GetAllHandler)
+					r.Get("/{id}", s.handlers.mailTemplate.GetByIdHandler)
+					r.Put("/{id}", s.handlers.mailTemplate.UpdateHandler)
+				})
 				r.Get("/counts/dashboard", s.handlers.count.GetDashboardCountsForAdminHandler)
 				r.Route("/jobs", func(r chi.Router) {
 					r.Get("/", s.handlers.job.JobGetAllHandler)

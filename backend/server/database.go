@@ -27,6 +27,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/analyticscomponents"
 	"github.com/eclipse-disuko/disuko/infra/repository/analyticslicenses"
 	announcement "github.com/eclipse-disuko/disuko/infra/repository/announcements"
+	"github.com/eclipse-disuko/disuko/infra/repository/mailtemplates"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
@@ -71,6 +72,7 @@ type dbRepos struct {
 	spdxLicense          spdx_license.ISpdxLicensesRepository
 	approvalList         approvallist.IApprovalListRepository
 	announcements        announcement.IAnnouncementsRepository
+	mailTemplates        mailtemplates.IMailTemplatesRepository
 	reviewRemarks        reviewremarks.IReviewRemarksRepository
 	filterSets           filtersets.IFilterSetsRepository
 	reviewTemplate       reviewremarks2.IReviewTemplateRepository
@@ -110,6 +112,7 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		spdxLicense:          spdx_license.NewSpdxLicenseRepository(requestSession),
 		approvalList:         approvallist.NewApprovalListRepository(requestSession),
 		announcements:        announcement.NewAnnouncementsRepository(requestSession),
+		mailTemplates:        mailtemplates.NewMailTemplatesRepository(requestSession),
 		reviewRemarks:        reviewremarks.NewReviewRemarskRepositry(requestSession),
 		filterSets:           filtersets.NewFilterSetsRepository(requestSession),
 		reviewTemplate:       reviewremarks2.NewReviewTemplateRepositry(requestSession),
