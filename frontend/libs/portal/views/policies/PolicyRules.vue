@@ -23,6 +23,7 @@ import {useRouter} from 'vue-router';
 import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
 import {useUrls} from '@shared/composables/useUrls';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import ClassificationMatrixDialog from '@disclosure-portal/components/dialog/ClassificationMatrixDialog.vue';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
@@ -66,6 +67,7 @@ const policyLabels = ref<Label[]>([]);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const policyRuleDialogRef = ref();
 const currentPolicyRuleForAction = ref<PolicyRule | null>(null);
+const classificationMatrixDialogRef = ref<InstanceType<typeof ClassificationMatrixDialog>>();
 
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs([
@@ -215,13 +217,13 @@ const getActionButtons = (item: PolicyRule): TableActionButtonsProps['buttons'] 
   ];
 };
 
-const customFilterTable = (value: string, search: string) => {
+const customFilterTable = (value: string, searchTerm: string) => {
   if (value != null && value) {
     const dateTime = formatDateAndTime(value);
     if (dateTime && dateTime !== 'Invalid date') {
-      return dateTime.indexOf(search) > -1;
+      return dateTime.indexOf(searchTerm) > -1;
     }
-    return value.toLowerCase().indexOf(search.toLowerCase()) > -1;
+    return value.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
   }
   return false;
 };
@@ -317,6 +319,10 @@ const headers = computed((): DataTableHeader[] => [
           @click="showDialog"
           v-if="isPolicyManager" />
       </NewPolicyRuleDialog>
+      <DCActionButton
+        :text="t('CLASSIFICATION_MATRIX')"
+        icon="mdi-table-large"
+        @click="classificationMatrixDialogRef?.open()" />
       <v-spacer></v-spacer>
       <DCActionButton
         icon="mdi-download"
@@ -407,4 +413,5 @@ const headers = computed((): DataTableHeader[] => [
   <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="doDeletePolicyRule" />
   <ConfirmationDialog v-model:showDialog="confirmDeprVisible" :config="confirmDeprConfig" @confirm="doDeprecate" />
   <ConfirmationDialog v-model:showDialog="confirmCopyVisible" :config="confirmCopyConfig" @confirm="doCopy" />
+  <ClassificationMatrixDialog ref="classificationMatrixDialogRef" />
 </template>
