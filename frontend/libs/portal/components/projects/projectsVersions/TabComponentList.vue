@@ -69,6 +69,8 @@ const allTypes = ref<DataTableHeaderFilterItems[]>([]);
 const allFamilies = ref<DataTableHeaderFilterItems[]>([]);
 const forceReload = ref(true);
 const tableHeight = ref(0);
+const selectedFilterShowPolicyDecision = ref(false);
+const selectedFilterShowLicenseDecision = ref(false);
 const {calculateHeight} = useDimensions();
 const tableComponents = ref<HTMLElement | null>(null);
 const newComponentDetailsDlg = ref();
@@ -167,9 +169,19 @@ const tableName = 'ComponentList';
 const headerSettingsStore = useHeaderSettings({tableName, headers});
 const {filteredHeaders} = headerSettingsStore;
 
+const policyDecisionCount = computed(() => componentList.value.filter((c) => c.showPolicyDecision).length);
+const licenseDecisionCount = computed(() => componentList.value.filter((c) => c.showLicenseDecision).length);
+
 const filteredList = computed(() => {
   return componentList.value.filter((info: TabelItem) => {
-    return filterOnLicense(info) && filterOnPolicyType(info) && filterOnType(info) && filterOnFamily(info);
+    return (
+      filterOnLicense(info) &&
+      filterOnPolicyType(info) &&
+      filterOnType(info) &&
+      filterOnFamily(info) &&
+      filterOnPolicyDecision(info) &&
+      filterOnLicenseDecision(info)
+    );
   });
 });
 
@@ -214,6 +226,16 @@ const filterOnPolicyType = (info: TabelItem): boolean => {
   } else {
     return true;
   }
+};
+
+const filterOnPolicyDecision = (info: TabelItem): boolean => {
+  if (!selectedFilterShowPolicyDecision.value) return true;
+  return info.showPolicyDecision;
+};
+
+const filterOnLicenseDecision = (info: TabelItem): boolean => {
+  if (!selectedFilterShowLicenseDecision.value) return true;
+  return info.showLicenseDecision;
 };
 
 const customKeySort = {
@@ -585,6 +607,28 @@ onUnmounted(async () => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <DRuleButtons :policies="policies" :callbacks="ruleCallback" />
+      <span>
+        <Tooltip>{{ t('COL_POLICY_DECISION') }}</Tooltip>
+        <v-btn
+          :variant="selectedFilterShowPolicyDecision ? 'tonal' : 'outlined'"
+          size="small"
+          class="text-none card-border my-2"
+          @click.stop="selectedFilterShowPolicyDecision = !selectedFilterShowPolicyDecision">
+          <v-icon color="primary" icon="mdi-bank" class="mr-1" />
+          {{ policyDecisionCount }} {{ t('COL_POLICY_DECISION') }}
+        </v-btn>
+      </span>
+      <span>
+        <Tooltip>{{ t('COL_LICENSE_DECISION') }}</Tooltip>
+        <v-btn
+          :variant="selectedFilterShowLicenseDecision ? 'tonal' : 'outlined'"
+          size="small"
+          class="text-none card-border my-2"
+          @click.stop="selectedFilterShowLicenseDecision = !selectedFilterShowLicenseDecision">
+          <v-icon color="primary" icon="mdi-text-box-edit-outline" class="mr-1" />
+          {{ licenseDecisionCount }} {{ t('COL_LICENSE_DECISION') }}
+        </v-btn>
+      </span>
       <v-spacer></v-spacer>
       <DCActionButton
         :text="t('BTN_BULK_POLICY_DECISION')"
