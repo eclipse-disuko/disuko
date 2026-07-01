@@ -44,6 +44,7 @@ const confirmVisible = ref(false);
 const dataAreLoaded = ref(false);
 const selectedTab = ref('');
 const editDlg = ref(null);
+const sbomMenuOpen = ref(false);
 
 const currentSpdx = computed(() => sbomStore.getSelectedSBOM || spdxFileHistory.value[0]);
 const currentProjectEmpty = computed(() => _.isEmpty(currentProject.value));
@@ -232,6 +233,11 @@ const close = () => {
   }
 };
 
+const selectSbom = async (spdx: SpdxFile) => {
+  sbomMenuOpen.value = false;
+  await selectedSpdxChanged(spdx);
+};
+
 const selectedSpdxChanged = async (newSpdx: SpdxFile) => {
   const subTab =
     (route.name === 'licenseRemarks' && '/licenseRemarks') ||
@@ -302,93 +308,59 @@ onUnmounted(() => {
 
 <template>
   <div v-if="currentProject" class="h-full p-4" data-testid="projects-versions">
-    <div v-if="!currentProjectEmpty" class="d-flex align-center ga-2 flex-row flex-wrap pb-3">
-      <div>
+    <div v-if="!currentProjectEmpty" class="flex flex-row flex-wrap items-center gap-2 pb-3">
+      <div class="flex flex-row items-center gap-2">
         <v-chip v-if="currentProject.isDummy" class="dummy-tag mr-2" label>DUMMY</v-chip>
-        <span class="text-h5" style="display: inline-block">{{ t('PROJECT') }}</span>
-        <span class="text-h5 project-name px-2" :title="currentProject.name">
-          <q>
-            <span>{{ currentProject.name }}</span>
-          </q>
-        </span>
-      </div>
-      <v-spacer></v-spacer>
-      <div class="d-flex align-center flex-row">
-        <v-select
-          v-if="spdxFileHistory.length > 0"
-          :model-value="currentSpdx"
-          :label="t('VERSION') + ' &quot;' + versionName + '&quot; > ' + t('SBOM_COMPARE_CURRENT')"
-          :items="spdxFileHistory"
-          style="display: inline-block; max-width: 550px"
-          variant="outlined"
-          density="compact"
-          hide-details
-          return-object
-          color="inputActiveBorderColor"
-          location="offsetY"
-          @update:modelValue="selectedSpdxChanged">
-          <template v-slot:item="{item, props}">
-            <v-list-item v-bind="props" title="">
-              <v-icon
-                v-if="currentProject?.approvablespdx.spdxkey === item.raw._key"
-                color="primary"
-                size="x-small"
-                class="pb-1">
-                mdi-star
-              </v-icon>
-              <span class="text-caption ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-              <span class="text-caption d-secondary-text" v-if="item.raw.metaInfo"
-                >&nbsp;-&nbsp;{{ getStrWithMaxLength(39, item.raw.metaInfo.name) }}</span
-              >
-              <span class="text-caption d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-              <span class="text-caption d-secondary-text mr-1" v-if="item.raw.isRecent"
-                >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
-              >
-              <span class="text-caption d-secondary-text mr-1" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
-              <DOverallStateIcon v-if="item.raw.overallReview" :review="item.raw.overallReview" />
-            </v-list-item>
-          </template>
-          <template v-slot:selection="{item}">
-            <div class="d-inline py-1">
-              <v-icon
-                v-if="currentProject?.approvablespdx.spdxkey == item.raw._key"
-                color="primary"
-                size="x-small"
-                class="pr-2 pb-1">
-                mdi-star
-              </v-icon>
-              <span v-else class="placeholder-icon"></span>
+        <v-menu v-if="spdxFileHistory.length > 0" v-model="sbomMenuOpen" location="bottom start">
+          <template v-slot:activator="{props}">
+            <div v-bind="props" class="sbom-selector flex cursor-pointer items-center gap-1">
+              <span class="text-h6">
+                <DDateCellWithTooltip :value="currentSpdx?.uploaded"></DDateCellWithTooltip>
+              </span>
+              <span class="text-h6 d-secondary-text" v-if="currentSpdx?.metaInfo">
+                - {{ getStrWithMaxLength(39, currentSpdx.metaInfo.name) }}
+              </span>
+              <v-chip v-if="currentSpdx?.tag" size="x-small">{{ getStrWithMaxLength(10, currentSpdx.tag) }}</v-chip>
+              <v-chip v-if="currentSpdx?.isRecent" size="x-small">{{ t('SBOM_LATEST') }}</v-chip>
+              <v-icon size="small">mdi-menu-down</v-icon>
             </div>
-            <span class="text-caption">
-              <DDateCellWithTooltip :value="item.raw.uploaded"></DDateCellWithTooltip>
-            </span>
-            <span class="text-caption d-secondary-text ml-1" v-if="item.raw.metaInfo">
-              - {{ getStrWithMaxLength(39, item.raw.metaInfo.name) }}
-            </span>
-            <span class="text-caption d-secondary-text" v-if="item.raw.tag"
-              >&nbsp;({{ getStrWithMaxLength(10, item.raw.tag) }})
-            </span>
-            <span class="text-caption" v-if="item.raw.isRecent">&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span>
-            <span class="text-caption d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }} </span>&nbsp;
-            <DOverallStateIcon v-if="item.raw.overallReview" :review="item.raw.overallReview" />
           </template>
-        </v-select>
-        <span v-if="spdxFileHistory.length >= 1 && userIsOwner">
-          <DCActionButton
-            variant="text"
-            :tableButton="true"
+          <v-list density="compact">
+            <v-list-item
+              v-for="spdx in spdxFileHistory"
+              :key="spdx._key"
+              :active="spdx._key === currentSpdx?._key"
+              @click="selectSbom(spdx)">
+              <span class="align-center flex flex-row gap-2">
+                <span class="text-caption">{{ formatDateAndTime(spdx.uploaded) }}&nbsp;</span>
+                <span class="text-caption d-secondary-text" v-if="spdx.metaInfo">
+                  &nbsp;-&nbsp;{{ getStrWithMaxLength(39, spdx.metaInfo.name) }}
+                </span>
+                <v-chip v-if="spdx.tag" size="x-small">{{ spdx.tag }}</v-chip>
+                <v-chip v-if="spdx.isRecent" size="x-small">{{ t('SBOM_LATEST') }}</v-chip>
+                <DOverallStateIcon v-if="spdx.overallReview" :review="spdx.overallReview" />
+                <v-icon v-if="currentProject?.approvablespdx.spdxkey === spdx._key" color="primary" size="x-small">
+                  mdi-star
+                </v-icon>
+              </span>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <DOverallStateIcon v-if="currentSpdx?.overallReview" :review="currentSpdx.overallReview" class="mx-1" />
+        <span v-if="spdxFileHistory.length >= 1 && userIsOwner" class="flex items-center">
+          <v-btn
             :icon="iconForSelectedSpdx"
+            variant="text"
+            density="compact"
+            size="small"
             :color="iconColorForSelectedSpdx"
-            :hint="t(hintForSelectedSpdx)"
-            @click="setApprovable(currentSpdx!._key)"></DCActionButton>
+            @click="setApprovable(currentSpdx!._key)">
+          </v-btn>
+          <Tooltip :text="t(hintForSelectedSpdx)" location="top" />
         </span>
-        <span v-else-if="spdxFileHistory.length > 0 && !userIsOwner">
-          <DCActionButton
-            variant="text"
-            :tableButton="true"
-            :disabled="true"
-            :icon="iconForSelectedSpdx"
-            :hint="t(hintForDisabledSelectedSpdx)"></DCActionButton>
+        <span v-else-if="spdxFileHistory.length > 0 && !userIsOwner" class="flex items-center">
+          <v-btn :icon="iconForSelectedSpdx" variant="text" density="compact" size="small" disabled></v-btn>
+          <Tooltip :text="t(hintForDisabledSelectedSpdx)" location="top" />
         </span>
       </div>
       <v-spacer></v-spacer>
@@ -410,13 +382,15 @@ onUnmounted(() => {
           icon="mdi-message-draw"
           :tooltip="t('TT_overall_review')"
           :text="t('BTN_OVRERALL_REVIEW')"
-          @click="showOverallReviewDialog"></MenuItem>
+          @click="showOverallReviewDialog">
+        </MenuItem>
         <MenuItem
           v-if="!currentProject.isDeprecated && currentProject?.accessRights?.allowProject?.delete"
           icon="mdi-delete"
           :tooltip="t('TT_delete_version')"
           :text="t('TT_delete_version')"
-          @click="showDeletionConfirmationDialog"></MenuItem>
+          @click="showDeletionConfirmationDialog">
+        </MenuItem>
       </ProjectMenu>
     </div>
     <div v-if="dataAreLoaded && versionDetails">
@@ -489,10 +463,8 @@ onUnmounted(() => {
       </v-card>
     </div>
     <VersionDialogForm ref="editDlg"></VersionDialogForm>
-    <ConfirmationDialog
-      v-model:showDialog="confirmVisible"
-      :config="confirmConfig"
-      @confirm="doDeleteVersion"></ConfirmationDialog>
+    <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="doDeleteVersion">
+    </ConfirmationDialog>
     <OverallReviewDialog ref="reviewDia" @reload="reload"></OverallReviewDialog>
   </div>
 </template>
@@ -502,19 +474,13 @@ onUnmounted(() => {
   margin-left: 2px;
   border: 1px solid rgb(var(--v-theme-chartYellow));
 }
-.project-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  position: relative;
-  transition: max-width 0.3s ease;
-}
 
-.project-name:hover {
-  max-width: none;
-  white-space: normal;
-  z-index: 1;
-  padding: 5px;
+.sbom-selector {
+  border-radius: 4px;
+  padding: 4px 8px;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.08);
+  }
 }
 </style>

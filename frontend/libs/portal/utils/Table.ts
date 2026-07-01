@@ -57,7 +57,11 @@ export function formatDateAndTime(dateStr: string) {
     }
     const d = dayjs(dateStr);
     if (d.isValid()) {
-      return d.format(DATE_FORMAT_SHORT);
+      return d.format(DATE_FORMAT_SHORT).replace(/([+-])(\d{2}):(\d{2})/, (_, sign, hours, minutes) => {
+        const h = parseInt(hours, 10);
+        const m = parseInt(minutes, 10);
+        return `${sign}${h}${m ? ':' + minutes : ''}`;
+      });
     } else {
       return 'Invalid date';
     }
