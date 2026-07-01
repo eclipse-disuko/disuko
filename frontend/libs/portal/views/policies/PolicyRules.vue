@@ -23,7 +23,7 @@ import {useRouter} from 'vue-router';
 import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
 import {useUrls} from '@shared/composables/useUrls';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
-import ClassificationMatrixDialog from '@disclosure-portal/components/dialog/ClassificationMatrixDialog.vue';
+import ClassificationMatrixDialog from '@disclosure-portal/components/policy-rules/ClassificationMatrixDialog.vue';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
