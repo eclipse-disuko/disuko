@@ -58,7 +58,7 @@ watch([() => route.path, windowSize.width], () => {
     <div v-if="$slots.description" ref="desc">
       <slot name="description"></slot>
     </div>
-    <div v-if="$slots.buttons" ref="buttons" class="flex flex-row items-center gap-3">
+    <div v-if="$slots.buttons" ref="buttons" class="flex flex-row flex-wrap items-center gap-3">
       <slot name="buttons"></slot>
     </div>
     <UseWindowSize v-slot="{height}">

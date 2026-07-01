@@ -102,7 +102,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <span v-if="policies" class="flex gap-2" data-testid="ruleButtons">
+  <span v-if="policies" class="flex flex-wrap gap-2" data-testid="ruleButtons">
     <v-tooltip
       :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
       location="bottom"
