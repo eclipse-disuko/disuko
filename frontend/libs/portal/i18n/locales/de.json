@@ -730,6 +730,7 @@
   "NO_SUPPLIER_INFORMATION": "Keine Lieferanteninformationen verfügbar",
   "PROJECT_APPROVAL_STATUS": "Genehmigungsanfrage",
   "TAB_PROJECT_CHILDREN": "Teilprojekte",
+  "PROJECT_CHILDREN_COUNT": "Anzahl der Teilprojekte",
   "TAB_PROJECT_VERSION": "Kanäle",
   "TAB_PROJECT_USERMANAGEMENT": "Benutzer-Verwaltung",
   "TAB_POLICYRULES": "Policy-Regeln",
