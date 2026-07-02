@@ -18,6 +18,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/job"
 	"github.com/eclipse-disuko/disuko/domain/label"
 	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/domain/obligation"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/schema"
@@ -54,6 +55,9 @@ var entityCreatorMap = map[string]func() interface{}{
 	},
 	"users": func() interface{} {
 		return &user.User{}
+	},
+	"mailtemplates": func() interface{} {
+		return &mailtemplate.MailTemplate{}
 	},
 }
 

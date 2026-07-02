@@ -44,6 +44,7 @@ type handlers struct {
 	customid      rest.CustomidHandler
 	publicAuth    rest.PublicAuthHandler
 	i18n          rest.I18nHandler
+	mailTemplate  rest.MailTemplateHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -265,6 +266,9 @@ func (s *Server) setupHandlers() {
 	}
 	s.handlers.i18n = rest.I18nHandler{
 		I18nRepository: s.repos.i18nLocale,
+	}
+	s.handlers.mailTemplate = rest.MailTemplateHandler{
+		MailTemplatesRepository: s.repos.mailTemplates,
 	}
 
 	// TODO: quick fix, move spdx retriever into service
