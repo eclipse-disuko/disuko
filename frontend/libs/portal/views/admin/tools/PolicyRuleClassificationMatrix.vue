@@ -28,7 +28,6 @@ const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>();
 const search = ref('');
 const isPolicyManager = ref(false);
-const showActions = computed(() => isPolicyManager.value);
 const actionHeader: DataTableHeader = {
   title: 'COL_ACTIONS',
   align: 'center',
@@ -38,7 +37,7 @@ const actionHeader: DataTableHeader = {
 };
 
 const headers = computed<DataTableHeader[]>(() => [
-  ...(showActions.value ? [actionHeader] : []),
+  ...(isPolicyManager.value ? [actionHeader] : []),
   {title: 'POLICY_RULES', align: 'start', width: 150, value: 'name', sortable: true},
   ...classifications.value.map((c) => ({
     key: c._key,
@@ -123,7 +122,7 @@ onMounted(() => {
           :items-per-page="-1"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :sort-by="[{key: 'name', order: 'asc'}]">
-          <template v-if="showActions" #[`header.actions`]="{column}">
+          <template v-if="isPolicyManager" #[`header.actions`]="{column}">
             <GridFilterHeader :column="column">
               <template #settings>
                 <HeaderSettings :grid-name="tableName" :column="column" />
@@ -135,7 +134,7 @@ onMounted(() => {
               <span class="inline-block max-w-[150px] truncate">{{ column.title }}</span>
             </Tooltip>
           </template>
-          <template v-if="showActions" #[`item.actions`]="{item}">
+          <template v-if="isPolicyManager" #[`item.actions`]="{item}">
             <TableActionButtons
               variant="normal"
               :buttons="actionButtons"
