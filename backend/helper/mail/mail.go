@@ -26,7 +26,7 @@ type Client struct {
 	Pass   string
 }
 
-var templates []string = []string{"taskReview", "taskApproval"}
+var templates []string = []string{"taskReview", "taskApproval", "approvalInactiveMail"}
 
 func NewClient(host, port, sender, user, pass string) Client {
 	return Client{

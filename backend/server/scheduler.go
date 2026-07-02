@@ -7,6 +7,7 @@ package server
 import (
 	"context"
 
+	"github.com/eclipse-disuko/disuko/jobs/approvals"
 	"github.com/eclipse-disuko/disuko/jobs/calculatedpolicyrules"
 	"github.com/eclipse-disuko/disuko/jobs/labels"
 	"github.com/eclipse-disuko/disuko/jobs/userdeletion"
@@ -124,6 +125,12 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 	s.scheduler.AddJobCb(job.CalculatedPolicyRulesUpdate, calculatedPolicyRules)
 	userDel := userdeletion.Init(s.services.deletionService)
 	s.scheduler.AddJobCb(job.UserDeletion, userDel)
+
+	inactiveMail := approvals.InitInactiveMail(s.repos.approvalList, s.repos.user, s.mailClient)
+	s.scheduler.AddJobCb(job.ApprovalsInactiveMail, inactiveMail)
+
+	abortInactive := approvals.InitAbortInactive(s.repos.approvalList, s.repos.project, s.repos.user, s.repos.auditLogList, s.repos.sbomList, &s.handlers.project)
+	s.scheduler.AddJobCb(job.ApprovalsAbortInactive, abortInactive)
 
 	go s.scheduler.Start(ctx)
 	s.handlers.job.Scheduler = s.scheduler // todo ensure scheduler is set also found in observer.go

@@ -1,0 +1,33 @@
+{{define "subject"}} Action required: Approval will be aborted on {{ .DeletionDate }} / Handlungsbedarf: Freigabe wird am {{ .DeletionDate }} abgebrochen {{end}}
+
+{{define "plainBody"}}
+Hello {{ .Username }},
+
+the approval for project "{{ .ProjectName }}" has been inactive for 18 days and will be automatically aborted on {{ .DeletionDate }} if no action is taken.
+
+Please log in and take action to prevent the approval from being aborted.
+
+Thank you,
+your FOSS Disclosure Portal
+
+
+Please do NOT reply to this mail
+
+
+#################################
+
+Hallo {{ .Username }},
+
+die Freigabe für das Projekt "{{ .ProjectName }}" ist seit 18 Tagen inaktiv und wird am {{ .DeletionDate }} automatisch abgebrochen, wenn keine Maßnahmen ergriffen werden.
+
+Bitte melden Sie sich an und ergreifen Sie Maßnahmen, um den Abbruch der Freigabe zu verhindern.
+
+
+Vielen Dank,
+ihr FOSS Disclosure Portal
+
+
+Bitte antworten Sie NICHT auf diese Mail
+
+
+{{end}}
