@@ -311,6 +311,7 @@ onUnmounted(() => {
     <div v-if="!currentProjectEmpty" class="flex flex-row flex-wrap items-center gap-2 pb-3">
       <div class="flex flex-row items-center gap-2">
         <v-chip v-if="currentProject.isDummy" class="dummy-tag mr-2" label>DUMMY</v-chip>
+        <div class="text-h6">SBOM:</div>
         <v-menu v-if="spdxFileHistory.length > 0" v-model="sbomMenuOpen" location="bottom start">
           <template v-slot:activator="{props}">
             <div v-bind="props" class="sbom-selector flex cursor-pointer items-center gap-1">
@@ -322,7 +323,7 @@ onUnmounted(() => {
               </span>
               <v-chip v-if="currentSpdx?.tag" size="x-small">{{ getStrWithMaxLength(10, currentSpdx.tag) }}</v-chip>
               <v-chip v-if="currentSpdx?.isRecent" size="x-small">{{ t('SBOM_LATEST') }}</v-chip>
-              <v-icon size="small">mdi-menu-down</v-icon>
+              <v-icon size="small" color="primary">mdi-menu-down</v-icon>
             </div>
           </template>
           <v-list density="compact">
