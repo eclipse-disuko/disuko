@@ -17,4 +17,6 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v5
         with:
-          allow-licenses: 'MIT, Apache-2.0'
+          allow-licenses: 'MIT'
+          comment-summary-in-pr: always
+          show-patched-versions: true
