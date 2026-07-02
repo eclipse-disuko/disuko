@@ -12,7 +12,6 @@ import {createReusableTemplate} from '@vueuse/core';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import ProjectLabel from '../ProjectLabel.vue';
-import config from '@shared/utils/config';
 
 const projectStore = useProjectStore();
 const labelStore = useLabelStore();
@@ -67,7 +66,7 @@ const uuidLabel = computed(() => {
       </v-col>
     </v-row>
     <v-row class="mb-4">
-      <v-col cols="12" xs="12" :md="currentProject.applicationMeta.id ? '5' : '6'">
+      <v-col cols="12" xs="12" :md="currentProject.isGroup ? '4' : currentProject.applicationMeta.id ? '5' : '6'">
         <p class="text-caption text-grey-darken-1">{{ t('LABELS') }}</p>
         <div class="flex flex-wrap gap-1">
           <ProjectLabel :label="labelStore.getLabelByKey(currentProject.schemaLabel)" />
@@ -94,12 +93,18 @@ const uuidLabel = computed(() => {
           </DLabel>
         </div>
       </v-col>
-      <v-col cols="12" xs="12" :md="currentProject.applicationMeta.id ? '7' : '6'">
+      <v-col cols="12" xs="12" :md="currentProject.isGroup ? '4' : currentProject.applicationMeta.id ? '7' : '6'">
         <p class="text-caption text-grey-darken-1">{{ t('DESCRIPTION') }}</p>
 
         <span class="text-body-2">
           {{ getStrWithMaxLength(250, currentProject.description) }}
           <Tooltip>{{ currentProject.description }}</Tooltip>
+        </span>
+      </v-col>
+      <v-col v-if="currentProject && currentProject.isGroup" cols="12" xs="12" md="4">
+        <p class="text-caption text-grey-darken-1">{{ t('PROJECT_CHILDREN_COUNT') }}</p>
+        <span class="text-body-2">
+          {{ currentProject?.projectChildren?.projects?.length }}
         </span>
       </v-col>
     </v-row>
