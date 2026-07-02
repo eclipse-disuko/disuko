@@ -130,9 +130,9 @@ const handleDeniedClick = () => {
 <template>
   <span v-if="isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
     <span v-if="canMakeWarnedPolicyDecision" @click.stop="handleWarnedClick">
-      <v-icon size="small" :color="warnedIconColor" :style="isWarnedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-        {{ warnedIcon }}
-      </v-icon>
+      <v-btn size="small" variant="text" disabled>
+      {{ t('no_warned_decision_text') || 'No Warned Decision' }}
+    </v-btn>
     </span>
     <v-icon v-else size="small" :color="warnedIconColor">
       {{ warnedIcon }}
@@ -167,21 +167,28 @@ const handleDeniedClick = () => {
     </Tooltip>
     &nbsp;
   </span>
-  <span v-else-if="!isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small">mdi-blank</v-icon>
-    &nbsp;
-  </span>
+
 
   <span v-if="isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <span v-if="canMakeDeniedPolicyDecision" @click.stop="handleDeniedClick">
-      <v-icon size="small" :color="deniedIconColor" :style="isDeniedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-        {{ deniedIcon }}
-      </v-icon>
-    </span>
-    <v-icon v-else size="small" :color="deniedIconColor">
-      {{ deniedIcon }}
-    </v-icon>
-
+      <v-btn
+        v-if="canMakeDeniedPolicyDecision"
+        size="small"
+        variant="tonal"
+        color="primary"
+        @click.stop="handleDeniedClick"
+        :disabled="isDeniedPolicyDecisionDisabled"
+        class="text-none"
+        density="comfortable"
+        prepend-icon="mdi-checkbox-marked-circle-plus-outline ">{{ t('Decide')}}
+      </v-btn>
+      <v-btn
+        v-else
+        size="small"
+        :color="deniedIconColor"
+        prepend-icon="mdi-block-helper"
+        variant="text">
+      {{ t('denied_decision_button_text') || 'Denied Decision' }}
+      </v-btn>
     <Tooltip>
       <span v-if="canMakeDeniedPolicyDecision">
         {{ deniedPolicyDecisionTooltip }}
@@ -210,14 +217,20 @@ const handleDeniedClick = () => {
       </template>
     </Tooltip>
   </span>
-  <span v-else-if="!isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small">mdi-blank</v-icon>
-  </span>
+
 
   <span v-if="isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small" :color="onlyAppliedDecisionsIconColor">
-      {{ onlyAppliedDecisionsIcon }}
-    </v-icon>
+    <v-btn
+      size="small"
+      variant="tonal"
+      color="primary"
+      @click.stop="handleDeniedClick"
+      :disabled="isDeniedPolicyDecisionDisabled"
+      class="text-none"
+      density="comfortable"
+      prepend-icon="mdi-information-outline">
+      {{ t('Info') }}
+    </v-btn>
 
     <Tooltip>
       <span v-if="canMakeDeniedPolicyDecision">
@@ -242,7 +255,6 @@ const handleDeniedClick = () => {
           arrow="⇢" />
       </template>
     </Tooltip>
-    &nbsp;
     <v-icon size="small">mdi-blank</v-icon>
   </span>
 </template>
