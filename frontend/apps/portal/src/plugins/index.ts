@@ -14,6 +14,7 @@ import {createPinia} from 'pinia';
 import type {App} from 'vue';
 import router from '../router';
 import {ConfigSymbol} from '../types/symbols';
+import head from './unhead';
 import vuetify from './vuetify';
 
 export function registerPlugins(app: App) {
@@ -23,4 +24,5 @@ export function registerPlugins(app: App) {
   app.use(vuetify);
   app.use(i18n);
   app.use(router);
+  app.use(head);
 }

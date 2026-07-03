@@ -9,7 +9,8 @@ import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import config from '@shared/utils/config';
-import {computed, onMounted, ref} from 'vue';
+import {useHead} from '@unhead/vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const getTABURL = (tabName: string) => {
@@ -17,7 +18,7 @@ const getTABURL = (tabName: string) => {
 };
 const rights = ref(new Rights());
 const userStore = useUserStore();
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/tools', [
@@ -31,6 +32,29 @@ const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/tools', [
   'notificationBar',
   'classificationMatrix',
 ]);
+
+const pageTitle = ref('');
+useHead({title: pageTitle});
+const toolsTabNames: Record<string, string> = {
+  analytics: 'ANALYTICS',
+  accessRights: 'TAB_ADMIN_ACCESS_RIGHTS',
+  export_import: 'TAB_ADMIN_EXPORT_IMPORT',
+  storageConsistency: 'TAB_ADMIN_S3',
+  sampleData: 'TAB_ADMIN_SAMPLE_DATA',
+  termsOfUseManagement: 'TAB_ADMIN_TERMS_MANAGEMENT',
+  mail: 'TAB_ADMIN_MAIL',
+  notificationBar: 'TAB_ADMIN_NOTIFICATION_BAR',
+  classificationMatrix: 'TAB_ADMIN_CLASSIFICATION_MATRIX',
+};
+watch(
+  () => [selectedTab.value, locale.value],
+  () => {
+    const tabKey = toolsTabNames[selectedTab.value];
+    const tabName = tabKey ? t(tabKey) : '';
+    pageTitle.value = tabName ? `${t('TOOLS')} | ${tabName}` : t('TOOLS');
+  },
+  {immediate: true},
+);
 
 onMounted(() => {
   rights.value = userStore.getRights;

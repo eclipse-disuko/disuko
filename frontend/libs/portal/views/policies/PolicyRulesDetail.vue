@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import {useHead} from '@unhead/vue';
 import icons from '@disclosure-portal/constants/icons';
 import Label from '@disclosure-portal/model/Label';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
@@ -18,10 +18,11 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const router = useRouter();
 const breadcrumbs = useBreadcrumbsStore();
-const {useReactiveTitle} = usePageTitle();
+const pageTitle = ref('');
+useHead({title: pageTitle});
 
 const rule = ref(new PolicyRule());
 const isPolicyManager = ref(false);
@@ -95,12 +96,21 @@ onMounted(async () => {
   await reloadLabels();
 });
 
+const policyRuleTabNames: Record<string, string> = {
+  tabPolicyRuleTable: 'TAB_PROJECT_SELECTED',
+  tabPolicyRuleOverview: 'TAB_PROJECT_DETAIL',
+  tabChangeLog: 'TAB_CHANGE_LOG',
+  tabAuditLog: 'TAB_PROJECT_AUDIT',
+};
+
 // Set up reactive title based on policy rule name
 watch(
-  () => rule.value?.name,
-  (rule) => {
-    if (rule) {
-      useReactiveTitle(rule + ' | Policy Rule');
+  () => [rule.value?.name, selectedTab.value, locale.value],
+  ([ruleName]) => {
+    if (ruleName) {
+      const tabKey = policyRuleTabNames[selectedTab.value];
+      const tabName = tabKey ? t(tabKey) : '';
+      pageTitle.value = tabName ? `${String(ruleName)} | ${tabName}` : String(ruleName);
     }
   },
   {immediate: true},

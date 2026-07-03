@@ -33,14 +33,31 @@
 </template>
 
 <script lang="ts" setup>
+import {useHead} from '@unhead/vue';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {onMounted} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/analytics', ['overview', 'occurrences', 'stats']);
 const breadcrumbs = useBreadcrumbsStore();
+const pageTitle = ref('');
+useHead({title: pageTitle});
+const analyticTabNames: Record<string, string> = {
+  overview: 'TAB_ANALYTICS',
+  occurrences: 'TAB_OCCURRENCES',
+  stats: 'TAB_STATS',
+};
+watch(
+  () => [selectedTab.value, locale.value],
+  () => {
+    const tabKey = analyticTabNames[selectedTab.value];
+    const tabName = tabKey ? t(tabKey) : '';
+    pageTitle.value = tabName ? `${t('ANALYTICS')} | ${tabName}` : t('ANALYTICS');
+  },
+  {immediate: true},
+);
 
 onMounted(() => {
   breadcrumbs.setCurrentBreadcrumbs([
