@@ -40,7 +40,7 @@ const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideO
   useTableActionSlider();
 
 if (props.variant === 'slider') {
-  setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), props.buttons.length);
+  setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), shownButtons.value.length);
 }
 </script>
 
@@ -95,17 +95,17 @@ if (props.variant === 'slider') {
           <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
         </v-btn>
         <div
-          v-else-if="(buttons[0]?.show ?? true) && !(buttons[0]?.disabled ?? false)"
+          v-else-if="shownButtons.length === 1 && !(shownButtons[0]?.disabled ?? false)"
           class="d-inline size-10"
-          @click.stop="emit(buttons[0].event)">
+          @click.stop="emit(shownButtons[0].event)">
           <v-btn
             plain
             size="small"
             variant="text"
             density="default"
-            :icon="buttons[0].icon"
-            :color="buttons[0].color || 'primary'" />
-          <Tooltip v-if="buttons[0].hint" location="bottom" :text="buttons[0].hint" />
+            :icon="shownButtons[0].icon"
+            :color="shownButtons[0].color || 'primary'" />
+          <Tooltip v-if="shownButtons[0].hint" location="bottom" :text="shownButtons[0].hint" />
         </div>
         <template v-if="shownButtons.length >= 2">
           <template v-for="button in buttons" :key="button.icon">
