@@ -610,22 +610,24 @@ onUnmounted(async () => {
       <span>
         <Tooltip>{{ t('COL_POLICY_DECISION') }}</Tooltip>
         <v-btn
-          :variant="selectedFilterShowPolicyDecision ? 'tonal' : 'outlined'"
+          :variant="selectedFilterShowPolicyDecision ? 'flat' : 'tonal'"
+          color="primary"
           size="small"
-          class="text-none card-border my-2"
+          class="text-none my-2"
           @click.stop="selectedFilterShowPolicyDecision = !selectedFilterShowPolicyDecision">
-          <v-icon color="primary" icon="mdi-bank" class="mr-1" />
+          <v-icon :color="selectedFilterShowPolicyDecision ? 'white' : 'orange'" icon="mdi-checkbox-marked-circle-plus-outline" class="mr-1"/>
           {{ policyDecisionCount }} {{ t('COL_POLICY_DECISION') }}
         </v-btn>
       </span>
       <span>
         <Tooltip>{{ t('COL_LICENSE_DECISION') }}</Tooltip>
         <v-btn
-          :variant="selectedFilterShowLicenseDecision ? 'tonal' : 'outlined'"
+          :variant="selectedFilterShowLicenseDecision ? 'flat' : 'tonal'"
+          color="primary"
           size="small"
-          class="text-none card-border my-2"
+          class="text-none my-2"
           @click.stop="selectedFilterShowLicenseDecision = !selectedFilterShowLicenseDecision">
-          <v-icon color="primary" icon="mdi-text-box-edit-outline" class="mr-1" />
+          <v-icon :color="selectedFilterShowLicenseDecision ? 'white' : 'primary'" icon="mdi-text-box-edit-outline" class="mr-1" />
           {{ licenseDecisionCount }} {{ t('COL_LICENSE_DECISION') }}
         </v-btn>
       </span>

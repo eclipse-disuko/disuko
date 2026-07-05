@@ -291,29 +291,32 @@ onMounted(async () => {
           <v-col>
             <v-btn
               size="small"
-              :variant="isHTMLSelected ? 'tonal' : 'text'"
+              color="primary"
+              :variant="isHTMLSelected ? 'flat' : 'tonal'"
               :class="{active: isHTMLSelected}"
-              class="ma-2 text-none card-border ml-0"
+              class="ma-2 text-none ml-0"
               @click="loadStyledHTML">
-              <v-icon color="primary">mdi-code-brackets</v-icon>
+              <v-icon :color="isHTMLSelected ? 'white' : 'primary'">mdi-code-brackets</v-icon>
               HTML
             </v-btn>
             <v-btn
               size="small"
-              :variant="isTextSelected ? 'tonal' : 'text'"
+              color="primary"
+              :variant="isTextSelected ? 'flat' : 'tonal'"
               :class="{active: isTextSelected}"
-              class="ma-2 text-none card-border"
+              class="ma-2 text-none"
               @click="loadPlainText">
-              <v-icon color="primary">mdi-format-text</v-icon>
+              <v-icon :color="isTextSelected ? 'white' : 'primary'">mdi-format-text</v-icon>
               Plain Text
             </v-btn>
             <v-btn
               size="small"
-              :variant="isJSONFormat ? 'tonal' : 'text'"
+              color="primary"
+              :variant="isJSONFormat ? 'flat' : 'tonal'"
               :class="{active: isJSONFormat}"
-              class="ma-2 text-none card-border"
+              class="ma-2 text-none"
               @click="loadJSON">
-              <v-icon color="primary">mdi-code-json</v-icon>
+              <v-icon :color="isJSONFormat ? 'white' : 'primary'">mdi-code-json</v-icon>
               JSON
             </v-btn>
 

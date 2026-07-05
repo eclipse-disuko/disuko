@@ -111,12 +111,13 @@ onMounted(() => {
       content-class="dpTooltip">
       <template v-slot:activator>
         <v-btn
-          :variant="isSelected(policy) ? 'tonal' : 'outlined'"
+          :variant="isSelected(policy) ? 'flat' : 'tonal'"
           xcolor="ruleButton"
+          color="primary"
           size="small"
           v-if="policy"
           :class="[
-            'text-none card-border my-2',
+            'text-none my-2',
             {active: isSelected(policy)},
             isSelected(policy) ? callbacks.getActiveClassForPolicyFilterBtn(policy) : '',
           ]"
