@@ -315,11 +315,9 @@ onUnmounted(() => {
         <v-menu v-if="spdxFileHistory.length > 0" v-model="sbomMenuOpen" location="bottom start">
           <template v-slot:activator="{props}">
             <div v-bind="props" class="sbom-selector flex cursor-pointer items-center gap-1">
-              <span class="text-caption d-secondary-text">
-                <DDateCellWithTooltip :value="currentSpdx?.uploaded"></DDateCellWithTooltip>
-              </span>
+              <DDateCellWithTooltip class="d-secondary-text" :value="currentSpdx?.uploaded"></DDateCellWithTooltip>
               <span class="text-h6" v-if="currentSpdx?.metaInfo">
-                - {{ getStrWithMaxLength(39, currentSpdx.metaInfo.name) }}
+                {{ getStrWithMaxLength(39, currentSpdx.metaInfo.name) }}
               </span>
               <v-chip v-if="currentSpdx?.tag" size="x-small">{{ getStrWithMaxLength(10, currentSpdx.tag) }}</v-chip>
               <v-chip v-if="currentSpdx?.isRecent" size="x-small">{{ t('SBOM_LATEST') }}</v-chip>
@@ -332,10 +330,11 @@ onUnmounted(() => {
               :key="spdx._key"
               :active="spdx._key === currentSpdx?._key"
               @click="selectSbom(spdx)">
-              <span class="align-center flex flex-row gap-2">
-                <span class="text-caption">{{ formatDateAndTime(spdx.uploaded) }}&nbsp;</span>
-                <span class="text-caption d-secondary-text" v-if="spdx.metaInfo">
-                  &nbsp;-&nbsp;{{ getStrWithMaxLength(39, spdx.metaInfo.name) }}
+              <span class="align-center text-caption flex flex-row gap-1">
+                <span class="d-secondary-text">{{ formatDateAndTime(spdx.uploaded) }}</span>
+                <span>-</span>
+                <span v-if="spdx.metaInfo">
+                  {{ getStrWithMaxLength(39, spdx.metaInfo.name) }}
                 </span>
                 <v-chip v-if="spdx.tag" size="x-small">{{ spdx.tag }}</v-chip>
                 <v-chip v-if="spdx.isRecent" size="x-small">{{ t('SBOM_LATEST') }}</v-chip>

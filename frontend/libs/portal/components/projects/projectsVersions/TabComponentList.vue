@@ -615,7 +615,10 @@ onUnmounted(async () => {
           size="small"
           class="text-none my-2"
           @click.stop="selectedFilterShowPolicyDecision = !selectedFilterShowPolicyDecision">
-          <v-icon :color="selectedFilterShowPolicyDecision ? 'white' : 'orange'" icon="mdi-checkbox-marked-circle-plus-outline" class="mr-1"/>
+          <v-icon
+            :color="selectedFilterShowPolicyDecision ? 'white' : 'orange'"
+            icon="mdi-checkbox-marked-circle-plus-outline"
+            class="mr-1" />
           {{ policyDecisionCount }} {{ t('COL_POLICY_DECISION') }}
         </v-btn>
       </span>
@@ -627,7 +630,10 @@ onUnmounted(async () => {
           size="small"
           class="text-none my-2"
           @click.stop="selectedFilterShowLicenseDecision = !selectedFilterShowLicenseDecision">
-          <v-icon :color="selectedFilterShowLicenseDecision ? 'white' : 'primary'" icon="mdi-text-box-edit-outline" class="mr-1" />
+          <v-icon
+            :color="selectedFilterShowLicenseDecision ? 'white' : 'primary'"
+            icon="mdi-text-box-edit-outline"
+            class="mr-1" />
           {{ licenseDecisionCount }} {{ t('COL_LICENSE_DECISION') }}
         </v-btn>
       </span>
