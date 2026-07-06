@@ -36,8 +36,7 @@ const shownButtons = computed(() => props.buttons.filter((button) => button.show
 const outsideButtons = computed(() => shownButtons.value.slice(0, 1));
 const remainingButtons = computed(() => shownButtons.value.slice(1));
 
-const {sliderWidth, baseWidth, setupTableActionSlider, stopSlideInTimerAndSlideOut, startSlideInTimer} =
-  useTableActionSlider();
+const {sliderWidth, baseWidth, setupTableActionSlider, toggleSlide} = useTableActionSlider();
 
 if (props.variant === 'slider') {
   setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), shownButtons.value.length);
@@ -47,7 +46,11 @@ if (props.variant === 'slider') {
 <template>
   <div
     class="flex items-center"
-    :class="{'justify-center': variant !== 'slider', 'justify-start': variant === 'slider'}">
+    :class="{
+      'justify-center': variant !== 'slider',
+      'justify-start': variant === 'slider',
+      'h-[100%]': variant === 'slider',
+    }">
     <!-- Minimal Variant: All buttons in an extra menu -->
     <template v-if="variant === 'minimal'">
       <ExtraMenu>
@@ -77,54 +80,33 @@ if (props.variant === 'slider') {
 
     <!-- Normal Variant: All buttons displayed -->
     <template v-else-if="variant === 'slider'">
-      <div
-        class="align-center flex h-[100%] justify-start pr-5 pl-8"
-        @click.stop
-        @mouseenter="stopSlideInTimerAndSlideOut"
-        @mouseleave="startSlideInTimer">
-        <v-btn
+      <div class="align-center flex h-[100%] justify-start pr-5" @click.stop>
+        <DIconButton
           v-if="shownButtons.length >= 2"
-          plain
-          size="small"
-          variant="text"
-          icon
+          icon="mdi-dots-horizontal"
           color="primary"
           class="size-10"
-          @click.stop>
-          <v-icon>mdi-dots-horizontal</v-icon>
-          <Tooltip location="bottom" :text="t('OPEN_ACTIONS')" />
-        </v-btn>
-        <div
-          v-else-if="shownButtons.length === 1 && !(shownButtons[0]?.disabled ?? false)"
-          class="d-inline size-10"
-          @click.stop="emit(shownButtons[0].event)">
-          <v-btn
-            plain
-            size="small"
-            variant="text"
-            density="default"
+          :hint="t('OPEN_ACTIONS')"
+          @clicked="toggleSlide" />
+        <div v-else-if="shownButtons.length === 1 && !(shownButtons[0]?.disabled ?? false)" class="d-inline size-10">
+          <DIconButton
             :icon="shownButtons[0].icon"
-            :color="shownButtons[0].color || 'primary'" />
-          <Tooltip v-if="shownButtons[0].hint" location="bottom" :text="shownButtons[0].hint" />
+            :color="shownButtons[0].color || 'primary'"
+            :hint="shownButtons[0].hint"
+            @clicked="emit(shownButtons[0].event)" />
         </div>
         <template v-if="shownButtons.length >= 2">
           <template v-for="button in buttons" :key="button.icon">
             <div
               :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}"
               class="transition-[opacity] duration-200 ease-in-out">
-              <div
-                v-if="(button?.show ?? true) && !(button?.disabled ?? false)"
-                class="d-inline size-10"
-                @click.stop="!button?.disabled ? emit(button.event) : null">
-                <v-btn
-                  plain
-                  size="small"
-                  variant="text"
-                  density="default"
+              <div v-if="(button?.show ?? true) && !(button?.disabled ?? false)" class="d-inline size-10">
+                <DIconButton
                   :icon="button.icon"
                   :color="button.color || 'primary'"
-                  :disabled="Boolean(button?.disabled) || false" />
-                <Tooltip v-if="button.hint && !button?.disabled" location="bottom" :text="button.hint" />
+                  :disabled="Boolean(button?.disabled) || false"
+                  :hint="button.hint && !button?.disabled ? button.hint : undefined"
+                  @clicked="!button?.disabled ? emit(button.event) : null" />
               </div>
             </div>
           </template>
