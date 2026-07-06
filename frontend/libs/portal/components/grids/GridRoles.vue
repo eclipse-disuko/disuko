@@ -91,7 +91,7 @@ onMounted(() => {
         :headers="headers"
         :search="search"
         @click:row="(event: Event, dataItem: DataTableItem<ProjectRoleDto>) => openProject(dataItem.item)"
-        :items-per-page="50"
+        :items-per-page="100"
         fixed-header
         :sort-by="sortBy"
         sort-desc>

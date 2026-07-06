@@ -343,7 +343,7 @@ const headers = computed((): DataTableHeader[] => [
           :custom-filter="customFilterTable"
           :items="filteredList"
           :item-class="getCssClassForTableRow"
-          :items-per-page="-1"
+          :items-per-page="100"
           :search="search"
           :sort-by="sortItems">
           <template #[`header.status`]="{column, getSortIcon, toggleSort}">

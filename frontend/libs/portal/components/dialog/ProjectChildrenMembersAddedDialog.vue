@@ -66,6 +66,7 @@ const close = () => {
             :headers="headers"
             :items="items"
             item-key="projectKey"
+            :items-per-page="100"
             :footer-props="{
               'items-per-page-options': [10, 50, 100, -1],
             }">

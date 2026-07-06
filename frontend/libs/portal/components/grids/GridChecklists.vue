@@ -145,7 +145,7 @@ const getActionButtons = (item: Checklist): TableActionButtonsProps['buttons'] =
           item-key="_key"
           :items="checklistsStore.checklists"
           :headers="headers"
-          :items-per-page="50"
+          :items-per-page="100"
           fixed-header
           :sort-by="sortBy"
           @click:row="openItem"

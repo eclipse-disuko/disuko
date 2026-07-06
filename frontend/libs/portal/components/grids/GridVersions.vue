@@ -277,6 +277,7 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
           :search="search"
           :headers="headers"
           :items="filteredList"
+          :items-per-page="100"
           class="striped-table fill-height"
           density="compact"
           :footer-props="{

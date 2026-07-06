@@ -214,7 +214,7 @@ watch(
         :headers="filteredHeaders"
         fixed-header
         density="compact"
-        :items-per-page="50"
+        :items-per-page="100"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
         :items="items"
         class="striped-table fill-height"

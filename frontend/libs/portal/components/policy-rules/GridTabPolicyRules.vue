@@ -809,7 +809,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
               :headers="componentHeadersSelected"
               :class="getCssClass() + ' striped-table fill-height'"
               :search="filterSelected"
-              :items-per-page="25"
+              :items-per-page="100"
               :items="filteredListSelected"
               @[canEditManual&&`click:row`]="
                 (event: Event, dataItem: DataTableItem<LicenseSlim>) => unselectLicense(dataItem.item)
@@ -1171,7 +1171,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
             :loading="licensesLoading"
             fixed-header
             :headers="componentHeadersUnSelected"
-            :items-per-page="25"
+            :items-per-page="100"
             :items="filteredListNotSelected"
             :search="filterUnSelected"
             @click:row="(event: Event, dataItem: DataTableItem<LicenseSlim>) => selectLicense(dataItem.item)"

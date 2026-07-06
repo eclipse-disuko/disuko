@@ -146,7 +146,7 @@ onMounted(async () => {
           item-key="_key"
           :items="items"
           :headers="headers"
-          :items-per-page="50"
+          :items-per-page="100"
           fixed-header
           :sort-by="sortBy"
           sort-desc>
