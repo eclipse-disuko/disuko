@@ -157,6 +157,19 @@ const tiles = computed<ITile[]>(() => {
     });
   }
 
+  if (RightsUtils.isApplicationAdmin()) {
+    res.push({
+      color: 'primary',
+      cnt: -1,
+      visible: true,
+      title: 'MAIL_TEMPLATES',
+      url: '/dashboard/admin/mailtemplates',
+      icon: 'mdi-email-outline',
+      expandGroup: false,
+      expand: false,
+    });
+  }
+
   if (RightsUtils.isApplicationAdmin() || RightsUtils.isDomainAdmin()) {
     res.push({
       color: 'primary',
