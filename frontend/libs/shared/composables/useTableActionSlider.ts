@@ -13,6 +13,7 @@ export const useTableActionSlider = () => {
 
   const buttonWidth = 40;
   const spaceAfter = 20;
+  const sliderTimeout = 600;
 
   const buttonsLength = ref<number>(1);
   const slideInTimer = ref<number>(0);
@@ -41,7 +42,7 @@ export const useTableActionSlider = () => {
 
   const startSlideInTimer = () => {
     if (buttonsLength.value >= 2) {
-      slideInTimer.value = 300;
+      slideInTimer.value = sliderTimeout;
 
       if (slideInTimeout.value) {
         clearTimeout(slideInTimeout.value);
@@ -64,14 +65,20 @@ export const useTableActionSlider = () => {
     slideToggleAction.value();
   };
 
-  const stopSlideInTimerAndSlideOut = () => {
+  const stopSlideInTimer = () => {
     if (buttonsLength.value >= 2) {
       if (slideInTimeout.value) {
         clearTimeout(slideInTimeout.value);
         slideInTimeout.value = null;
       }
+    }
+  };
 
+  const toggleSlide = () => {
+    if (sliderWidth.value === baseWidth.value) {
       slideOut();
+    } else {
+      slideIn();
     }
   };
 
@@ -87,8 +94,9 @@ export const useTableActionSlider = () => {
     expandedMaxWidth,
     slideOut,
     slideIn,
-    setupTableActionSlider,
+    toggleSlide,
     startSlideInTimer,
-    stopSlideInTimerAndSlideOut,
+    stopSlideInTimer,
+    setupTableActionSlider,
   };
 };
