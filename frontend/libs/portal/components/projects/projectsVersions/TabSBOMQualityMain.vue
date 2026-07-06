@@ -140,14 +140,15 @@ watch(
     <template #buttons>
       <v-btn
         v-for="tab in tabs"
+        color="primary"
         size="small"
         :key="tab.id"
         @click="changeTab(tab)"
-        :variant="selectedTabId === tab.id ? 'tonal' : 'text'"
+        :variant="selectedTabId === tab.id ? 'flat' : 'tonal'"
         :class="{active: selectedTabId === tab.id}"
-        class="text-none card-border"
+        class="text-none"
         min-width="130px">
-        <v-icon color="primary" class="pr-2">{{ tab.buttonIcon }}</v-icon>
+        <v-icon :color="selectedTabId === tab.id ? 'white' : 'primary'" class="pr-2">{{ tab.buttonIcon }}</v-icon>
         {{ t(tab.buttonText) }}
       </v-btn>
       <v-spacer></v-spacer>
