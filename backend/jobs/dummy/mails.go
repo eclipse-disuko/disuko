@@ -9,13 +9,14 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/job"
 	"github.com/eclipse-disuko/disuko/domain/label"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/user"
-	"github.com/eclipse-disuko/disuko/helper/mail"
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/scheduler"
 )
@@ -23,20 +24,20 @@ import (
 type MailJob struct {
 	projectRepository projectRepo.IProjectRepository
 	labelRepository   labels.ILabelRepository
-	mailClient        mail.Client
+	mailService       *mail.Service
 	userRepository    userRepo.IUsersRepository
 }
 
 func InitMailJob(
 	projectRepository projectRepo.IProjectRepository,
 	labelRepository labels.ILabelRepository,
-	mailClient mail.Client,
+	mailService *mail.Service,
 	userRepository userRepo.IUsersRepository,
 ) *MailJob {
 	return &MailJob{
 		projectRepository: projectRepository,
 		labelRepository:   labelRepository,
-		mailClient:        mailClient,
+		mailService:       mailService,
 		userRepository:    userRepository,
 	}
 }
@@ -91,10 +92,10 @@ func (j *MailJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execu
 		del := prj.Created.UTC().AddDate(0, 3, 0)
 		daysUntil := int(time.Until(del).Hours() / 24)
 		if daysUntil == 30 {
-			j.sendMail(prj, respUser, &log, 30)
+			j.sendMail(rs, prj, respUser, &log, 30)
 		}
 		if daysUntil == 14 {
-			j.sendMail(prj, respUser, &log, 14)
+			j.sendMail(rs, prj, respUser, &log, 14)
 		}
 	}
 
@@ -104,7 +105,7 @@ func (j *MailJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execu
 	}
 }
 
-func (j *MailJob) sendMail(prj *project.Project, resp *user.User, log *job.Log, days int) {
+func (j *MailJob) sendMail(rs *logy.RequestSession, prj *project.Project, resp *user.User, log *job.Log, days int) {
 	mailData := struct {
 		Username    string
 		ProjectName string
@@ -113,8 +114,8 @@ func (j *MailJob) sendMail(prj *project.Project, resp *user.User, log *job.Log, 
 	mailData.Username = resp.Forename + " " + resp.Lastname
 	mailData.ProjectName = prj.Name
 	mailData.Days = days
-	templ := "dummyDeletion"
-	err := j.mailClient.Send(resp.Email, templ, mailData)
+
+	err := j.mailService.SendMail(rs, resp.Email, mailtemplate.MailTemplateKeyDummyDeletion, mailData)
 	if err != nil {
 		log.AddEntry(job.Error, "Failed to send the email to %s", resp.Email)
 	} else {

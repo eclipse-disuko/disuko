@@ -6,21 +6,22 @@ package spdxsubscribe
 
 import (
 	"github.com/eclipse-disuko/disuko/conf"
-	"github.com/eclipse-disuko/disuko/helper/mail"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 )
 
 type SpdxSubscribe struct {
-	mailClient mail.Client
-	userRepo   user.IUsersRepository
+	mailService *mail.Service
+	userRepo    user.IUsersRepository
 }
 
-func Init(mailClient mail.Client, userRepo user.IUsersRepository) *SpdxSubscribe {
+func Init(mailService *mail.Service, userRepo user.IUsersRepository) *SpdxSubscribe {
 	return &SpdxSubscribe{
-		mailClient: mailClient,
-		userRepo:   userRepo,
+		mailService: mailService,
+		userRepo:    userRepo,
 	}
 }
 
@@ -72,8 +73,7 @@ func (s *SpdxSubscribe) sendMail(data observermngmt.SpdxData) {
 					logy.Errorf(data.RequestSession, "Could not send email %v", err)
 				}
 			}()
-			templ := "spdxUploaded"
-			err := s.mailClient.Send(targetUser.Email, templ, mailData)
+			err := s.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeySpdxUploaded, mailData)
 			if err != nil {
 				logy.Errorf(data.RequestSession, "Failed to send the email: %v", err)
 			} else {

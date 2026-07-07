@@ -9,6 +9,17 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/audit"
 )
 
+type MailTemplateKey string
+
+const (
+	MailTemplateKeyApprovalFinalized MailTemplateKey = "approvalFinalized"
+	MailTemplateKeyDummyDeletion     MailTemplateKey = "dummyDeletion"
+	MailTemplateKeyReviewCreated     MailTemplateKey = "reviewCreated"
+	MailTemplateKeyReviewFinalized   MailTemplateKey = "reviewFinalized"
+	MailTemplateKeySpdxUploaded      MailTemplateKey = "spdxUploaded"
+	MailTemplateKeyTaskApproval      MailTemplateKey = "taskApproval"
+)
+
 type MailTemplate struct {
 	domain.RootEntity `bson:"inline"`
 	audit.Container   `bson:"inline"`

@@ -110,7 +110,7 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 	dummyMail := dummy.InitMailJob(
 		s.repos.project,
 		s.repos.label,
-		s.mailClient,
+		s.services.mail,
 		s.repos.user,
 	)
 	s.scheduler.AddJobCb(job.DummyMail, dummyMail)

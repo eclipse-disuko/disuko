@@ -17,11 +17,11 @@ type observer interface {
 }
 
 func (s *Server) registerObserver() {
-	approvalMail := approvalmail.Init(s.mailClient, s.repos.user, s.repos.project)
+	approvalMail := approvalmail.Init(s.services.mail, s.repos.user, s.repos.project)
 	userStatsCon := userstats.Init(s.scheduler)
 	analyticsCon := analytics.Init(&s.services.analytics)
-	spdxMail := spdxsubscribe.Init(s.mailClient, s.repos.user)
-	overallReview := reviewmail.Init(s.mailClient, s.repos.user)
+	spdxMail := spdxsubscribe.Init(s.services.mail, s.repos.user)
+	overallReview := reviewmail.Init(s.services.mail, s.repos.user)
 
 	observers := []observer{
 		approvalMail,

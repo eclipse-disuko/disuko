@@ -11,6 +11,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/export"
 	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
 	"github.com/eclipse-disuko/disuko/infra/service/locks"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/infra/service/patauth"
 	"github.com/eclipse-disuko/disuko/infra/service/policy"
 	"github.com/eclipse-disuko/disuko/infra/service/project"
@@ -37,6 +38,7 @@ type services struct {
 	deletionService     *userService.DeletionService
 	userService         *userService.Service
 	patAuthService      *patauth.Service
+	mail                *mail.Service
 }
 
 func (s *Server) setupServices(rs *logy.RequestSession) {
@@ -147,6 +149,10 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 		userService: userServ,
 		patAuthService: &patauth.Service{
 			Repo: s.repos.user,
+		},
+		mail: &mail.Service{
+			Client:       &s.mailClient,
+			TemplateRepo: s.repos.mailTemplates,
 		},
 	}
 }
