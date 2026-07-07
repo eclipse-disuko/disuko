@@ -98,6 +98,7 @@ const isExpanded = (item: AuditLog) => {
           :headers="headers"
           :search="search"
           fixed-header
+          items-per-page="100"
           class="striped-table custom-data-table fill-height"
           density="compact"
           :sort-by="sortBy"

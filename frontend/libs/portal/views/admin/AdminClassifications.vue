@@ -262,7 +262,7 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
           :headers="headers"
           fixed-header
           @click:row="onRowClick"
-          :items-per-page="-1"
+          :items-per-page="100"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :items="filteredList"
           :sort-by="sortItem()"

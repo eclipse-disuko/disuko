@@ -258,7 +258,7 @@ const updateTableHeight = () => {
                       :headers="headers"
                       :sort-by="sortItems"
                       :items="schemaLabels"
-                      :items-per-page="-1"
+                      :items-per-page="100"
                       :custom-filter="customFilterTable"
                       :item-class="getCssClassForTableRow"
                       :search="schemaLabelSearch">

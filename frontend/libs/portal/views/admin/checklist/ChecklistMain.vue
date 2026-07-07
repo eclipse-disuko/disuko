@@ -156,7 +156,7 @@ watch(
           item-key="_key"
           :items="checklist.items"
           :headers="headers"
-          :items-per-page="50"
+          :items-per-page="100"
           fixed-header
           :sort-by="sortBy"
           sort-desc>

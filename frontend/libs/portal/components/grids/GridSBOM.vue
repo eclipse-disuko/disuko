@@ -505,6 +505,7 @@ onMounted(async () => {
           :headers="headers"
           :items="filteredList"
           @click:row="openSBOM"
+          items-per-page="100"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"

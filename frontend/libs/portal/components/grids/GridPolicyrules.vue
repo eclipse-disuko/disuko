@@ -155,6 +155,7 @@ watch(projectModel, async (value) => {
           :search="search"
           :headers="headers"
           :items="rules"
+          :items-per-page="100"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"

@@ -245,7 +245,7 @@ onMounted(async () => {
         fixed-header
         @click:row="onClickRow"
         class="striped-table fill-height"
-        :items-per-page="50"
+        :items-per-page="100"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
         :items="filteredItems"
         :item-class="getCssClassForTableRow">

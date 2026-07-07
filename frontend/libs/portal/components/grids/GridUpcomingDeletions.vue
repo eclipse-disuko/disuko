@@ -157,7 +157,7 @@ onMounted(async () => {
         item-value="user"
         :items="items"
         :headers="headers"
-        :items-per-page="50"
+        :items-per-page="100"
         fixed-header
         :sort-by="sortBy"
         expand-on-click

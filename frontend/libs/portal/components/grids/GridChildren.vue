@@ -154,7 +154,7 @@ const getStatusClass = computed(() => (status?: string) => {
         :headers="headers"
         :items="filteredList"
         @click:row="(_: Event, dataItem: DataTableItem<ProjectChildrenCombiDto>) => openVersion(dataItem.item)"
-        :items-per-page="-1">
+        :items-per-page="100">
         <template #[`item.data-table-expand`]="{}"> x </template>
         <template #group-header="{item, toggleGroup, isGroupOpen}">
           <tr

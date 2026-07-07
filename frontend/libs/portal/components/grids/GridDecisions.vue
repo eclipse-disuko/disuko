@@ -273,7 +273,7 @@ onMounted(async () => {
         sort-desc
         :items="filteredList"
         :search="search"
-        items-per-page="50"
+        items-per-page="100"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}">
         <template v-slot:[`header.actions`]="{column}">
           <GridFilterHeader :column="column">
