@@ -211,7 +211,7 @@ const getActionButtons = (item: Token): TableActionButtonsProps['buttons'] => {
           density="compact"
           :loading="!dataAreLoaded"
           fixed-header
-          :items-per-page="15"
+          :items-per-page="100"
           :sort-by="sortBy"
           sort-desc
           class="striped-table custom-data-table fill-height"

@@ -556,7 +556,7 @@ watch(
           :search="search"
           :sort-by="sortItems"
           :loading="isLoading"
-          :items-per-page="25">
+          :items-per-page="100">
           <template #[`item.translation`]="{item}">
             <div v-if="isEditingRow(item)">
               <v-textarea

@@ -14,7 +14,7 @@ const projectStore = useProjectStore();
 
 const {t} = useI18n();
 const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
-const search = ref<string | null>('');
+const search = ref<string>('');
 const dataAreLoaded = ref(false);
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
 
@@ -77,6 +77,8 @@ onMounted(async () => {
           class="flex-1 overflow-hidden"
           :projects="filteredProjects"
           :channels="projectModel.versions"
+          :items-per-page="100"
+          :show-footer="true"
           showSbomExtras
           showSupplier
           showLoading

@@ -288,7 +288,7 @@ onMounted(() => {
           fixed-header
           :headers="headers"
           :items="filteredItems"
-          items-per-page="25"
+          items-per-page="100"
           item-value="_key"
           :sort-by="sortBy"
           :cell-props="{class: 'py-3'}">

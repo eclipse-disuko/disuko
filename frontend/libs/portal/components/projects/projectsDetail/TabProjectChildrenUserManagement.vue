@@ -385,6 +385,7 @@ watch(
           density="compact"
           :loading="!dataAreLoaded"
           fixed-header
+          :items-per-page="100"
           :height="tableHeight"
           class="striped-table custom-data-table h-full"
           :headers="userHeaders"

@@ -125,7 +125,7 @@ const doExpire = async (config: IConfirmationDialogConfig) => {
         item-key="key"
         :items="items"
         :headers="headers"
-        :items-per-page="50"
+        :items-per-page="100"
         fixed-header
         :sort-by="sortBy"
         sort-desc>
