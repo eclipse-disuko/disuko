@@ -5,13 +5,13 @@
 <script setup lang="ts">
 import GridMailTemplates from '@disclosure-portal/components/grids/GridMailTemplates.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {onMounted} from 'vue';
+import {onBeforeMount} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 
-onMounted(() => {
+onBeforeMount(() => {
   breadcrumbs.setCurrentBreadcrumbs([
     ...dashboardCrumbs,
     {title: t('MAIL_TEMPLATES'), disabled: true, href: '/dashboard/admin/mailtemplates'},
@@ -22,4 +22,3 @@ onMounted(() => {
 <template>
   <GridMailTemplates />
 </template>
-

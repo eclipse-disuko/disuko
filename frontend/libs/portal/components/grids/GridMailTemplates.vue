@@ -8,7 +8,7 @@ import {MailTemplate} from '@disclosure-portal/model/MailTemplate';
 import mailTemplatesService from '@disclosure-portal/services/mailtemplates.service';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
-import {onMounted, ref, computed} from 'vue';
+import {ref, computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
@@ -16,7 +16,7 @@ const {sliderWidth} = useTableActionSlider();
 
 const dialog = ref<InstanceType<typeof MailTemplateDialog>>();
 const items = ref<MailTemplate[]>([]);
-const loaded = ref(false);
+const loading = ref(true);
 const sortBy: SortItem[] = [{key: '_key', order: 'asc'}];
 
 const headers = computed((): DataTableHeader[] => [
@@ -27,13 +27,13 @@ const headers = computed((): DataTableHeader[] => [
 ]);
 
 const reload = async () => {
-  loaded.value = false;
+  loading.value = true;
   const res = await mailTemplatesService.getAll();
   items.value = res.data;
-  loaded.value = true;
+  loading.value = false;
 };
 
-onMounted(reload);
+reload();
 </script>
 
 <template>
@@ -46,7 +46,7 @@ onMounted(reload);
         <v-data-table
           density="compact"
           class="striped-table fill-height"
-          :loading="!loaded"
+          :loading="loading"
           item-key="_key"
           :items="items"
           :headers="headers"

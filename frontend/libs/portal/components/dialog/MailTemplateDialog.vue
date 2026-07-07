@@ -113,10 +113,3 @@ defineExpose({open});
     </ReactiveDialogLayout>
   </v-dialog>
 </template>
-
-<style scoped>
-.values-table {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.38) !important;
-  border-radius: 4px;
-}
-</style>
