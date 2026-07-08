@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import {useHead} from '@unhead/vue';
 import {ProjectSubscriptions} from '@disclosure-portal/model/Project';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useIdleStore} from '@shared/stores/idle.store';
@@ -20,7 +20,8 @@ const route = useRoute();
 const router = useRouter();
 const {t, locale} = useI18n();
 const {dashboardCrumbs, projectsCrumb, ...breadcrumbs} = useBreadcrumbsStore();
-const {useReactiveTitle} = usePageTitle();
+const pageTitle = ref('');
+useHead({title: pageTitle});
 const appStore = useAppStore();
 const projectStore = useProjectStore();
 const idleStore = useIdleStore();
@@ -45,30 +46,30 @@ const tabUrl = computed(() => {
   return `/dashboard/${type}/${encodedProjectId.value}`;
 });
 
-// Function to get tab display name from route
-const getTabDisplayName = () => {
-  const path = route.path;
-  if (path.includes('/overview')) return t('TAB_PROJECT_OVERVIEW');
-  if (path.includes('/children')) return t('TAB_PROJECT_CHILDREN');
-  if (path.includes('/sbomlist')) return t('SBOM_DELIVERIES');
-  if (path.includes('/versionlist')) return t('TAB_PROJECT_VERSION');
-  if (path.includes('/users')) return t('TAB_PROJECT_USERMANAGEMENT');
-  if (path.includes('/childrenUsers')) return t('TAB_PROJECT_USERMANAGEMENT');
-  if (path.includes('/tokens')) return t('TAB_PROJECT_TOKENMANAGEMENT');
-  if (path.includes('/policyrules')) return t('TAB_POLICYRULES');
-  if (path.includes('/licenserules')) return t('TAB_LICENSERULES');
-  if (path.includes('/approvals')) return t('TAB_PROJECT_APPROVALS');
-  if (path.includes('/auditLog')) return t('TAB_PROJECT_AUDIT');
-  return t('TAB_PROJECT_OVERVIEW');
+const projectTabNames: Record<string, string> = {
+  overview: 'TAB_PROJECT_OVERVIEW',
+  children: 'TAB_PROJECT_CHILDREN',
+  sbomlist: 'SBOM_DELIVERIES',
+  versionlist: 'TAB_PROJECT_VERSION',
+  users: 'TAB_PROJECT_USERMANAGEMENT',
+  childrenUsers: 'TAB_PROJECT_USERMANAGEMENT',
+  tokens: 'TAB_PROJECT_TOKENMANAGEMENT',
+  policyrules: 'TAB_POLICYRULES',
+  licenserules: 'TAB_LICENSERULES',
+  decisions: 'TAB_DECISIONS',
+  approvals: 'TAB_PROJECT_APPROVALS',
+  auditLog: 'TAB_PROJECT_AUDIT',
 };
 
 // Set up reactive page title
 watch(
-  () => [currentProject.value?.name, route.name, locale.value],
-  ([projectName]) => {
+  () => [currentProject.value?.name, currentProject.value?.parentName, selectedTab.value, locale.value],
+  ([projectName, parentName]) => {
     if (projectName) {
-      const tabName = getTabDisplayName();
-      useReactiveTitle(`${String(projectName)} | ${tabName}`);
+      const tabKey = projectTabNames[selectedTab.value];
+      const tabName = tabKey ? t(tabKey) : '';
+      const base = parentName ? `${String(projectName)} | ${String(parentName)}` : String(projectName);
+      pageTitle.value = tabName ? `${base} | ${tabName}` : base;
     }
   },
   {immediate: true},

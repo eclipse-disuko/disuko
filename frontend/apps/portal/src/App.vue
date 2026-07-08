@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import {useHead} from '@unhead/vue';
 import i18nService from '@disclosure-portal/services/i18n.service';
 import DHTTPError from '@shared/types/DHTTPError';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
@@ -33,7 +33,8 @@ const customIdsStore = useCustomIdStore();
 const router = useRouter();
 const wizardStore = useWizardStore();
 const labelStore = useLabelStore();
-const {useReactiveTitle} = usePageTitle();
+const pageTitle = ref('');
+useHead({title: pageTitle});
 const eventKeyStore = useEventKeysStore();
 
 const hasAuthentication = ref(false);
@@ -127,7 +128,7 @@ watch(
       const titleObj = route.meta.title as {[key: string]: string};
       title = titleObj[appLanguage.value];
 
-      useReactiveTitle(title);
+      pageTitle.value = title;
     }
   },
   {immediate: true},

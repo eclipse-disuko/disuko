@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {DialogVersionFormConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
-import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import {useHead} from '@unhead/vue';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {SpdxFile} from '@disclosure-portal/model/VersionDetails';
 import projectService from '@disclosure-portal/services/projects';
@@ -33,7 +33,8 @@ const sbomStore = useSbomStore();
 const {info: snack} = useSnackbar();
 const idle = useIdleStore();
 const {dashboardCrumbs, projectsCrumb, ...breadcrumbs} = useBreadcrumbsStore();
-const {useReactiveTitle} = usePageTitle();
+const pageTitle = ref('');
+useHead({title: pageTitle});
 const {currentProject} = storeToRefs(projectStore);
 
 const {currentVersion, channelSpdxs} = storeToRefs(sbomStore);
@@ -272,28 +273,34 @@ watch(dataAreLoaded, async (dal) => {
   }
 });
 
-// Function to get tab display name from route
-const getTabDisplayName = () => {
-  const path = route.path;
-  if (path.includes('/overview')) return t('TAB_OVERVIEW');
-  if (path.includes('/component')) return t('TAB_Components');
-  if (path.includes('/history')) return t('SBOM_DELIVERIES');
-  if (path.includes('/sbomCompare')) return t('TAB_SBOM_COMPARE');
-  if (path.includes('/sbomQuality')) return t('TAB_QUALITY');
-  if (path.includes('/source')) return t('TAB_SourceCode');
-  if (path.includes('/overallReviews')) return t('TAB_OVERALL_REVIEWS');
-  if (path.includes('/notice')) return t('TAB_NoticeFile');
-  if (path.includes('/auditLog')) return t('TAB_PROJECT_AUDIT');
-  return t('TAB_OVERVIEW');
+const sbomTabNames: Record<string, string> = {
+  overview: 'TAB_OVERVIEW',
+  component: 'TAB_Components',
+  history: 'SBOM_DELIVERIES',
+  sbomCompare: 'TAB_SBOM_COMPARE',
+  sbomQuality: 'TAB_QUALITY',
+  source: 'TAB_SourceCode',
+  overallReviews: 'TAB_OVERALL_REVIEWS',
+  notice: 'TAB_NoticeFile',
+  auditLog: 'TAB_PROJECT_AUDIT',
 };
 
 // Set up reactive page title
 watch(
-  () => [currentProject.value?.name, versionDetails.value?.name, route.name, locale.value],
-  ([projectName, versionName]) => {
-    if (projectName && versionName) {
-      const tabName = getTabDisplayName();
-      useReactiveTitle(`${String(projectName)} | ${String(versionName)} | ${tabName}`);
+  () => [
+    currentProject.value?.name,
+    currentSpdx.value?.uploaded,
+    currentSpdx.value?.metaInfo?.name,
+    selectedTab.value,
+    locale.value,
+  ],
+  ([projectName, uploaded, sbomName]) => {
+    if (projectName && uploaded) {
+      const tabKey = sbomTabNames[selectedTab.value];
+      const tabName = tabKey ? t(tabKey) : '';
+      pageTitle.value = tabName
+        ? `${sbomName} | ${String(projectName)} | ${tabName}`
+        : `${sbomName} | ${String(projectName)}`;
     }
   },
   {immediate: true},

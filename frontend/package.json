@@ -25,6 +25,7 @@
   "dependencies": {
     "@date-io/dayjs": "3.2.0",
     "@mdi/font": "7.4.47",
+    "@unhead/vue": "^3.1.7",
     "@vavt/cm-extension": "1.10.1",
     "@vavt/v3-extension": "1.3.2",
     "@vueuse/components": "13.5.0",

@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import {usePageTitle} from '@disclosure-portal/composables/usePageTitle';
+import {useHead} from '@unhead/vue';
 import LicenseModel from '@disclosure-portal/model/License';
 import LicenseService from '@disclosure-portal/services/license';
 import {useUserStore} from '@disclosure-portal/stores/user';
@@ -104,11 +104,12 @@ import {computed, onBeforeMount, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const route = useRoute();
 const breadcrumbs = useBreadcrumbsStore();
 const userStore = useUserStore();
-const {useReactiveTitle} = usePageTitle();
+const pageTitle = ref('');
+useHead({title: pageTitle});
 
 const licenseLoaded = ref(false);
 const item = ref<LicenseModel>({} as LicenseModel);
@@ -222,10 +223,12 @@ onBeforeMount(async () => {
 
 // Set up reactive title based on license name
 watch(
-  () => item.value?.name,
-  (item) => {
-    if (item) {
-      useReactiveTitle(item + ' | License');
+  () => [item.value?.name, selectedTab.value, locale.value],
+  ([licenseName]) => {
+    if (licenseName) {
+      const header = tabHeaders.find((h) => h.key === selectedTab.value);
+      const tabName = header ? t(header.text) : '';
+      pageTitle.value = tabName ? `${String(licenseName)} | ${tabName}` : String(licenseName);
     }
   },
   {immediate: true},

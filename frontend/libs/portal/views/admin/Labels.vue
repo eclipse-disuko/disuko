@@ -14,20 +14,37 @@ import {downloadFile} from '@disclosure-portal/utils/download';
 import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
+import {useHead} from '@unhead/vue';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import dayjs from 'dayjs';
-import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const {calculateHeight} = useDimensions();
 const {info} = useSnackbar();
 const {dashboardCrumbs, ...breadcrumbs} = useBreadcrumbsStore();
 const {tabUrl, selectedTab} = useTabsWindows('/dashboard/admin/labels', ['schema', 'policy', 'project']);
 const userStore = useUserStore();
+const pageTitle = ref('');
+useHead({title: pageTitle});
+const labelsTabNames: Record<string, string> = {
+  schema: 'TAB_SCHEMA_LABELS',
+  policy: 'TAB_POLICY_LABELS',
+  project: 'TAB_PROJECT_LABELS',
+};
+watch(
+  () => [selectedTab.value, locale.value],
+  () => {
+    const tabKey = labelsTabNames[selectedTab.value];
+    const tabName = tabKey ? t(tabKey) : '';
+    pageTitle.value = tabName ? `${t('LABELS')} | ${tabName}` : t('LABELS');
+  },
+  {immediate: true},
+);
 const {sliderWidth} = useTableActionSlider();
 
 const dialogNewLabelVisible = ref(false);

@@ -192,6 +192,12 @@ const routes: RouteRecordRaw[] = [
         path: 'licenses/compare',
         name: 'CompareLicenses',
         component: Licenses,
+        meta: {
+          title: {
+            en: 'Compare Licenses',
+            de: 'Lizenzen vergleichen',
+          },
+        },
       },
       {
         path: 'licenses/:id/:tab?',
@@ -219,6 +225,12 @@ const routes: RouteRecordRaw[] = [
         path: 'licenses/filtersets/:id',
         name: 'FilterSetsForLicenses',
         component: Licenses,
+        meta: {
+          title: {
+            en: 'Licenses',
+            de: 'Lizenzen',
+          },
+        },
       },
       {
         path: 'admin',
@@ -327,6 +339,12 @@ const routes: RouteRecordRaw[] = [
         path: 'schemas/:id',
         name: 'SchemaReadonly',
         component: SchemaMain,
+        meta: {
+          title: {
+            en: 'Schema',
+            de: 'Schema',
+          },
+        },
       },
       {
         path: 'admin/schemas/:id',
