@@ -16,12 +16,16 @@ import (
 	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
-const inactiveMailTemplate = "approvalInactiveMail"
+const (
+	inactiveMailTemplate = "approvalInactiveMail"
+	sendMailOnDay        = 18
+)
 
 type inactiveMailData struct {
 	Username     string
 	ProjectName  string
 	DeletionDate string
+	InactiveDays int
 }
 
 type InactiveMail struct {
@@ -49,10 +53,10 @@ func (j *InactiveMail) Execute(rs *logy.RequestSession, info job.Job) scheduler.
 				continue
 			}
 			inactive := time.Since(appr.Updated)
-			if inactive < 18*24*time.Hour || inactive >= 19*24*time.Hour {
+			if inactive < sendMailOnDay*24*time.Hour || inactive >= (sendMailOnDay+1)*24*time.Hour {
 				continue
 			}
-			deletionDate := appr.Updated.Add(21 * 24 * time.Hour).Format("2006-01-02")
+			deletionDate := appr.Updated.Add(abortOnDay * 24 * time.Hour).Format("2006-01-02")
 			log.AddEntry(job.Info, "approval %s (project %s, type %s) ongoing for %s", appr.Key, list.Key, appr.Type, inactive.Round(time.Second))
 			j.notifyRecipients(rs, &appr, list.Key, deletionDate, &log)
 		}
@@ -91,10 +95,12 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 			Username:     u.Forename + " " + u.Lastname,
 			ProjectName:  projectKey,
 			DeletionDate: deletionDate,
+			InactiveDays: sendMailOnDay,
 		}
 		err := j.mailClient.Send(u.Email, inactiveMailTemplate, data)
 		if err != nil {
 			log.AddEntry(job.Error, "failed to send mail to %s: %s", u.Email, err)
+			logy.Errorf(rs, "failed to send inactive mail to %s: %s", u.Email, err)
 		} else {
 			log.AddEntry(job.Info, "mail sent to %s for approval %s", u.Email, appr.Key)
 		}

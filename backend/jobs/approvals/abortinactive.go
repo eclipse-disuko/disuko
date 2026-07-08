@@ -18,6 +18,8 @@ import (
 	"github.com/eclipse-disuko/disuko/scheduler"
 )
 
+const abortOnDay = 21
+
 type AbortInactive struct {
 	approvalListRepo approvallist.IApprovalListRepository
 	projectRepo      projectRepo.IProjectRepository
@@ -57,7 +59,7 @@ func (j *AbortInactive) Execute(rs *logy.RequestSession, info job.Job) scheduler
 			if !isOngoing(appr) {
 				continue
 			}
-			if time.Since(appr.Updated) < 21*24*time.Hour || time.Since(appr.Updated) >= 22*24*time.Hour {
+			if time.Since(appr.Updated) < abortOnDay*24*time.Hour || time.Since(appr.Updated) >= (abortOnDay+1)*24*time.Hour {
 				continue
 			}
 			pr := j.projectRepo.FindByKey(rs, list.Key, false)
