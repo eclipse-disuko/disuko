@@ -101,6 +101,8 @@ func (s *ApprovalService) AdminAbortRandomApproval(pr *project.Project, app *app
 		s.adminAbortInternal(pr, app)
 	case approval.TypePlausibility:
 		s.adminAbortPlausibility(pr, app)
+	case approval.TypeExternal:
+		s.adminAbortExternal(pr, app)
 	default:
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorUnexpectedType), "")
 	}

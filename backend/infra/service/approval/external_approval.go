@@ -89,6 +89,15 @@ func (s *ApprovalService) processExternalApprovalUpdate(pr *project.Project, tar
 	// auditHelper.CreateAndAddAuditEntry(&targetApproval.Container, username, message.ExternalApprovalUpdated, audit.DiffWithReporter, targetApproval.ToAudit(), before)
 }
 
+func (s *ApprovalService) adminAbortExternal(pr *project.Project, targetApproval *approval.Approval) {
+	if targetApproval.External.State != approval.Pending {
+		return
+	}
+	before := targetApproval.ToAudit()
+	targetApproval.External.State = approval.Aborted
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, "SYSTEM", message.ExternalApprovalAborted, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+}
+
 func (s *ApprovalService) SetExternalState(prKey, key string, state approval.StateInfo) {
 	approvalList := s.ApprovalListRepo.FindByKey(s.RequestSession, prKey, false)
 	if approvalList == nil {
