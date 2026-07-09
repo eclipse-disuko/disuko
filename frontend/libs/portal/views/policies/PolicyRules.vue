@@ -69,9 +69,6 @@ const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const policyRuleDialogRef = ref();
 const currentPolicyRuleForAction = ref<PolicyRule | null>(null);
 const classificationMatrixDialogRef = ref<InstanceType<typeof ClassificationMatrixDialog>>();
-const isProd = computed(() => {
-  return appConfig.isProd;
-});
 
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs([
@@ -327,7 +324,7 @@ const headers = computed((): DataTableHeader[] => [
         :text="t('CLASSIFICATION_MATRIX')"
         icon="mdi-table-large"
         @click="classificationMatrixDialogRef?.open()"
-        v-if="!isProd" />
+        v-if="!appConfig.isProd" />
       <v-spacer></v-spacer>
       <DCActionButton
         icon="mdi-download"
