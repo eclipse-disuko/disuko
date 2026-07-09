@@ -16,6 +16,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import appConfig from '@shared/utils/config';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -68,6 +69,9 @@ const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
 const policyRuleDialogRef = ref();
 const currentPolicyRuleForAction = ref<PolicyRule | null>(null);
 const classificationMatrixDialogRef = ref<InstanceType<typeof ClassificationMatrixDialog>>();
+const isProd = computed(() => {
+  return appConfig.isProd;
+});
 
 const initBreadcrumbs = () => {
   breadcrumbs.setCurrentBreadcrumbs([
@@ -322,7 +326,8 @@ const headers = computed((): DataTableHeader[] => [
       <DCActionButton
         :text="t('CLASSIFICATION_MATRIX')"
         icon="mdi-table-large"
-        @click="classificationMatrixDialogRef?.open()" />
+        @click="classificationMatrixDialogRef?.open()"
+        v-if="!isProd" />
       <v-spacer></v-spacer>
       <DCActionButton
         icon="mdi-download"
