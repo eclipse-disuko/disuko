@@ -77,6 +77,11 @@ The official SPDX schema can be downloaded here:
 
 ---
 
+## API Documentation
+
+Currently only the public API part of the API that is served by the backend is documented [here](https://eclipse-disuko.github.io/disuko/swagger/index.html).
+
+---
 ## Contributing
 
 Before starting to contribute, please read our [contributing guide](https://github.com/eclipse-disuko/.github/blob/main/CONTRIBUTING.md).
