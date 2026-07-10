@@ -749,6 +749,13 @@ func (licensesHandler *LicensesHandler) handleUpdate(requestSession *logy.Reques
 	var licenseData license.LicenseDto
 	validation.DecodeAndValidate(r, &licenseData, false)
 
+	if !validation.IsNoLeadingWhitespace(licenseData.Name) {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorKeyRequestParamNotValid, "name"))
+	}
+	if !validation.IsNoLeadingWhitespace(licenseData.LicenseId) {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorKeyRequestParamNotValid, "licenseId"))
+	}
+
 	if !validation.IsSpdxIdentifier(licenseData.LicenseId) {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorValidationNotValidSpdxIdentifier))
 	}
@@ -955,6 +962,13 @@ func (licensesHandler *LicensesHandler) LicensePostHandler(w http.ResponseWriter
 
 	var licenseData license.LicenseDto
 	validation.DecodeAndValidate(r, &licenseData, false)
+
+	if !validation.IsNoLeadingWhitespace(licenseData.Name) {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorKeyRequestParamNotValid, "name"))
+	}
+	if !validation.IsNoLeadingWhitespace(licenseData.LicenseId) {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorKeyRequestParamNotValid, "licenseId"))
+	}
 
 	if !validation.IsSpdxIdentifier(licenseData.LicenseId) {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorValidationNotValidSpdxIdentifier, licenseData.LicenseId))

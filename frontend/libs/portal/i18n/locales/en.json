@@ -1048,6 +1048,7 @@
   "DLG_CLONE_PROJECT_COUNT_INTEGER": "Number must be a whole number",
   "BTN_CLONE": "Clone",
   "VALIDATION_required": "Required field",
+  "VALIDATION_NO_LEADING_BLANKS": "Leading blanks are not allowed",
   "VALIDATION_max_length": "Max length exceeds",
   "VALIDATION_url": "URL is not valid",
   "ERROR_VALIDATION_NOT_VALID_SPDX_IDENTIFIER": "Spdx identifier is not valid",

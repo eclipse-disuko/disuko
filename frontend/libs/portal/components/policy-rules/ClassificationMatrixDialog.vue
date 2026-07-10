@@ -56,6 +56,8 @@ const dialogConfig = computed(
   }),
 );
 
+const tableHeight = computed(() => 'calc(100dvh - 400px)');
+
 const open = async () => {
   isVisible.value = true;
   try {
@@ -84,7 +86,7 @@ defineExpose({open});
         v-model:search="search"
         item-value="_key"
         fixed-header
-        height="65vh"
+        :height="tableHeight"
         :items-per-page="-1"
         :sort-by="[{key: 'name', order: 'asc'}]">
         <template #[`header.name`]="{column}">
