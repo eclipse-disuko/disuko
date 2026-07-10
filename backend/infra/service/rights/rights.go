@@ -73,7 +73,7 @@ func applyForProjectRole(rights oauth.AccessAndRolesRights, role string) *oauth.
 		rights.SetOwnerRights()
 		return &rights
 	case string(project.SUPPLIER):
-		rights.SetSupplierRights()
+		rights.SetSupplierRights(false)
 		return &rights
 	case string(project.VIEWER):
 		rights.SetViewerRights()

@@ -568,7 +568,7 @@ func (r *AccessAndRolesRights) SetProjectResponsibleRights() {
 	r.AllowPolicyDecision.SetAll(true)
 }
 
-func (r *AccessAndRolesRights) SetSupplierRights() {
+func (r *AccessAndRolesRights) SetSupplierRights(isGroup bool) {
 	r.AllowProjectPolicy.SetReadOnly()
 	r.AllowProject.SetReadOnly()
 	r.AllowProjectVersion.Create = true
@@ -576,7 +576,7 @@ func (r *AccessAndRolesRights) SetSupplierRights() {
 	r.AllowProjectVersion.Update = true
 	r.AllowProjectVersion.Delete = false
 	r.AllowProjectUserManagement.SetReadOnly()
-	r.AllowProjectTokenManagement.SetAll(true)
+	r.AllowProjectTokenManagement.SetAll(!isGroup)
 	r.AllowProjectGroup.SetReadOnly()
 	r.AllowSBOMAction.Upload = true
 	r.AllowSBOMAction.Download = true
