@@ -8,7 +8,7 @@ COPY . .
 RUN go build -o /go/server/app
 
 
-FROM alpine:3.22
+FROM alpine:3.23
 ENV USERNAME=disukoUser
 WORKDIR /go/server/
 
@@ -21,7 +21,7 @@ RUN apk update
 RUN apk add terminus-font ttf-inconsolata ttf-dejavu font-noto font-noto-cjk ttf-font-awesome font-noto-extra
 
 RUN apk add --no-cache \
-    --repository http://dl-cdn.alpinelinux.org/alpine/v3.22/main \
+    --repository http://dl-cdn.alpinelinux.org/alpine/v3.23/main \
     ca-certificates
 RUN update-ca-certificates
 RUN apk add chromium
