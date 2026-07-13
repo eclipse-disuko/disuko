@@ -8,6 +8,17 @@ import {ComponentInfo} from '@disclosure-portal/model/VersionDetails';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 
+interface DecisionOption {
+  type: DecisionType;
+  visible: boolean;
+  canMake: boolean;
+  dimmed: boolean;
+  icon: string;
+  color: string;
+  label: string;
+  tooltip: string;
+}
+
 const props = defineProps<{
   item: ComponentInfo;
 }>();
@@ -16,44 +27,36 @@ const emit = defineEmits<{openPolicyDecision: [type: DecisionType]}>();
 
 const {t} = useI18n();
 
-const canMakeWarnedPolicyDecision = computed(() => props.item.policyRuleStatus.some((pr) => pr.canMakeWarnedDecision));
-const hasWarnedDecisions = computed(() =>
-  props.item.policyDecisionsApplied.some((pd) => pd.policyEvaluated === 'warn'),
+const canWarn = computed(() => props.item.policyRuleStatus.some((pr) => pr.canMakeWarnedDecision));
+const canDeny = computed(() => props.item.policyRuleStatus.some((pr) => pr.canMakeDeniedDecision));
+
+const hasWarnDecisions = computed(() => props.item.policyDecisionsApplied.some((pd) => pd.policyEvaluated === 'warn'));
+const hasDenyDecisions = computed(() => props.item.policyDecisionsApplied.some((pd) => pd.policyEvaluated === 'deny'));
+
+const showWarnColumn = computed(() => canWarn.value || hasWarnDecisions.value);
+const showDenyColumn = computed(() => canDeny.value || hasDenyDecisions.value);
+const showAppliedOnlyColumn = computed(
+  () => !canWarn.value && !canDeny.value && props.item.policyDecisionsApplied.length > 0,
 );
-const isWarnedPolicyDecisionInfosAvailable = computed(
-  () => canMakeWarnedPolicyDecision.value || hasWarnedDecisions.value,
+const showBothColumns = computed(() => showWarnColumn.value && showDenyColumn.value && !showAppliedOnlyColumn.value);
+
+const activeDecisions = computed(() => props.item.policyDecisionsApplied.filter((pd) => !pd.previewMode));
+const previewDecisions = computed(() => props.item.policyDecisionsApplied.filter((pd) => pd.previewMode));
+const hasAnyDecisions = computed(() => activeDecisions.value.length > 0 || previewDecisions.value.length > 0);
+
+const isWarnDisabled = computed(() => !!props.item.policyDecisionDeniedReason);
+const warnTooltip = computed(() =>
+  isWarnDisabled.value ? t('TT_' + props.item.policyDecisionDeniedReason) : t('TT_warned_policy_decision'),
 );
 
-const canMakeDeniedPolicyDecision = computed(() => props.item.policyRuleStatus.some((pr) => pr.canMakeDeniedDecision));
-const hasDeniedDecisions = computed(() =>
-  props.item.policyDecisionsApplied.some((pd) => pd.policyEvaluated === 'deny'),
-);
-const isDeniedPolicyDecisionInfosAvailable = computed(
-  () => canMakeDeniedPolicyDecision.value || hasDeniedDecisions.value,
-);
-
-const isOnlyPolicyDecisionsAppliedPresent = computed(
-  () =>
-    !canMakeWarnedPolicyDecision.value &&
-    !canMakeDeniedPolicyDecision.value &&
-    props.item.policyDecisionsApplied.length > 0,
-);
-
-const isWarnedPolicyDecisionDisabled = computed(() => !!props.item.policyDecisionDeniedReason);
-const warnedPolicyDecisionTooltip = computed(() =>
-  isWarnedPolicyDecisionDisabled.value
-    ? t('TT_' + props.item.policyDecisionDeniedReason)
-    : t('TT_warned_policy_decision'),
-);
-
-const isDeniedPolicyDecisionDisabled = computed(
+const deniableRuleStatuses = computed(() => props.item.policyRuleStatus.filter((p) => p.canMakeDeniedDecision));
+const isDenyDisabled = computed(
   () =>
     props.item.policyDecisionDeniedReason === 'DECISION_DENIED_COMPONENT_VERSION_NOT_SET' ||
-    (props.item.policyRuleStatus.filter((p) => p.canMakeDeniedDecision).length > 0 &&
-      props.item.policyRuleStatus.filter((p) => p.canMakeDeniedDecision).every((p) => !!p.deniedDecisionDeniedReason)),
+    (deniableRuleStatuses.value.length > 0 && deniableRuleStatuses.value.every((p) => !!p.deniedDecisionDeniedReason)),
 );
-const deniedPolicyDecisionTooltip = computed(() => {
-  if (!isDeniedPolicyDecisionDisabled.value) {
+const denyTooltip = computed(() => {
+  if (!isDenyDisabled.value) {
     return t('TT_denied_policy_decision');
   }
 
@@ -62,8 +65,8 @@ const deniedPolicyDecisionTooltip = computed(() => {
   }
 
   if (
-    props.item.policyRuleStatus.filter((p) => p.canMakeDeniedDecision).length > 0 &&
-    props.item.policyRuleStatus.filter((p) => p.canMakeDeniedDecision).every((p) => !!p.deniedDecisionDeniedReason)
+    deniableRuleStatuses.value.length > 0 &&
+    deniableRuleStatuses.value.every((p) => !!p.deniedDecisionDeniedReason)
   ) {
     return t(`TT_${props.item.policyRuleStatus[0].deniedDecisionDeniedReason}`);
   }
@@ -71,178 +74,123 @@ const deniedPolicyDecisionTooltip = computed(() => {
   return t('TT_denied_policy_decision');
 });
 
-const activeDecisions = computed(() => props.item.policyDecisionsApplied.filter((pd) => !pd.previewMode));
-const previewDecisions = computed(() => props.item.policyDecisionsApplied.filter((pd) => pd.previewMode));
-const hasAnyDecisions = computed(() => activeDecisions.value.length > 0 || previewDecisions.value.length > 0);
-
-const warnedIcon = computed(() => {
-  if (canMakeWarnedPolicyDecision.value) return 'mdi-checkbox-marked-circle-plus-outline';
+const getDecisionIcon = (canMake: boolean) => {
+  if (canMake) return 'mdi-checkbox-marked-circle-plus-outline';
   if (activeDecisions.value.length > 0) return 'mdi-information-outline';
   if (previewDecisions.value.length > 0) return 'mdi-progress-alert';
   return '';
-});
-
-const warnedIconColor = computed(() => {
-  if (canMakeWarnedPolicyDecision.value) return 'primary';
-  if (activeDecisions.value.length > 0) return '';
-  if (previewDecisions.value.length > 0) return 'grey';
-  return '';
-});
-
-const deniedIcon = computed(() => {
-  if (canMakeDeniedPolicyDecision.value) return 'mdi-checkbox-marked-circle-plus-outline';
-  if (activeDecisions.value.length > 0) return 'mdi-information-outline';
-  if (previewDecisions.value.length > 0) return 'mdi-progress-alert';
-  return '';
-});
-
-const deniedIconColor = computed(() => {
-  if (canMakeDeniedPolicyDecision.value) return 'orange';
-  if (activeDecisions.value.length > 0) return '';
-  if (previewDecisions.value.length > 0) return 'grey';
-  return '';
-});
-
-const onlyAppliedDecisionsIcon = computed(() => {
-  if (activeDecisions.value.length > 0) return 'mdi-information-outline';
-  if (previewDecisions.value.length > 0) return 'mdi-progress-alert';
-  return '';
-});
-const onlyAppliedDecisionsIconColor = computed(() => {
-  if (activeDecisions.value.length > 0) return '';
-  if (previewDecisions.value.length > 0) return 'grey';
-  return '';
-});
-
-const handleWarnedClick = () => {
-  if (canMakeWarnedPolicyDecision.value && !isWarnedPolicyDecisionDisabled.value) {
-    emit('openPolicyDecision', 'warn');
-  }
 };
 
-const handleDeniedClick = () => {
-  if (canMakeDeniedPolicyDecision.value && !isDeniedPolicyDecisionDisabled.value) {
-    emit('openPolicyDecision', 'deny');
+const getDecisionColor = (canMake: boolean, canMakeColor: string) => {
+  if (canMake) return canMakeColor;
+  if (activeDecisions.value.length > 0) return '';
+  if (previewDecisions.value.length > 0) return 'grey';
+  return '';
+};
+
+const appliedOnlyIcon = computed(() => getDecisionIcon(false));
+const appliedOnlyColor = computed(() => getDecisionColor(false, ''));
+
+const decisionOptions = computed<DecisionOption[]>(() => [
+  {
+    type: 'warn',
+    visible: showWarnColumn.value && !showAppliedOnlyColumn.value,
+    canMake: canWarn.value,
+    dimmed: canWarn.value && isWarnDisabled.value,
+    icon: getDecisionIcon(canWarn.value),
+    color: getDecisionColor(canWarn.value, 'primary'),
+    label: canWarn.value ? t('WARN') : t('INFO'),
+    tooltip: warnTooltip.value,
+  },
+  {
+    type: 'deny',
+    visible: showDenyColumn.value && !showAppliedOnlyColumn.value,
+    canMake: canDeny.value,
+    dimmed: canDeny.value && isDenyDisabled.value,
+    icon: getDecisionIcon(canDeny.value),
+    color: getDecisionColor(canDeny.value, 'orange'),
+    label: canDeny.value ? t('DENY') : t('INFO'),
+    tooltip: denyTooltip.value,
+  },
+]);
+
+const onDecisionClick = (option: DecisionOption) => {
+  if (option.canMake && !option.dimmed) {
+    emit('openPolicyDecision', option.type);
   }
 };
 </script>
 
 <template>
-  <span v-if="isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <span v-if="canMakeWarnedPolicyDecision" @click.stop="handleWarnedClick">
-      <v-icon size="small" :color="warnedIconColor" :style="isWarnedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-        {{ warnedIcon }}
-      </v-icon>
+  <div class="flex flex-col" :class="showBothColumns ? 'gap-y-0.5' : 'justify-center'">
+    <template v-for="option in decisionOptions" :key="option.type">
+      <span v-if="option.visible">
+        <DCActionButton
+          size="small"
+          density="compact"
+          variant="text"
+          class="h-auto min-h-6 px-1 py-0.5"
+          :color="option.color"
+          :icon="option.icon"
+          :text="option.label"
+          :style="option.dimmed ? 'opacity: 0.38;' : ''"
+          @click.stop="onDecisionClick(option)">
+          <template #tooltip>
+            <template v-if="option.canMake">
+              {{ option.tooltip }}
+              <br />
+            </template>
+
+            <template v-if="hasAnyDecisions">
+              <v-divider></v-divider>
+              {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
+
+              <PolicyDecisionList
+                v-if="activeDecisions.length > 0"
+                :decisions="activeDecisions"
+                :title="t('TT_POLICY_DECISION_APPLIED')"
+                icon="mdi-information-outline"
+                arrow="→" />
+
+              <PolicyDecisionList
+                v-if="previewDecisions.length > 0"
+                :decisions="previewDecisions"
+                :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
+                icon="mdi-progress-alert"
+                icon-color="grey"
+                arrow="⇢" />
+            </template>
+          </template>
+        </DCActionButton>
+      </span>
+    </template>
+
+    <span v-if="showAppliedOnlyColumn">
+      <DCActionButton
+        size="small"
+        density="compact"
+        variant="text"
+        class="h-auto min-h-6 px-1 py-0.5"
+        :color="appliedOnlyColor"
+        :icon="appliedOnlyIcon"
+        :text="t('INFO')">
+        <template #tooltip>
+          <PolicyDecisionList
+            v-if="activeDecisions.length > 0"
+            :decisions="activeDecisions"
+            :title="t('TT_POLICY_DECISION_APPLIED')"
+            icon="mdi-information-outline"
+            arrow="→" />
+
+          <PolicyDecisionList
+            v-if="previewDecisions.length > 0"
+            :decisions="previewDecisions"
+            :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
+            icon="mdi-progress-alert"
+            icon-color="grey"
+            arrow="⇢" />
+        </template>
+      </DCActionButton>
     </span>
-    <v-icon v-else size="small" :color="warnedIconColor">
-      {{ warnedIcon }}
-    </v-icon>
-
-    <Tooltip>
-      <span v-if="canMakeWarnedPolicyDecision">
-        {{ warnedPolicyDecisionTooltip }}
-        <br />
-      </span>
-
-      <template v-if="hasAnyDecisions">
-        <v-divider></v-divider>
-        {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
-        <br />
-
-        <PolicyDecisionList
-          v-if="activeDecisions.length > 0"
-          :decisions="activeDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED')"
-          icon="mdi-information-outline"
-          arrow="→" />
-
-        <PolicyDecisionList
-          v-if="previewDecisions.length > 0"
-          :decisions="previewDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-          icon="mdi-progress-alert"
-          icon-color="grey"
-          arrow="⇢" />
-      </template>
-    </Tooltip>
-    &nbsp;
-  </span>
-  <span v-else-if="!isWarnedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small">mdi-blank</v-icon>
-    &nbsp;
-  </span>
-
-  <span v-if="isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <span v-if="canMakeDeniedPolicyDecision" @click.stop="handleDeniedClick">
-      <v-icon size="small" :color="deniedIconColor" :style="isDeniedPolicyDecisionDisabled ? 'opacity: 0.38;' : ''">
-        {{ deniedIcon }}
-      </v-icon>
-    </span>
-    <v-icon v-else size="small" :color="deniedIconColor">
-      {{ deniedIcon }}
-    </v-icon>
-
-    <Tooltip>
-      <span v-if="canMakeDeniedPolicyDecision">
-        {{ deniedPolicyDecisionTooltip }}
-        <br />
-      </span>
-
-      <template v-if="hasAnyDecisions">
-        <v-divider></v-divider>
-        {{ t('TT_POLICY_DECISIONS_AVAILABLE') }}
-        <br />
-
-        <PolicyDecisionList
-          v-if="activeDecisions.length > 0"
-          :decisions="activeDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED')"
-          icon="mdi-information-outline"
-          arrow="→" />
-
-        <PolicyDecisionList
-          v-if="previewDecisions.length > 0"
-          :decisions="previewDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-          icon="mdi-progress-alert"
-          icon-color="grey"
-          arrow="⇢" />
-      </template>
-    </Tooltip>
-  </span>
-  <span v-else-if="!isDeniedPolicyDecisionInfosAvailable && !isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small">mdi-blank</v-icon>
-  </span>
-
-  <span v-if="isOnlyPolicyDecisionsAppliedPresent">
-    <v-icon size="small" :color="onlyAppliedDecisionsIconColor">
-      {{ onlyAppliedDecisionsIcon }}
-    </v-icon>
-
-    <Tooltip>
-      <span v-if="canMakeDeniedPolicyDecision">
-        {{ deniedPolicyDecisionTooltip }}
-        <br />
-      </span>
-
-      <template v-if="hasAnyDecisions">
-        <PolicyDecisionList
-          v-if="activeDecisions.length > 0"
-          :decisions="activeDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED')"
-          icon="mdi-information-outline"
-          arrow="→" />
-
-        <PolicyDecisionList
-          v-if="previewDecisions.length > 0"
-          :decisions="previewDecisions"
-          :title="t('TT_POLICY_DECISION_APPLIED_PREVIEW')"
-          icon="mdi-progress-alert"
-          icon-color="grey"
-          arrow="⇢" />
-      </template>
-    </Tooltip>
-    &nbsp;
-    <v-icon size="small">mdi-blank</v-icon>
-  </span>
+  </div>
 </template>

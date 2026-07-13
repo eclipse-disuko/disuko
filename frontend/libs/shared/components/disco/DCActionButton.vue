@@ -18,7 +18,7 @@
     ]"
     @click="$emit('clicked')">
     <div class="d-inline discoActionBtnHover">
-      <v-icon :color="color ? color : 'primary'" v-if="icon">{{ icon }}</v-icon>
+      <v-icon :color="color ? color : 'primary'" :size="size" v-if="icon">{{ icon }}</v-icon>
       <span
         class="font-weight-bold px-1"
         v-if="text"
@@ -27,7 +27,9 @@
       </span>
     </div>
 
-    <tooltip v-if="hint" :text="hint"></tooltip>
+    <Tooltip v-if="hint || $slots.tooltip" :text="hint">
+      <slot name="tooltip"></slot>
+    </Tooltip>
   </v-btn>
 </template>
 
