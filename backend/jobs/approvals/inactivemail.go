@@ -31,10 +31,10 @@ type inactiveMailData struct {
 type InactiveMail struct {
 	approvalListRepo approvallist.IApprovalListRepository
 	userRepo         userRepo.IUsersRepository
-	mailService      mail.Service
+	mailService      *mail.Service
 }
 
-func InitInactiveMail(approvalListRepo approvallist.IApprovalListRepository, userRepo userRepo.IUsersRepository, mailService mail.Service) *InactiveMail {
+func InitInactiveMail(approvalListRepo approvallist.IApprovalListRepository, userRepo userRepo.IUsersRepository, mailService *mail.Service) *InactiveMail {
 	return &InactiveMail{
 		approvalListRepo: approvalListRepo,
 		userRepo:         userRepo,
