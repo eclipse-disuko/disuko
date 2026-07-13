@@ -177,13 +177,14 @@ func setAccessRights(userName string, prj *project.Project, rights *oauth.Access
 		rights.SetOwnerRights()
 	case project.SUPPLIER:
 		rights.Groups = append(rights.Groups, string(project.SUPPLIER))
-		rights.SetSupplierRights()
+		rights.SetSupplierRights(prj.IsGroup)
 	case project.VIEWER:
 		rights.Groups = append(rights.Groups, string(project.VIEWER))
 		rights.SetViewerRights()
 	}
 	// All things are fine: access rights are set, no error occured
 }
+
 func CanAccessVehicleProjectOperations(rights *oauth.AccessAndRolesRights, hasVehiclePlatformLabel bool) bool {
 	return rights.IsFossOffice() && hasVehiclePlatformLabel
 }
