@@ -21,9 +21,8 @@ const sortBy: SortItem[] = [{key: '_key', order: 'asc'}];
 
 const headers = computed((): DataTableHeader[] => [
   {title: t('COL_ACTIONS'), align: 'start', value: 'actions', width: sliderWidth.value, sortable: false},
-  {title: t('MAIL_TEMPLATE_KEY'), align: 'start', value: '_key', sortable: true},
-  {title: t('MAIL_TEMPLATE_BCC'), align: 'start', value: 'bcc', sortable: false},
-  {title: t('MAIL_TEMPLATE_CC'), align: 'start', value: 'cc', sortable: false},
+  {title: t('MAIL_TEMPLATE_KEY'), align: 'start', value: '_key', width: 180, sortable: true},
+  {title: t('MAIL_TEMPLATE_DESCRIPTION'), align: 'start', value: 'description', width: 'auto', sortable: false},
 ]);
 
 const reload = async () => {
@@ -58,6 +57,14 @@ reload();
               variant="slider"
               :buttons="[{icon: 'mdi-pencil', event: 'edit'}]"
               @edit="dialog?.open(item)" />
+          </template>
+          <template #[`item._key`]="{item}">
+            <div>{{ t(`MAIL_TEMPLATE_KEY_${item._key}`) }}</div>
+            <div class="text-caption text-medium-emphasis">{{ t('MAIL_TEMPLATE_CC') }}: {{ item.cc }}</div>
+            <div class="text-caption text-medium-emphasis">{{ t('MAIL_TEMPLATE_BCC') }}: {{ item.bcc }}</div>
+          </template>
+          <template #[`item.description`]="{item}">
+            {{ t(`MAIL_TEMPLATE_KEY_DESC_${item._key}`) }}
           </template>
         </v-data-table>
       </div>

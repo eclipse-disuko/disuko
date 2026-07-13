@@ -72,26 +72,39 @@ defineExpose({open});
 </script>
 
 <template>
-  <v-dialog v-model="isVisible" scrollable width="1100">
+  <v-dialog v-model="isVisible" scrollable width="1100" height="700">
     <ReactiveDialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
       <v-form ref="dialogRef" @submit.prevent="save">
-        <div class="flex gap-6">
+        <div class="mb-3 flex gap-2">
+          <v-text-field
+            v-model="form.bcc"
+            :label="t('MAIL_TEMPLATE_BCC')"
+            variant="outlined"
+            class="flex-1"
+            hide-details="auto" />
+          <v-text-field
+            v-model="form.cc"
+            :label="t('MAIL_TEMPLATE_CC')"
+            variant="outlined"
+            class="flex-1"
+            hide-details="auto" />
+        </div>
+        <v-text-field
+          v-model="form.subject"
+          :label="t('MAIL_TEMPLATE_SUBJECT')"
+          variant="outlined"
+          class="mb-6"
+          hide-details="auto" />
+        <div class="flex gap-3">
           <Stack class="flex-1">
-            <v-text-field
-              v-model="form.subject"
-              :label="t('MAIL_TEMPLATE_SUBJECT')"
-              variant="outlined"
-              hide-details="auto" />
             <v-textarea
               v-model="form.message"
               :label="t('MAIL_TEMPLATE_MESSAGE')"
               variant="outlined"
               no-resize
               rows="8" />
-            <v-text-field v-model="form.bcc" :label="t('MAIL_TEMPLATE_BCC')" variant="outlined" hide-details="auto" />
-            <v-text-field v-model="form.cc" :label="t('MAIL_TEMPLATE_CC')" variant="outlined" hide-details="auto" />
           </Stack>
-          <div v-if="values.length" class="values-table pa-3 w-90 shrink-0">
+          <div v-if="values.length" class="pa-3 w-90">
             <div class="mb-2 flex items-center gap-1">
               <v-icon icon="mdi-help-circle-outline" color="primary" size="small" />
               <span class="text-body-2 font-weight-medium">{{ t('MAIL_TEMPLATE_VALUES') }}</span>
@@ -101,6 +114,7 @@ defineExpose({open});
               :items="values"
               :headers="valuesHeaders"
               hide-default-footer
+              height="250"
               disable-sort
               item-value="key">
               <template #[`item.key`]="{item}">
