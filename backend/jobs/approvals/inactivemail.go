@@ -9,9 +9,9 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/job"
-	"github.com/eclipse-disuko/disuko/helper/mail"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/scheduler"
 )
@@ -31,14 +31,14 @@ type inactiveMailData struct {
 type InactiveMail struct {
 	approvalListRepo approvallist.IApprovalListRepository
 	userRepo         userRepo.IUsersRepository
-	mailClient       mail.Client
+	mailService      mail.Service
 }
 
-func InitInactiveMail(approvalListRepo approvallist.IApprovalListRepository, userRepo userRepo.IUsersRepository, mailClient mail.Client) *InactiveMail {
+func InitInactiveMail(approvalListRepo approvallist.IApprovalListRepository, userRepo userRepo.IUsersRepository, mailService mail.Service) *InactiveMail {
 	return &InactiveMail{
 		approvalListRepo: approvalListRepo,
 		userRepo:         userRepo,
-		mailClient:       mailClient,
+		mailService:      mailService,
 	}
 }
 
@@ -75,7 +75,7 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 	recipients := []string{appr.Creator}
 	switch appr.Type {
 	case approval.TypeInternal:
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			recipients = append(recipients, appr.Internal.GetApproverName(approval.Approver(i)))
 		}
 	case approval.TypePlausibility:
@@ -97,7 +97,7 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 			DeletionDate: deletionDate,
 			InactiveDays: sendMailOnDay,
 		}
-		err := j.mailClient.Send(u.Email, inactiveMailTemplate, data)
+		err := j.mailService.SendMail(rs, u.Email, inactiveMailTemplate, data)
 		if err != nil {
 			log.AddEntry(job.Error, "failed to send mail to %s: %s", u.Email, err)
 			logy.Errorf(rs, "failed to send inactive mail to %s: %s", u.Email, err)
