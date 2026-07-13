@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
+	"fmt"
 	"strings"
 
 	//"html/template"
@@ -46,49 +47,58 @@ func explicitUTF8Subject(subject string) string {
 	return "=?UTF-8?B?" + base64.StdEncoding.EncodeToString([]byte(subject)) + "?="
 }
 
-func (c Client) Send(to string, templateName string, data any) error {
+func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl string, data any) error {
 	if c.Host == "" {
 		return nil
 	}
 
-	tmpl, err := template.New("taskEmail").ParseFS(taskTemplate, "templates/"+templateName+".txt")
+	t, err := template.New("subject").Parse(subjectTmpl)
 	if err != nil {
-		return err
+		return fmt.Errorf("parsing subject template: %w", err)
 	}
-
 	subject := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(subject, "subject", data)
+	err = t.ExecuteTemplate(subject, "subject", data)
 	if err != nil {
-		return err
+		return fmt.Errorf("executing subject template: %w", err)
 	}
 
-	plainBody := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
+	t, err = template.New("body").Parse(bodyTmpl)
 	if err != nil {
-		return err
+		return fmt.Errorf("parsing body template: %w", err)
+	}
+	body := new(bytes.Buffer)
+	err = t.ExecuteTemplate(body, "body", data)
+	if err != nil {
+		return fmt.Errorf("executing body template: %w", err)
 	}
 
-	/*
-		htmlBody := new(bytes.Buffer)
-		err = tmpl.ExecuteTemplate(htmlBody, "htmlBody", data)
-		if err != nil {
-			return err
-		}
-	*/
-
-	msg := []byte("To: " + to + "\r\n" +
-		"Subject: " + explicitUTF8Subject(subject.String()) + "\r\n" +
-		"MIME-Version: 1.0\r\n" +
-		"Content-Type: text/plain; charset=UTF-8\r\n" +
-		"Content-Transfer-Encoding: 8bit\r\n" +
-		"\r\n" +
-		plainBody.String() + "\r\n")
+	msgLines := []string{
+		"To: " + to,
+	}
+	if cc != "" {
+		msgLines = append(msgLines, "CC: "+cc)
+	}
+	msgLines = append(
+		msgLines,
+		"Subject: "+explicitUTF8Subject(subject.String()),
+		"MIME-Version: 1.0",
+		"Content-Type: text/plain; charset=UTF-8",
+		"Content-Transfer-Encoding: 8bit",
+		"",
+		body.String(),
+	)
 
 	var auth smtp.Auth
 	if c.User != "" && c.Pass != "" {
 		auth = smtp.PlainAuth("", c.User, c.Pass, c.Host)
 	}
-	err = smtp.SendMail(c.Host+":"+c.Port, auth, c.Sender, []string{to}, msg)
+
+	toAddrs := []string{to}
+	if bcc != "" {
+		toAddrs = append(toAddrs, bcc)
+	}
+
+	err = smtp.SendMail(c.Host+":"+c.Port, auth, c.Sender, toAddrs, []byte(strings.Join(msgLines, "\r\n")))
 	return err
 }
 

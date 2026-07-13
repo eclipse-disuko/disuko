@@ -6,23 +6,24 @@ package reviewmail
 
 import (
 	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/domain/overallreview"
-	"github.com/eclipse-disuko/disuko/helper/mail"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 )
 
 type ReviewSubscribe struct {
-	mailClient mail.Client
-	userRepo   user.IUsersRepository
+	mailService *mail.Service
+	userRepo    user.IUsersRepository
 }
 
-func Init(mailClient mail.Client, userRepo user.IUsersRepository) *ReviewSubscribe {
+func Init(mailService *mail.Service, userRepo user.IUsersRepository) *ReviewSubscribe {
 	return &ReviewSubscribe{
-		mailClient: mailClient,
-		userRepo:   userRepo,
+		mailService: mailService,
+		userRepo:    userRepo,
 	}
 }
 
@@ -101,8 +102,7 @@ func (r *ReviewSubscribe) sendMail(data observermngmt.OverallReviewData) {
 					logy.Errorf(data.RequestSession, "Could not send email %v", err)
 				}
 			}()
-			templ := "reviewCreated"
-			err := r.mailClient.Send(targetUser.Email, templ, mailData)
+			err := r.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeyReviewCreated, mailData)
 			if err != nil {
 				logy.Errorf(data.RequestSession, "Failed to send the email: %v", err)
 			} else {

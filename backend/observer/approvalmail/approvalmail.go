@@ -7,23 +7,24 @@ package approvalmail
 import (
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/approval"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/domain/user"
-	"github.com/eclipse-disuko/disuko/helper/mail"
 	"github.com/eclipse-disuko/disuko/infra/repository/project"
 	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 )
 
 type ApprovalMail struct {
-	mailClient  mail.Client
+	mailService *mail.Service
 	userRepo    userRepo.IUsersRepository
 	projectRepo project.IProjectRepository
 }
 
-func Init(mailClient mail.Client, userRepo userRepo.IUsersRepository, projectRepo project.IProjectRepository) *ApprovalMail {
+func Init(mailService *mail.Service, userRepo userRepo.IUsersRepository, projectRepo project.IProjectRepository) *ApprovalMail {
 	return &ApprovalMail{
-		mailClient:  mailClient,
+		mailService: mailService,
 		userRepo:    userRepo,
 		projectRepo: projectRepo,
 	}
@@ -139,7 +140,7 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 			md.StateDE = "Abgebrochen"
 		}
 		md.Username = creatorUser.Forename + " " + creatorUser.Lastname
-		a.sendMail(data.RequestSession, creatorUser, creatorUser.Email, "approvalFinalized", md)
+		a.sendMail(data.RequestSession, creatorUser, mailtemplate.MailTemplateKeyApprovalFinalized, md)
 		users := []string{
 			data.Approval.Internal.GetApproverName(approval.Supplier1),
 			data.Approval.Internal.GetApproverName(approval.Supplier2),
@@ -155,7 +156,7 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 				continue
 			}
 			md.Username = currentUser.Forename + " " + currentUser.Lastname
-			a.sendMail(data.RequestSession, currentUser, currentUser.Email, "approvalFinalized", md)
+			a.sendMail(data.RequestSession, currentUser, mailtemplate.MailTemplateKeyApprovalFinalized, md)
 		}
 	case approval.TypePlausibility:
 		if data.Approval.Plausibility.State.State == approval.Approved {
@@ -184,12 +185,12 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 		md.ReviewerComment = data.Approval.Plausibility.ApproveComment
 
 		md.Username = creatorUser.Forename + " " + creatorUser.Lastname
-		a.sendMail(data.RequestSession, creatorUser, creatorUser.Email, "reviewFinalized", md)
+		a.sendMail(data.RequestSession, creatorUser, mailtemplate.MailTemplateKeyReviewFinalized, md)
 		if approverUser.User == creatorUser.User {
 			return
 		}
 		md.Username = md.Reviewer
-		a.sendMail(data.RequestSession, approverUser, approverUser.Email, "reviewFinalized", md)
+		a.sendMail(data.RequestSession, approverUser, mailtemplate.MailTemplateKeyReviewFinalized, md)
 	}
 }
 
@@ -270,10 +271,10 @@ func (a *ApprovalMail) sendTaskMail(data observermngmt.ApprovalTaskData) {
 		mailData.Type = "Approval"
 		mailData.TypeDE = "Freigabeaufforderung"
 	}
-	a.sendMail(data.RequestSession, targetUser, targetUser.Email, "taskApproval", mailData)
+	a.sendMail(data.RequestSession, targetUser, mailtemplate.MailTemplateKeyTaskApproval, mailData)
 }
 
-func (a *ApprovalMail) sendMail(rs *logy.RequestSession, user *user.User, mail string, templ string, data interface{}) {
+func (a *ApprovalMail) sendMail(rs *logy.RequestSession, user *user.User, template mailtemplate.MailTemplateKey, data any) {
 	if !user.Deprovisioned.IsZero() {
 		return
 	}
@@ -283,7 +284,7 @@ func (a *ApprovalMail) sendMail(rs *logy.RequestSession, user *user.User, mail s
 				logy.Errorf(rs, "Could not send email %v", err)
 			}
 		}()
-		err := a.mailClient.Send(mail, templ, data)
+		err := a.mailService.SendMail(rs, user.Email, template, data)
 		if err != nil {
 			logy.Errorf(rs, "Failed to send the email: %v", err)
 		} else {

@@ -9,15 +9,16 @@ import (
 
 	"github.com/eclipse-disuko/disuko/conf"
 	mail2 "github.com/eclipse-disuko/disuko/domain/mail"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/helper/exception"
-	"github.com/eclipse-disuko/disuko/helper/mail"
 	"github.com/eclipse-disuko/disuko/helper/roles"
 	"github.com/eclipse-disuko/disuko/helper/validation"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type MailHandler struct {
-	Client mail.Client
+	Service *mail.Service
 }
 
 type MailData struct {
@@ -40,13 +41,6 @@ func (handler *MailHandler) SendMail(w http.ResponseWriter, r *http.Request) {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
-	request := extractRequestMailBody(r)
-
-	if !handler.Client.IsTeamplateValid(request.MailType) {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
 	mailData := MailData{
 		Username: "Superman",
 	}
@@ -60,7 +54,7 @@ func (handler *MailHandler) SendMail(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 
-		err := handler.Client.Send(recipient, "taskReview", mailData)
+		err := handler.Service.SendMail(requestSession, recipient, mailtemplate.MailTemplateKeyTaskApproval, mailData)
 		if err != nil {
 			logy.Errorf(requestSession, "Failed to send the email: %v", err)
 		} else {
