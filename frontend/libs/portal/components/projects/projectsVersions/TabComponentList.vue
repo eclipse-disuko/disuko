@@ -756,11 +756,14 @@ onUnmounted(async () => {
             <PolicyDecisionCell :item="item" @open-policy-decision="(type) => openPolicyDecisionDialog(item, type)" />
           </template>
           <template v-slot:[`item.showLicenseDecision`]="{item}">
-            <span v-if="item.licenseRuleApplied">
-              <v-icon size="small" :color="item.licenseRuleApplied.previewMode ? 'grey' : ''">
-                {{ item.licenseRuleApplied.previewMode ? 'mdi-progress-alert' : 'mdi-information-outline' }}
-              </v-icon>
-              <Tooltip>
+            <DCActionButton
+              v-if="item.licenseRuleApplied"
+              size="small"
+              variant="text"
+              :color="item.licenseRuleApplied.previewMode ? 'grey' : ''"
+              icon="mdi-information-outline"
+              :text="t('INFO')">
+              <template #tooltip>
                 <span class="text-subtitle-1">{{
                   item.licenseRuleApplied.previewMode
                     ? t('TT_LICENSE_RULE_APPLIED_PREVIEW')
@@ -786,22 +789,24 @@ onUnmounted(async () => {
                     created: formatDateAndTime(item.licenseRuleApplied.created),
                   })
                 }}</span>
-              </Tooltip>
-            </span>
-            <span
+              </template>
+            </DCActionButton>
+            <DCActionButton
               v-else-if="item.canChooseLicense && !item.choiceDeniedReason"
-              @click.stop="openLicenseRuleDialog(item)">
-              <v-icon size="small" color="primary">mdi-text-box-edit-outline</v-icon>
-              <Tooltip>
-                <span>{{ t('TT_license_rule') }}</span>
-              </Tooltip>
-            </span>
-            <span v-else-if="item.canChooseLicense && item.choiceDeniedReason">
-              <v-icon size="small" color="primary" :style="'opacity: 0.38;'">mdi-text-box-edit-outline</v-icon>
-              <Tooltip>
-                <span>{{ t('TT_' + item.choiceDeniedReason) }}</span>
-              </Tooltip>
-            </span>
+              size="small"
+              variant="text"
+              icon="mdi-text-box-edit-outline"
+              :text="t('BTN_CREATE')"
+              :hint="t('TT_license_rule')"
+              @click.stop="openLicenseRuleDialog(item)" />
+            <DCActionButton
+              v-else-if="item.canChooseLicense && item.choiceDeniedReason"
+              size="small"
+              variant="text"
+              icon="mdi-text-box-edit-outline"
+              :text="t('BTN_CREATE')"
+              :hint="t('TT_' + item.choiceDeniedReason)"
+              disabled />
           </template>
           <template v-slot:[`item.licenseEffective`]="{item}">
             <span>
