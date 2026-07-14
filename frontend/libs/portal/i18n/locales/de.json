@@ -1073,7 +1073,6 @@
   "DLG_CLONE_PROJECT_COUNT_INTEGER": "Die Anzahl muss eine ganze Zahl sein",
   "BTN_CLONE": "Klonen",
   "VALIDATION_required": "Erforderliche Angabe",
-  "VALIDATION_NO_LEADING_BLANKS": "Fuehrende Leerzeichen sind nicht erlaubt",
   "VALIDATION_max_length": "Maximale Länge überschritten ",
   "VALIDATION_url": "URL ist ungültig",
   "ERROR_VALIDATION_NOT_VALID_SPDX_IDENTIFIER": "SPDX-Identifier ist nicht gültig",
