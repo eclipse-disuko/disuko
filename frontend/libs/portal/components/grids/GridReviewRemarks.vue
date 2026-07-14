@@ -20,7 +20,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {chain} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -578,7 +578,7 @@ onMounted(() => {
         show-select
         single-select
         return-object
-        items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         @click:row="rowClick"
         @update:modelValue="(val) => (selected = val || [])">
         <template #[`header.actions`]="{column}">

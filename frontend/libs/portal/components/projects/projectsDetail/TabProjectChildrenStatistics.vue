@@ -10,6 +10,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useI18n} from 'vue-i18n';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 const projectStore = useProjectStore();
 
 const {t} = useI18n();
@@ -77,7 +78,7 @@ onMounted(async () => {
           class="flex-1 overflow-hidden"
           :projects="filteredProjects"
           :channels="projectModel.versions"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :show-footer="true"
           showSbomExtras
           showSupplier

@@ -15,7 +15,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import {computed, ref} from 'vue';
@@ -277,7 +277,7 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
           :search="search"
           :headers="headers"
           :items="filteredList"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           class="striped-table fill-height"
           density="compact"
           :footer-props="{

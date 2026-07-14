@@ -27,6 +27,7 @@ import {
   SortItem,
 } from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import config from '@shared/utils/config';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -505,7 +506,7 @@ onMounted(async () => {
           :headers="headers"
           :items="filteredList"
           @click:row="openSBOM"
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"

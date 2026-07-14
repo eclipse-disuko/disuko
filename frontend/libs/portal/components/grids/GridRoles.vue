@@ -6,6 +6,7 @@
 import {ProjectRoleDto} from '@shared/types/Users';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -91,7 +92,7 @@ onMounted(() => {
         :headers="headers"
         :search="search"
         @click:row="(event: Event, dataItem: DataTableItem<ProjectRoleDto>) => openProject(dataItem.item)"
-        :items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         fixed-header
         :sort-by="sortBy"
         sort-desc>

@@ -18,6 +18,7 @@ import {useHead} from '@unhead/vue';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -275,7 +276,7 @@ const updateTableHeight = () => {
                       :headers="headers"
                       :sort-by="sortItems"
                       :items="schemaLabels"
-                      :items-per-page="100"
+                      :items-per-page="DEFAULT_ITEMS_PER_PAGE"
                       :custom-filter="customFilterTable"
                       :item-class="getCssClassForTableRow"
                       :search="schemaLabelSearch">

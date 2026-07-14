@@ -15,7 +15,7 @@ import {
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -207,7 +207,7 @@ onMounted(async () => {
           class="striped-table fill-height"
           :sort-by="sortBy"
           :item-class="getCssClassForTableRow"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{'items-per-page-options': [10, 50, 100, 200, 500, -1]}">
           <template v-slot:header.content.licenseId="{column, getSortIcon, toggleSort}">
             <div class="v-data-table-header__content">

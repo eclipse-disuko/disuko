@@ -6,6 +6,7 @@
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -98,7 +99,7 @@ const isExpanded = (item: AuditLog) => {
           :headers="headers"
           :search="search"
           fixed-header
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           class="striped-table custom-data-table fill-height"
           density="compact"
           :sort-by="sortBy"

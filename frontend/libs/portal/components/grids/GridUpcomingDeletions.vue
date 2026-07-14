@@ -10,6 +10,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
@@ -157,7 +158,7 @@ onMounted(async () => {
         item-value="user"
         :items="items"
         :headers="headers"
-        :items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         fixed-header
         :sort-by="sortBy"
         expand-on-click
