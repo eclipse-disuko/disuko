@@ -124,7 +124,7 @@ const licenseNameRules = [
   (value: string) => (value && value.length <= 100) || t('LICENSE_NAME_VALIDATION_MAX_LENGTH', {max: 100}),
 ];
 const licenseIdRules = rules.required(t('COL_LICENSE_ID'));
-licenseIdRules.push((value) => isSpdxIdentifier(value) || t('ERROR_VALIDATION_LICENSE_ID_IS_NOT_VALID'));
+licenseIdRules.push((value) => isSpdxIdentifier(value, true) || t('ERROR_VALIDATION_LICENSE_ID_IS_NOT_VALID'));
 const licenseFamilyRules = rules.requiredOrEmpty(t('COL_LICENSE_FAMILY'));
 const licenseTypeRules = rules.requiredOrEmpty(t('COL_LICENSE_TYPE'));
 
@@ -275,6 +275,9 @@ const formDialog = ref<DiscoForm | null>(null);
 const doDialogAction = async () => {
   if (isLoading.value) return; // Verhindert mehrfaches Klicken
   isLoading.value = true;
+
+  item.value.name = item.value.name.trim();
+  item.value.licenseId = item.value.licenseId.trim();
 
   const result = await formDialog.value!.validate();
   if (result.valid) {
