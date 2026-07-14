@@ -7,7 +7,6 @@ import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 import {nextTick} from 'vue';
 import {config} from '@vue/test-utils';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
-import {hasLeadingBlank} from '@disclosure-portal/utils/Validation';
 import NewOrEditLicenseDialog from '../NewOrEditLicenseDialog.vue';
 
 const {createMock, updateMock, getMock, getAllObligationsMock, snackbarInfoMock, snackbarErrorMock} = vi.hoisted(
@@ -43,18 +42,6 @@ vi.mock('@shared/composables/useSnackbar', () => ({
 }));
 
 describe('NewOrEditLicenseDialog', () => {
-  describe('hasLeadingBlank', () => {
-    it('returns true for values starting with whitespace', () => {
-      expect(hasLeadingBlank(' test')).toBe(true);
-      expect(hasLeadingBlank('\ttest')).toBe(true);
-    });
-
-    it('returns false for values without leading whitespace', () => {
-      expect(hasLeadingBlank('test')).toBe(false);
-      expect(hasLeadingBlank('')).toBe(false);
-    });
-  });
-
   const originalTMock = config.global.mocks?.$t;
 
   beforeAll(() => {

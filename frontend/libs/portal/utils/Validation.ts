@@ -28,11 +28,6 @@ export function isURLOrEmpty(str: string) {
   return url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'ssh:';
 }
 
-export function hasLeadingBlank(value: string): boolean {
-  const normalized = value || '';
-  return normalized !== normalized.trimStart();
-}
-
 export function isSpdxIdentifier(str: string, trim = true): boolean {
   if (str) {
     if (trim) {

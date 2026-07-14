@@ -12,7 +12,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"unicode"
 
 	"github.com/eclipse-disuko/disuko/domain/department"
 	"github.com/eclipse-disuko/disuko/domain/project"
@@ -111,13 +110,6 @@ func validateUser(name string, internal *bool) bool {
 func ValidateSupportedUserType(fl validator.FieldLevel) bool {
 	value := fl.Field().Interface().(project.UserType)
 	return value == project.OWNER || value == project.SUPPLIER || value == project.VIEWER
-}
-
-func IsNoLeadingWhitespace(str string) bool {
-	if len(str) == 0 {
-		return true
-	}
-	return !unicode.IsSpace([]rune(str)[0])
 }
 
 func ValidateOmitemptyStruct(fl validator.FieldLevel) bool {

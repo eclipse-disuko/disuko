@@ -12,7 +12,7 @@ import adminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useRules from '@disclosure-portal/utils/Rules';
-import {hasLeadingBlank, isSpdxIdentifier, isURLOrEmpty} from '@disclosure-portal/utils/Validation';
+import {isSpdxIdentifier, isURLOrEmpty} from '@disclosure-portal/utils/Validation';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import dayjs from 'dayjs';
@@ -118,16 +118,13 @@ const duplicateIdMessage = '';
 
 const rules = useRules();
 const snackbar = useSnackbar();
-const noLeadingBlankRule = (value: string) => !hasLeadingBlank(value) || t('VALIDATION_NO_LEADING_BLANKS');
 const licenseNameRules = [
   ...rules.required(t('COL_NAME')),
-  noLeadingBlankRule,
   (value: string) => (value && value.length >= 3) || t('LICENSE_NAME_VALIDATION_MIN_LENGTH', {min: 3}),
   (value: string) => (value && value.length <= 100) || t('LICENSE_NAME_VALIDATION_MAX_LENGTH', {max: 100}),
 ];
 const licenseIdRules = rules.required(t('COL_LICENSE_ID'));
-licenseIdRules.push(noLeadingBlankRule);
-licenseIdRules.push((value) => isSpdxIdentifier(value, false) || t('ERROR_VALIDATION_LICENSE_ID_IS_NOT_VALID'));
+licenseIdRules.push((value) => isSpdxIdentifier(value, true) || t('ERROR_VALIDATION_LICENSE_ID_IS_NOT_VALID'));
 const licenseFamilyRules = rules.requiredOrEmpty(t('COL_LICENSE_FAMILY'));
 const licenseTypeRules = rules.requiredOrEmpty(t('COL_LICENSE_TYPE'));
 
@@ -278,6 +275,9 @@ const formDialog = ref<DiscoForm | null>(null);
 const doDialogAction = async () => {
   if (isLoading.value) return; // Verhindert mehrfaches Klicken
   isLoading.value = true;
+
+  item.value.name = item.value.name.trim();
+  item.value.licenseId = item.value.licenseId.trim();
 
   const result = await formDialog.value!.validate();
   if (result.valid) {
