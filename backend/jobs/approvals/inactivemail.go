@@ -9,6 +9,7 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
 	"github.com/eclipse-disuko/disuko/infra/service/mail"
@@ -17,7 +18,7 @@ import (
 )
 
 const (
-	inactiveMailTemplate = "approvalInactiveMail"
+	inactiveMailTemplate = mailtemplate.MailTemplateKeyApprovalInactive
 	sendMailOnDay        = 18
 )
 

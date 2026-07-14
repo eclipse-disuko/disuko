@@ -13,6 +13,7 @@ type MailTemplateKey string
 
 const (
 	MailTemplateKeyApprovalFinalized MailTemplateKey = "approvalFinalized"
+	MailTemplateKeyApprovalInactive  MailTemplateKey = "approvalInactiveMail"
 	MailTemplateKeyDummyDeletion     MailTemplateKey = "dummyDeletion"
 	MailTemplateKeyReviewCreated     MailTemplateKey = "reviewCreated"
 	MailTemplateKeyReviewFinalized   MailTemplateKey = "reviewFinalized"
