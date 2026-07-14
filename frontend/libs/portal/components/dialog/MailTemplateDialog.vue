@@ -118,7 +118,7 @@ defineExpose({open});
               :items="values"
               :headers="valuesHeaders"
               hide-default-footer
-              height="250"
+              height="240"
               disable-sort
               item-value="key">
               <template #[`item.key`]="{item}">
