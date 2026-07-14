@@ -79,14 +79,18 @@ defineExpose({open});
           <v-text-field
             v-model="form.bcc"
             :label="t('MAIL_TEMPLATE_BCC')"
+            :hint="t('MAIL_TEMPLATE_BCC_HINT')"
             variant="outlined"
             class="flex-1"
+            persistent-hint
             hide-details="auto" />
           <v-text-field
             v-model="form.cc"
             :label="t('MAIL_TEMPLATE_CC')"
+            :hint="t('MAIL_TEMPLATE_CC_HINT')"
             variant="outlined"
             class="flex-1"
+            persistent-hint
             hide-details="auto" />
         </div>
         <v-text-field
@@ -114,7 +118,7 @@ defineExpose({open});
               :items="values"
               :headers="valuesHeaders"
               hide-default-footer
-              height="250"
+              height="240"
               disable-sort
               item-value="key">
               <template #[`item.key`]="{item}">

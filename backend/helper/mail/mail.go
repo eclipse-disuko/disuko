@@ -72,11 +72,14 @@ func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl str
 		return fmt.Errorf("executing body template: %w", err)
 	}
 
+	ccAddrs := splitAddresses(cc)
+	bccAddrs := splitAddresses(bcc)
+
 	msgLines := []string{
 		"To: " + to,
 	}
-	if cc != "" {
-		msgLines = append(msgLines, "CC: "+cc)
+	if len(ccAddrs) > 0 {
+		msgLines = append(msgLines, "CC: "+strings.Join(ccAddrs, ", "))
 	}
 	msgLines = append(
 		msgLines,
@@ -94,12 +97,22 @@ func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl str
 	}
 
 	toAddrs := []string{to}
-	if bcc != "" {
-		toAddrs = append(toAddrs, bcc)
-	}
+	toAddrs = append(toAddrs, ccAddrs...)
+	toAddrs = append(toAddrs, bccAddrs...)
 
 	err = smtp.SendMail(c.Host+":"+c.Port, auth, c.Sender, toAddrs, []byte(strings.Join(msgLines, "\r\n")))
 	return err
+}
+
+func splitAddresses(addrs string) []string {
+	var result []string
+	for _, addr := range strings.Split(addrs, ";") {
+		addr = strings.TrimSpace(addr)
+		if addr != "" {
+			result = append(result, addr)
+		}
+	}
+	return result
 }
 
 func (c Client) IsTeamplateValid(templateName string) bool {
