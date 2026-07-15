@@ -180,7 +180,7 @@ func (h *PublicAuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "access",
 		Value:    "",
-		Path:     "/api/public/",
+		Path:     conf.Config.PublicAuth.AccessPath,
 		Expires:  time.Now().Add(-24 * time.Hour),
 		HttpOnly: true,
 		Secure:   true,
@@ -189,7 +189,7 @@ func (h *PublicAuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh",
 		Value:    "",
-		Path:     "/api/public/auth/refresh",
+		Path:     conf.Config.PublicAuth.RefreshPath,
 		Expires:  time.Now().Add(-24 * time.Hour),
 		HttpOnly: true,
 		Secure:   true,
