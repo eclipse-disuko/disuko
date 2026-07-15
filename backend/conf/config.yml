@@ -9,6 +9,8 @@ publicauth:
   accessttlseconds: 90
   refreshttlminutes: 30
   signingkey: ""
+  accesspath: "/api/public/"
+  refreshpath: "/api/public/auth/refresh"
 server:
   autodeletesbomsafterupload: false
   uploadpath: "/uploads/"
