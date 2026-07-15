@@ -157,6 +157,8 @@ var Config = struct {
 		AccessTTLSeconds  int
 		RefreshTTLMinutes int
 		SigningKey        string
+		AccessPath        string
+		RefreshPath       string
 	}
 	Auth struct {
 		AccessSecret                string
@@ -308,6 +310,8 @@ func checkEnvironmentVariables() {
 	Config.PublicAuth.AccessTTLSeconds = getEnvVariableInt("PUBLICAUTH_ACCESS_TTL", Config.PublicAuth.AccessTTLSeconds)
 	Config.PublicAuth.RefreshTTLMinutes = getEnvVariableInt("PUBLICAUTH_REFRESH_TTL", Config.PublicAuth.RefreshTTLMinutes)
 	Config.PublicAuth.SigningKey = getEnvVariable("PUBLICAUTH_SIGNING_KEY", Config.PublicAuth.SigningKey)
+	Config.PublicAuth.AccessPath = getEnvVariable("PUBLICAUTH_ACCESS_PATH", Config.PublicAuth.AccessPath)
+	Config.PublicAuth.RefreshPath = getEnvVariable("PUBLICAUTH_REFRESH_PATH", Config.PublicAuth.RefreshPath)
 
 	Config.Auth.AccessSecret = getEnvVariable("AUTH_ACCESS_SECRET", Config.Auth.AccessSecret)
 	Config.Auth.RefreshSecret = getEnvVariable("AUTH_REFRESH_SECRET", Config.Auth.RefreshSecret)
