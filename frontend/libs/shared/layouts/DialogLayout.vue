@@ -47,6 +47,10 @@ const {t} = useI18n();
         <slot name="left"></slot>
       </template>
 
+      <template v-if="$slots.leftButtons">
+        <slot name="leftButtons"></slot>
+      </template>
+
       <v-spacer></v-spacer>
 
       <template v-if="$slots.right">

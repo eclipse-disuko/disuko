@@ -59,5 +59,8 @@ watch(
     <template v-if="$slots.left">
       <slot name="left"></slot>
     </template>
+    <template v-if="$slots.leftButtons" #leftButtons>
+      <slot name="leftButtons"></slot>
+    </template>
   </DialogLayout>
 </template>

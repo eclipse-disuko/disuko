@@ -87,9 +87,6 @@ defineExpose({open});
 <template>
   <v-dialog v-model="isVisible" scrollable width="1100" height="700">
     <ReactiveDialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
-      <template #left>
-        <DCActionButton size="small" is-dialog-button :loading="testing" @click="test" :text="t('MAIL_TEMPLATE_BTN_TEST')" />
-      </template>
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
           <v-text-field
@@ -144,6 +141,15 @@ defineExpose({open});
           </div>
         </div>
       </v-form>
+      <template #leftButtons>
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          variant="text"
+          :loading="testing"
+          :text="t('MAIL_TEMPLATE_BTN_TEST')"
+          @click="test" />
+      </template>
     </ReactiveDialogLayout>
   </v-dialog>
 </template>
