@@ -168,7 +168,7 @@ func (h *PublicAuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "access",
 		Value:    accessSigned,
-		Path:     "/api/public/",
+		Path:     conf.Config.PublicAuth.AccessPath,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
