@@ -12,6 +12,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -211,7 +212,7 @@ const getActionButtons = (item: Token): TableActionButtonsProps['buttons'] => {
           density="compact"
           :loading="!dataAreLoaded"
           fixed-header
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :sort-by="sortBy"
           sort-desc
           class="striped-table custom-data-table fill-height"

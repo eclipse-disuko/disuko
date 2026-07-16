@@ -19,6 +19,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
@@ -263,7 +264,7 @@ onMounted(async () => {
           v-bind:expanded="expanded"
           :single-expand="true"
           :sort-by="[{key: 'updated', order: 'desc'}]"
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           item-value="_key">
           <template #[`header.execution`]="{column, getSortIcon, toggleSort}">
             <span class="mr-1">{{ column.title }}</span>

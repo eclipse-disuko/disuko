@@ -10,7 +10,7 @@ import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -154,7 +154,7 @@ const getStatusClass = computed(() => (status?: string) => {
         :headers="headers"
         :items="filteredList"
         @click:row="(_: Event, dataItem: DataTableItem<ProjectChildrenCombiDto>) => openVersion(dataItem.item)"
-        :items-per-page="100">
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE">
         <template #[`item.data-table-expand`]="{}"> x </template>
         <template #group-header="{item, toggleGroup, isGroupOpen}">
           <tr

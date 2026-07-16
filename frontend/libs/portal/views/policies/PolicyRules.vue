@@ -16,6 +16,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import appConfig from '@shared/utils/config';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
@@ -345,7 +346,7 @@ const headers = computed((): DataTableHeader[] => [
           :custom-filter="customFilterTable"
           :items="filteredList"
           :item-class="getCssClassForTableRow"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :search="search"
           :sort-by="sortItems">
           <template #[`header.status`]="{column, getSortIcon, toggleSort}">

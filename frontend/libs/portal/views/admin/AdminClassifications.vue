@@ -19,6 +19,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref} from 'vue';
@@ -262,7 +263,7 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
           :headers="headers"
           fixed-header
           @click:row="onRowClick"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :items="filteredList"
           :sort-by="sortItem()"

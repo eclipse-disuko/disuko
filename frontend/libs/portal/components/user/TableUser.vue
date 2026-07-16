@@ -9,6 +9,7 @@ import {UserDto} from '@shared/types/Users';
 import adminService from '@disclosure-portal/services/admin';
 import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, nextTick, onBeforeMount, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -254,7 +255,7 @@ watch(loading, async (newValue) => {
           density="compact"
           class="striped-table fill-height"
           :item-class="getCssClassForTableRow"
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :items-length="reactiveTotal"
           :loading="loading"

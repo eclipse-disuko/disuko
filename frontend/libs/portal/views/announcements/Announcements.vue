@@ -8,6 +8,7 @@ import announcementService from '@disclosure-portal/services/announcements';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -136,7 +137,7 @@ onMounted(async () => {
           density="compact"
           class="striped-table fill-height"
           fixed-header
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :headers="headers"
           :items="filteredAnnouncements"
           :search="search"

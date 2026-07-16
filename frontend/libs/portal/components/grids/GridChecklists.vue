@@ -10,6 +10,7 @@ import TableActionButtons, {TableActionButtonsProps} from '@shared/components/Ta
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -145,7 +146,7 @@ const getActionButtons = (item: Checklist): TableActionButtonsProps['buttons'] =
           item-key="_key"
           :items="checklistsStore.checklists"
           :headers="headers"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           fixed-header
           :sort-by="sortBy"
           @click:row="openItem"

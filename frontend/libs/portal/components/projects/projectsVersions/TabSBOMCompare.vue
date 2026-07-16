@@ -26,6 +26,7 @@ import {
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -784,7 +785,7 @@ onBeforeMount(async () => {
             :headers="componentHeaders"
             density="compact"
             class="striped-table fill-height"
-            :items-per-page="100"
+            :items-per-page="DEFAULT_ITEMS_PER_PAGE"
             :footer-props="{
               'items-per-page-options': [10, 50, 100, -1],
             }"

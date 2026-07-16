@@ -8,6 +8,7 @@ import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
@@ -241,7 +242,7 @@ onMounted(async () => {
           :search="search"
           :custom-filter="customFilter"
           :headers="filteredHeaders"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
           :sort-by="sortItems"
           item-key="_key"

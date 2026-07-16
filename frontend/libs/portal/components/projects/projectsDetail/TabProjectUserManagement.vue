@@ -17,6 +17,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -288,7 +289,7 @@ onBeforeMount(async () => {
       <div ref="tableUserManagement" class="fill-height action-slider-table">
         <v-data-table
           density="compact"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :loading="!dataAreLoaded"
           :search="search"
           fixed-header

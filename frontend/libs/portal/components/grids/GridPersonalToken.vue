@@ -9,6 +9,7 @@ import {PersonalToken} from '@disclosure-portal/model/PersonalToken';
 import profileService from '@disclosure-portal/services/profile';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -125,7 +126,7 @@ const doExpire = async (config: IConfirmationDialogConfig) => {
         item-key="key"
         :items="items"
         :headers="headers"
-        :items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         fixed-header
         :sort-by="sortBy"
         sort-desc>

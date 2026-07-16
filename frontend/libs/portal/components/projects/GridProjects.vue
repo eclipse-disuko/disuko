@@ -11,6 +11,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@disclosure-portal/stores/user';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {chain} from 'lodash';
 import {storeToRefs} from 'pinia';
 import {computed, ref} from 'vue';
@@ -178,7 +179,7 @@ const customFilterTable = (rawCellValue: unknown, searchTerm: string, internalIt
           :page="page"
           :sort-by="sortBy"
           :custom-filter="customFilterTable"
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           item-value="_key"
           :loading="loading"
           :cell-props="{class: 'py-3'}"

@@ -31,6 +31,7 @@ import {
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
@@ -657,7 +658,7 @@ onUnmounted(async () => {
           :headers="filteredHeaders"
           density="compact"
           class="striped-table custom-data-table fill-height"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"

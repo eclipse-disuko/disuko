@@ -13,7 +13,7 @@ import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel, getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -316,7 +316,7 @@ watch(() => spdx.value, reload);
       :sort-by="sortBy"
       sort-desc
       :search="search"
-      :items-per-page="-1"
+      :items-per-page="DEFAULT_ITEMS_PER_PAGE"
       :items="filteredList"
       :expanded.sync="expanded"
       @click:row.stop="
@@ -324,7 +324,7 @@ watch(() => spdx.value, reload);
           expanded.some((e: string) => e === tableItem.item._key) ? (expanded = []) : (expanded = [tableItem.item._key])
       "
       :footer-props="{
-        'items-per-page-options': [10, 50, 100, -1],
+        'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS,
       }"
       :custom-filter="classificationsCustomFilterTable">
       <template #[`header.warnLevel`]="{column, toggleSort, getSortIcon}">

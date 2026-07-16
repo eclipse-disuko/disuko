@@ -11,6 +11,7 @@ import {formatDateAndTime, getIconColor, getVersionStateIcon} from '@disclosure-
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -121,8 +122,9 @@ const showOverallAuditDialog = async () => {
         item-key="updated"
         :sort-by="sortBy"
         sort-desc
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         :items="items"
-        :footer-props="{'items-per-page-options': [10, 50, 100, -1]}">
+        :footer-props="{'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS}">
         <template v-slot:[`item.state`]="{item}">
           <v-icon :color="getIconColor(enumToLowerCase(item.state))" small>
             {{ getVersionStateIcon(enumToLowerCase(item.state)) }}

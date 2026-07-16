@@ -22,6 +22,7 @@ import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 
 const {t} = useI18n();
 const {calculateHeight} = useDimensions();
@@ -231,8 +232,8 @@ onUnmounted(() => {
           :sort-by="sortTable()"
           @click:row="onRowClick"
           :headers="headers"
-          :items-per-page="-1"
-          :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
+          :footer-props="{'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS}"
           :items="filteredReviewTemplates"
           :item-class="getCssClassForTableRow"
           v-model:search="search"

@@ -10,6 +10,7 @@ import adminService from '@disclosure-portal/services/admin';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useLanguageStore} from '@shared/stores/language.store';
@@ -146,7 +147,7 @@ onMounted(async () => {
           item-key="_key"
           :items="items"
           :headers="headers"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           fixed-header
           :sort-by="sortBy"
           sort-desc>

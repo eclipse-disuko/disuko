@@ -22,6 +22,7 @@ import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -385,7 +386,7 @@ watch(
           density="compact"
           :loading="!dataAreLoaded"
           fixed-header
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :height="tableHeight"
           class="striped-table custom-data-table h-full"
           :headers="userHeaders"
