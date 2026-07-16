@@ -17,6 +17,7 @@ const emit = defineEmits(['reload']);
 
 const isVisible = ref(false);
 const saving = ref(false);
+const testing = ref(false);
 const key = ref('');
 const form = ref<UpdateMailTemplate>({subject: '', message: '', bcc: '', cc: ''});
 const values = ref<{key: string; value: string}[]>([]);
@@ -68,12 +69,27 @@ const save = async () => {
   }
 };
 
+const test = async () => {
+  const valid = (await dialogRef.value?.validate())?.valid;
+  if (!valid) return;
+  testing.value = true;
+  try {
+    await mailTemplatesService.test(key.value, form.value.message);
+    info(t('MAIL_TEMPLATE_TEST_SUCCESS'));
+  } finally {
+    testing.value = false;
+  }
+};
+
 defineExpose({open});
 </script>
 
 <template>
   <v-dialog v-model="isVisible" scrollable width="1100" height="700">
     <ReactiveDialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
+      <template #left>
+        <DCActionButton size="small" is-dialog-button :loading="testing" @click="test" :text="t('MAIL_TEMPLATE_BTN_TEST')" />
+      </template>
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
           <v-text-field
