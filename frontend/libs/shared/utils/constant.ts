@@ -7,3 +7,5 @@ export const DATE_FORMAT = 'DD.MM.YYYY';
 export const DATE_FORMAT_SHORT = 'DD.MM.YYYY HH:mm [(UTC]Z[)]';
 export const DATETIME_FORMAT = 'DD.MM.YYYY HH:mm:ss [(UTC]Z[)]';
 export const DATETIME_FORMAT_FILE = 'YYYY-MM-DD-HH-mm';
+export const DEFAULT_ITEMS_PER_PAGE = 100;
+export const DEFAULT_ITEMS_PER_PAGE_OPTIONS = [10, 50, 100, -1];

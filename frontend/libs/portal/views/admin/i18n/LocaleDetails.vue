@@ -9,6 +9,7 @@ import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
@@ -556,7 +557,7 @@ watch(
           :search="search"
           :sort-by="sortItems"
           :loading="isLoading"
-          :items-per-page="100">
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE">
           <template #[`item.translation`]="{item}">
             <div v-if="isEditingRow(item)">
               <v-textarea

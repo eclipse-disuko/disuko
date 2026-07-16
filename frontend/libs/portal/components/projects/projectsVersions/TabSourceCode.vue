@@ -17,7 +17,7 @@ import TableActionButtons, {TableActionButtonsProps} from '@shared/components/Ta
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -251,8 +251,9 @@ onMounted(async () => {
           :search="search"
           sort-desc
           :items="sourceCodeHistory"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{
-            'items-per-page-options': [10, 50, 100, -1],
+            'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS,
           }">
           <template v-slot:item.url="{item}">
             <v-tooltip v-if="!item.url.startsWith('file://')" :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom">

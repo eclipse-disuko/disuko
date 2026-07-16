@@ -23,7 +23,7 @@ import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
+import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -809,7 +809,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
               :headers="componentHeadersSelected"
               :class="getCssClass() + ' striped-table fill-height'"
               :search="filterSelected"
-              :items-per-page="100"
+              :items-per-page="DEFAULT_ITEMS_PER_PAGE"
               :items="filteredListSelected"
               @[canEditManual&&`click:row`]="
                 (event: Event, dataItem: DataTableItem<LicenseSlim>) => unselectLicense(dataItem.item)
@@ -1171,7 +1171,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
             :loading="licensesLoading"
             fixed-header
             :headers="componentHeadersUnSelected"
-            :items-per-page="100"
+            :items-per-page="DEFAULT_ITEMS_PER_PAGE"
             :items="filteredListNotSelected"
             :search="filterUnSelected"
             @click:row="(event: Event, dataItem: DataTableItem<LicenseSlim>) => selectLicense(dataItem.item)"

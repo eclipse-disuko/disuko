@@ -8,6 +8,7 @@ import AnalyticsService from '@disclosure-portal/services/analytics';
 import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
 import {createProjectURL, createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {debounce} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -214,7 +215,7 @@ watch(
         :headers="filteredHeaders"
         fixed-header
         density="compact"
-        :items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
         :items="items"
         class="striped-table fill-height"

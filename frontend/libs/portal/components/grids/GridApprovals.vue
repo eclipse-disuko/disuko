@@ -15,6 +15,7 @@ import {useUserStore} from '@disclosure-portal/stores/user';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
@@ -314,7 +315,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
           expand-on-click
           :expanded.sync="expanded"
           @update:expanded="onRowExpand"
-          :items-per-page="100">
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE">
           <template #[`item.data-table-expand`]="{item}">
             <v-icon color="primary" @click.stop="toggleExpand(item)">
               {{ isExpanded(item) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

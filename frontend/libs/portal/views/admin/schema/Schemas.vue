@@ -16,6 +16,7 @@ import {IMap} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, nextTick, onMounted, onUnmounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -234,7 +235,7 @@ onUnmounted(() => {
           :sort-by="sortItems()"
           :sort-desc="[1]"
           :custom-filter="customFilterTable"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :item-class="getCssClassForTableRow">
           <template #[`item.active`]="{item}">
             <div class="flex justify-center">

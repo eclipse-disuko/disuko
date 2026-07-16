@@ -12,6 +12,7 @@ import TableLayout from '@shared/layouts/TableLayout.vue';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
@@ -156,7 +157,7 @@ watch(
           item-key="_key"
           :items="checklist.items"
           :headers="headers"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           fixed-header
           :sort-by="sortBy"
           sort-desc>

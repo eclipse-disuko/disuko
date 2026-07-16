@@ -12,6 +12,7 @@ import {formatDateTimeShort} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {useClipboard} from '@shared/utils/clipboard';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -155,7 +156,7 @@ watch(projectModel, async (value) => {
           :search="search"
           :headers="headers"
           :items="rules"
-          :items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           :footer-props="{
             'items-per-page-options': [10, 50, 100, -1],
           }"

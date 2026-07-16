@@ -15,6 +15,7 @@ import {RightsUtils} from '@disclosure-portal/utils/Rights';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {formatDateTime} from '@disclosure-portal/utils/View';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
@@ -273,7 +274,7 @@ onMounted(async () => {
         sort-desc
         :items="filteredList"
         :search="search"
-        items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}">
         <template v-slot:[`header.actions`]="{column}">
           <GridFilterHeader :column="column">

@@ -13,6 +13,7 @@ import TextField from '@shared/components/disco/TextField.vue';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -288,7 +289,7 @@ onMounted(() => {
           fixed-header
           :headers="headers"
           :items="filteredItems"
-          items-per-page="100"
+          :items-per-page="DEFAULT_ITEMS_PER_PAGE"
           item-value="_key"
           :sort-by="sortBy"
           :cell-props="{class: 'py-3'}">

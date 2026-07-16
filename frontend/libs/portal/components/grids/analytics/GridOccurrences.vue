@@ -10,6 +10,7 @@ import AnalyticsService from '@disclosure-portal/services/analytics';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
@@ -245,7 +246,7 @@ onMounted(async () => {
         fixed-header
         @click:row="onClickRow"
         class="striped-table fill-height"
-        :items-per-page="100"
+        :items-per-page="DEFAULT_ITEMS_PER_PAGE"
         :footer-props="{'items-per-page-options': [10, 50, 100, -1]}"
         :items="filteredItems"
         :item-class="getCssClassForTableRow">

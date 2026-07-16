@@ -9,6 +9,7 @@ import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {DataTableHeader} from '@shared/types/table';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 
 const showDialog = defineModel<boolean>('showDialog');
 
@@ -66,7 +67,7 @@ const close = () => {
             :headers="headers"
             :items="items"
             item-key="projectKey"
-            :items-per-page="100"
+            :items-per-page="DEFAULT_ITEMS_PER_PAGE"
             :footer-props="{
               'items-per-page-options': [10, 50, 100, -1],
             }">

@@ -18,6 +18,7 @@ import {
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -308,7 +309,7 @@ onMounted(async () => {
       @click:row="showDetails"
       :search="search"
       :custom-filter="customFilterTable"
-      :items-per-page="100"
+      :items-per-page="DEFAULT_ITEMS_PER_PAGE"
       :footer-props="{
         'items-per-page-options': [10, 50, 100, 500],
       }">

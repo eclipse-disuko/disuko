@@ -24,8 +24,6 @@ const props = defineProps<{
 const endpoint = ref(config.PUBLIC_API_ENDPOINT);
 const publicUrl = ref(config.PUBLIC_UI_URL);
 const snackBarText = ref<string | undefined>('');
-const isProd = computed(() => config.isProd);
-
 const projectName = computed(() => useProjectStore().currentProject?.name);
 const tokenExpiry = computed(() => formatDate(props.token!.expiry));
 const warningHintText = computed(() => t('TOKEN_INFO_WARN_HINT'));
@@ -35,14 +33,13 @@ const close = () => {
 };
 
 function getInfoToClipboard() {
-  const publicUrlLine = isProd.value ? '' : `${t('TOKEN_COPY_TEXT_PUBLIC_URL')}: ${publicUrl.value}\n`;
   return `${t('TOKEN_COPY_TEXT_PROJECT_NAME')}: ${projectName.value}
 ${t('TOKEN_COPY_TEXT_PROJECT_TOKEN')}: ${props.token.tokenSecret}
 ${t('TOKEN_COPY_TEXT_TOKEN_EXPIRY')}: ${props.token.expiry}
 ${t('TOKEN_COPY_TEXT_TOKEN_NAME')}: ${props.token.company}
 ${t('TOKEN_COPY_TEXT_TOKEN_DESCRIPTION')}: ${props.token.description}
 ${t('TOKEN_COPY_TEXT_ENDPOINT')}: ${endpoint.value}
-${publicUrlLine}
+${t('TOKEN_COPY_TEXT_PUBLIC_URL')}: ${publicUrl.value}
 
 ${warningHintText.value}`;
 }
@@ -140,7 +137,6 @@ const dialogConfig: DialogLayoutConfig = {
         </v-text-field>
 
         <v-text-field
-          v-if="!isProd"
           autocomplete="off"
           readonly
           variant="outlined"
