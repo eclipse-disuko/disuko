@@ -5,6 +5,7 @@
 package rest
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -125,7 +126,7 @@ func (h *PublicAuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return []byte(conf.Config.PublicAuth.SigningKey), nil
 	})
 	if err != nil {
-		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.DiscoTokenUnauthorized), err)
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid refresh token"), err)
 	}
 	claims, ok := token.Claims.(*publicauth.RefreshClaims)
 	if !ok {
@@ -207,6 +208,10 @@ func (h *PublicAuthHandler) Info(w http.ResponseWriter, r *http.Request) {
 		return []byte(conf.Config.PublicAuth.SigningKey), nil
 	})
 	if err != nil {
+		var validationErr *jwt.ValidationError
+		if errors.As(err, &validationErr) && validationErr.Errors&jwt.ValidationErrorExpired != 0 {
+			exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenSessionExpired), err.Error())
+		}
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid access token"), err.Error())
 	}
 	claims, ok := token.Claims.(*publicauth.AccessClaims)
@@ -233,6 +238,10 @@ func projectAccessAuth(rs *logy.RequestSession, repo projectRepo.IProjectReposit
 		return []byte(conf.Config.PublicAuth.SigningKey), nil
 	})
 	if err != nil {
+		var validationErr *jwt.ValidationError
+		if errors.As(err, &validationErr) && validationErr.Errors&jwt.ValidationErrorExpired != 0 {
+			exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenSessionExpired), err.Error())
+		}
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DiscoTokenUnauthorized, "Invalid access token"), err.Error())
 	}
 	claims, ok := token.Claims.(*publicauth.AccessClaims)
