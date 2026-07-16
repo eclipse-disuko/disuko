@@ -248,6 +248,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Get("/", s.handlers.mailTemplate.GetAllHandler)
 					r.Get("/{id}", s.handlers.mailTemplate.GetByIdHandler)
 					r.Put("/{id}", s.handlers.mailTemplate.UpdateHandler)
+					r.Post("/{id}/test", s.handlers.mailTemplate.TestHandler)
 				})
 				r.Get("/counts/dashboard", s.handlers.count.GetDashboardCountsForAdminHandler)
 				r.Route("/jobs", func(r chi.Router) {

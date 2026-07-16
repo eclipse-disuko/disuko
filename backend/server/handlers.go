@@ -269,6 +269,8 @@ func (s *Server) setupHandlers() {
 	}
 	s.handlers.mailTemplate = rest.MailTemplateHandler{
 		MailTemplatesRepository: s.repos.mailTemplates,
+		UserRepository:          s.repos.user,
+		MailService:             s.services.mail,
 	}
 
 	// TODO: quick fix, move spdx retriever into service

@@ -137,6 +137,7 @@ const (
 	ErrorCsvGenerationDataMissing             = "ERROR_CSV_GENERATION_DATA_MISSING"
 	ErrorCsvGeneration                        = "ERROR_CSV_GENERATION"
 	ErrorUserNotFound                         = "ERROR_USER_NOT_FOUND"
+	ErrorSendingMail                          = "ERROR_SENDING_MAIL"
 	ErrorProjectLastOwnerCanNotChanged        = "ERROR_PROJECT_LAST_OWNER_CAN_NOT_CHANGED"
 	ReadFile                                  = "READ_FILE"
 	ReadFileCorrupted                         = "READ_FILE_CORRUPTED"
@@ -492,6 +493,7 @@ func InitI18N() {
 	addI18NKeyValue(UnmarshallingSpdxContentLicense, "No license info found for spdx component")
 	addI18NKeyValue(ErrorCsvGenerationDataMissing, "error fetching %s from the database")
 	addI18NKeyValue(ErrorUserNotFound, "Error user not found %s")
+	addI18NKeyValue(ErrorSendingMail, "Error sending mail")
 	addI18NKeyValue(ErrorProjectLastOwnerCanNotChanged, "Error the last project owner cannot be changed")
 	addI18NKeyValue(ReadFile, "The %s file could not be read from HD")
 	addI18NKeyValue(ReadFileCorrupted, "The %s file is corrupted")

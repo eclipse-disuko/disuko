@@ -15,6 +15,8 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/roles"
 	"github.com/eclipse-disuko/disuko/helper/validation"
 	"github.com/eclipse-disuko/disuko/infra/repository/mailtemplates"
+	user2 "github.com/eclipse-disuko/disuko/infra/repository/user"
+	"github.com/eclipse-disuko/disuko/infra/service/mail"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -22,6 +24,8 @@ import (
 
 type MailTemplateHandler struct {
 	MailTemplatesRepository mailtemplates.IMailTemplatesRepository
+	UserRepository          user2.IUsersRepository
+	MailService             *mail.Service
 }
 
 func (h *MailTemplateHandler) GetAllHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,4 +76,29 @@ func (h *MailTemplateHandler) UpdateHandler(w http.ResponseWriter, r *http.Reque
 
 	h.MailTemplatesRepository.Update(requestSession, tmpl)
 	render.JSON(w, r, tmpl.ToDto())
+}
+
+func (h *MailTemplateHandler) TestHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	userName, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.IsApplicationAdmin() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	idEscaped := chi.URLParam(r, "id")
+	id, err := url.QueryUnescape(idEscaped)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorQueryUnescape))
+
+	var req mailtemplate.TestMailTemplateDto
+	validation.DecodeAndValidate(r, &req, false)
+
+	currentUser := GetUserByUsername(requestSession, h.UserRepository, userName)
+	if currentUser == nil {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ErrorPermissionDeniedUser, userName))
+	}
+
+	err = h.MailService.SendTestMail(requestSession, currentUser.Email, mailtemplate.MailTemplateKey(id), req.Message)
+	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorSendingMail))
+
+	w.WriteHeader(http.StatusOK)
 }

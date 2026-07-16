@@ -24,3 +24,18 @@ func (s *Service) SendMail(rs *logy.RequestSession, to string, templateKey mailt
 	}
 	return nil
 }
+
+func (s *Service) SendTestMail(rs *logy.RequestSession, to string, templateKey mailtemplate.MailTemplateKey, message string) error {
+	tmpl := s.TemplateRepo.FindByKey(rs, string(templateKey), false)
+	if tmpl == nil {
+		return fmt.Errorf("template not found %s", templateKey)
+	}
+	data := make(map[string]string, len(tmpl.Values))
+	for key, description := range tmpl.Values {
+		data[key] = fmt.Sprintf("<< %s >>", description)
+	}
+	if err := s.Client.Send(to, "", "", message, tmpl.Subject, data); err != nil {
+		return fmt.Errorf("sending test mail: %w", err)
+	}
+	return nil
+}
