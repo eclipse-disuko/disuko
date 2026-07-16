@@ -17,7 +17,6 @@ import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
-import appConfig from '@shared/utils/config';
 import dayjs from 'dayjs';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -324,8 +323,7 @@ const headers = computed((): DataTableHeader[] => [
       <DCActionButton
         :text="t('CLASSIFICATION_MATRIX')"
         icon="mdi-table-large"
-        @click="classificationMatrixDialogRef?.open()"
-        v-if="!appConfig.isProd" />
+        @click="classificationMatrixDialogRef?.open()" />
       <v-spacer></v-spacer>
       <DCActionButton
         icon="mdi-download"
