@@ -126,7 +126,7 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 	userDel := userdeletion.Init(s.services.deletionService)
 	s.scheduler.AddJobCb(job.UserDeletion, userDel)
 
-	inactiveMail := approvals.InitInactiveMail(s.repos.approvalList, s.repos.user, s.services.mail)
+	inactiveMail := approvals.InitInactiveMail(s.repos.approvalList, s.repos.project, s.repos.user, s.services.mail)
 	s.scheduler.AddJobCb(job.ApprovalsInactiveMail, inactiveMail)
 
 	abortInactive := approvals.InitAbortInactive(s.repos.approvalList, s.repos.project, s.repos.user, s.repos.auditLogList, s.repos.sbomList, &s.handlers.project)

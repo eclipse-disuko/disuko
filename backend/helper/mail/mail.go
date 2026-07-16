@@ -6,7 +6,6 @@ package mail
 
 import (
 	"bytes"
-	"embed"
 	"encoding/base64"
 	"fmt"
 	"strings"
@@ -16,9 +15,6 @@ import (
 	"text/template"
 )
 
-//go:embed templates
-var taskTemplate embed.FS
-
 type Client struct {
 	Host   string
 	Port   string
@@ -26,8 +22,6 @@ type Client struct {
 	User   string
 	Pass   string
 }
-
-var templates []string = []string{"taskReview", "taskApproval", "approvalInactiveMail"}
 
 func NewClient(host, port, sender, user, pass string) Client {
 	return Client{
@@ -113,16 +107,4 @@ func splitAddresses(addrs string) []string {
 		}
 	}
 	return result
-}
-
-func (c Client) IsTeamplateValid(templateName string) bool {
-	if templateName == "" {
-		return false
-	}
-	for _, template := range templates {
-		if strings.EqualFold(template, templateName) {
-			return true
-		}
-	}
-	return false
 }
