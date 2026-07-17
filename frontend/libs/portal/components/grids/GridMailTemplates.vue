@@ -60,8 +60,12 @@ reload();
           </template>
           <template #[`item._key`]="{item}">
             <div>{{ t(`MAIL_TEMPLATE_KEY_${item._key}`) }}</div>
-            <div v-if="item.cc" class="text-caption text-medium-emphasis">{{ t('MAIL_TEMPLATE_CC') }}: {{ item.cc }}</div>
-            <div v-if="item.bcc" class="text-caption text-medium-emphasis">{{ t('MAIL_TEMPLATE_BCC') }}: {{ item.bcc }}</div>
+            <div v-if="item.cc" class="text-caption text-medium-emphasis">
+              {{ t('MAIL_TEMPLATE_CC') }}: {{ item.cc }}
+            </div>
+            <div v-if="item.bcc" class="text-caption text-medium-emphasis">
+              {{ t('MAIL_TEMPLATE_BCC') }}: {{ item.bcc }}
+            </div>
           </template>
           <template #[`item.description`]="{item}">
             {{ t(`MAIL_TEMPLATE_KEY_DESC_${item._key}`) }}
