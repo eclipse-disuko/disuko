@@ -24,11 +24,10 @@ const (
 type MailTemplate struct {
 	domain.RootEntity `bson:"inline"`
 	audit.Container   `bson:"inline"`
-	Subject           string            `json:"subject"`
-	Message           string            `json:"message"`
-	Bcc               string            `json:"bcc"`
-	Cc                string            `json:"cc"`
-	Values            map[string]string `json:"values"`
+	Subject           string `json:"subject"`
+	Message           string `json:"message"`
+	Bcc               string `json:"bcc"`
+	Cc                string `json:"cc"`
 }
 
 type MailTemplateDto struct {
@@ -54,7 +53,6 @@ type TestMailTemplateDto struct {
 func NewMailTemplate() *MailTemplate {
 	return &MailTemplate{
 		RootEntity: domain.NewRootEntity(),
-		Values:     make(map[string]string),
 	}
 }
 
@@ -65,7 +63,6 @@ func (entity *MailTemplate) ToDto() *MailTemplateDto {
 		Message: entity.Message,
 		Bcc:     entity.Bcc,
 		Cc:      entity.Cc,
-		Values:  entity.Values,
 	}
 }
 

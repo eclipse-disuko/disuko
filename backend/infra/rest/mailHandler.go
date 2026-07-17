@@ -21,11 +21,6 @@ type MailHandler struct {
 	Service *mail.Service
 }
 
-type MailData struct {
-	Username string
-	Link     string
-}
-
 var recipient string = "disclosure-portal@mercedes-benz.com"
 
 func extractRequestMailBody(r *http.Request) mail2.MailRequstDto {
@@ -41,7 +36,7 @@ func (handler *MailHandler) SendMail(w http.ResponseWriter, r *http.Request) {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
-	mailData := MailData{
+	mailData := mailtemplate.TaskApprovalMailData{
 		Username: "Superman",
 	}
 

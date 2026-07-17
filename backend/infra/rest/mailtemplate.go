@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/mailtemplate"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
@@ -36,7 +35,7 @@ func (h *MailTemplateHandler) GetAllHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	all := h.MailTemplatesRepository.FindAll(requestSession, false)
-	render.JSON(w, r, domain.ToDtos(all))
+	render.JSON(w, r, mail.ToDtos(all))
 }
 
 func (h *MailTemplateHandler) GetByIdHandler(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +50,7 @@ func (h *MailTemplateHandler) GetByIdHandler(w http.ResponseWriter, r *http.Requ
 	exception.HandleErrorClientMessage(err, message.GetI18N(message.ErrorQueryUnescape))
 
 	tmpl := h.MailTemplatesRepository.FindByKey(requestSession, id, false)
-	render.JSON(w, r, tmpl.ToDto())
+	render.JSON(w, r, mail.ToDto(tmpl))
 }
 
 func (h *MailTemplateHandler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +74,7 @@ func (h *MailTemplateHandler) UpdateHandler(w http.ResponseWriter, r *http.Reque
 	tmpl.Cc = req.Cc
 
 	h.MailTemplatesRepository.Update(requestSession, tmpl)
-	render.JSON(w, r, tmpl.ToDto())
+	render.JSON(w, r, mail.ToDto(tmpl))
 }
 
 func (h *MailTemplateHandler) TestHandler(w http.ResponseWriter, r *http.Request) {

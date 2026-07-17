@@ -38,14 +38,7 @@ func (s *SpdxSubscribe) OnSpdxAdded(eventId observermngmt.EventId, arg interface
 }
 
 func (s *SpdxSubscribe) sendMail(data observermngmt.SpdxData) {
-	mailData := struct {
-		Username    string
-		ProjectName string
-		ProjectLink string
-		VersionName string
-		VersionLink string
-		SbomLink    string
-	}{}
+	mailData := mailtemplate.SpdxUploadedMailData{}
 
 	mailData.ProjectName = data.Project.Name
 	projectTypeUrlPart := "projects"

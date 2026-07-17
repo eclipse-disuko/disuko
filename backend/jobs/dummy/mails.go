@@ -106,11 +106,7 @@ func (j *MailJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execu
 }
 
 func (j *MailJob) sendMail(rs *logy.RequestSession, prj *project.Project, resp *user.User, log *job.Log, days int) {
-	mailData := struct {
-		Username    string
-		ProjectName string
-		Days        int
-	}{}
+	mailData := mailtemplate.DummyDeletionMailData{}
 	mailData.Username = resp.Forename + " " + resp.Lastname
 	mailData.ProjectName = prj.Name
 	mailData.Days = days

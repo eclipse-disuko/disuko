@@ -60,18 +60,7 @@ func (r *ReviewSubscribe) sendMail(data observermngmt.OverallReviewData) {
 	if data.Project.IsGroup {
 		return
 	}
-	mailData := struct {
-		Username         string
-		ProjectName      string
-		ReviewerFullName string
-		Status           string
-		StatusDE         string
-		Comment          string
-		ReviewsLink      string
-		ProjectLink      string
-		VersionName      string
-		VersionLink      string
-	}{}
+	mailData := mailtemplate.ReviewCreatedMailData{}
 
 	mailData.ProjectName = data.Project.Name
 	projectTypeUrlPart := "projects"
