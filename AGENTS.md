@@ -1,21 +1,26 @@
 # AGENTS.md
 
 ## Repository structure
+
 Monorepo structure with the following packages:
+
 - docs: Vitepress documentation, intended for developers
 - frontend: Contains one shared configuration for frontend applications. This includes portal, rlm and cli (3 different apps)
 - backend: Go backend
 - infra: Kubernetes and Helm Charts
 
 ## Commands
+
 - `cd frontend && npm install && npm run dev:portal-local` to start the frontend
 - `cd backend && go build -o /tmp/dps && /tmp/dps` to start backend
 
 ## General coding guidelines
+
 - Do not write comments
 - Every file must start with the SPDX license header (same format as backend)
 
 ## Frontend coding guidelines
+
 - Use vuetify components where possible
 - Avoid using v-col and v-row, use flexbox or grid instead, see @shared/layouts
 - Use tailwindcss, do not write inline styles
@@ -27,10 +32,11 @@ Monorepo structure with the following packages:
 - All UI strings through `vue-i18n`; translation keys are SCREAMING_SNAKE_CASE; portal keys in `libs/portal/i18n/locales/{en,de}.json`, shared keys in `libs/shared/i18n/locales/{en,de}.json`
 - Use event bus (`@disclosure-portal/utils/eventbus`) for cross-component communication when props/emits/store can't handle it
 - Use `dayjs` with shared constants (`DATE_FORMAT`, `DATE_FORMAT_SHORT`, etc.) from `@shared/utils/constant` for dates
-- Use layout components from `@shared/layouts` (`Stack`, `TableLayout`, `DialogLayout`, `ReactiveDialogLayout`)
+- Use layout components from `@shared/layouts` (`Stack`, `TableLayout`, `DialogLayout`); pass `showIdle: true` in `DialogLayoutConfig` to show global idle spinner while `loading` is true
 - Code shared across apps in `libs/shared/`; portal-specific in `libs/portal/`; `apps/portal/` is the entry point (router, plugins only)
 
 ## Backend coding guidelines
+
 - Every file must start with the SPDX license header
 - 4-layer architecture: `domain/` → `infra/repository/` → `infra/service/` → `infra/rest/`; never skip or reverse layers
 - Each domain area under `infra/repository/` must have a `layer.go` (interface) and a separate implementation file
@@ -47,6 +53,7 @@ Monorepo structure with the following packages:
 - Config via `jinzhu/configor`; access through `conf.Config`
 
 ## Contributing
+
 - Write commits message in conventional commit format, e.g. `feat: add new feature` or `fix: resolve bug`
 - Write commit messages focused on user impact, not implementation details
 - Make sure to have gitleaks configured with `pre-commit install`, do not commit credentials or secrets

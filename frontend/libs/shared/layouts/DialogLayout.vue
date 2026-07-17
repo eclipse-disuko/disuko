@@ -3,7 +3,9 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
+import {useIdleStore} from '@shared/stores/idle.store';
 import {useI18n} from 'vue-i18n';
+import {watch} from 'vue';
 
 const emit = defineEmits(['close', 'secondaryAction', 'primaryAction']);
 
@@ -14,13 +16,28 @@ export interface DialogLayoutConfig {
   primaryButton?: {text: string; disabled?: boolean; loading?: boolean};
   icon?: string;
   iconColor?: string; // optional icon color override
+  showIdle?: boolean; // show global idle spinner while loading is true
+  loading?: boolean; // used together with showIdle
 }
 
-defineProps<{
+const props = defineProps<{
   config: DialogLayoutConfig;
 }>();
 
 const {t} = useI18n();
+const idleStore = useIdleStore();
+
+watch(
+  () => props.config.loading,
+  (loading) => {
+    if (!props.config.showIdle) return;
+    if (loading) {
+      idleStore.show();
+    } else {
+      idleStore.hide();
+    }
+  },
+);
 </script>
 
 <template>

@@ -31,8 +31,9 @@ const valuesHeaders = computed((): DataTableHeader[] => [
 const dialogConfig = ref({
   title: '',
   loading: false,
-  primaryButton: '',
-  secondaryButton: '',
+  showIdle: true,
+  primaryButton: {text: ''},
+  secondaryButton: {text: ''},
 });
 
 const open = (item: MailTemplate) => {
@@ -42,8 +43,9 @@ const open = (item: MailTemplate) => {
   dialogConfig.value = {
     title: t('MAIL_TEMPLATE_DIALOG_TITLE'),
     loading: false,
-    primaryButton: t('BTN_SAVE'),
-    secondaryButton: t('BTN_CANCEL'),
+    showIdle: true,
+    primaryButton: {text: t('BTN_SAVE')},
+    secondaryButton: {text: t('BTN_CANCEL')},
   };
   dialogRef.value?.reset();
   isVisible.value = true;
@@ -86,7 +88,7 @@ defineExpose({open});
 
 <template>
   <v-dialog v-model="isVisible" scrollable width="1100" height="700">
-    <ReactiveDialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
+    <DialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
           <v-text-field
@@ -151,6 +153,6 @@ defineExpose({open});
           :text="t('MAIL_TEMPLATE_BTN_TEST')"
           @click="test" />
       </template>
-    </ReactiveDialogLayout>
+    </DialogLayout>
   </v-dialog>
 </template>

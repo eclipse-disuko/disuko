@@ -39,8 +39,9 @@ const rules = {
 const dialogConfig = computed(() => ({
   title: t(title.value),
   loading: saving.value,
-  primaryButton: t(confirmText.value),
-  secondaryButton: t('BTN_CANCEL'),
+  showIdle: true,
+  primaryButton: {text: t(confirmText.value)},
+  secondaryButton: {text: t('BTN_CANCEL')},
 }));
 
 const open = (existing?: CustomId) => {
@@ -107,11 +108,7 @@ defineExpose({
 
 <template>
   <v-dialog v-model="isVisible" content-class="large" scrollable width="500">
-    <ReactiveDialogLayout
-      :config="dialogConfig"
-      @primary-action="doDialogAction"
-      @secondary-action="close"
-      @close="close">
+    <DialogLayout :config="dialogConfig" @primary-action="doDialogAction" @secondary-action="close" @close="close">
       <v-form ref="dialog" @submit.prevent="doDialogAction">
         <Stack>
           <v-text-field
@@ -166,6 +163,6 @@ defineExpose({
             variant="outlined" />
         </Stack>
       </v-form>
-    </ReactiveDialogLayout>
+    </DialogLayout>
   </v-dialog>
 </template>

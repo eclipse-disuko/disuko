@@ -186,7 +186,6 @@ declare module 'vue' {
     ProjectSubscriptionsDialog: typeof import('./../../libs/portal/components/dialog/ProjectSubscriptionsDialog.vue')['default']
     ProjectsVersions: typeof import('./../../libs/portal/views/projects/ProjectsVersions.vue')['default']
     ProviderPrivacyDialog: typeof import('./../../libs/shared/components/dialogs/ProviderPrivacyDialog.vue')['default']
-    ReactiveDialogLayout: typeof import('./../../libs/shared/layouts/ReactiveDialogLayout.vue')['default']
     ReleaseNotesDialog: typeof import('./../../libs/shared/components/dialogs/ReleaseNotesDialog.vue')['default']
     RequestApproval: typeof import('./../../libs/portal/components/dialog/project/RequestApproval.vue')['default']
     RequestApprovalV2: typeof import('./../../libs/portal/components/dialog/project/RequestApprovalV2.vue')['default']
