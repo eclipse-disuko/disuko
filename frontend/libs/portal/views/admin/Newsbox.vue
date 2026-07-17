@@ -241,8 +241,9 @@ const handleImageError = (message: string) => {
 const dialogConfig = computed(() => ({
   title: isEditMode.value ? t('EDIT_NEWSBOX_ITEM') : t('TT_ADD_NEWSBOX_ITEM'),
   loading: submitting.value,
-  primaryButton: isEditMode.value ? t('UPDATE') : t('CREATE'),
-  secondaryButton: t('BTN_CANCEL'),
+  showIdle: true,
+  primaryButton: {text: isEditMode.value ? t('UPDATE') : t('CREATE')},
+  secondaryButton: {text: t('BTN_CANCEL')},
 }));
 
 const getActionButtons = (_: NewsboxItem): TableActionButtonsProps['buttons'] => {
@@ -390,11 +391,7 @@ onMounted(() => {
   </TableLayout>
 
   <v-dialog v-model="showDialog" content-class="large" scrollable width="600">
-    <ReactiveDialogLayout
-      :config="dialogConfig"
-      @primary-action="submit"
-      @secondary-action="closeDialog"
-      @close="closeDialog">
+    <DialogLayout :config="dialogConfig" @primary-action="submit" @secondary-action="closeDialog" @close="closeDialog">
       <v-form ref="formNewsboxDialog" @submit.prevent="submit">
         <Stack>
           <TextField v-model="form.title" :label="t('TITLE')" required class="errorBorder" autofocus />
@@ -428,7 +425,7 @@ onMounted(() => {
           </TextField>
         </Stack>
       </v-form>
-    </ReactiveDialogLayout>
+    </DialogLayout>
   </v-dialog>
   <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="onConfirm" />
 </template>

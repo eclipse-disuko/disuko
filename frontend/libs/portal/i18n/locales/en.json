@@ -2129,6 +2129,8 @@
   "MAIL_TEMPLATE_CC_HINT": "Separate multiple addresses with a semicolon (;)",
   "MAIL_TEMPLATE_DIALOG_TITLE": "Edit Mail Template",
   "MAIL_TEMPLATE_SAVE_SUCCESS": "Mail template saved",
+  "MAIL_TEMPLATE_BTN_TEST": "Send test mail",
+  "MAIL_TEMPLATE_TEST_SUCCESS": "Test mail sent",
   "MAIL_TEMPLATE_VALUES": "Available variables",
   "MAIL_TEMPLATE_VALUE_KEY": "Variable",
   "MAIL_TEMPLATE_VALUE_DESCRIPTION": "Description",

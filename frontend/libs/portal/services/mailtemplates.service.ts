@@ -20,6 +20,10 @@ class MailTemplatesService {
   public update(id: string, data: UpdateMailTemplate): Promise<AxiosResponse<MailTemplate>> {
     return api.put<MailTemplate>(`/api/v1/admin/mailtemplates/${encodeURIComponent(id)}`, data);
   }
+
+  public test(id: string, message: string): Promise<AxiosResponse<void>> {
+    return api.post<void>(`/api/v1/admin/mailtemplates/${encodeURIComponent(id)}/test`, {message});
+  }
 }
 
 const mailTemplatesService = new MailTemplatesService();

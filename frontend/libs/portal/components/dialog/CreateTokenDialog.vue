@@ -8,7 +8,7 @@ import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateTimeShort} from '@disclosure-portal/utils/View';
-import ReactiveDialogLayout, {type ReactiveDialogLayoutConfig} from '@shared/layouts/ReactiveDialogLayout.vue';
+import {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -123,11 +123,12 @@ function closeDialog() {
 }
 
 const dialogConfig = computed(
-  (): ReactiveDialogLayoutConfig => ({
+  (): DialogLayoutConfig => ({
     title: t('UM_DIALOG_TITLE_NEW_TOKEN'),
     loading: loading.value,
-    secondaryButton: t('BTN_CANCEL'),
-    primaryButton: t('NP_DIALOG_BTN_CREATE'),
+    showIdle: true,
+    secondaryButton: {text: t('BTN_CANCEL')},
+    primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
   }),
 );
 </script>
@@ -137,7 +138,7 @@ const dialogConfig = computed(
 
   <v-form ref="tokenForm">
     <v-dialog v-model="isDialogVisible" content-class="small" persistent width="600">
-      <ReactiveDialogLayout
+      <DialogLayout
         :config="dialogConfig"
         @close="closeDialog"
         @secondary-action="closeDialog"
@@ -194,7 +195,7 @@ const dialogConfig = computed(
             </v-date-picker>
           </v-menu>
         </Stack>
-      </ReactiveDialogLayout>
+      </DialogLayout>
     </v-dialog>
   </v-form>
 </template>

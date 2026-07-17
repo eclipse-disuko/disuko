@@ -17,6 +17,7 @@ const emit = defineEmits(['reload']);
 
 const isVisible = ref(false);
 const saving = ref(false);
+const testing = ref(false);
 const key = ref('');
 const form = ref<UpdateMailTemplate>({subject: '', message: '', bcc: '', cc: ''});
 const values = ref<{key: string; value: string}[]>([]);
@@ -30,8 +31,9 @@ const valuesHeaders = computed((): DataTableHeader[] => [
 const dialogConfig = ref({
   title: '',
   loading: false,
-  primaryButton: '',
-  secondaryButton: '',
+  showIdle: true,
+  primaryButton: {text: ''},
+  secondaryButton: {text: ''},
 });
 
 const open = (item: MailTemplate) => {
@@ -41,8 +43,9 @@ const open = (item: MailTemplate) => {
   dialogConfig.value = {
     title: t('MAIL_TEMPLATE_DIALOG_TITLE'),
     loading: false,
-    primaryButton: t('BTN_SAVE'),
-    secondaryButton: t('BTN_CANCEL'),
+    showIdle: true,
+    primaryButton: {text: t('BTN_SAVE')},
+    secondaryButton: {text: t('BTN_CANCEL')},
   };
   dialogRef.value?.reset();
   isVisible.value = true;
@@ -68,12 +71,24 @@ const save = async () => {
   }
 };
 
+const test = async () => {
+  const valid = (await dialogRef.value?.validate())?.valid;
+  if (!valid) return;
+  testing.value = true;
+  try {
+    await mailTemplatesService.test(key.value, form.value.message);
+    info(t('MAIL_TEMPLATE_TEST_SUCCESS'));
+  } finally {
+    testing.value = false;
+  }
+};
+
 defineExpose({open});
 </script>
 
 <template>
   <v-dialog v-model="isVisible" scrollable width="1100" height="700">
-    <ReactiveDialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
+    <DialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
           <v-text-field
@@ -128,6 +143,16 @@ defineExpose({open});
           </div>
         </div>
       </v-form>
-    </ReactiveDialogLayout>
+
+      <template #left>
+        <DCActionButton
+          is-dialog-button
+          size="small"
+          variant="text"
+          :loading="testing"
+          :text="t('MAIL_TEMPLATE_BTN_TEST')"
+          @click="test" />
+      </template>
+    </DialogLayout>
   </v-dialog>
 </template>

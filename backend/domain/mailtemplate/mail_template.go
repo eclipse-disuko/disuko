@@ -47,6 +47,10 @@ type UpdateMailTemplateDto struct {
 	Cc      string `json:"cc"`
 }
 
+type TestMailTemplateDto struct {
+	Message string `json:"message" validate:"required"`
+}
+
 func NewMailTemplate() *MailTemplate {
 	return &MailTemplate{
 		RootEntity: domain.NewRootEntity(),
