@@ -875,6 +875,9 @@ func getContactMetaOfGroupOrProject(requestSession *logy.RequestSession, project
 	contactMeta := p.NoticeContactMeta
 	if len(p.Parent) > 0 {
 		parentProject := projectRepo.FindByKey(requestSession, p.Parent, false)
+		if parentProject == nil {
+			return contactMeta
+		}
 		contactMeta = parentProject.NoticeContactMeta
 	}
 
