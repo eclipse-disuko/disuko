@@ -141,7 +141,8 @@ defineExpose({open});
           </div>
         </div>
       </v-form>
-      <template #leftButtons>
+
+      <template #left>
         <DCActionButton
           is-dialog-button
           size="small"
