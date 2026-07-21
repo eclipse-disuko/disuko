@@ -75,13 +75,11 @@ const {t} = useI18n();
     </v-alert>
   </section>
 
-  <section v-if="(config.useFutureProduct || config.useFutureIt) && props.selectedProjectsContainEmptySbom">
-    <v-alert color="warning" type="warning">
-      {{ t('NO_PROJECT_NO_FOSS') }}
-    </v-alert>
-  </section>
-
-  <section v-if="props.isNoSbomNoFossWarning && props.fossVersion === 'default'">
+  <section
+    v-if="
+      (config.useFutureProduct || config.useFutureIt) &&
+      (props.selectedProjectsContainEmptySbom || (props.isNoSbomNoFossWarning && props.fossVersion === 'default'))
+    ">
     <v-alert color="warning" type="warning">
       {{ t('NO_PROJECT_NO_FOSS') }}
     </v-alert>
