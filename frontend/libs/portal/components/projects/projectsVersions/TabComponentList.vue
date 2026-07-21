@@ -236,6 +236,16 @@ const toggleDecisionFilter = (key: 'policy' | 'license') => {
   }
 };
 
+const getDecisionFilterBtnIconColor = (btn: (typeof decisionFilterButtons.value)[number]) => {
+  if (btn.count === 0) {
+    return 'disabledColor';
+  }
+  return decisionFilter[btn.key] ? 'white' : btn.activeIconColor;
+};
+
+const getDecisionFilterBtnStyle = (btn: (typeof decisionFilterButtons.value)[number]) =>
+  btn.count === 0 ? 'color: var(--v-disabledColor-base) !important;' : '';
+
 const customKeySort = {
   prStatus: (a: string, b: string) => {
     const value1Str = a ?? '';
@@ -607,8 +617,14 @@ onUnmounted(async () => {
           color="primary"
           size="small"
           class="text-none my-2"
+          :style="getDecisionFilterBtnStyle(btn)"
+          :disabled="btn.count === 0"
           @click.stop="toggleDecisionFilter(btn.key)">
-          <v-icon :color="decisionFilter[btn.key] ? 'white' : btn.activeIconColor" :icon="btn.icon" class="mr-1" />
+          <v-icon
+            :color="getDecisionFilterBtnIconColor(btn)"
+            :style="getDecisionFilterBtnStyle(btn)"
+            :icon="btn.icon"
+            class="mr-1" />
           {{ btn.count }} {{ btn.label }}
         </v-btn>
       </span>
