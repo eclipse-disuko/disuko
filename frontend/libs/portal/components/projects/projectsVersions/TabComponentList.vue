@@ -32,7 +32,7 @@ import {
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
-import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue';
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
@@ -51,13 +51,12 @@ const idle = useIdleStore();
 
 const projectModel = computed(() => projectStore.currentProject!);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
-const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
 const currentSpdx = computed(() => sbomStore.getSelectedSBOM);
 
 const search = ref('');
 const sortBy = ref<SortItem[]>([{key: 'prStatus', order: 'desc'}]);
 const policies = ref(PolicyStates);
-const selectedFilterPolicyTypes = ref<PolicyState[]>([]);
+const selectedFilterPolicyTypes = ref<PolicyState[]>([PolicyState.NOT_SET]);
 const selectedFilterLicenses = ref<string[]>([]);
 const selectedFilterTypes = ref<string[]>([]);
 const selectedFilterFamily = ref<string[]>([]);
@@ -70,8 +69,7 @@ const allTypes = ref<DataTableHeaderFilterItems[]>([]);
 const allFamilies = ref<DataTableHeaderFilterItems[]>([]);
 const forceReload = ref(true);
 const tableHeight = ref(0);
-const selectedFilterShowPolicyDecision = ref(false);
-const selectedFilterShowLicenseDecision = ref(false);
+const decisionFilter = reactive({policy: false, license: false});
 const {calculateHeight} = useDimensions();
 const tableComponents = ref<HTMLElement | null>(null);
 const newComponentDetailsDlg = ref();
@@ -173,6 +171,23 @@ const {filteredHeaders} = headerSettingsStore;
 const policyDecisionCount = computed(() => componentList.value.filter((c) => c.showPolicyDecision).length);
 const licenseDecisionCount = computed(() => componentList.value.filter((c) => c.showLicenseDecision).length);
 
+const decisionFilterButtons = computed(() => [
+  {
+    key: 'policy' as const,
+    label: t('COL_POLICY_DECISION'),
+    count: policyDecisionCount.value,
+    icon: 'mdi-checkbox-marked-circle-plus-outline',
+    activeIconColor: 'orange',
+  },
+  {
+    key: 'license' as const,
+    label: t('COL_LICENSE_DECISION'),
+    count: licenseDecisionCount.value,
+    icon: 'mdi-text-box-edit-outline',
+    activeIconColor: 'primary',
+  },
+]);
+
 const filteredList = computed(() => {
   return componentList.value.filter((info: TabelItem) => {
     return (
@@ -186,57 +201,39 @@ const filteredList = computed(() => {
   });
 });
 
-const filterOnLicense = (info: TabelItem): boolean => {
-  if (selectedFilterLicenses.value.length <= 0) {
-    return true;
-  } else {
-    return selectedFilterLicenses.value.some(
-      (selectedFilterLicense) => info.licenseEffective.toUpperCase().indexOf(selectedFilterLicense) > -1,
-    );
-  }
-};
+const filterOnLicense = (info: TabelItem): boolean =>
+  selectedFilterLicenses.value.length === 0 ||
+  selectedFilterLicenses.value.some((license) => info.licenseEffective.toUpperCase().includes(license));
 
-const filterOnType = (info: TabelItem): boolean => {
-  if (selectedFilterTypes.value.length <= 0) {
-    return true;
-  } else {
-    return selectedFilterTypes.value.some((filterType) => info.type === filterType);
-  }
-};
+const filterOnType = (info: TabelItem): boolean =>
+  selectedFilterTypes.value.length === 0 || selectedFilterTypes.value.includes(info.type);
 
-const filterOnFamily = (info: TabelItem): boolean => {
-  if (selectedFilterFamily.value.length <= 0) {
-    return true;
-  } else {
-    return selectedFilterFamily.value.some(
-      (filterFamily) => getI18NTextOfPrefixKey('LIC_FAMILY_', info.worstFamily) === filterFamily,
-    );
-  }
-};
+const filterOnFamily = (info: TabelItem): boolean =>
+  selectedFilterFamily.value.length === 0 ||
+  selectedFilterFamily.value.includes(getI18NTextOfPrefixKey('LIC_FAMILY_', info.worstFamily));
 
 const filterOnPolicyType = (info: TabelItem): boolean => {
-  if (selectedFilterPolicyTypes.value.length > 0 && !selectedFilterPolicyTypes.value.includes(PolicyState.NOT_SET)) {
-    if (info.prStatus) {
-      for (const filterType of selectedFilterPolicyTypes.value) {
-        if (info.prStatus.includes(filterType)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  } else {
+  if (selectedFilterPolicyTypes.value.length === 0 || selectedFilterPolicyTypes.value.includes(PolicyState.NOT_SET)) {
     return true;
   }
+  return !!info.prStatus && selectedFilterPolicyTypes.value.some((filterType) => info.prStatus.includes(filterType));
 };
 
-const filterOnPolicyDecision = (info: TabelItem): boolean => {
-  if (!selectedFilterShowPolicyDecision.value) return true;
-  return info.showPolicyDecision;
+const filterOnPolicyDecision = (info: TabelItem): boolean => !decisionFilter.policy || info.showPolicyDecision;
+
+const filterOnLicenseDecision = (info: TabelItem): boolean => !decisionFilter.license || info.showLicenseDecision;
+
+const resetPolicyStateSelection = () => {
+  selectedFilterPolicyTypes.value = [];
 };
 
-const filterOnLicenseDecision = (info: TabelItem): boolean => {
-  if (!selectedFilterShowLicenseDecision.value) return true;
-  return info.showLicenseDecision;
+const toggleDecisionFilter = (key: 'policy' | 'license') => {
+  const activate = !decisionFilter[key];
+  decisionFilter.policy = key === 'policy' && activate;
+  decisionFilter.license = key === 'license' && activate;
+  if (activate) {
+    resetPolicyStateSelection();
+  }
 };
 
 const customKeySort = {
@@ -522,6 +519,8 @@ const ruleCallback: IRuleBtnCallbacks = {
   },
   handlePolicySelect: (filter: PolicyState) => {
     forceReload.value = false;
+    decisionFilter.policy = false;
+    decisionFilter.license = false;
     if (filter.length < 1) {
       selectedFilterPolicyTypes.value = [];
       return;
@@ -550,9 +549,6 @@ const ruleCallback: IRuleBtnCallbacks = {
         return 0;
     }
   },
-  getInitSelectedPolicy: () => {
-    return PolicyState.NOT_SET;
-  },
   getToolTipKeyForPolicyFilterBtn: (policy: PolicyState) => {
     switch (policy) {
       case PolicyState.NOT_SET:
@@ -574,7 +570,6 @@ const ruleCallback: IRuleBtnCallbacks = {
   getActiveClassForPolicyFilterBtn: () => {
     return '';
   },
-  setRuleButtons: () => {},
 };
 
 watch(() => currentSpdx.value, reload);
@@ -594,9 +589,6 @@ onMounted(async () => {
   filterOnFamilyQuery();
   await updateTableHeight();
   await reload();
-  if (spdxFileHistory.value.length === 0) {
-    return;
-  }
 });
 
 onUnmounted(async () => {
@@ -607,35 +599,17 @@ onUnmounted(async () => {
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <DRuleButtons :policies="policies" :callbacks="ruleCallback" />
-      <span>
-        <Tooltip>{{ t('COL_POLICY_DECISION') }}</Tooltip>
+      <DRuleButtons :policies="policies" :callbacks="ruleCallback" :selected-policies="selectedFilterPolicyTypes" />
+      <span v-for="btn in decisionFilterButtons" :key="btn.key">
+        <Tooltip>{{ btn.label }}</Tooltip>
         <v-btn
-          :variant="selectedFilterShowPolicyDecision ? 'flat' : 'tonal'"
+          :variant="decisionFilter[btn.key] ? 'flat' : 'tonal'"
           color="primary"
           size="small"
           class="text-none my-2"
-          @click.stop="selectedFilterShowPolicyDecision = !selectedFilterShowPolicyDecision">
-          <v-icon
-            :color="selectedFilterShowPolicyDecision ? 'white' : 'orange'"
-            icon="mdi-checkbox-marked-circle-plus-outline"
-            class="mr-1" />
-          {{ policyDecisionCount }} {{ t('COL_POLICY_DECISION') }}
-        </v-btn>
-      </span>
-      <span>
-        <Tooltip>{{ t('COL_LICENSE_DECISION') }}</Tooltip>
-        <v-btn
-          :variant="selectedFilterShowLicenseDecision ? 'flat' : 'tonal'"
-          color="primary"
-          size="small"
-          class="text-none my-2"
-          @click.stop="selectedFilterShowLicenseDecision = !selectedFilterShowLicenseDecision">
-          <v-icon
-            :color="selectedFilterShowLicenseDecision ? 'white' : 'primary'"
-            icon="mdi-text-box-edit-outline"
-            class="mr-1" />
-          {{ licenseDecisionCount }} {{ t('COL_LICENSE_DECISION') }}
+          @click.stop="toggleDecisionFilter(btn.key)">
+          <v-icon :color="decisionFilter[btn.key] ? 'white' : btn.activeIconColor" :icon="btn.icon" class="mr-1" />
+          {{ btn.count }} {{ btn.label }}
         </v-btn>
       </span>
       <v-spacer></v-spacer>
@@ -760,7 +734,6 @@ onUnmounted(async () => {
             <DCActionButton
               v-if="item.licenseRuleApplied"
               size="small"
-              variant="text"
               :color="item.licenseRuleApplied.previewMode ? 'grey' : ''"
               icon="mdi-information-outline"
               :text="t('INFO')">
@@ -795,7 +768,6 @@ onUnmounted(async () => {
             <DCActionButton
               v-else-if="item.canChooseLicense && !item.choiceDeniedReason"
               size="small"
-              variant="text"
               icon="mdi-text-box-edit-outline"
               :text="t('BTN_CREATE')"
               :hint="t('TT_license_rule')"
@@ -803,7 +775,6 @@ onUnmounted(async () => {
             <DCActionButton
               v-else-if="item.canChooseLicense && item.choiceDeniedReason"
               size="small"
-              variant="text"
               icon="mdi-text-box-edit-outline"
               :text="t('BTN_CREATE')"
               :hint="t('TT_' + item.choiceDeniedReason)"

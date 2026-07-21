@@ -548,9 +548,6 @@ const ruleCallback: IRuleBtnCallbacks = {
         throw new Error('Method not implemented.');
     }
   },
-  getInitSelectedPolicy: () => {
-    return PolicyState.ALLOW;
-  },
   getToolTipKeyForPolicyFilterBtn: (policy) => {
     switch (policy) {
       case PolicyState.DENY:
@@ -575,7 +572,6 @@ const ruleCallback: IRuleBtnCallbacks = {
         return '';
     }
   },
-  setRuleButtons: () => {},
 };
 
 const componentHeaders = computed<DataTableHeader[]>(() => {
@@ -776,7 +772,12 @@ const handleSetCalculatedEnabled = (value: boolean) => {
           <div :class="{'col-span-2': !canEditManual && !rule.calculated, 'col-start-1': rule.calculated}">
             <div class="d-flex ga-1 label-filter flex-row">
               <div class="overflow-auto">
-                <DRuleButtons :policies="policies" :callbacks="ruleCallback" min-width="128px" :forceClickable="true" />
+                <DRuleButtons
+                  :policies="policies"
+                  :callbacks="ruleCallback"
+                  :selected-policies="[mode]"
+                  min-width="128px"
+                  :forceClickable="true" />
               </div>
               <v-spacer />
               <DSearchField v-model="filterSelected" />
