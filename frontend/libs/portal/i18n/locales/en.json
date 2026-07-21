@@ -655,7 +655,7 @@
   "RR_EVENT_IN_PROGRESS": "moved this remark in progress.",
   "RR_EVENT_CLOSED": "closed this remark.",
   "RR_EVENT_CANCELLED": "cancelled this remark.",
-  "RR_EVENT_REOPENED": "repoened this remark.",
+  "RR_EVENT_REOPENED": "reopened this remark.",
   "RR_EVENT_CHANGED_LEVEL": "changed the level of this remark",
   "RR_EVENT_CHANGED_TITLE": "changed the title of this remark",
   "RR_EVENT_CHANGED_DESCRIPTION": "changed the description of this remark",
