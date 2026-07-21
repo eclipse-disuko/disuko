@@ -72,6 +72,7 @@ const (
 	ErrorS3ReadMetaData                       = "ERROR_S3_READ_META_DATA"
 	ErrorS3Delete                             = "ERROR_S3_DELETE"
 	DiscoTokenUnauthorized                    = "DISCOTOKEN_UNAUTHORIZED"
+	DiscoTokenSessionExpired                  = "DISCOTOKEN_SESSION_EXPIRED"
 	ErrorGroupsParentAlreadyExists            = "PARENT_ALREADY_EXISTS"
 	ErrorLicenseCanOnlyDeleteCustom           = "ERROR_LICENSE_CAN_ONLY_DELETE_CUSTOM"
 	ErrorLicenseFindByObligationKey           = "ERROR_LICENSE_FIND_BY_OBLIGATION_KEY"
@@ -650,6 +651,8 @@ func InitI18N() {
 	addI18NKeyValue(VerifyError, "Verify error")
 	addI18NKeyValue(Verify, "Unable to retrieve user info from CIAM")
 	addI18NKeyValue(VerifyClaims, "Verify claim error")
+	addI18NKeyValue(DiscoTokenUnauthorized, "%s")
+	addI18NKeyValue(DiscoTokenSessionExpired, "Access token expired. Please sign in again.")
 	addI18NKeyValue(Unauthorized, "User unauthorized")
 	addI18NKeyValue(TokenCreate, "Failed to create a jwt token")
 	addI18NKeyValue(BasicAuth, "Missing Basic")
