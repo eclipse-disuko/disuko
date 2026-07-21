@@ -92,17 +92,17 @@ defineExpose({open});
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
           <v-text-field
-            v-model="form.bcc"
-            :label="t('MAIL_TEMPLATE_BCC')"
-            :hint="t('MAIL_TEMPLATE_BCC_HINT')"
+            v-model="form.cc"
+            :label="t('MAIL_TEMPLATE_CC')"
+            :hint="t('MAIL_TEMPLATE_CC_HINT')"
             variant="outlined"
             class="flex-1"
             persistent-hint
             hide-details="auto" />
           <v-text-field
-            v-model="form.cc"
-            :label="t('MAIL_TEMPLATE_CC')"
-            :hint="t('MAIL_TEMPLATE_CC_HINT')"
+            v-model="form.bcc"
+            :label="t('MAIL_TEMPLATE_BCC')"
+            :hint="t('MAIL_TEMPLATE_BCC_HINT')"
             variant="outlined"
             class="flex-1"
             persistent-hint
