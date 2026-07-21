@@ -96,7 +96,7 @@ const activeRules = {
 };
 
 const form = ref<VForm | null>(null);
-const isDeprecated = computed(() => useProjectStore().currentProject!.isDeprecated);
+const isDeprecated = computed(() => useProjectStore().currentProject?.isDeprecated ?? false);
 const headers: DataTableHeader[] = [
   {
     title: t('COL_CREATED'),

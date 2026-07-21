@@ -6,6 +6,7 @@
   "scripts": {
     "dev:portal-local": "cd ./apps/portal &&  vite",
     "dev:portal-int": "cd ./apps/portal && vite --mode int",
+    "dev:cli": "cd ./apps/discocli && vite",
     "typecheck": "cd ./apps/portal && vue-tsc --noEmit",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",

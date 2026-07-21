@@ -11,11 +11,12 @@
     "jsxImportSource": "vue",
     "lib": ["ES2023", "dom", "DOM.Iterable"],
     "paths": {
+      "@cli/*": ["./libs/discocli/*"],
       "@disclosure-portal/*": ["./libs/portal/*"],
       "@shared/*": ["./libs/shared/*"]
     },
+    "include": ["eslint.config.*"],
     "resolveJsonModule": true,
-    "allowJs": true,
     "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,

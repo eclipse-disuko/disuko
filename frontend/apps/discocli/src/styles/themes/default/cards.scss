@@ -1,0 +1,19 @@
+.bar-container {
+  max-height: 400px;
+  max-width: 800px;
+}
+
+.doughnut-container {
+  max-height: 400px;
+  max-width: 400px;
+}
+
+.helptext-container {
+  background-color: rgb(var(--v-theme-cardBackground));
+  max-width: 400px;
+}
+
+.empty-container {
+  height: 400px !important;
+  border: 0 !important;
+}
