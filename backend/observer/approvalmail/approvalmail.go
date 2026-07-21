@@ -52,29 +52,7 @@ func (a *ApprovalMail) OnApprovalTask(eventId observermngmt.EventId, arg interfa
 }
 
 func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
-	type mailData struct {
-		Username        string
-		Link            string
-		State           string
-		StateDE         string
-		Requestor       string
-		Comment         string
-		Reviewer        string
-		DelegatedTo     string
-		ReviewerComment string
-		IsGroup         bool
-		GroupName       string
-		GroupLink       string
-		Versions        []struct {
-			Num               int
-			ProjectName       string
-			ProjectLink       string
-			VersionName       string
-			VersionLink       string
-			ReviewRemarksLink string
-		}
-	}
-	md := mailData{}
+	md := mailtemplate.ApprovalFinalizedMailData{}
 	creatorUser := a.userRepo.FindByUserId(data.RequestSession, data.Approval.Creator)
 	md.Requestor = creatorUser.Forename + " " + creatorUser.Lastname
 	pr := a.projectRepo.FindByKey(data.RequestSession, data.Approval.ProjectGuid, false)
@@ -87,14 +65,7 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 			prLink := conf.Config.Server.DisukoHost + "/#/dashboard/projects/" + a.ProjectKey
 			versionLink := prLink + "/versions/" + a.ApprovableSPDX.VersionKey
 			reviewRemarksLink := versionLink + "/sbomQuality/" + a.ApprovableSPDX.SpdxKey + "/reviewRemarks"
-			md.Versions = append(md.Versions, struct {
-				Num               int
-				ProjectName       string
-				ProjectLink       string
-				VersionName       string
-				VersionLink       string
-				ReviewRemarksLink string
-			}{
+			md.Versions = append(md.Versions, mailtemplate.ApprovalFinalizedVersionData{
 				Num:               i + 1,
 				ProjectName:       a.ProjectName,
 				ProjectLink:       prLink,
@@ -109,14 +80,7 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 		md.Link = prLink + "/approvals"
 		versionLink := prLink + "/versions/" + approvable.ApprovableSPDX.VersionKey
 		reviewRemarksLink := versionLink + "/sbomQuality/" + approvable.ApprovableSPDX.SpdxKey + "/reviewRemarks"
-		md.Versions = append(md.Versions, struct {
-			Num               int
-			ProjectName       string
-			ProjectLink       string
-			VersionName       string
-			VersionLink       string
-			ReviewRemarksLink string
-		}{
+		md.Versions = append(md.Versions, mailtemplate.ApprovalFinalizedVersionData{
 			ProjectName:       pr.Name,
 			ProjectLink:       prLink,
 			VersionName:       approvable.ApprovableSPDX.VersionName,
@@ -195,24 +159,7 @@ func (a *ApprovalMail) sendFinalizedMail(data observermngmt.ApprovalData) {
 }
 
 func (a *ApprovalMail) sendTaskMail(data observermngmt.ApprovalTaskData) {
-	mailData := struct {
-		Username  string
-		Type      string
-		TypeDE    string
-		Link      string
-		Requestor string
-		Comment   string
-		IsGroup   bool
-		GroupName string
-		GroupLink string
-		Versions  []struct {
-			Num         int
-			ProjectName string
-			ProjectLink string
-			VersionName string
-			VersionLink string
-		}
-	}{}
+	mailData := mailtemplate.TaskApprovalMailData{}
 
 	mailData.Link = conf.Config.Server.DisukoHost + "/#/dashboard/tasks/" + data.TaskId
 
@@ -232,13 +179,7 @@ func (a *ApprovalMail) sendTaskMail(data observermngmt.ApprovalTaskData) {
 		for i, a := range data.Approvables {
 			prLink := conf.Config.Server.DisukoHost + "/#/dashboard/projects/" + a.ProjectKey
 			versionLink := prLink + "/versions/" + a.ApprovableSPDX.VersionKey
-			mailData.Versions = append(mailData.Versions, struct {
-				Num         int
-				ProjectName string
-				ProjectLink string
-				VersionName string
-				VersionLink string
-			}{
+			mailData.Versions = append(mailData.Versions, mailtemplate.TaskApprovalVersionData{
 				Num:         i + 1,
 				ProjectName: a.ProjectName,
 				ProjectLink: prLink,
@@ -250,13 +191,7 @@ func (a *ApprovalMail) sendTaskMail(data observermngmt.ApprovalTaskData) {
 		approvable := data.Approvables[0]
 		prLink := conf.Config.Server.DisukoHost + "/#/dashboard/projects/" + data.ProjectId
 		versionLink := prLink + "/versions/" + approvable.ApprovableSPDX.VersionKey
-		mailData.Versions = append(mailData.Versions, struct {
-			Num         int
-			ProjectName string
-			ProjectLink string
-			VersionName string
-			VersionLink string
-		}{
+		mailData.Versions = append(mailData.Versions, mailtemplate.TaskApprovalVersionData{
 			ProjectName: pr.Name,
 			ProjectLink: prLink,
 			VersionName: approvable.ApprovableSPDX.VersionName,

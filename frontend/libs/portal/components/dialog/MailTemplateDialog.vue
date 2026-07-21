@@ -87,7 +87,7 @@ defineExpose({open});
 </script>
 
 <template>
-  <v-dialog v-model="isVisible" scrollable width="1100" height="700">
+  <v-dialog v-model="isVisible" scrollable width="1500" height="700">
     <DialogLayout :config="dialogConfig" @primary-action="save" @secondary-action="close" @close="close">
       <v-form ref="dialogRef" @submit.prevent="save">
         <div class="mb-3 flex gap-2">
@@ -123,7 +123,7 @@ defineExpose({open});
               no-resize
               rows="8" />
           </Stack>
-          <div v-if="values.length" class="pa-3 w-90">
+          <div v-if="values.length" class="pa-3 w-110">
             <div class="mb-2 flex items-center gap-1">
               <v-icon icon="mdi-help-circle-outline" color="primary" size="small" />
               <span class="text-body-2 font-weight-medium">{{ t('MAIL_TEMPLATE_VALUES') }}</span>
@@ -133,6 +133,7 @@ defineExpose({open});
               :items="values"
               :headers="valuesHeaders"
               hide-default-footer
+              items-per-page="0"
               height="240"
               disable-sort
               item-value="key">

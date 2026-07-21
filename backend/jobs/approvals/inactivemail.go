@@ -24,14 +24,6 @@ const (
 	sendMailOnDay        = 18
 )
 
-type inactiveMailData struct {
-	Username     string
-	ProjectName  string
-	ProjectLink  string
-	DeletionDate string
-	InactiveDays int
-}
-
 type InactiveMail struct {
 	approvalListRepo approvallist.IApprovalListRepository
 	projectRepo      projectRepo.IProjectRepository
@@ -103,7 +95,7 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 		if u == nil || u.Email == "" || !u.Deprovisioned.IsZero() {
 			continue
 		}
-		data := inactiveMailData{
+		data := mailtemplate.ApprovalInactiveMailData{
 			Username:     u.Forename + " " + u.Lastname,
 			ProjectName:  projectName,
 			ProjectLink:  projectLink,
