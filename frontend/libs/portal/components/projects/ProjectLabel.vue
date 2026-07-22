@@ -35,7 +35,7 @@ const tooltipTitle = computed(() => (props.label.type ? labelTooltipTitles[props
 
 <template>
   <span>
-    <DLabel css-clazzes="m-0" :labelName="label.name" :iconName="iconName"></DLabel>
+    <DLabel class="m-0" :labelName="label.name" :iconName="iconName"></DLabel>
     <Tooltip v-if="label.description">
       <span v-if="tooltipTitle">{{ tooltipTitle }}</span>
       <span v-if="label.description">{{ label.description }}</span>

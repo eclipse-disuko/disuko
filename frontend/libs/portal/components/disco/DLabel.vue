@@ -6,16 +6,13 @@
 import {PropType, defineComponent} from 'vue';
 
 export default defineComponent({
+  inheritAttrs: false,
   props: {
     iconName: {
       type: String,
       required: false,
     },
     labelName: {
-      type: String,
-      required: false,
-    },
-    cssClazzes: {
       type: String,
       required: false,
     },
@@ -34,13 +31,12 @@ export default defineComponent({
 
 <template>
   <v-chip
-    :class="cssClazzes && cssClazzes.length > 0 ? cssClazzes : 'mr-1 px-2 py-2'"
+    v-bind="{...$attrs, ...parentProps}"
     variant="outlined"
     size="small"
     color="labels"
     label
     :prepend-icon="iconName"
-    v-bind="parentProps"
     :closable="closable">
     {{ labelName }}
   </v-chip>
