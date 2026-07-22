@@ -281,10 +281,7 @@ class ProjectService {
     versionRequest: VersionRequest,
   ): Promise<VersionDetails | null> {
     try {
-      const response = await axios.post<VersionDetails>(
-        `/v1/projects/${projectUuid}/versions`,
-        versionRequest,
-      );
+      const response = await axios.post<VersionDetails>(`/v1/projects/${projectUuid}/versions`, versionRequest);
       return response.data;
     } catch (error) {
       console.error('Error creating project version:', error);
@@ -430,15 +427,11 @@ class ProjectService {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await axios.post<SpdxStatusInformation>(
-        `/v1/projects/${projectUuid}/sbomcheck`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      const response = await axios.post<SpdxStatusInformation>(`/v1/projects/${projectUuid}/sbomcheck`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
       return response.data;
     } catch (error) {
       console.error('Error checking SBOM:', error);
@@ -451,9 +444,7 @@ class ProjectService {
    */
   public async getVersionReviewRemarks(projectUuid: string, version: string): Promise<Remark[] | null> {
     try {
-      const response = await axios.get<Remark[]>(
-        `/v2/projects/${projectUuid}/versions/${version}/reviewremarks`,
-      );
+      const response = await axios.get<Remark[]>(`/v2/projects/${projectUuid}/versions/${version}/reviewremarks`);
       return response.data;
     } catch (error) {
       console.error('Error fetching review remarks:', error);
@@ -471,10 +462,7 @@ class ProjectService {
     comment: RRCommentExternDTO,
   ): Promise<void> {
     try {
-      await axios.post(
-        `/v1/projects/${projectUuid}/versions/${version}/reviewremarks/${reviewRemarkUuid}`,
-        comment,
-      );
+      await axios.post(`/v1/projects/${projectUuid}/versions/${version}/reviewremarks/${reviewRemarkUuid}`, comment);
     } catch (error) {
       console.error('Error commenting on review remark:', error);
       throw error;
@@ -588,9 +576,7 @@ class ProjectService {
       // Map 'plain' format to backend 'text' endpoint
       const endpointFormat = format === NoticeFileFormat.plain ? 'text' : format;
       const response = await axios.get<string>(
-        `/v1/projects/${projectUuid}/versions/${encodeURIComponent(
-          version,
-        )}/sboms/${sbomId}/notice/${endpointFormat}`,
+        `/v1/projects/${projectUuid}/versions/${encodeURIComponent(version)}/sboms/${sbomId}/notice/${endpointFormat}`,
       );
       // For json we ensure we return the raw string (backend may already send parsed object if axios interprets)
       if (format === NoticeFileFormat.json && typeof response.data !== 'string') {
