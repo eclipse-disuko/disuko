@@ -219,6 +219,9 @@ func parseLicenseText(requestSession *logy.RequestSession, text string) (process
 		if strings.ToLower(name) == "noassertion" {
 			continue
 		}
+		if strings.ToLower(name) == "none" {
+			continue
+		}
 		if len(name) == 0 {
 			// logy.Infof(requestSession, "Empty name from %s op %s", text, op)
 			continue
