@@ -122,14 +122,13 @@ const onDecisionClick = (option: DecisionOption) => {
 </script>
 
 <template>
-  <div class="flex flex-col" :class="showBothColumns ? 'gap-y-0.5' : 'justify-center'">
+  <div class="flex flex-col" :class="showBothColumns ? 'gap-y-0.5 py-0.5' : 'justify-center'">
     <template v-for="option in decisionOptions" :key="option.type">
       <span v-if="option.visible">
         <DCActionButton
           size="small"
           density="compact"
-          variant="text"
-          class="h-auto min-h-6 px-1 py-0.5"
+          class="h-auto min-h-7 py-0.5"
           :color="option.color"
           :icon="option.icon"
           :text="option.label"
@@ -169,8 +168,7 @@ const onDecisionClick = (option: DecisionOption) => {
       <DCActionButton
         size="small"
         density="compact"
-        variant="text"
-        class="h-auto min-h-6 px-1 py-0.5"
+        class="h-auto min-h-7 px-1 py-0.5"
         :color="appliedOnlyColor"
         :icon="appliedOnlyIcon"
         :text="t('INFO')">

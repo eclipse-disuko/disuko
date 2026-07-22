@@ -13,7 +13,6 @@ import {
 } from '@disclosure-portal/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
-import {getCurrentInstance, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 import {useUrls} from '@shared/composables/useUrls';
@@ -21,6 +20,7 @@ import {useUrls} from '@shared/composables/useUrls';
 interface Props {
   policies: PolicyState[];
   callbacks: IRuleBtnCallbacks;
+  selectedPolicies: PolicyState[];
   minWidth?: string;
   noClickable?: boolean;
   forceClickable?: boolean;
@@ -32,13 +32,11 @@ const {t} = useI18n();
 const router = useRouter();
 const {openUrl} = useUrls();
 
-const selectedFilterPolicyTypes = ref<PolicyState[]>([]);
-
 const isSelected = (policy: PolicyState) => {
   if (!policy || policy.length < 1) {
-    return selectedFilterPolicyTypes.value.length === 0;
+    return props.selectedPolicies.length === 0;
   }
-  return selectedFilterPolicyTypes.value.includes(policy);
+  return props.selectedPolicies.includes(policy);
 };
 
 const getBtnIconColorForPolicyFilterBtn = (policy: PolicyState) => {
@@ -83,22 +81,8 @@ const handlePolicySelect = (policy: PolicyState) => {
   if (!props.forceClickable && props.callbacks.getCountForPolicyFilterBtn(policy) === 0) {
     return;
   }
-  selectedFilterPolicyTypes.value = [policy];
-  props.callbacks.handlePolicySelect(policy, selectedFilterPolicyTypes.value);
+  props.callbacks.handlePolicySelect(policy, [policy]);
 };
-
-onMounted(() => {
-  if (typeof props.callbacks.getUrlToComponents !== 'function') {
-    console.error('getUrlToComponents is not a function');
-    return;
-  }
-  const initPolicy = props.callbacks.getInitSelectedPolicy();
-  selectedFilterPolicyTypes.value = initPolicy ? [initPolicy] : [];
-  const instance = getCurrentInstance();
-  if (instance) {
-    props.callbacks.setRuleButtons(instance.proxy as any);
-  }
-});
 </script>
 
 <template>
