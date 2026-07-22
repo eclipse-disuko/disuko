@@ -30,6 +30,19 @@ func (a *InternalApproval) IsActive() bool {
 	return (acceptedCount != 4)
 }
 
+func (a *InternalApproval) IsActiveForDeprecation() bool {
+	if a.Aborted || a.Generating || a.GenerationFailed {
+		return false
+	}
+
+	for i := 0; i < 4; i++ {
+		if a.ApproveStates[i].State == Declined {
+			return false
+		}
+	}
+	return !a.SupplierDone()
+}
+
 func (a *InternalApproval) IsDeclined() bool {
 	for i := 0; i < 4; i++ {
 		if a.ApproveStates[i].State == Declined {

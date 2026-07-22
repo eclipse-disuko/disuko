@@ -212,7 +212,7 @@ func hasActiveApprovals(approvals []approval2.Approval) bool {
 	for _, appr := range approvals {
 		switch appr.Type {
 		case approval2.TypeInternal:
-			if appr.Internal.IsActive() {
+			if appr.Internal.IsActiveForDeprecation() {
 				return true
 			}
 		case approval2.TypePlausibility:
