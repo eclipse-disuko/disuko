@@ -31,13 +31,12 @@ export default defineComponent({
 
 <template>
   <v-chip
-    v-bind="$attrs"
+    v-bind="{...$attrs, ...parentProps}"
     variant="outlined"
     size="small"
     color="labels"
     label
     :prepend-icon="iconName"
-    v-bind="parentProps"
     :closable="closable">
     {{ labelName }}
   </v-chip>
