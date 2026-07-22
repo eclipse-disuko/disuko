@@ -14,9 +14,15 @@ jobs:
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v6
+      - name: 'Fetch Eclipse Approved and Valid Licenses'
+        id: eclipse-licenses
+        run: |
+          LICENSES=$(curl -sSf https://www.eclipse.org/legal/licenses/licenses.json \
+            | jq -r '[(.approved, .valid) | keys[]] | join(",")')
+          echo "list=${LICENSES}" >> "$GITHUB_OUTPUT"
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v5
         with:
-          allow-licenses: 'MIT'
+          allow-licenses: ${{ steps.eclipse-licenses.outputs.list }}
           comment-summary-in-pr: always
           show-patched-versions: true
