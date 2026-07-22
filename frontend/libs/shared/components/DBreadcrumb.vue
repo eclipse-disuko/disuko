@@ -6,14 +6,14 @@
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {storeToRefs} from 'pinia';
 import {computed} from 'vue';
-import {InternalBreadcrumbItem} from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs';
+import {BreadcrumbItem} from '@shared/types/table';
 
 const breadcrumbsStore = useBreadcrumbsStore();
 const {currentBreadcrumbs} = storeToRefs(breadcrumbsStore);
 
-const breadcrumbs = computed<InternalBreadcrumbItem[]>(() =>
-  currentBreadcrumbs.value.map((crumb: InternalBreadcrumbItem, index: number) => {
-    const newCrumb: InternalBreadcrumbItem = {...crumb};
+const breadcrumbs = computed<BreadcrumbItem[]>(() =>
+  currentBreadcrumbs.value.map((crumb: BreadcrumbItem, index: number) => {
+    const newCrumb: BreadcrumbItem = {...crumb};
     newCrumb.to = crumb.href ?? '';
     if (index === currentBreadcrumbs.value.length - 1) {
       newCrumb.disabled = true;

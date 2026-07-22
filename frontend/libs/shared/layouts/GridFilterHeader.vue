@@ -4,8 +4,7 @@
 
 <script setup lang="ts">
 import {useSlots} from 'vue';
-import {InternalDataTableHeader} from 'vuetify/lib/components/VDataTable/types';
-import {IconValue} from 'vuetify/lib/composables/icons';
+import {InternalDataTableHeader, IconValue} from '@shared/types/table';
 
 interface Props {
   column: InternalDataTableHeader;

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {DataTableHeaderFilterItems} from '@shared/types/table';
 import {useI18n} from 'vue-i18n';
-import {InternalDataTableHeader} from 'vuetify/lib/components/VDataTable/types';
+import {InternalDataTableHeader} from '@shared/types/table';
 
 interface Props {
   column: InternalDataTableHeader;

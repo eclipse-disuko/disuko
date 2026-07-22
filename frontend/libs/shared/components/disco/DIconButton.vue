@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
-import {Density} from 'vuetify/lib/composables/density';
+type Density = 'default' | 'comfortable' | 'compact';
 
 interface Props {
   icon: string;

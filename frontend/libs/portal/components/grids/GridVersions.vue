@@ -13,7 +13,7 @@ import {formatDateAndTime, getOverallReviewTranslationKey} from '@disclosure-por
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
 import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import dayjs from 'dayjs';
@@ -21,7 +21,6 @@ import _ from 'lodash';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 import {getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
 import {useUrls} from '@shared/composables/useUrls';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';

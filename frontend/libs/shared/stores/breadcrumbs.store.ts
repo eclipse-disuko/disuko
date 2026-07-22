@@ -6,17 +6,17 @@ import {defineStore} from 'pinia';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
-import {InternalBreadcrumbItem} from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs';
+import {BreadcrumbItem} from '@shared/types/table';
 
 export const useBreadcrumbsStore = defineStore('breadcrumbStore', () => {
   const {t} = useI18n();
   const route = useRoute();
-  const currentBreadcrumbs = ref<InternalBreadcrumbItem[]>([]);
+  const currentBreadcrumbs = ref<BreadcrumbItem[]>([]);
 
   const isInAdminArea = computed<boolean>(() => route.path.includes('admin'));
   const dashboardCrumbs = computed(() => (isInAdminArea.value ? [dashboard, adminDashboard] : [dashboard]));
 
-  const setCurrentBreadcrumbs = (breadcrumbs: InternalBreadcrumbItem[]) => {
+  const setCurrentBreadcrumbs = (breadcrumbs: BreadcrumbItem[]) => {
     currentBreadcrumbs.value = breadcrumbs;
   };
 

@@ -6,7 +6,7 @@ import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
 import {useStorage} from '@vueuse/core';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {InternalDataTableHeader} from 'vuetify/lib/components/VDataTable/types';
+import {InternalDataTableHeader} from '@shared/types/table';
 import {useHeaderSettingsStore} from '@shared/stores/headerSettings.store';
 
 const STORE_KEY = 'gridHeaderSettings';

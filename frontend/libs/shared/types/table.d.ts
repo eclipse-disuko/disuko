@@ -49,6 +49,20 @@ export type DataTableHeader = {
   sortRaw?: DataTableCompareFunction;
 };
 
+export type InternalDataTableHeader = DataTableHeader & {
+  align: 'start' | 'end' | 'center';
+  sortable: boolean;
+};
+
+export type IconValue = string;
+
+export type BreadcrumbItem = {
+  title?: string;
+  href?: string;
+  to?: string | object;
+  disabled?: boolean;
+};
+
 export type HeaderSettings = {
   headers: DataTableHeader[];
   hideInitially: string[];

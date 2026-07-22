@@ -10,7 +10,7 @@ import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import {DataTableItem} from 'vuetify/lib/components/VDataTable/types';
+import {DataTableItem} from '@shared/types/table';
 import {useUrls} from '@shared/composables/useUrls';
 
 interface Props {

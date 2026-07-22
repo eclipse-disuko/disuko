@@ -25,12 +25,11 @@ import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-por
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
-import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
+import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {debounce} from 'lodash';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
-import {SortItem} from 'vuetify/lib/components/VDataTable/composables/sort';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {useUrls} from '@shared/composables/useUrls';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';

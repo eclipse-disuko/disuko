@@ -6,7 +6,7 @@ import {Checklist, ChecklistItem} from '@disclosure-portal/model/Checklist';
 import adminService from '@disclosure-portal/services/admin';
 import {defineStore} from 'pinia';
 import {computed, onMounted, reactive, toRefs} from 'vue';
-import {useRoute} from 'vuetify/lib/composables/router';
+import {useRoute} from 'vue-router';
 
 export const useChecklistsStore = defineStore('checklists', () => {
   const route = useRoute();

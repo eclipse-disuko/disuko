@@ -8,7 +8,7 @@ import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, defineProps, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import type {DataTableHeader} from 'vuetify/lib/components/VDataTable/types';
+import type {DataTableHeader} from '@shared/types/table';
 const appStore = useAppStore();
 const search = ref('');
 
