@@ -82,14 +82,26 @@ const uuidLabel = computed(() => {
             :label="labelStore.getLabelByKey(l)" />
 
           <span v-for="(l, i) in currentProject.freeLabels" :key="'tag-' + i">
-            <DLabel :labelName="l" :iconName="icons.TAG"> </DLabel>
+            <DLabel class="m-0" :labelName="l" :iconName="icons.TAG"> </DLabel>
             <Tooltip>
               <span>{{ t('TT_free_label') }}</span>
             </Tooltip>
           </span>
-          <DLabel :labelName="t('LBL_PROJECT_PARENT')" :iconName="icons.BACKUP" v-if="currentProject.isGroup"></DLabel>
-          <DLabel :labelName="t('LBL_PROJECT_CHILD')" :iconName="icons.CHILD" v-if="currentProject.parent"></DLabel>
-          <DLabel :labelName="t('LBL_PROJECT_NON_FOSS')" :iconName="icons.NON_FOSS" v-if="currentProject.isNoFoss">
+          <DLabel
+            class="m-0"
+            :labelName="t('LBL_PROJECT_PARENT')"
+            :iconName="icons.BACKUP"
+            v-if="currentProject.isGroup"></DLabel>
+          <DLabel
+            class="m-0"
+            :labelName="t('LBL_PROJECT_CHILD')"
+            :iconName="icons.CHILD"
+            v-if="currentProject.parent"></DLabel>
+          <DLabel
+            class="m-0"
+            :labelName="t('LBL_PROJECT_NON_FOSS')"
+            :iconName="icons.NON_FOSS"
+            v-if="currentProject.isNoFoss">
           </DLabel>
         </div>
       </v-col>
