@@ -7,7 +7,6 @@ package rest
 import (
 	"net/http"
 	"runtime"
-	"strconv"
 	"time"
 
 	"github.com/go-chi/render"
@@ -59,7 +58,6 @@ func (handler *StatisticHandler) GetSystemStats(w http.ResponseWriter, r *http.R
 	} else {
 		render.JSON(w, r, dtoResults)
 	}
-
 }
 
 func (handler *StatisticHandler) getStatisticsForWeb(requestSession *logy.RequestSession) *statistic.SystemStatsResponseDto {
@@ -79,11 +77,11 @@ func (handler *StatisticHandler) getStatisticsForWeb(requestSession *logy.Reques
 	lastDaysStats := statistic.ToSystemStatisticDtoList(statistics)
 	handler.checkStatistics(lastDaysStats)
 
-	//last 12 months
+	// last 12 months
 	currentMonth := int(time.Now().Month())
 	currentYear := time.Now().Year()
 	last12MonthsStats := make([]*statistic.SystemStatisticDto, 0)
-	for i := 0; i < 12; i++ {
+	for i := range 12 {
 		// calculate year and month
 		year := currentYear
 		month := currentMonth - i
@@ -92,20 +90,18 @@ func (handler *StatisticHandler) getStatisticsForWeb(requestSession *logy.Reques
 			year = currentYear - 1
 		}
 
-		//create filter
-		filter := strconv.Itoa(year) + "-"
-		if month < 10 {
-			filter += "0" + strconv.Itoa(month)
-		} else {
-			filter += strconv.Itoa(month)
-		}
-		filter += "-%"
-
 		qc := database.New().SetMatcher(
-			database.AttributeMatcher(
-				"Created",
-				database.LIKE,
-				filter,
+			database.AndChain(
+				database.AttributeMatcher(
+					"Created",
+					database.GT,
+					time.Date(year, time.Month(month), 0, 0, 0, 0, 0, time.Local),
+				),
+				database.AttributeMatcher(
+					"Created",
+					database.LT,
+					time.Date(year, time.Month(month+1), 0, 0, 0, 0, 0, time.Local),
+				),
 			),
 		).SetSort(database.SortConfig{
 			database.SortAttribute{
@@ -116,13 +112,13 @@ func (handler *StatisticHandler) getStatisticsForWeb(requestSession *logy.Reques
 
 		monthState := handler.StatisticRepository.Query(requestSession, qc)
 
-		//search last statistic for this month
-		//no statistic in this month
+		// search last statistic for this month
+		// no statistic in this month
 		if len(monthState) == 0 {
 			continue
 		}
 
-		//store statistic for this month
+		// store statistic for this month
 		last12MonthsStats = append(last12MonthsStats, monthState[0].ToDto())
 	}
 	handler.checkStatistics(last12MonthsStats)
@@ -237,11 +233,11 @@ func (handler *StatisticHandler) triggerUpdateSystemStats(requestSession *logy.R
 	)
 	userTermsNotAcceptedCount := len(handler.UsersRepository.Query(requestSession, qc))
 
-	//count over folders
+	// count over folders
 	uploadedFilesCountByType := s3Helper.CountFiles(requestSession, conf.Config.Server.GetUploadPath())
 	dbBackupFilesCount := s3Helper.CountFiles(requestSession, conf.Config.Server.BackupPath).CntFiles
 
-	//count version over limit and max version count in one project
+	// count version over limit and max version count in one project
 	allProjectKeysNotDeleted := handler.ProjectRepository.FindAllKeys(requestSession)
 	maxVersionsInOneProject := 0
 	projectsOverOrAtVersionLimit := 0
@@ -298,7 +294,7 @@ func (handler *StatisticHandler) triggerUpdateSystemStats(requestSession *logy.R
 		VersionLimit:                 conf.Config.Server.MaxVersions,
 	}
 
-	//check changes
+	// check changes
 	lastStatistics := handler.getStatisticsForWeb(requestSession)
 	if len(lastStatistics.DayStats) > 0 {
 		lastStatistic := lastStatistics.DayStats[0]
