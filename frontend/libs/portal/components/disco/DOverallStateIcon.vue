@@ -13,7 +13,7 @@ import {
 } from '@disclosure-portal/utils/Table';
 import {formatDateTime} from '@disclosure-portal/utils/View';
 import {useI18n} from 'vue-i18n';
-import {Anchor} from 'vuetify/framework';
+import type {Anchor} from 'vuetify/lib/util';
 
 interface Props {
   review: OverallReview;

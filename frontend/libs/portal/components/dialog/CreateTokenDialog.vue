@@ -166,8 +166,8 @@ const dialogConfig = computed(
                 return-object
                 hide-details
                 required>
-                <template v-slot:item="{item, props}">
-                  <v-list-item v-bind="props" :title="t('TKN_duration_' + item.value)"> </v-list-item>
+                <template v-slot:item="{internalItem, props}">
+                  <v-list-item v-bind="props" :title="t('TKN_duration_' + internalItem.value)"> </v-list-item>
                 </template>
                 <template v-if="selectedDuration === 'custom'" v-slot:append>
                   <v-btn variant="flat" large icon="mdi-calendar" @click="isDatePickerVisible = true">

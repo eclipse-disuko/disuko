@@ -53,14 +53,14 @@ const handleSBOMSelect = (sbom: any) => {
       :label="`${t('COL_CHANNEL')} '${version}' > ${t('TAB_PROJECT_SBOM_LIST')}`"
       @update:model-value="handleSBOMSelect"
       style="min-width: 400px">
-      <template v-slot:item="{item, props: itemProps}">
+      <template v-slot:item="{internalItem, props: itemProps}">
         <v-list-item v-bind="itemProps" title="">
-          <span class="d-subtitle-2" v-if="item.raw.details?.uploaded">
-            {{ formatDateAndTime(item.raw.details.uploaded) }}
+          <span class="d-subtitle-2" v-if="internalItem.raw.details?.uploaded">
+            {{ formatDateAndTime(internalItem.raw.details.uploaded) }}
           </span>
-          <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.details?.name }}</span>
+          <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.details?.name }}</span>
           <span class="d-text d-secondary-text">/{{ version }}</span>
-          <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;[{{ item.raw.tag }}]</span>
+          <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;[{{ internalItem.raw.tag }}]</span>
         </v-list-item>
       </template>
       <template v-slot:selection>

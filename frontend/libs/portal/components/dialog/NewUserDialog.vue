@@ -233,20 +233,20 @@ defineExpose({close});
                 hide-details="auto"
                 :disabled="!ownerRemaining || isResponsible"
                 required>
-                <template v-slot:item="{item, props}">
+                <template v-slot:item="{internalItem, props}">
                   <v-list-item
                     v-bind="{...props, title: undefined}"
-                    :disabled="!isInternalUser && item.raw === UserType.OWNER">
-                    <template v-if="!isInternalUser && item.raw === UserType.OWNER">
-                      <span>{{ item.raw }} {{ t('USER_DIALOG_OWNER_ONLY_FOR_INTERNAL') }}</span>
+                    :disabled="!isInternalUser && internalItem.raw === UserType.OWNER">
+                    <template v-if="!isInternalUser && internalItem.raw === UserType.OWNER">
+                      <span>{{ internalItem.raw }} {{ t('USER_DIALOG_OWNER_ONLY_FOR_INTERNAL') }}</span>
                     </template>
                     <template v-else>
                       {{
-                        item.raw === UserType.OWNER
-                          ? `${item.raw} ${t('USER_DIALOG_OWNER_ONLY_FOR_INTERNAL')}`
-                          : item.raw
+                        internalItem.raw === UserType.OWNER
+                          ? `${internalItem.raw} ${t('USER_DIALOG_OWNER_ONLY_FOR_INTERNAL')}`
+                          : internalItem.raw
                       }}
-                      <tooltip :text="t(`HELP_USER_TYPE_${item.raw}`)"></tooltip>
+                      <tooltip :text="t(`HELP_USER_TYPE_${internalItem.raw}`)"></tooltip>
                     </template>
                   </v-list-item>
                 </template>

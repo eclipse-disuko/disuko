@@ -134,8 +134,8 @@ watch(
                 item-title="name"
                 item-value="_key"
                 clearable>
-                <template v-slot:selection="{item}">
-                  <DLabel v-if="item.raw.name" :labelName="item.raw.name" closable />
+                <template v-slot:selection="{internalItem}">
+                  <DLabel v-if="internalItem.raw.name" :labelName="internalItem.raw.name" closable />
                 </template>
                 <template v-slot:label="{label}">
                   {{ label }}

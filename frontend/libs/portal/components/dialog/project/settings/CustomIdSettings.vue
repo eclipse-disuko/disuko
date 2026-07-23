@@ -112,19 +112,19 @@ const activeRules = ref({
               :rules="activeRules.required"
               v-bind:menu-props="{location: 'bottom'}"
               v-model="item.technicalId">
-              <template v-slot:item="{props, item}">
+              <template v-slot:item="{props, internalItem}">
                 <v-list-item v-bind="props">
                   <template v-slot:title>
                     <v-tooltip
                       :text="
                         appLanguage === 'en'
-                          ? customIds.map[item.value].description
-                          : customIds.map[item.value].descriptionDE
+                          ? customIds.map[internalItem.value].description
+                          : customIds.map[internalItem.value].descriptionDE
                       "
                       :disabled="
                         appLanguage === 'en'
-                          ? !customIds.map[item.value].description
-                          : !customIds.map[item.value].descriptionDE
+                          ? !customIds.map[internalItem.value].description
+                          : !customIds.map[internalItem.value].descriptionDE
                       "
                       location="right"
                       content-class="dpTooltip">

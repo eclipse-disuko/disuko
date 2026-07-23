@@ -6,7 +6,7 @@ import {ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {defineStore} from 'pinia';
 import {getStoreLanguage, isLanguage} from '@shared/utils/language';
-import {useLocale} from 'vuetify/framework';
+import {useLocale} from 'vuetify';
 
 const resolveInitialAppLanguage = (locale: string): Lang => {
   const storeLanguage = getStoreLanguage();

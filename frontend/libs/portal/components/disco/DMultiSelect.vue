@@ -70,9 +70,9 @@ const multiSelectClass =
     persistent-clear
     v-bind="attrs"
     @update:modelValue="emit('update:modelValue', $event as SelectValue[])">
-    <template v-slot:selection="{item, index}">
+    <template v-slot:selection="{internalItem, index}">
       <span v-if="index === 0" class="inline-flex max-w-full min-w-0 items-center gap-1">
-        <span class="pFilterEntry min-w-0 truncate">{{ item.title }}</span>
+        <span class="pFilterEntry min-w-0 truncate">{{ internalItem.title }}</span>
         <span v-if="modelValue.length > 1" class="pAdditionalFilter shrink-0 whitespace-nowrap opacity-70">
           +{{ modelValue.length - 1 }}
         </span>

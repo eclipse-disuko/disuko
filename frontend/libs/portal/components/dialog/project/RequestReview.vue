@@ -244,42 +244,44 @@ defineExpose({open});
             :items="sboms"
             hide-details
             required>
-            <template v-slot:item="{item, props}">
+            <template v-slot:item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
                 <div class="d-flex">
                   <div>
                     <v-icon
                       color="primary"
-                      v-if="projectModel.approvablespdx.spdxkey == item.raw._key"
+                      v-if="projectModel.approvablespdx.spdxkey == internalItem.raw._key"
                       size="small"
                       class="pb-1"
                       >mdi-star</v-icon
                     >
                   </div>
-                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-                  <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-                  <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
+                  <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+                  <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+                  <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                    >&nbsp;({{ internalItem.raw.tag }})</span
+                  >
+                  <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"
                     >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                   >
                   <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
                 </div>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item}">
+            <template v-slot:selection="{internalItem}">
               <div style="min-width: 13px" class="d-flex">
                 <v-icon
                   color="primary"
-                  v-if="projectModel.approvablespdx.spdxkey == item.raw._key"
+                  v-if="projectModel.approvablespdx.spdxkey == internalItem.raw._key"
                   size="small"
                   class="pb-1"
                   >mdi-star</v-icon
                 >
               </div>
-              <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-              <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-              <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-              <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
+              <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+              <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+              <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+              <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"
                 >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
               >
               <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>

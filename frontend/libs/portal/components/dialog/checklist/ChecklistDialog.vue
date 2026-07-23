@@ -142,8 +142,8 @@ defineExpose({
           :label="t('AL_DIALOG_SB_LABELS_OR')"
           :rules="rules.labels"
           v-bind:menu-props="{location: 'bottom'}">
-          <template v-slot:chip="{item, props}">
-            <DLabel closable :parentProps="props" :labelName="item.title" :iconName="icons.TAG" />
+          <template v-slot:chip="{internalItem, props}">
+            <DLabel closable :parentProps="props" :labelName="internalItem.raw.name" :iconName="icons.TAG" />
           </template>
         </v-select>
         <v-checkbox

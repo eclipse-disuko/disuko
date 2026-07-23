@@ -138,8 +138,8 @@ defineExpose({
                 v-bind:menu-props="{location: 'bottom'}"
                 v-for="(_, index) in item.labelSets"
                 :key="index">
-                <template v-slot:chip="{item, props}">
-                  <DLabel closable :parentProps="props" :labelName="item.title" :iconName="icons.TAG" />
+                <template v-slot:chip="{internalItem, props}">
+                  <DLabel closable :parentProps="props" :labelName="internalItem.raw.name" :iconName="icons.TAG" />
                 </template>
               </v-select>
             </v-col>

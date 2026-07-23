@@ -101,27 +101,29 @@ const debouncedSearchChanged = _.debounce(searchChanged, 300);
           class="cursor-help text-gray-400 opacity-0 transition-opacity duration-250 group-focus-within:opacity-100 group-hover:opacity-100" />
       </Tooltip>
     </template>
-    <template #item="{item, props: itemProps}">
-      <v-list-item v-bind="itemProps" :class="'dep-level-' + item.raw.level" class="px-2">
+    <template #item="{internalItem, props: itemProps}">
+      <v-list-item v-bind="itemProps" :class="'dep-level-' + internalItem.raw.level" class="px-2">
         <v-list-item-title>
           <span class="font-weight-bold">
-            {{ `[${item.raw.companyCode}] ${item.raw.companyName}` }}
+            {{ `[${internalItem.raw.companyCode}] ${internalItem.raw.companyName}` }}
           </span>
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ `[${item.raw.deptId}, ${item.raw.orgAbbreviation}, ${item.raw.level}] ${item.raw.descriptionEnglish}` }}
+          {{
+            `[${internalItem.raw.deptId}, ${internalItem.raw.orgAbbreviation}, ${internalItem.raw.level}] ${internalItem.raw.descriptionEnglish}`
+          }}
         </v-list-item-subtitle>
       </v-list-item>
     </template>
-    <template #selection="{item}">
+    <template #selection="{internalItem}">
       <v-list-item class="px-0">
         <v-list-item-title>
           <span class="font-weight-bold">
-            {{ `[${item.raw.companyCode}] ${item.raw.companyName}` }}
+            {{ `[${internalItem.raw.companyCode}] ${internalItem.raw.companyName}` }}
           </span>
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ `[${item.raw.deptId}, ${item.raw.orgAbbreviation}] ${item.raw.descriptionEnglish}` }}
+          {{ `[${internalItem.raw.deptId}, ${internalItem.raw.orgAbbreviation}] ${internalItem.raw.descriptionEnglish}` }}
         </v-list-item-subtitle>
       </v-list-item>
     </template>

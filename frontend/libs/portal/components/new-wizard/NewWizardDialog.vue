@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import {useDisplay} from 'vuetify/framework';
+import {useDisplay} from 'vuetify';
 
 const wizardStore = useWizardStore();
 const {smAndDown, height} = useDisplay();

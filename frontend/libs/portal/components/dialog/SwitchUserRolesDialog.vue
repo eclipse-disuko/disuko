@@ -103,8 +103,8 @@ export default defineComponent({
               variant="outlined"
               density="compact"
               hide-details="auto">
-              <template v-slot:chip="{item, props}">
-                <DLabel closable :parentProps="props" :labelName="item.title" iconName="mdi-security" />
+              <template v-slot:chip="{internalItem, props}">
+                <DLabel closable :parentProps="props" :labelName="internalItem.raw.text" iconName="mdi-security" />
               </template>
             </v-select>
           </v-col>

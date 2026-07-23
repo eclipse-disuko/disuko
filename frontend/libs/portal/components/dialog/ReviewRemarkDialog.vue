@@ -381,8 +381,8 @@ defineExpose({open});
                   </template>
                 </v-list-item>
               </template>
-              <template v-slot:selection="{item}">
-                <span>{{ item.raw ? t('REMARK_LEVEL_' + item.raw) : '' }}</span>
+              <template v-slot:selection="{internalItem}">
+                <span>{{ internalItem.raw ? t('REMARK_LEVEL_' + internalItem.raw) : '' }}</span>
               </template>
             </v-select>
           </Stack>
@@ -400,24 +400,26 @@ defineExpose({open});
               :loading="sbomsLoading"
               hide-details="auto"
               @update:model-value="sbomChanged">
-              <template v-slot:item="{props, item}">
+              <template v-slot:item="{props, internalItem}">
                 <v-list-item v-bind="props">
                   <template v-slot:title>
-                    <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
+                    <span class="d-subtitle-2">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                      >&nbsp;({{ internalItem.raw.tag }})</span
+                    >
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"
                       >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                     >
                     <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
                   </template>
                 </v-list-item>
               </template>
-              <template v-slot:selection="{item}">
-                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-                <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
+              <template v-slot:selection="{internalItem}">
+                <span class="d-subtitle-2">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+                <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+                <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"
                   >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
                 >
                 <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
@@ -437,16 +439,16 @@ defineExpose({open});
               :loading="compsLoading"
               variant="outlined"
               hide-details="auto">
-              <template v-slot:item="{item, props}">
+              <template v-slot:item="{internalItem, props}">
                 <v-list-item v-bind="props" title="">
-                  <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
-                  <span class="d-text d-secondary-text">&nbsp;({{ item.raw.version }})</span>
+                  <span class="d-subtitle-2 ml-2">{{ internalItem.raw.name }}</span>
+                  <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.version }})</span>
                 </v-list-item>
               </template>
-              <template v-slot:selection="{item}">
+              <template v-slot:selection="{internalItem}">
                 <div class="d-inline">
-                  <span class="d-subtitle-2 ml-2">{{ item.raw.name }}</span>
-                  <span class="d-text d-secondary-text">&nbsp;({{ item.raw.version }})</span>
+                  <span class="d-subtitle-2 ml-2">{{ internalItem.raw.name }}</span>
+                  <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.version }})</span>
                 </div>
               </template>
             </v-autocomplete>
@@ -471,16 +473,16 @@ defineExpose({open});
               :loading="licensesLoading"
               variant="outlined"
               hide-details="auto">
-              <template v-slot:item="{item, props}">
+              <template v-slot:item="{internalItem, props}">
                 <v-list-item v-bind="props" title="">
-                  <span class="d-subtitle-2 ml-2">{{ item.raw.licenseName }}</span>
-                  <span class="d-text d-secondary-text">&nbsp;({{ item.raw.licenseId }})</span>
+                  <span class="d-subtitle-2 ml-2">{{ internalItem.raw.licenseName }}</span>
+                  <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.licenseId }})</span>
                 </v-list-item>
               </template>
-              <template v-slot:selection="{item}">
+              <template v-slot:selection="{internalItem}">
                 <div class="d-inline">
-                  <span class="d-subtitle-2 ml-2">{{ item.raw.licenseName }}</span>
-                  <span class="d-text d-secondary-text">&nbsp;({{ item.raw.licenseId }})</span>
+                  <span class="d-subtitle-2 ml-2">{{ internalItem.raw.licenseName }}</span>
+                  <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.licenseId }})</span>
                 </div>
               </template>
             </v-autocomplete>

@@ -341,8 +341,8 @@ onMounted(() => {
                 item-title="text"
                 hide-details="auto"
                 @update:modelValue="selectedRolesChanged">
-                <template v-slot:chip="{item, props}">
-                  <DLabel :labelName="item.title" closable :parentProps="props" :iconName="icons.SECURITY" />
+                <template v-slot:chip="{internalItem, props}">
+                  <DLabel :labelName="internalItem.raw.text" closable :parentProps="props" :iconName="icons.SECURITY" />
                 </template>
               </v-select>
             </v-col>

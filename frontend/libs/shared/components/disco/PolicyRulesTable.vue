@@ -154,17 +154,17 @@ const typeWidth = computed(() => (appLanguage.value === 'en' ? 450 : 470));
                 transition="scale-transition"
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">
-                <template v-slot:item="{props, item}">
+                <template v-slot:item="{props, internalItem}">
                   <v-list-item v-bind="props" :title="undefined" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
-                    <span :class="'prStatus' + item.value + ' prStatusFilter'">{{ item.title }}</span>
+                    <span :class="'prStatus' + internalItem.value + ' prStatusFilter'">{{ internalItem.title }}</span>
                   </v-list-item>
                 </template>
-                <template v-slot:selection="{item, index}">
+                <template v-slot:selection="{internalItem, index}">
                   <div v-if="index === 0" class="d-flex align-center">
-                    <span :class="'prStatus' + item.value + ' prStatusFilter'">{{ item.title }}</span>
+                    <span :class="'prStatus' + internalItem.value + ' prStatusFilter'">{{ internalItem.title }}</span>
                   </div>
                   <span v-if="index === 1" class="pAdditionalFilter">
                     +{{ selectedFilterStatus.length - 1 }} others

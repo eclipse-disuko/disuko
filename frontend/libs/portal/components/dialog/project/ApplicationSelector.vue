@@ -42,21 +42,21 @@
           variant="outlined"
           hide-details="auto"
           :class="{required: isRequired}">
-          <template v-slot:item="{item, props}">
+          <template v-slot:item="{internalItem, props}">
             <v-list-item v-bind="props" title="">
               <div class="d-flex align-center w-100">
                 <div class="custom-cell">
                   <v-icon color="primary" size="large">mdi-view-dashboard-outline</v-icon>
                 </div>
                 <div class="pl-2">
-                  <v-list-item-title>{{ getInputItemText(item.raw) }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ 'Application (' + item.raw.id + ')' }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ getInputItemText(internalItem.raw) }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ 'Application (' + internalItem.raw.id + ')' }}</v-list-item-subtitle>
                 </div>
               </div>
             </v-list-item>
           </template>
-          <template v-slot:selection="{item}">
-            <span> {{ getInputItemText(item.raw) }}</span>
+          <template v-slot:selection="{internalItem}">
+            <span> {{ getInputItemText(internalItem.raw) }}</span>
           </template>
           <template v-slot:no-data>
             <v-list-item>

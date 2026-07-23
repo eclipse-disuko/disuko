@@ -292,9 +292,9 @@ onMounted(async () => {
                       </template>
                     </v-list-item>
                   </template>
-                  <template v-slot:selection="{item, index}">
+                  <template v-slot:selection="{internalItem, index}">
                     <div v-if="index === 0" class="d-flex align-center">
-                      <span :class="'pFilterEntry'">{{ item.title }}</span>
+                      <span :class="'pFilterEntry'">{{ internalItem.title }}</span>
                     </div>
                     <span v-if="index === 1" class="pAdditionalFilter">
                       +{{ selectedFilterIsLicenseChart.length - 1 }} others
@@ -346,9 +346,9 @@ onMounted(async () => {
                       </template>
                     </v-list-item>
                   </template>
-                  <template v-slot:selection="{item, index}">
+                  <template v-slot:selection="{internalItem, index}">
                     <div v-if="index === 0" class="d-flex align-center">
-                      <span :class="'pFilterEntry'">{{ item.title }}</span>
+                      <span :class="'pFilterEntry'">{{ internalItem.title }}</span>
                     </div>
                     <span v-if="index === 1" class="pAdditionalFilter">
                       +{{ selectedFilterSource.length - 1 }} others
@@ -400,9 +400,9 @@ onMounted(async () => {
                       </template>
                     </v-list-item>
                   </template>
-                  <template v-slot:selection="{item, index}">
+                  <template v-slot:selection="{internalItem, index}">
                     <div v-if="index === 0" class="d-flex align-center">
-                      <span :class="'pFilterEntry'">{{ item.title }}</span>
+                      <span :class="'pFilterEntry'">{{ internalItem.title }}</span>
                     </div>
                     <span v-if="index === 1" class="pAdditionalFilter">
                       +{{ selectedFilterFamily.length - 1 }} others
@@ -454,9 +454,9 @@ onMounted(async () => {
                       </template>
                     </v-list-item>
                   </template>
-                  <template v-slot:selection="{item, index}">
+                  <template v-slot:selection="{internalItem, index}">
                     <div v-if="index === 0" class="d-flex align-center">
-                      <span :class="'pFilterEntry'">{{ item.title }}</span>
+                      <span :class="'pFilterEntry'">{{ internalItem.title }}</span>
                     </div>
                     <span v-if="index === 1" class="pAdditionalFilter">
                       +{{ selectedFilterType.length - 1 }} others
@@ -508,9 +508,9 @@ onMounted(async () => {
                       </template>
                     </v-list-item>
                   </template>
-                  <template v-slot:selection="{item, index}">
+                  <template v-slot:selection="{internalItem, index}">
                     <div v-if="index === 0" class="d-flex align-center">
-                      <span :class="'pFilterEntry'">{{ item.title }}</span>
+                      <span :class="'pFilterEntry'">{{ internalItem.title }}</span>
                     </div>
                     <span v-if="index === 1" class="pAdditionalFilter">
                       +{{ selectedFilterApproval.length - 1 }} others

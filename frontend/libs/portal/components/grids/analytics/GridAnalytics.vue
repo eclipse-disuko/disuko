@@ -247,19 +247,19 @@ watch(
                 v-bind:menu-props="{location: 'bottom'}"
                 variant="outlined"
                 density="compact">
-                <template v-slot:item="{props, item}">
+                <template v-slot:item="{props, internalItem}">
                   <v-list-item v-bind="props" class="px-2 py-0">
                     <template v-slot:prepend="{isSelected}">
                       <v-checkbox hide-details :model-value="isSelected" />
                     </template>
                     <template v-slot:title>
-                      <span class="pFilterEntry"> {{ allHeaders[item.value].title }}</span>
+                      <span class="pFilterEntry"> {{ allHeaders[internalItem.value].title }}</span>
                     </template>
                   </v-list-item>
                 </template>
-                <template v-slot:selection="{item, index}">
+                <template v-slot:selection="{internalItem, index}">
                   <div v-if="index === 0" class="d-flex align-center">
-                    <span class="pFilterEntry">{{ allHeaders[item.value].title }}</span>
+                    <span class="pFilterEntry">{{ allHeaders[internalItem.value].title }}</span>
                   </div>
                   <span v-if="index === 1" class="pAdditionalFilter"> +{{ selectedHeaders.length - 1 }} others </span>
                 </template>

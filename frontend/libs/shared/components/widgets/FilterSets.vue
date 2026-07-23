@@ -453,7 +453,7 @@ export default defineComponent({
                     :label="labelTools.camelCaseToLabel(key)"
                     hide-details="auto"
                     v-bind:menu-props="{location: 'bottom'}">
-                    <template v-slot:item="{item, props}">
+                    <template v-slot:item="{internalItem, props}">
                       <v-list-item v-bind="props">
                         <template v-slot:prepend="{isSelected}">
                           <v-list-item-action start>
@@ -462,17 +462,17 @@ export default defineComponent({
                         </template>
                         <template v-slot:title>
                           <v-icon
-                            :color="getIconColorOfLevel(getWarnLevel(item.raw.value))"
-                            :icon="getIconOfLevel(getWarnLevel(item.raw.value).toUpperCase())" />
-                          {{ item.title }}
+                            :color="getIconColorOfLevel(getWarnLevel(internalItem.raw.value))"
+                            :icon="getIconOfLevel(getWarnLevel(internalItem.raw.value).toUpperCase())" />
+                          {{ internalItem.title }}
                           {{ key + ' ' + selectedFilters[key] }}
                         </template>
                       </v-list-item>
                     </template>
 
-                    <template v-slot:selection="{item, index}">
+                    <template v-slot:selection="{internalItem, index}">
                       <v-chip v-if="index < 2">
-                        <span>{{ item.title }}</span>
+                        <span>{{ internalItem.title }}</span>
                       </v-chip>
                       <span v-if="index === 2" class="text-grey text-caption align-self-center">
                         (+{{ selectedFilters[key].length - 2 }} others)

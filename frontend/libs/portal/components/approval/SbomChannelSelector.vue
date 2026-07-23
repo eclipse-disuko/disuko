@@ -48,50 +48,50 @@ const {isAudited} = useApprovalCheck();
       clearable
       autocomplete="off"
       :items="props.sboms">
-      <template v-slot:item="{item, props: itemProps}">
+      <template v-slot:item="{internalItem, props: itemProps}">
         <v-list-item v-bind="itemProps" title="">
           <div class="d-flex">
             <div>
-              <v-icon color="primary" v-if="approvableSpdxKey === item.raw._key" size="small" class="pb-1"
+              <v-icon color="primary" v-if="approvableSpdxKey === internalItem.raw._key" size="small" class="pb-1"
                 >mdi-star</v-icon
               >
             </div>
             <div>
               <v-icon
                 color="green"
-                v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, item?.raw?._key)"
+                v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, internalItem?.raw?._key)"
                 size="small"
                 class="ml-1 pb-1"
                 >mdi-clipboard-check-outline</v-icon
               >
             </div>
-            <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-            <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-            <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-            <span class="d-text d-secondary-text" v-if="item.raw.isRecent"
+            <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+            <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+            <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+            <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"
               >&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span
             >
             <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
           </div>
         </v-list-item>
       </template>
-      <template v-slot:selection="{item}">
+      <template v-slot:selection="{internalItem}">
         <div style="min-width: 13px">
-          <v-icon color="primary" v-if="approvableSpdxKey === item.raw._key" size="small" class="pb-1">mdi-star</v-icon>
+          <v-icon color="primary" v-if="approvableSpdxKey === internalItem.raw._key" size="small" class="pb-1">mdi-star</v-icon>
         </div>
         <div>
           <v-icon
             color="green"
-            v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, item?.raw?._key)"
+            v-if="config.useFutureProduct && isVehicle && isAudited(selectedChannel, internalItem.raw?._key)"
             size="small"
             class="ml-1 pb-1"
             >mdi-clipboard-check-outline</v-icon
           >
         </div>
-        <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(item.raw.uploaded) }}&nbsp;</span>
-        <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.metaInfo.name }}</span>
-        <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
-        <span class="d-text d-secondary-text" v-if="item.raw.isRecent">&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span>
+        <span class="d-subtitle-2 ml-5">{{ formatDateAndTime(internalItem.raw.uploaded) }}&nbsp;</span>
+        <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.metaInfo.name }}</span>
+        <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+        <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent">&nbsp;{{ '[' + t('SBOM_LATEST') + ']' }}</span>
         <span class="d-text d-secondary-text" v-else>&nbsp;{{ '[' + t('SBOM_FORMER') + ']' }}</span>
       </template>
     </v-autocomplete>

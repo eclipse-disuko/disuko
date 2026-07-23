@@ -244,9 +244,9 @@ onMounted(async () => {
                         </template>
                       </v-list-item>
                     </template>
-                    <template v-slot:selection="{item, index}">
+                    <template v-slot:selection="{internalItem, index}">
                       <div v-if="index === 0" class="d-flex align-center">
-                        <span>{{ item.title }}</span>
+                        <span>{{ internalItem.title }}</span>
                       </div>
                       <span v-if="index === 1" class="d-secondary-text d-subtitle-2 pl-1">
                         +{{ selectedFilterLicenseIds.length - 1 }} others
@@ -285,26 +285,26 @@ onMounted(async () => {
                     item-value="value"
                     variant="outlined"
                     density="compact">
-                    <template v-slot:item="{item, props}">
+                    <template v-slot:item="{internalItem, props}">
                       <v-list-item v-bind="props" title="">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
-                        <v-icon small :color="getIconColorForPolicyType(item.value.toLowerCase())">{{
-                          getIconForPolicyType(item.value.toLowerCase())
+                        <v-icon small :color="getIconColorForPolicyType(internalItem.value.toLowerCase())">{{
+                          getIconForPolicyType(internalItem.value.toLowerCase())
                         }}</v-icon>
                         <span class="d-subtitle-2 handpointer mx-2">{{
-                          t(policyStateToTranslationKey(item.value.toLowerCase()))
+                          t(policyStateToTranslationKey(internalItem.value.toLowerCase()))
                         }}</span>
                       </v-list-item>
                     </template>
-                    <template v-slot:selection="{item, index}">
+                    <template v-slot:selection="{internalItem, index}">
                       <div v-if="index === 0" class="d-flex align-center">
-                        <v-icon small :color="getIconColorForPolicyType(item.value.toLowerCase())">{{
-                          getIconForPolicyType(item.value.toLowerCase())
+                        <v-icon small :color="getIconColorForPolicyType(internalItem.value.toLowerCase())">{{
+                          getIconForPolicyType(internalItem.value.toLowerCase())
                         }}</v-icon>
                         <span class="d-subtitle-2 handpointer mx-2">{{
-                          t(policyStateToTranslationKey(item.value.toLowerCase()))
+                          t(policyStateToTranslationKey(internalItem.value.toLowerCase()))
                         }}</span>
                       </div>
                       <span v-if="index === 1" class="d-secondary-text d-subtitle-2 pl-1">
@@ -344,31 +344,31 @@ onMounted(async () => {
                     item-value="value"
                     variant="outlined"
                     density="compact">
-                    <template v-slot:item="{item, props}">
+                    <template v-slot:item="{internalItem, props}">
                       <v-list-item v-bind="props" title="">
                         <template v-slot:prepend="{isSelected}">
                           <v-checkbox hide-details :model-value="isSelected" />
                         </template>
                         <v-icon
                           size="small"
-                          :color="getIconColorForPolicyType(item.value.toLowerCase())"
+                          :color="getIconColorForPolicyType(internalItem.value.toLowerCase())"
                           class="mr-2"
-                          :icon="getIconForChange(item.value)">
+                          :icon="getIconForChange(internalItem.value)">
                         </v-icon>
 
-                        <span class="mr-2">{{ item.props.title }}</span>
+                        <span class="mr-2">{{ internalItem.props.title }}</span>
                       </v-list-item>
                     </template>
-                    <template v-slot:selection="{item, index}">
+                    <template v-slot:selection="{internalItem, index}">
                       <div v-if="index === 0" class="d-flex align-center">
                         <v-icon
                           size="small"
-                          :color="getIconColorForPolicyType(item.value.toLowerCase())"
+                          :color="getIconColorForPolicyType(internalItem.value.toLowerCase())"
                           class="mr-2"
-                          :icon="getIconForChange(item.value)">
+                          :icon="getIconForChange(internalItem.value)">
                         </v-icon>
 
-                        <span class="mr-2">{{ item.props.title }}</span>
+                        <span class="mr-2">{{ internalItem.props.title }}</span>
                       </div>
                       <span v-if="index === 1" class="d-secondary-text d-subtitle-2 pl-1">
                         +{{ selectedFilterChange.length - 1 }} others

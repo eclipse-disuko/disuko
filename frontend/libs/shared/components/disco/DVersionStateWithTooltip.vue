@@ -15,7 +15,7 @@ import {formatDateTime} from '@disclosure-portal/utils/View';
 import dayjs from 'dayjs';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {Anchor} from 'vuetify/framework';
+import type {Anchor} from 'vuetify/lib/util';
 
 interface Props {
   version: VersionSlim;

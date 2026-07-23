@@ -107,13 +107,13 @@ defineExpose({open});
             :items="possibleStates"
             v-model="selectedState"
             :label="t('SELECT_OVERALL_REVIEW_STATE')">
-            <template v-slot:item="{item, props}">
+            <template v-slot:item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
-                <span class="d-subtitle-2 ml-2">{{ t(getOverallReviewTranslationKey(item.raw)) }}</span>
+                <span class="d-subtitle-2 ml-2">{{ t(getOverallReviewTranslationKey(internalItem.raw)) }}</span>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item}">
-              <span class="d-subtitle-2 ml-2">{{ t(getOverallReviewTranslationKey(item.raw)) }}</span>
+            <template v-slot:selection="{internalItem}">
+              <span class="d-subtitle-2 ml-2">{{ t(getOverallReviewTranslationKey(internalItem.raw)) }}</span>
             </template>
           </v-select>
           <v-textarea
@@ -132,33 +132,35 @@ defineExpose({open});
             item-text="_key"
             item-value="_key"
             :label="t('SBOM_DELIVERIES')">
-            <template v-slot:item="{item, props}">
+            <template v-slot:item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
                 <v-icon
                   color="primary"
-                  v-if="currentProject.approvablespdx.spdxkey === item.raw._key"
+                  v-if="currentProject.approvablespdx.spdxkey === internalItem.raw._key"
                   size="small"
                   class="pr-2"
                   icon="mdi-star"></v-icon>
-                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}</span>
-                <span class="d-text d-secondary-text"> - {{ item.raw.metaInfo.name }}</span>
-                <span class="d-text d-secondary-text ml-1" v-if="item.raw.tag">({{ item.raw.tag }})</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
+                <span class="d-subtitle-2">{{ formatDateAndTime(internalItem.raw.uploaded) }}</span>
+                <span class="d-text d-secondary-text"> - {{ internalItem.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text ml-1" v-if="internalItem.raw.tag"
+                  >({{ internalItem.raw.tag }})</span
+                >
+                <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
                 <span class="d-text d-secondary-text" v-else> [{{ t('SBOM_FORMER') }}] </span>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item}">
+            <template v-slot:selection="{internalItem}">
               <div class="d-inline">
                 <v-icon
                   color="primary"
-                  v-if="currentProject.approvablespdx.spdxkey === item.raw._key"
+                  v-if="currentProject.approvablespdx.spdxkey === internalItem.raw._key"
                   size="small"
                   class="pr-2"
                   icon="mdi-star"></v-icon>
-                <span class="d-subtitle-2">{{ formatDateAndTime(item.raw.uploaded) }}</span>
-                <span class="d-text d-secondary-text"> - {{ item.raw.metaInfo.name }}</span>
-                <span class="d-text d-secondary-text ml-1" v-if="item.raw.tag">({{ item.raw.tag }})</span>
-                <span class="d-text d-secondary-text" v-if="item.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
+                <span class="d-subtitle-2">{{ formatDateAndTime(internalItem.raw.uploaded) }}</span>
+                <span class="d-text d-secondary-text"> - {{ internalItem.raw.metaInfo.name }}</span>
+                <span class="d-text d-secondary-text ml-1" v-if="internalItem.raw.tag">({{ internalItem.raw.tag }})</span>
+                <span class="d-text d-secondary-text" v-if="internalItem.raw.isRecent"> [{{ t('SBOM_LATEST') }}] </span>
                 <span class="d-text d-secondary-text" v-else> [{{ t('SBOM_FORMER') }}] </span>
               </div>
             </template>

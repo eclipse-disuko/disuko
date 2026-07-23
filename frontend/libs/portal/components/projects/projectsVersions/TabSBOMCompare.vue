@@ -682,35 +682,37 @@ onBeforeMount(async () => {
                 @click:clear="resetErrors"
                 v-on:change="resetErrors"
                 @change="onSelectionChanged()">
-                <template #item="{item, props}">
-                  <v-list-item v-if="item.raw.spdxFileId === 'header'" title="">
-                    <span class="d-subtitle-2">{{ item.raw.header }}</span>
+                <template #item="{internalItem, props}">
+                  <v-list-item v-if="internalItem.raw.spdxFileId === 'header'" title="">
+                    <span class="d-subtitle-2">{{ internalItem.raw.header }}</span>
                   </v-list-item>
                   <v-list-item v-bind="props" title="" v-else>
                     <v-icon
                       color="primary"
-                      v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
+                      v-if="currentProject && currentProject.approvablespdx.spdxkey == internalItem.raw.spdxFileId"
                       size="small"
                       class="pb-1"
                       >mdi-star
                     </v-icon>
-                    <span class="d-subtitle-2 ml-2">{{ item.raw.uploaded }}</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
+                    <span class="d-subtitle-2 ml-2">{{ internalItem.raw.uploaded }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                      >&nbsp;({{ internalItem.raw.tag }})</span
+                    >
                   </v-list-item>
                 </template>
-                <template #selection="{item}">
+                <template #selection="{internalItem}">
                   <div class="d-inline">
                     <v-icon
                       color="primary"
-                      v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
+                      v-if="currentProject && currentProject.approvablespdx.spdxkey == internalItem.raw.spdxFileId"
                       size="small"
                       class="pr-2 pb-1"
                       >mdi-star
                     </v-icon>
-                    <span class="d-subtitle-2">{{ item.raw.uploaded }}</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
+                    <span class="d-subtitle-2">{{ internalItem.raw.uploaded }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
                   </div>
                 </template>
               </v-select>
@@ -732,35 +734,37 @@ onBeforeMount(async () => {
                 @click:clear="resetErrors"
                 v-on:change="resetErrors"
                 @change="onSelectionChanged()">
-                <template #item="{item, props}">
-                  <v-list-item v-if="item.raw.spdxFileId === 'header'" title="">
-                    <span class="d-subtitle-2">{{ item.raw.header }}</span>
+                <template #item="{internalItem, props}">
+                  <v-list-item v-if="internalItem.raw.spdxFileId === 'header'" title="">
+                    <span class="d-subtitle-2">{{ internalItem.raw.header }}</span>
                   </v-list-item>
                   <v-list-item v-bind="props" title="" v-else>
                     <v-icon
                       color="primary"
-                      v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
+                      v-if="currentProject && currentProject.approvablespdx.spdxkey == internalItem.raw.spdxFileId"
                       size="small"
                       class="pb-1"
                       >mdi-star
                     </v-icon>
-                    <span class="d-subtitle-2 ml-2">{{ item.raw.uploaded }}</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
+                    <span class="d-subtitle-2 ml-2">{{ internalItem.raw.uploaded }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                      >&nbsp;({{ internalItem.raw.tag }})</span
+                    >
                   </v-list-item>
                 </template>
-                <template #selection="{item}">
+                <template #selection="{internalItem}">
                   <div class="d-inline">
                     <v-icon
                       color="primary"
-                      v-if="currentProject && currentProject.approvablespdx.spdxkey == item.raw.spdxFileId"
+                      v-if="currentProject && currentProject.approvablespdx.spdxkey == internalItem.raw.spdxFileId"
                       size="small"
                       class="pr-2 pb-1"
                       >mdi-star
                     </v-icon>
-                    <span class="d-subtitle-2">{{ item.raw.uploaded }}</span>
-                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ item.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="item.raw.tag">&nbsp;({{ item.raw.tag }})</span>
+                    <span class="d-subtitle-2">{{ internalItem.raw.uploaded }}</span>
+                    <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
                   </div>
                 </template>
               </v-select>
@@ -822,19 +826,19 @@ onBeforeMount(async () => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template #item="{props, item}">
+                      <template #item="{props, internalItem}">
                         <v-list-item v-bind="props" class="px-2 py-0" title="">
                           <template #prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
                           <span class="pFilterEntry">
-                            {{ item.title }}
+                            {{ internalItem.title }}
                           </span>
                         </v-list-item>
                       </template>
-                      <template #selection="{item, index}">
+                      <template #selection="{internalItem, index}">
                         <div v-if="index === 0" class="pFilterEntry">
-                          {{ item.raw }}
+                          {{ internalItem.raw }}
                         </div>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterLicenses.length - 1 }} others
@@ -880,25 +884,25 @@ onBeforeMount(async () => {
                       transition="scale-transition"
                       persistent-clea
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template #item="{item, props}">
+                      <template #item="{internalItem, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
                           <template #prepend="{isSelected}">
                             <v-checkbox hide-details :model-value="isSelected" />
                           </template>
                           <template #title>
-                            <v-icon small :color="getIconColorForPolicyType(item.raw)"
-                              >{{ getIconForPolicyType(item.raw) }}
+                            <v-icon small :color="getIconColorForPolicyType(internalItem.raw)"
+                              >{{ getIconForPolicyType(internalItem.raw) }}
                             </v-icon>
-                            <span class="pFilterEntry pl-1">{{ item.raw }}</span>
+                            <span class="pFilterEntry pl-1">{{ internalItem.raw }}</span>
                           </template>
                         </v-list-item>
                       </template>
-                      <template #selection="{item, index}">
+                      <template #selection="{internalItem, index}">
                         <div v-if="index === 0" class="d-flex align-center">
-                          <v-icon small :color="getIconColorForPolicyType(item.raw)"
-                            >{{ getIconForPolicyType(item.raw) }}
+                          <v-icon small :color="getIconColorForPolicyType(internalItem.raw)"
+                            >{{ getIconForPolicyType(internalItem.raw) }}
                           </v-icon>
-                          <span class="pFilterEntry pl-1">{{ item.raw }}</span>
+                          <span class="pFilterEntry pl-1">{{ internalItem.raw }}</span>
                         </div>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterPolicyTypes.length - 1 }} others

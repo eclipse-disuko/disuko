@@ -230,8 +230,8 @@ defineExpose({
             :items="labelStore.policyLabels"
             :label="t('AL_DIALOG_SB_LABELS_OR')"
             v-bind:menu-props="{location: 'bottom'}">
-            <template v-slot:chip="{item, props}">
-              <DLabel closable :parentProps="props" :labelName="item.title" :iconName="icons.TAG" />
+            <template v-slot:chip="{internalItem, props}">
+              <DLabel closable :parentProps="props" :labelName="internalItem.raw.name" :iconName="icons.TAG" />
             </template>
           </v-select>
           <v-autocomplete
@@ -285,16 +285,16 @@ defineExpose({
             hide-details="auto"
             @update:search="debouncedSearchLicenses"
             :no-filter="true">
-            <template v-slot:item="{item, props}">
+            <template v-slot:item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
-                <span class="d-subtitle-2">{{ item.raw.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw.licenseId }})</span>
+                <span class="d-subtitle-2">{{ internalItem.raw.name }}</span>
+                <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.licenseId }})</span>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item}">
+            <template v-slot:selection="{internalItem}">
               <div class="d-inline">
-                <span class="d-subtitle-2">{{ item.raw.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw.licenseId }})</span>
+                <span class="d-subtitle-2">{{ internalItem.raw.name }}</span>
+                <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw.licenseId }})</span>
               </div>
             </template>
           </v-autocomplete>
@@ -318,16 +318,16 @@ defineExpose({
             single-line
             variant="outlined"
             hide-details="auto">
-            <template v-slot:item="{item, props}">
+            <template v-slot:item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
-                <span class="d-subtitle-2">{{ item.raw?.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw?.warnLevel }})</span>
+                <span class="d-subtitle-2">{{ internalItem.raw?.name }}</span>
+                <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw?.warnLevel }})</span>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item}">
+            <template v-slot:selection="{internalItem}">
               <div class="d-inline">
-                <span class="d-subtitle-2">{{ item.raw?.name }}</span>
-                <span class="d-text d-secondary-text">&nbsp;({{ item.raw?.warnLevel }})</span>
+                <span class="d-subtitle-2">{{ internalItem.raw?.name }}</span>
+                <span class="d-text d-secondary-text">&nbsp;({{ internalItem.raw?.warnLevel }})</span>
               </div>
             </template>
           </v-autocomplete>

@@ -216,20 +216,20 @@ defineExpose({open});
             hide-details
             required
             :rules="policyDecisionRule">
-            <template #item="{item, props}">
+            <template #item="{internalItem, props}">
               <v-list-item v-bind="props" title="">
-                <v-icon size="small" :color="getIconColorForPolicyType(item.raw.type)">
-                  {{ getIconForPolicyType(item.raw.type) }}
+                <v-icon size="small" :color="getIconColorForPolicyType(internalItem.raw.type)">
+                  {{ getIconForPolicyType(internalItem.raw.type) }}
                 </v-icon>
-                <span class="d-subtitle-2 ml-2">{{ item.raw.licenseMatched }}</span>
+                <span class="d-subtitle-2 ml-2">{{ internalItem.raw.licenseMatched }}</span>
               </v-list-item>
             </template>
-            <template #selection="{item}">
+            <template #selection="{internalItem}">
               <div class="d-inline">
-                <v-icon size="small" :color="getIconColorForPolicyType(item.raw.type)">
-                  {{ getIconForPolicyType(item.raw.type) }}
+                <v-icon size="small" :color="getIconColorForPolicyType(internalItem.raw.type)">
+                  {{ getIconForPolicyType(internalItem.raw.type) }}
                 </v-icon>
-                <span class="d-subtitle-2 ml-2">{{ item.raw.licenseMatched }}</span>
+                <span class="d-subtitle-2 ml-2">{{ internalItem.raw.licenseMatched }}</span>
               </div>
             </template>
           </v-select>

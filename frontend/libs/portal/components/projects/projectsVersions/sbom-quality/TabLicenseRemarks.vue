@@ -272,26 +272,28 @@ watch(() => spdx.value, reload);
         color="inputActiveBorderColor"
         @change="selectedLicenseChanged"
         style="max-height: 40px !important">
-        <template #item="{item, props}">
+        <template #item="{internalItem, props}">
           <v-list-item v-bind="props" :title="undefined">
-            <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
+            <v-icon v-if="internalItem.value.alarms" :color="getIconColorOfLevel('alarm')" dense
               >{{ getIconOfLevel('alarm') }}
             </v-icon>
-            <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
+            <v-icon v-else-if="internalItem.value.warnings" :color="getIconColorOfLevel('warning')" dense
               >{{ getIconOfLevel('warning') }}
             </v-icon>
-            <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
+            <span class="d-text d-secondary-text"
+              >{{ internalItem.value.license }} ({{ internalItem.value.affected.length }})</span
+            >
           </v-list-item>
         </template>
-        <template #selection="{item}">
+        <template #selection="{internalItem}">
           <div class="d-inline">
-            <v-icon v-if="item.value.alarms" :color="getIconColorOfLevel('alarm')" dense
+            <v-icon v-if="internalItem.value.alarms" :color="getIconColorOfLevel('alarm')" dense
               >{{ getIconOfLevel('alarm') }}
             </v-icon>
-            <v-icon v-else-if="item.value.warnings" :color="getIconColorOfLevel('warning')" dense
+            <v-icon v-else-if="internalItem.value.warnings" :color="getIconColorOfLevel('warning')" dense
               >{{ getIconOfLevel('warning') }}
             </v-icon>
-            <span class="d-text d-secondary-text">{{ item.value.license }} ({{ item.value.affected.length }})</span>
+            <span class="d-text d-secondary-text">{{ internalItem.value.license }} ({{ internalItem.value.affected.length }})</span>
           </div>
         </template>
       </v-autocomplete>
