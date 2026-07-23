@@ -9,6 +9,8 @@
  */
 
 import '@mdi/font/css/materialdesignicons.min.css';
+import './styles/layers.css';
+import './styles/tailwind.css';
 import {setup} from '@shared/utils/config';
 import dayjs from 'dayjs';
 import dayjsPluginUTC from 'dayjs-plugin-utc';

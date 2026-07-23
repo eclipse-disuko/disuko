@@ -42,6 +42,7 @@ export default defineConfig(({mode}) => {
   const isDevelopment = mode === 'development';
   return {
     plugins: [
+      tailwindcss(),
       Vue({
         template: {transformAssetUrls},
         include: [/\.vue$/, /\.md$/],
@@ -81,7 +82,6 @@ export default defineConfig(({mode}) => {
         open: true,
         template: 'sunburst',
       }),
-      tailwindcss(),
     ].filter(Boolean),
     base: '/supplierportal/',
     resolve: {

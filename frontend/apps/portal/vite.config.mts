@@ -50,6 +50,7 @@ export default defineConfig(({mode}) => {
   const isDevelopment = mode === 'development';
   return {
     plugins: [
+      tailwindcss(),
       Vue({
         template: {transformAssetUrls},
         include: [/\.vue$/, /\.md$/],
@@ -90,7 +91,6 @@ export default defineConfig(({mode}) => {
         failOnError: false,
         quiet: true,
       }),
-      tailwindcss(),
       generateTailwindColors(),
     ].filter(Boolean),
     base: '/',

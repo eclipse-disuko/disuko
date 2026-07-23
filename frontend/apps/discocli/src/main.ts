@@ -5,6 +5,8 @@
  */
 
 import '@mdi/font/css/materialdesignicons.min.css';
+import './styles/layers.css';
+import './styles/tailwind.css';
 import {registerPlugins} from './plugins';
 
 import dayjs from 'dayjs';
