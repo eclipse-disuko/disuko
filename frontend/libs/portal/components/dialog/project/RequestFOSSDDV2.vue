@@ -18,11 +18,13 @@ import dayjs from 'dayjs';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
 const sbomStore = useSbomStore();
 const {longText} = useRules();
 const {t} = useI18n();
 const idle = useIdleStore();
+const approvableInfoStore = useApprovableInfoStore();
 
 const form = ref<VForm | null>(null);
 const dd = ref();
@@ -226,7 +228,7 @@ const smartAutoSelect = async () => {
 
 const open = async (isVehicle: boolean) => {
   idle.showIdle = true;
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
+  await approvableInfoStore.fetchApprovableInfo();
 
   checkFossMixedStatus();
   vehicle.value = isVehicle;

@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
-import {ApprovableInfo} from '@disclosure-portal/model/Approval';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
@@ -28,6 +28,7 @@ const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
 const idle = useIdleStore();
+const approvableInfoStore = useApprovableInfoStore();
 
 const isVisible = ref(false);
 const selectedChannel = ref<VersionSlim | null>(null);
@@ -35,7 +36,7 @@ const sboms = ref<SpdxFile[]>([]);
 const selectedSbom = ref<SpdxFile | null>(null);
 const sbomStats = ref<ComponentStats>({} as ComponentStats);
 const tab = ref('');
-const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
+const approvableInfo = computed(() => approvableInfoStore.approvableInfo);
 const comment = ref('');
 const approver = ref('');
 const approverPreselect = ref<UserDto | undefined>(undefined);
@@ -86,7 +87,7 @@ const open = async (payload?: {comment: string; reviewer: string}) => {
       approverPreselect.value = users[0];
     }
   }
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
+  await approvableInfoStore.fetchApprovableInfo();
 
   await autoSelect();
   idle.showIdle = false;

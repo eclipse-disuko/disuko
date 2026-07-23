@@ -15,11 +15,13 @@ import {DataTableHeader} from '@shared/types/table';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {InternalItem} from 'vuetify/framework';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const labelStore = useLabelStore();
 const idleStore = useIdleStore();
+const approvableInfoStore = useApprovableInfoStore();
 
 const show = ref(false);
 const search = ref('');
@@ -150,6 +152,7 @@ const save = async () => {
   projectPostRequest.children = getSelected();
   try {
     await projectStore.updateProject(projectPostRequest);
+    await approvableInfoStore.fetchApprovableInfo(true);
   } finally {
     idleStore.hide();
   }
