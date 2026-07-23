@@ -20,6 +20,7 @@ import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 import {useAppStore} from '@disclosure-portal/stores/app';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
 const projectStore = useProjectStore();
 const appStore = useAppStore();
@@ -27,6 +28,7 @@ const {longText} = useRules();
 const {t} = useI18n();
 const snackbar = useSnackbar();
 const idle = useIdleStore();
+const approvableInfoStore = useApprovableInfoStore();
 
 const approverTab = ref<'developer' | 'owner'>('developer');
 const form = ref<VForm | null>(null);
@@ -96,7 +98,7 @@ const commentRule = longText(t('TAD_COMMENT'));
 
 const open = async (isVehicleProject: boolean) => {
   idle.showIdle = true;
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key);
+  await approvableInfoStore.fetchApprovableInfo();
 
   isVehicle.value = isVehicleProject;
   if (config.useFutureFoss) {

@@ -5,16 +5,16 @@
 <script setup lang="ts">
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, onMounted, ref} from 'vue';
-import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useI18n} from 'vue-i18n';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
+
 const projectStore = useProjectStore();
+const approvableInfoStore = useApprovableInfoStore();
 
 const {t} = useI18n();
-const approvableInfo = ref<ApprovableInfo>({} as ApprovableInfo);
 const search = ref<string>('');
 const dataAreLoaded = ref(false);
 // const childProjectChannels = ref<Map<string, VersionSlim>>(new Map());
@@ -23,7 +23,7 @@ const idle = useIdleStore();
 
 const projectModel = computed(() => projectStore.currentProject!);
 const filteredProjects = computed(() => {
-  const projects = approvableInfo.value.projects ?? [];
+  const projects = approvableInfoStore.approvableInfoLatestSbom?.projects ?? [];
   const normalizedSearch = (search.value ?? '').trim().toLowerCase();
 
   if (!normalizedSearch) {
@@ -39,7 +39,7 @@ async function reload() {
   dataAreLoaded.value = false;
   idle.showIdle = true;
 
-  approvableInfo.value = await projectService.getApprovableInfo(projectModel.value._key, true);
+  await approvableInfoStore.fetchApprovableInfo(true);
 
   // childProjectChannels.value.clear();
   // const versionFetchPromises = approvableInfo.value.projects

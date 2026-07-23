@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ApprovableInfo} from '@disclosure-portal/model/Approval';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import dayjs from 'dayjs';
 import {computed, ref, watch} from 'vue';
+import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
 export interface UseApprovalFormBaseOptions {
   setDefaultFlags: () => void;
@@ -19,13 +19,14 @@ export interface UseApprovalFormBaseOptions {
 export function useApprovalFormBase(options: UseApprovalFormBaseOptions) {
   const projectStore = useProjectStore();
   const sbomStore = useSbomStore();
+  const approvableInfoStore = useApprovableInfoStore();
 
   const isVisible = ref(false);
   const selectedChannel = ref<VersionSlim | null>(null);
   const sboms = ref<SpdxFile[]>([]);
   const selectedSbom = ref<SpdxFile | null>(null);
   const sbomStats = ref<ComponentStats>(new ComponentStats());
-  const approvableInfo = ref<ApprovableInfo>(new ApprovableInfo());
+  const approvableInfo = computed(() => approvableInfoStore.approvableInfo);
   const comment = ref('');
   const withZip = ref(false);
   const noFOSS = ref(false);
