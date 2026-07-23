@@ -59,45 +59,47 @@ const showMenu = ref(false);
             density="compact"
             transition="scale-transition"
             @update:modelValue="(value: string[]) => emit('update', value)">
-            <template v-slot:item="{props, item}">
-              <v-list-item v-bind="props" :title="undefined" :disabled="item.raw?.disabled" class="px-2 py-0">
+            <template v-slot:item="{props, internalItem}">
+              <v-list-item v-bind="props" :title="undefined" :disabled="internalItem.raw?.disabled" class="px-2 py-0">
                 <template v-slot:prepend="{isSelected}">
                   <v-checkbox hide-details :model-value="isSelected" />
                 </template>
-                <v-icon v-if="item.raw?.icon" small :color="item.raw.iconColor">{{ item.raw.icon }}</v-icon>
+                <v-icon v-if="internalItem.raw?.icon" small :color="internalItem.raw.iconColor">{{
+                  internalItem.raw.icon
+                }}</v-icon>
                 <span
-                  :style="{color: item.raw?.textColor || 'inherit'}"
+                  :style="{color: internalItem.raw?.textColor || 'inherit'}"
                   class="text-sm"
-                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
-                  >{{ item.raw?.text || item.raw.value }}</span
+                  :class="{'ml-1': internalItem.raw?.icon, 'font-bold': internalItem.raw?.textBold}"
+                  >{{ internalItem.raw?.text || internalItem.raw.value }}</span
                 >
                 <v-chip
-                  v-if="item.raw?.chip"
-                  :color="item.raw?.chipColor || 'default'"
+                  v-if="internalItem.raw?.chip"
+                  :color="internalItem.raw?.chipColor || 'default'"
                   label
                   size="x-small"
                   class="ml-1">
-                  {{ item.raw.chip }}
+                  {{ internalItem.raw.chip }}
                 </v-chip>
               </v-list-item>
             </template>
-            <template v-slot:selection="{item, index}">
+            <template v-slot:selection="{internalItem, index}">
               <div v-if="index === 0" class="d-flex align-center">
-                <v-icon v-if="item.raw?.icon" small :color="item.raw.iconColor">{{ item.raw.icon }}</v-icon>
+                <v-icon v-if="internalItem.raw?.icon" small :color="internalItem.raw.iconColor">{{ internalItem.raw.icon }}</v-icon>
                 <span
                   v-if="index === 0"
-                  :style="{color: item.raw?.textColor || 'inherit'}"
+                  :style="{color: internalItem.raw?.textColor || 'inherit'}"
                   class="text-sm"
-                  :class="{'ml-1': item.raw?.icon, 'font-bold': item.raw?.textBold}"
-                  >{{ item.raw?.text || item.raw.value }}</span
+                  :class="{'ml-1': internalItem.raw?.icon, 'font-bold': internalItem.raw?.textBold}"
+                  >{{ internalItem.raw?.text || internalItem.raw.value }}</span
                 >
                 <v-chip
-                  v-if="item.raw?.chip"
-                  :color="item.raw?.chipColor || 'default'"
+                  v-if="internalItem.raw?.chip"
+                  :color="internalItem.raw?.chipColor || 'default'"
                   label
                   size="x-small"
                   class="ml-1">
-                  {{ item.raw.chip }}
+                  {{ internalItem.raw.chip }}
                 </v-chip>
               </div>
               <span v-if="index === 1" class="text-sm">
