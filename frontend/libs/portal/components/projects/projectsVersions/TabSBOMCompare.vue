@@ -712,7 +712,9 @@ onBeforeMount(async () => {
                     </v-icon>
                     <span class="d-subtitle-2">{{ internalItem.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                      >&nbsp;({{ internalItem.raw.tag }})</span
+                    >
                   </div>
                 </template>
               </v-select>
@@ -764,7 +766,9 @@ onBeforeMount(async () => {
                     </v-icon>
                     <span class="d-subtitle-2">{{ internalItem.raw.uploaded }}</span>
                     <span class="d-text d-secondary-text">&nbsp;-&nbsp;{{ internalItem.raw.label }}</span>
-                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag">&nbsp;({{ internalItem.raw.tag }})</span>
+                    <span class="d-text d-secondary-text" v-if="internalItem.raw.tag"
+                      >&nbsp;({{ internalItem.raw.tag }})</span
+                    >
                   </div>
                 </template>
               </v-select>
