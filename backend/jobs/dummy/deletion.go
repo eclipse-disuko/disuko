@@ -78,7 +78,7 @@ func (j *DeletionJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.E
 	}
 
 	// Search for all dummy projects older than 3 months
-	cutoff := time.Now().UTC().AddDate(0, -3, 0).Format(time.RFC3339Nano)
+	cutoff := time.Now().UTC().AddDate(0, -3, 0)
 	qc := database.New().SetMatcher(
 		database.AndChain(
 			database.AttributeMatcher(

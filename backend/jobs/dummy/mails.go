@@ -56,7 +56,7 @@ func (j *MailJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execu
 		}
 	}
 
-	cutoff := time.Now().UTC().AddDate(0, 0, -12).Format(time.RFC3339Nano)
+	cutoff := time.Now().UTC().AddDate(0, 0, -12)
 	qc := database.New().SetMatcher(
 		database.AndChain(
 			database.AttributeMatcher(
