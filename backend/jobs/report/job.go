@@ -5,7 +5,7 @@
 package report
 
 import (
-	"encoding/csv"
+	"encoding/json"
 	"os"
 	"slices"
 	"strconv"
@@ -42,14 +42,9 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/eclipse-disuko/disuko/scheduler"
-	"golang.org/x/text/encoding/unicode"
 )
 
-type Col int
-
 const WITH = " with "
-
-// this does define the ordering
 
 type sbomStats struct {
 	weakCopyLeftCount      int
@@ -124,7 +119,7 @@ func Init(
 }
 
 func GetReportAllName() string {
-	return "report_all.csv"
+	return "report_all.json"
 }
 
 func GetReportStorageFileNameOf(fileName string) string {
@@ -144,23 +139,25 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	tempHelper.CreateRandomFolder()
 	defer tempHelper.RemoveAll()
 	tmpFileName := tempHelper.GetCompleteFileName(GetReportAllName())
-	tmpFile, err := os.Create(tmpFileName)
-	if err != nil {
-		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report csv file", "header"), err)
+
+	customIdNames := j.customIdNames(rs)
+	report := Report{
+		CustomIDNames: customIdNames,
+		Projects:      j.buildProjects(rs, customIdNames),
 	}
-	defer j.finishCSV(rs, tmpFile, tmpFileName)
 
-	convWriter := unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewEncoder().Writer(tmpFile)
-	csvWriter := csv.NewWriter(convWriter)
-	csvWriter.Comma = '\t'
-	defer csvWriter.Flush()
+	data, err := json.MarshalIndent(report, "", "  ")
+	if err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonMarshalling, "report json file"), err)
+	}
+	if err := os.WriteFile(tmpFileName, data, 0o600); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "report json file", "header"), err)
+	}
+	j.uploadReport(rs, tmpFileName)
 
-	h := j.writeHeaders(rs, csvWriter)
-	pc := j.processProjects(rs, csvWriter, h)
-
-	log.AddEntry(job.Info, "successfully report created of %d projects", pc)
+	log.AddEntry(job.Info, "successfully report created of %d projects", len(report.Projects))
 	log.AddEntry(job.Info, "finished")
-	customRes.ProjectCnt = pc
+	customRes.ProjectCnt = len(report.Projects)
 	customRes.FileName = tmpFileName
 
 	return scheduler.ExecutionResult{
@@ -170,11 +167,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	}
 }
 
-func (j *Job) finishCSV(rs *logy.RequestSession, tmpFile *os.File, tmpFileName string) {
-	if err := tmpFile.Close(); err != nil {
-		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "close file error "+tmpFileName, "header"), err)
-		return
-	}
+func (j *Job) uploadReport(rs *logy.RequestSession, tmpFileName string) {
 	fileReader, err := os.Open(tmpFileName)
 	if err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "read file error "+tmpFileName, "header"), err)
@@ -188,34 +181,24 @@ func (j *Job) finishCSV(rs *logy.RequestSession, tmpFile *os.File, tmpFileName s
 	logy.Infof(rs, "Report is uploaded to storage into folder %s", s3FileName)
 }
 
-func (j *Job) writeHeaders(rs *logy.RequestSession, csv *csv.Writer) []string {
-	var customIdHeaders []string
+func (j *Job) customIdNames(rs *logy.RequestSession) []string {
+	var customIdNames []string
 	cids := j.repoCustomId.FindAll(rs, false)
 	for _, cid := range cids {
-		customIdHeaders = append(customIdHeaders, cid.Key)
+		customIdNames = append(customIdNames, cid.Key)
 	}
-	combinedHeaders := append(colHeaders, customIdHeaders...)
-	j.writeRow(csv, combinedHeaders)
-	return combinedHeaders
+	return customIdNames
 }
 
-// writeProjectRow writes a single project row to the CSV and handles errors
-func (j *Job) writeRow(csvWriter *csv.Writer, row []string) {
-	if err := csvWriter.Write(row); err != nil {
-		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report analyzes", "data"), err)
-	}
-}
-
-// processProjects processes a list of projects and groups
-func (j *Job) processProjects(rs *logy.RequestSession, csvWriter *csv.Writer, headers []string) int {
+func (j *Job) buildProjects(rs *logy.RequestSession, customIdNames []string) []Project {
 	prCache := make(prCache)
 	licCache := make(licCache)
 	oblCache := make(oblCache)
-	processed := 0
+	var projects []Project
 
 	dummyLabel := j.repoLabel.FindByNameAndType(rs, label.DUMMY, label.PROJECT)
-	projects := j.repo.FindAllKeys(rs)
-	for _, projectKey := range projects {
+	projectKeys := j.repo.FindAllKeys(rs)
+	for _, projectKey := range projectKeys {
 		pr, ok := prCache[projectKey]
 		if !ok {
 			pr = j.repo.FindByKey(rs, projectKey, false)
@@ -224,20 +207,13 @@ func (j *Job) processProjects(rs *logy.RequestSession, csvWriter *csv.Writer, he
 		if pr == nil {
 			continue
 		}
-		j.processProject(rs, pr, csvWriter, headers, prCache, licCache, oblCache, hasDummyLabel(pr, dummyLabel))
-		processed++
-
+		projects = append(projects, j.project(rs, pr, customIdNames, prCache, licCache, oblCache, hasDummyLabel(pr, dummyLabel)))
 	}
-	return processed
+	return projects
 }
 
-func (j *Job) processProject(rs *logy.RequestSession, pr *project.Project, csv *csv.Writer, headers []string, prCache prCache, licCache licCache, oblCache oblCache, isDummy bool) {
-	j.writeRow(csv, j.row(rs, pr, headers, prCache, licCache, oblCache, isDummy))
-}
-
-// row generates a report row for a given project, filling all relevant columns using helper functions.
-func (j *Job) row(rs *logy.RequestSession, pr *project.Project, headers []string, prCache prCache, licCache licCache, oblCache oblCache, isDummy bool) []string {
-	res := make([]string, len(headers))
+func (j *Job) project(rs *logy.RequestSession, pr *project.Project, customIdNames []string, prCache prCache, licCache licCache, oblCache oblCache, isDummy bool) Project {
+	res := Project{}
 	j.fillBasicProjectInfo(pr, &res, isDummy)
 	j.fillParentAndSupplierInfo(rs, pr, prCache, &res)
 	j.fillLabelsAndTags(rs, pr, &res)
@@ -247,33 +223,31 @@ func (j *Job) row(rs *logy.RequestSession, pr *project.Project, headers []string
 	j.fillReviewStats(pr, &res)
 	j.fillSourceStats(pr, &res)
 	j.fillTokenStats(pr, &res)
-	j.fillCustomIds(pr, headers, &res)
+	j.fillCustomIds(pr, customIdNames, &res)
 	j.fillSbomStats(rs, pr, &res, prCache, licCache, oblCache)
 	j.fillApprovalStats(rs, pr, &res, prCache, licCache, oblCache)
 	return res
 }
 
-// fillBasicProjectInfo fills basic project fields
-func (j *Job) fillBasicProjectInfo(pr *project.Project, res *[]string, isDummy bool) {
-	(*res)[colName] = pr.Name
-	(*res)[colGroup] = renderBool(pr.IsGroup)
-	(*res)[colNonFoss] = renderBool(pr.IsNoFoss)
-	(*res)[colIsDummy] = renderBool(isDummy)
-	(*res)[colStatus] = string(pr.Status)
-	(*res)[colGuid] = pr.Key
-	(*res)[colCreated] = pr.Created.String()
-	(*res)[colUpdated] = pr.Updated.String()
-	(*res)[colLink] = conf.Config.Server.DisukoHost + "/#/dashboard/"
-	(*res)[colSubscribers] = strconv.Itoa(j.getSbomSubscribersCount(pr))
+func (j *Job) fillBasicProjectInfo(pr *project.Project, res *Project, isDummy bool) {
+	res.Name = pr.Name
+	res.Group = renderBool(pr.IsGroup)
+	res.NonFoss = renderBool(pr.IsNoFoss)
+	res.IsDummy = renderBool(isDummy)
+	res.Status = string(pr.Status)
+	res.Guid = pr.Key
+	res.Created = pr.Created.String()
+	res.Updated = pr.Updated.String()
+	res.Link = conf.Config.Server.DisukoHost + "/#/dashboard/"
+	res.Subscribers = strconv.Itoa(j.getSbomSubscribersCount(pr))
 	if pr.IsGroup {
-		(*res)[colLink] += "groups/" + pr.Key
+		res.Link += "groups/" + pr.Key
 	} else {
-		(*res)[colLink] += "projects/" + pr.Key
+		res.Link += "projects/" + pr.Key
 	}
 }
 
-// fillParentAndSupplierInfo fills parent, owner, and supplier info
-func (j *Job) fillParentAndSupplierInfo(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *[]string) {
+func (j *Job) fillParentAndSupplierInfo(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *Project) {
 	depPrj := pr
 	if pr.Parent != "" {
 		var ok bool
@@ -290,57 +264,56 @@ func (j *Job) fillParentAndSupplierInfo(rs *logy.RequestSession, pr *project.Pro
 	if depPrj.CustomerMeta.DeptId != "" {
 		dep := j.repoDept.GetByDeptId(rs, depPrj.CustomerMeta.DeptId)
 		if dep == nil {
-			(*res)[colOwnerCompanyName] = "deleted in the meantime"
-			(*res)[colOwnerCompanyId] = "deleted in the meantime"
-			(*res)[colOwnerDepartmentId] = "deleted in the meantime"
-			(*res)[colOwnerDepartmentTitle] = "deleted in the meantime"
-			(*res)[colOwnerDepartmentAbbreviation] = "deleted in the meantime"
+			res.OwnerCompanyName = "deleted in the meantime"
+			res.OwnerCompanyId = "deleted in the meantime"
+			res.OwnerDepartmentId = "deleted in the meantime"
+			res.OwnerDepartmentTitle = "deleted in the meantime"
+			res.OwnerDepartmentAbbreviation = "deleted in the meantime"
 		} else {
-			(*res)[colOwnerCompanyName] = dep.CompanyName
-			(*res)[colOwnerCompanyId] = dep.CompanyCode
-			(*res)[colOwnerDepartmentId] = dep.Key
-			(*res)[colOwnerDepartmentTitle] = dep.DescriptionEnglish
-			(*res)[colOwnerDepartmentAbbreviation] = dep.OrgAbbreviation
+			res.OwnerCompanyName = dep.CompanyName
+			res.OwnerCompanyId = dep.CompanyCode
+			res.OwnerDepartmentId = dep.Key
+			res.OwnerDepartmentTitle = dep.DescriptionEnglish
+			res.OwnerDepartmentAbbreviation = dep.OrgAbbreviation
 		}
 	}
 	if depPrj.DocumentMeta.SupplierDeptId != "" && !depPrj.SupplierExtraData.External {
 		dep := j.repoDept.GetByDeptId(rs, depPrj.DocumentMeta.SupplierDeptId)
 		if dep == nil {
-			(*res)[colSupplierCompanyName] = "deleted in the meantime"
-			(*res)[colSupplierCompanyId] = "deleted in the meantime"
-			(*res)[colSupplierDepartmentId] = "deleted in the meantime"
-			(*res)[colSupplierDepartmentTitle] = "deleted in the meantime"
-			(*res)[colSupplierDepartmentAbbreviation] = "deleted in the meantime"
+			res.SupplierCompanyName = "deleted in the meantime"
+			res.SupplierCompanyId = "deleted in the meantime"
+			res.SupplierDepartmentId = "deleted in the meantime"
+			res.SupplierDepartmentTitle = "deleted in the meantime"
+			res.SupplierDepartmentAbbreviation = "deleted in the meantime"
 		} else {
-			(*res)[colSupplierCompanyName] = dep.CompanyName
-			(*res)[colSupplierCompanyId] = dep.CompanyCode
-			(*res)[colSupplierDepartmentId] = dep.Key
-			(*res)[colSupplierDepartmentTitle] = dep.DescriptionEnglish
-			(*res)[colSupplierDepartmentAbbreviation] = dep.OrgAbbreviation
+			res.SupplierCompanyName = dep.CompanyName
+			res.SupplierCompanyId = dep.CompanyCode
+			res.SupplierDepartmentId = dep.Key
+			res.SupplierDepartmentTitle = dep.DescriptionEnglish
+			res.SupplierDepartmentAbbreviation = dep.OrgAbbreviation
 		}
 	} else if depPrj.SupplierExtraData.External && depPrj.DocumentMeta.SupplierName != "" {
-		(*res)[colSupplierCompanyName] = depPrj.DocumentMeta.SupplierName
+		res.SupplierCompanyName = depPrj.DocumentMeta.SupplierName
 	}
-	(*res)[colSupplierDepartmentExternal] = renderBool(depPrj.SupplierExtraData.External)
+	res.SupplierDepartmentExternal = renderBool(depPrj.SupplierExtraData.External)
 	responsible := pr.ProjectResponsible()
 	if responsible != nil {
-		(*res)[colProjectResponsibleUserid] = responsible.UserId
+		res.ProjectResponsibleUserid = responsible.UserId
 		// TODO: maybe cache that too?
 		user := j.repoUser.FindByUserId(rs, responsible.UserId)
 		if user != nil {
-			(*res)[colProjectResponsibleEmail] = user.Email
-			(*res)[colProjectResponsibleFullName] = user.Lastname + "," + user.Forename
+			res.ProjectResponsibleEmail = user.Email
+			res.ProjectResponsibleFullName = user.Lastname + "," + user.Forename
 		}
 	}
-	(*res)[colApplicationId] = pr.ApplicationMeta.Id
-	(*res)[colApplicationSecondaryId] = pr.ApplicationMeta.SecondaryId
-	(*res)[colApplicationName] = pr.ApplicationMeta.Name
-	(*res)[colGroupId] = pr.Parent
-	(*res)[colGroupName] = pr.ParentName
+	res.ApplicationId = pr.ApplicationMeta.Id
+	res.ApplicationSecondaryId = pr.ApplicationMeta.SecondaryId
+	res.ApplicationName = pr.ApplicationMeta.Name
+	res.GroupId = pr.Parent
+	res.GroupName = pr.ParentName
 }
 
-// countLicenseDecisionRules counts the number of active and inactive license decision rules for a project version.
-func (j *Job) fillLicenseDecisionRuleStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *[]string) {
+func (j *Job) fillLicenseDecisionRuleStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *Project) {
 	prs := []*project.Project{pr}
 	if pr.IsGroup {
 		prs = make([]*project.Project, 0)
@@ -374,12 +347,11 @@ func (j *Job) fillLicenseDecisionRuleStats(rs *logy.RequestSession, pr *project.
 		}
 
 	}
-	(*res)[colActiveLicenseDecisionRules] = strconv.Itoa(active)
-	(*res)[colInactiveLicenseDecisionRules] = strconv.Itoa(inactive)
+	res.ActiveLicenseDecisionRules = strconv.Itoa(active)
+	res.InactiveLicenseDecisionRules = strconv.Itoa(inactive)
 }
 
-// countPolicyDecisionRules counts the number of active and inactive policy decision rules for a project version.
-func (j *Job) fillPolicyDecisionRuleStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *[]string) {
+func (j *Job) fillPolicyDecisionRuleStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *Project) {
 	prs := []*project.Project{pr}
 	if pr.IsGroup {
 		prs = make([]*project.Project, 0)
@@ -413,11 +385,11 @@ func (j *Job) fillPolicyDecisionRuleStats(rs *logy.RequestSession, pr *project.P
 		}
 
 	}
-	(*res)[colActivePolicyDecisionRules] = strconv.Itoa(active)
-	(*res)[colInactivePolicyDecisionRules] = strconv.Itoa(inactive)
+	res.ActivePolicyDecisionRules = strconv.Itoa(active)
+	res.InactivePolicyDecisionRules = strconv.Itoa(inactive)
 }
 
-func (j *Job) fillDeniedPolicyDecisionStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *[]string) {
+func (j *Job) fillDeniedPolicyDecisionStats(rs *logy.RequestSession, pr *project.Project, prCache prCache, res *Project) {
 	prs := []*project.Project{pr}
 	if pr.IsGroup {
 		prs = make([]*project.Project, 0)
@@ -454,38 +426,37 @@ func (j *Job) fillDeniedPolicyDecisionStats(rs *logy.RequestSession, pr *project
 		}
 
 	}
-	(*res)[colActiveDeniedPolicyDecision] = strconv.Itoa(active)
-	(*res)[colInactiveDeniedPolicyDecision] = strconv.Itoa(inactive)
+	res.ActiveDeniedPolicyDecision = strconv.Itoa(active)
+	res.InactiveDeniedPolicyDecision = strconv.Itoa(inactive)
 }
 
-// fillLabelsAndTags fills label and tag columns
-func (j *Job) fillLabelsAndTags(rs *logy.RequestSession, pr *project.Project, res *[]string) {
+func (j *Job) fillLabelsAndTags(rs *logy.RequestSession, pr *project.Project, res *Project) {
 	if pr.SchemaLabel != "" {
 		l := j.repoLabel.FindByKey(rs, pr.SchemaLabel, false)
 		if l != nil {
-			(*res)[colSchemaLabel] = l.Name
+			res.SchemaLabel = l.Name
 		}
 	}
 	for _, k := range pr.PolicyLabels {
 		l := j.repoLabel.FindByKey(rs, k, false)
 		if l != nil {
-			(*res)[colPolicyLabels] += l.Name + ","
+			res.PolicyLabels += l.Name + ","
 		}
 	}
-	(*res)[colPolicyLabels] = strings.TrimSuffix((*res)[colPolicyLabels], ",")
+	res.PolicyLabels = strings.TrimSuffix(res.PolicyLabels, ",")
 	if pr.FreeLabels != nil {
-		(*res)[colTags] = strings.Join(pr.FreeLabels, ",")
+		res.Tags = strings.Join(pr.FreeLabels, ",")
 	}
 	for _, k := range pr.ProjectLabels {
 		l := j.repoLabel.FindByKey(rs, k, false)
 		if l != nil {
-			(*res)[colProjectLabels] += l.Name + ","
+			res.ProjectLabels += l.Name + ","
 		}
 	}
-	(*res)[colProjectLabels] = strings.TrimSuffix((*res)[colProjectLabels], ",")
+	res.ProjectLabels = strings.TrimSuffix(res.ProjectLabels, ",")
 }
 
-func (j *Job) fillReviewStats(pr *project.Project, res *[]string) {
+func (j *Job) fillReviewStats(pr *project.Project, res *Project) {
 	var (
 		latestReviewState   overallreview.State
 		latestReviewDate    time.Time
@@ -503,25 +474,24 @@ func (j *Job) fillReviewStats(pr *project.Project, res *[]string) {
 	if latestReviewDate.IsZero() {
 		return
 	}
-	(*res)[colLatestStatusReviewDate] = latestReviewDate.Format(time.RFC3339)
-	(*res)[colLatestStatusReviewStatus] = string(latestReviewState)
+	res.LatestStatusReviewDate = latestReviewDate.Format(time.RFC3339)
+	res.LatestStatusReviewStatus = string(latestReviewState)
 	if latestReviewState == overallreview.Audited {
-		(*res)[colLatestE2ReviewDate] = latestReviewDate.Format(time.RFC3339)
-		(*res)[colLatestE2ReviewStatus] = string(latestReviewState)
-		(*res)[colLatestE2ReviewComment] = strings.ReplaceAll(latestReviewComment, "\n", " ")
+		res.LatestE2ReviewDate = latestReviewDate.Format(time.RFC3339)
+		res.LatestE2ReviewStatus = string(latestReviewState)
+		res.LatestE2ReviewComment = strings.ReplaceAll(latestReviewComment, "\n", " ")
 	}
 }
 
-func (j *Job) fillSourceStats(pr *project.Project, res *[]string) {
+func (j *Job) fillSourceStats(pr *project.Project, res *Project) {
 	codeReferenceCount := 0
 	for k := range pr.Versions {
 		codeReferenceCount += j.countSourceRefs(pr.Versions[k])
 	}
-	(*res)[colNumberOfCodeReference] = strconv.Itoa(codeReferenceCount)
+	res.NumberOfCodeReference = strconv.Itoa(codeReferenceCount)
 }
 
-// fillVersionStats fills version-related statistics
-func (j *Job) fillSbomStats(rs *logy.RequestSession, pr *project.Project, res *[]string, prCache prCache, licCache licCache, oblCache oblCache) {
+func (j *Job) fillSbomStats(rs *logy.RequestSession, pr *project.Project, res *Project, prCache prCache, licCache licCache, oblCache oblCache) {
 	prs := []*project.Project{pr}
 	if pr.IsGroup {
 		prs = make([]*project.Project, 0)
@@ -577,7 +547,7 @@ func (j *Job) fillSbomStats(rs *logy.RequestSession, pr *project.Project, res *[
 
 		sbomFound = true
 		if !pr.IsGroup {
-			(*res)[colLastUpload] = latestSbom.Created.String()
+			res.LastUpload = latestSbom.Created.String()
 		}
 
 		latestSbomSourceCodeReference += j.countSourceRefs(latestSbomVersion)
@@ -619,38 +589,37 @@ func (j *Job) fillSbomStats(rs *logy.RequestSession, pr *project.Project, res *[
 
 	}
 
-	(*res)[colManuallyLockedSBOM] = strconv.Itoa(manuallyLockedCount)
-	(*res)[colTotalLockedSBOM] = strconv.Itoa(totalLockedSboms)
-	(*res)[colProjectSboms] = strconv.Itoa(uploaded)
+	res.ManuallyLockedSBOM = strconv.Itoa(manuallyLockedCount)
+	res.TotalLockedSBOM = strconv.Itoa(totalLockedSboms)
+	res.ProjectSboms = strconv.Itoa(uploaded)
 
 	if !sbomFound {
 		return
 	}
 
-	(*res)[colLatestSbomSourceCodeReference] = strconv.Itoa(latestSbomSourceCodeReference)
-	(*res)[colLatestSbomAllowed] = strconv.Itoa(compStats.Allowed)
-	(*res)[colLatestSbomDenied] = strconv.Itoa(compStats.Denied)
-	(*res)[colLatestSbomUnasserted] = strconv.Itoa(compStats.NoAssertion)
-	(*res)[colLatestSbomWarned] = strconv.Itoa(compStats.Warned)
-	(*res)[colLatestSbomQuestioned] = strconv.Itoa(compStats.Questioned)
-	(*res)[colLatestSbomWeakCopyLeft] = strconv.Itoa(stats.weakCopyLeftCount)
-	(*res)[colLatestSbomStrongCopyLeft] = strconv.Itoa(stats.strongCopyLeftCount)
-	(*res)[colLatestSbomNetworkCopyLeft] = strconv.Itoa(stats.networkCopyLeftCount)
-	(*res)[colLatestSbomAndLicenseExp] = strconv.Itoa(stats.andCount)
-	(*res)[colLatestSbomOrLicenseExp] = strconv.Itoa(stats.orCount)
-	(*res)[colLatestSbomWithLicenseExp] = strconv.Itoa(stats.withCount)
-	(*res)[colLatestSbomMixedLicenseExp] = strconv.Itoa(stats.mixedCount)
-	(*res)[colLatestSbomMassiveAndExp] = strconv.Itoa(stats.massiveAnd)
-	(*res)[colLatestSbomMassiveOrExp] = strconv.Itoa(stats.massiveOr)
-	(*res)[colLatestSbomKeepSourceCode] = strconv.Itoa(stats.keepOfSourceCodeCount)
-	(*res)[colLatestSbomGNU_CCSObligation] = strconv.Itoa(stats.GNU_CCSObligationCount)
-	(*res)[colLatestSbomNoFoss] = strconv.Itoa(stats.noFossCount)
-	(*res)[colLatestSbomTotal] = strconv.Itoa(stats.totalComponentCount)
+	res.LatestSbomSourceCodeReference = strconv.Itoa(latestSbomSourceCodeReference)
+	res.LatestSbomAllowed = strconv.Itoa(compStats.Allowed)
+	res.LatestSbomDenied = strconv.Itoa(compStats.Denied)
+	res.LatestSbomUnasserted = strconv.Itoa(compStats.NoAssertion)
+	res.LatestSbomWarned = strconv.Itoa(compStats.Warned)
+	res.LatestSbomQuestioned = strconv.Itoa(compStats.Questioned)
+	res.LatestSbomWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
+	res.LatestSbomStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)
+	res.LatestSbomNetworkCopyLeft = strconv.Itoa(stats.networkCopyLeftCount)
+	res.LatestSbomAndLicenseExp = strconv.Itoa(stats.andCount)
+	res.LatestSbomOrLicenseExp = strconv.Itoa(stats.orCount)
+	res.LatestSbomWithLicenseExp = strconv.Itoa(stats.withCount)
+	res.LatestSbomMixedLicenseExp = strconv.Itoa(stats.mixedCount)
+	res.LatestSbomMassiveAndExp = strconv.Itoa(stats.massiveAnd)
+	res.LatestSbomMassiveOrExp = strconv.Itoa(stats.massiveOr)
+	res.LatestSbomKeepSourceCode = strconv.Itoa(stats.keepOfSourceCodeCount)
+	res.LatestSbomGNU_CCSObligation = strconv.Itoa(stats.GNU_CCSObligationCount)
+	res.LatestSbomNoFoss = strconv.Itoa(stats.noFossCount)
+	res.LatestSbomTotal = strconv.Itoa(stats.totalComponentCount)
 }
 
-// fillTokenStats fills token-related statistics
-func (j *Job) fillTokenStats(pr *project.Project, res *[]string) {
-	(*res)[colProjectTokens] = strconv.Itoa(len(pr.Token))
+func (j *Job) fillTokenStats(pr *project.Project, res *Project) {
+	res.ProjectTokens = strconv.Itoa(len(pr.Token))
 	active := 0
 	for _, t := range pr.Token {
 		if t.IsExpired() || t.Status == project.REVOKED {
@@ -658,11 +627,10 @@ func (j *Job) fillTokenStats(pr *project.Project, res *[]string) {
 		}
 		active++
 	}
-	(*res)[colActiveTokens] = strconv.Itoa(active)
+	res.ActiveTokens = strconv.Itoa(active)
 }
 
-// fillApprovalStats fills approval-related statistics
-func (j *Job) fillApprovalStats(rs *logy.RequestSession, pr *project.Project, res *[]string, prCache prCache, licCache licCache, oblCache oblCache) {
+func (j *Job) fillApprovalStats(rs *logy.RequestSession, pr *project.Project, res *Project, prCache prCache, licCache licCache, oblCache oblCache) {
 	approvals := j.repoApprovals.FindByKey(rs, pr.Key, false)
 	if approvals == nil {
 		return
@@ -693,120 +661,120 @@ func (j *Job) fillApprovalStats(rs *logy.RequestSession, pr *project.Project, re
 	if len(internals) > 0 {
 		latest := internals[len(internals)-1]
 		stats := j.sumSbomStats(rs, latest, prCache, licCache, oblCache)
-		(*res)[colLatestApprovalWeakCopyLeft] = strconv.Itoa(stats.weakCopyLeftCount)
-		(*res)[colLatestApprovalStrongCopyLeft] = strconv.Itoa(stats.strongCopyLeftCount)
-		(*res)[colLatestApprovalNetworkCopyLeft] = strconv.Itoa(stats.networkCopyLeftCount)
-		(*res)[colLatestApprovalAndLicenseExp] = strconv.Itoa(stats.andCount)
-		(*res)[colLatestApprovalOrLicenseExp] = strconv.Itoa(stats.orCount)
-		(*res)[colLatestApprovalWithLicenseExp] = strconv.Itoa(stats.withCount)
-		(*res)[colLatestApprovalMixedLicenseExp] = strconv.Itoa(stats.mixedCount)
-		(*res)[colLatestApprovalMassiveAndExp] = strconv.Itoa(stats.massiveAnd)
-		(*res)[colLatestApprovalMassiveOrExp] = strconv.Itoa(stats.massiveOr)
-		(*res)[colLatestApprovalKeepSourceCode] = strconv.Itoa(stats.keepOfSourceCodeCount)
-		(*res)[colLatestApprovalGNU_CCSObligation] = strconv.Itoa(stats.GNU_CCSObligationCount)
-		(*res)[colLatestApprovalNoFoss] = strconv.Itoa(stats.noFossCount)
+		res.LatestApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
+		res.LatestApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)
+		res.LatestApprovalNetworkCopyLeft = strconv.Itoa(stats.networkCopyLeftCount)
+		res.LatestApprovalAndLicenseExp = strconv.Itoa(stats.andCount)
+		res.LatestApprovalOrLicenseExp = strconv.Itoa(stats.orCount)
+		res.LatestApprovalWithLicenseExp = strconv.Itoa(stats.withCount)
+		res.LatestApprovalMixedLicenseExp = strconv.Itoa(stats.mixedCount)
+		res.LatestApprovalMassiveAndExp = strconv.Itoa(stats.massiveAnd)
+		res.LatestApprovalMassiveOrExp = strconv.Itoa(stats.massiveOr)
+		res.LatestApprovalKeepSourceCode = strconv.Itoa(stats.keepOfSourceCodeCount)
+		res.LatestApprovalGNU_CCSObligation = strconv.Itoa(stats.GNU_CCSObligationCount)
+		res.LatestApprovalNoFoss = strconv.Itoa(stats.noFossCount)
 		if latest.Internal.Aborted {
-			(*res)[colLatestApprovalStatus] = "aborted"
+			res.LatestApprovalStatus = "aborted"
 		} else if latest.Internal.IsDeclined() {
-			(*res)[colLatestApprovalStatus] = "declined"
+			res.LatestApprovalStatus = "declined"
 		} else if latest.Internal.SupplierDone() {
-			(*res)[colLatestApprovalStatus] = "pending"
-			(*res)[colLatestApprovalStatusDetails] = "developer approved"
+			res.LatestApprovalStatus = "pending"
+			res.LatestApprovalStatusDetails = "developer approved"
 			if latest.Internal.CustomerDone() {
-				(*res)[colLatestApprovalStatus] = "approved"
-				(*res)[colLatestApprovalStatusDetails] = "customer approved"
+				res.LatestApprovalStatus = "approved"
+				res.LatestApprovalStatusDetails = "customer approved"
 			}
 		} else {
-			(*res)[colLatestApprovalStatus] = "pending"
+			res.LatestApprovalStatus = "pending"
 		}
 
 		latestApprovalUpdated = latest.Updated
-		(*res)[colLatestApprovalSourceCodeReference] = strconv.Itoa(j.countSourceRefsForApprovals(rs, latest, prCache))
-		(*res)[colLatestApprovalAllowed] = strconv.Itoa(latest.Info.CompStats.Allowed)
-		(*res)[colLatestApprovalTotal] = strconv.Itoa(latest.Info.CompStats.Allowed +
+		res.LatestApprovalSourceCodeReference = strconv.Itoa(j.countSourceRefsForApprovals(rs, latest, prCache))
+		res.LatestApprovalAllowed = strconv.Itoa(latest.Info.CompStats.Allowed)
+		res.LatestApprovalTotal = strconv.Itoa(latest.Info.CompStats.Allowed +
 			latest.Info.CompStats.Warned + latest.Info.CompStats.Denied +
 			latest.Info.CompStats.Questioned + latest.Info.CompStats.NoAssertion)
-		(*res)[colLatestApprovalDenied] = strconv.Itoa(latest.Info.CompStats.Denied)
-		(*res)[colLatestApprovalWarned] = strconv.Itoa(latest.Info.CompStats.Warned)
-		(*res)[colLatestApprovalQuestioned] = strconv.Itoa(latest.Info.CompStats.Questioned)
-		(*res)[colLatestApprovalUnasserted] = strconv.Itoa(latest.Info.CompStats.NoAssertion)
+		res.LatestApprovalDenied = strconv.Itoa(latest.Info.CompStats.Denied)
+		res.LatestApprovalWarned = strconv.Itoa(latest.Info.CompStats.Warned)
+		res.LatestApprovalQuestioned = strconv.Itoa(latest.Info.CompStats.Questioned)
+		res.LatestApprovalUnasserted = strconv.Itoa(latest.Info.CompStats.NoAssertion)
 	}
 	if approvedFound {
 		approvedApprovalUpdated = latestApproved.Updated
-		(*res)[colApprovedApprovalAllowed] = strconv.Itoa(latestApproved.Info.CompStats.Allowed)
-		(*res)[colApprovedApprovalTotal] = strconv.Itoa(latestApproved.Info.CompStats.Allowed +
+		res.ApprovedApprovalAllowed = strconv.Itoa(latestApproved.Info.CompStats.Allowed)
+		res.ApprovedApprovalTotal = strconv.Itoa(latestApproved.Info.CompStats.Allowed +
 			latestApproved.Info.CompStats.Warned + latestApproved.Info.CompStats.Denied +
 			latestApproved.Info.CompStats.Questioned + latestApproved.Info.CompStats.NoAssertion)
-		(*res)[colApprovedApprovalDenied] = strconv.Itoa(latestApproved.Info.CompStats.Denied)
-		(*res)[colApprovedApprovalWarned] = strconv.Itoa(latestApproved.Info.CompStats.Warned)
-		(*res)[colApprovedApprovalQuestioned] = strconv.Itoa(latestApproved.Info.CompStats.Questioned)
-		(*res)[colApprovedApprovalUnasserted] = strconv.Itoa(latestApproved.Info.CompStats.NoAssertion)
-		(*res)[colApprovedApprovalLink] = conf.Config.Server.DisukoHost + "/#/dashboard/"
+		res.ApprovedApprovalDenied = strconv.Itoa(latestApproved.Info.CompStats.Denied)
+		res.ApprovedApprovalWarned = strconv.Itoa(latestApproved.Info.CompStats.Warned)
+		res.ApprovedApprovalQuestioned = strconv.Itoa(latestApproved.Info.CompStats.Questioned)
+		res.ApprovedApprovalUnasserted = strconv.Itoa(latestApproved.Info.CompStats.NoAssertion)
+		res.ApprovedApprovalLink = conf.Config.Server.DisukoHost + "/#/dashboard/"
 		if pr.IsGroup {
-			(*res)[colApprovedApprovalLink] += "groups/" + pr.Key
+			res.ApprovedApprovalLink += "groups/" + pr.Key
 		} else {
-			(*res)[colApprovedApprovalLink] += "projects/" + pr.Key
+			res.ApprovedApprovalLink += "projects/" + pr.Key
 		}
-		(*res)[colApprovedApprovalLink] += "/approvals"
+		res.ApprovedApprovalLink += "/approvals"
 	}
 	if externalFound {
 		latest := latestExternal
 		stats := j.sumSbomStats(rs, latest, prCache, licCache, oblCache)
-		(*res)[colLatestExternalApprovalWeakCopyLeft] = strconv.Itoa(stats.weakCopyLeftCount)
-		(*res)[colLatestExternalApprovalStrongCopyLeft] = strconv.Itoa(stats.strongCopyLeftCount)
-		(*res)[colLatestExternalApprovalNetworkCopyLeft] = strconv.Itoa(stats.networkCopyLeftCount)
-		(*res)[colLatestExternalApprovalAndLicenseExp] = strconv.Itoa(stats.andCount)
-		(*res)[colLatestExternalApprovalOrLicenseExp] = strconv.Itoa(stats.orCount)
-		(*res)[colLatestExternalApprovalWithLicenseExp] = strconv.Itoa(stats.withCount)
-		(*res)[colLatestExternalApprovalMixedLicenseExp] = strconv.Itoa(stats.mixedCount)
-		(*res)[colLatestExternalApprovalMassiveAndExp] = strconv.Itoa(stats.massiveAnd)
-		(*res)[colLatestExternalApprovalMassiveOrExp] = strconv.Itoa(stats.massiveOr)
-		(*res)[colLatestExternalApprovalKeepSourceCode] = strconv.Itoa(stats.keepOfSourceCodeCount)
-		(*res)[colLatestExternalApprovalGNU_CCSObligation] = strconv.Itoa(stats.GNU_CCSObligationCount)
-		(*res)[colLatestExternalApprovalNoFoss] = strconv.Itoa(stats.noFossCount)
-		(*res)[colLatestExternalApprovalSourceCodeReference] = strconv.Itoa(j.countSourceRefsForApprovals(rs, latest, prCache))
-		(*res)[colLatestExternalApprovalStatus] = strings.ToLower(string(latest.External.State))
+		res.LatestExternalApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
+		res.LatestExternalApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)
+		res.LatestExternalApprovalNetworkCopyLeft = strconv.Itoa(stats.networkCopyLeftCount)
+		res.LatestExternalApprovalAndLicenseExp = strconv.Itoa(stats.andCount)
+		res.LatestExternalApprovalOrLicenseExp = strconv.Itoa(stats.orCount)
+		res.LatestExternalApprovalWithLicenseExp = strconv.Itoa(stats.withCount)
+		res.LatestExternalApprovalMixedLicenseExp = strconv.Itoa(stats.mixedCount)
+		res.LatestExternalApprovalMassiveAndExp = strconv.Itoa(stats.massiveAnd)
+		res.LatestExternalApprovalMassiveOrExp = strconv.Itoa(stats.massiveOr)
+		res.LatestExternalApprovalKeepSourceCode = strconv.Itoa(stats.keepOfSourceCodeCount)
+		res.LatestExternalApprovalGNU_CCSObligation = strconv.Itoa(stats.GNU_CCSObligationCount)
+		res.LatestExternalApprovalNoFoss = strconv.Itoa(stats.noFossCount)
+		res.LatestExternalApprovalSourceCodeReference = strconv.Itoa(j.countSourceRefsForApprovals(rs, latest, prCache))
+		res.LatestExternalApprovalStatus = strings.ToLower(string(latest.External.State))
 		latestExternalApprovalUpdated = latest.Updated
-		(*res)[colLatestExternalApprovalAllowed] = strconv.Itoa(latest.Info.CompStats.Allowed)
-		(*res)[colLatestExternalApprovalTotal] = strconv.Itoa(latest.Info.CompStats.Allowed +
+		res.LatestExternalApprovalAllowed = strconv.Itoa(latest.Info.CompStats.Allowed)
+		res.LatestExternalApprovalTotal = strconv.Itoa(latest.Info.CompStats.Allowed +
 			latest.Info.CompStats.Warned + latest.Info.CompStats.Denied +
 			latest.Info.CompStats.Questioned + latest.Info.CompStats.NoAssertion)
-		(*res)[colLatestExternalApprovalDenied] = strconv.Itoa(latest.Info.CompStats.Denied)
-		(*res)[colLatestExternalApprovalWarned] = strconv.Itoa(latest.Info.CompStats.Warned)
-		(*res)[colLatestExternalApprovalQuestioned] = strconv.Itoa(latest.Info.CompStats.Questioned)
-		(*res)[colLatestExternalApprovalUnasserted] = strconv.Itoa(latest.Info.CompStats.NoAssertion)
-		(*res)[colLatestExternalApprovalLink] = conf.Config.Server.DisukoHost + "/#/dashboard/"
+		res.LatestExternalApprovalDenied = strconv.Itoa(latest.Info.CompStats.Denied)
+		res.LatestExternalApprovalWarned = strconv.Itoa(latest.Info.CompStats.Warned)
+		res.LatestExternalApprovalQuestioned = strconv.Itoa(latest.Info.CompStats.Questioned)
+		res.LatestExternalApprovalUnasserted = strconv.Itoa(latest.Info.CompStats.NoAssertion)
+		res.LatestExternalApprovalLink = conf.Config.Server.DisukoHost + "/#/dashboard/"
 		if pr.IsGroup {
-			(*res)[colLatestExternalApprovalLink] += "groups/" + pr.Key
+			res.LatestExternalApprovalLink += "groups/" + pr.Key
 		} else {
-			(*res)[colLatestExternalApprovalLink] += "projects/" + pr.Key
+			res.LatestExternalApprovalLink += "projects/" + pr.Key
 		}
-		(*res)[colLatestExternalApprovalLink] += "/approvals"
+		res.LatestExternalApprovalLink += "/approvals"
 	}
 	if !latestApprovalUpdated.IsZero() {
-		(*res)[colLatestApprovalUpdated] = latestApprovalUpdated.String()
+		res.LatestApprovalUpdated = latestApprovalUpdated.String()
 	}
 	if !approvedApprovalUpdated.IsZero() {
-		(*res)[colApprovedApprovalUpdated] = approvedApprovalUpdated.String()
+		res.ApprovedApprovalUpdated = approvedApprovalUpdated.String()
 	}
 	if !latestExternalApprovalUpdated.IsZero() {
-		(*res)[colLatestExternalApprovalUpdated] = latestExternalApprovalUpdated.String()
+		res.LatestExternalApprovalUpdated = latestExternalApprovalUpdated.String()
 	}
 }
 
-// fillCustomIds fills custom ID columns
-func (j *Job) fillCustomIds(pr *project.Project, headers []string, res *[]string) {
-	for i := len(colHeaders); i < len(headers); i++ {
+func (j *Job) fillCustomIds(pr *project.Project, customIdNames []string, res *Project) {
+	res.CustomIDs = make([]string, len(customIdNames))
+	for i, name := range customIdNames {
+		var values []string
 		for _, cid := range pr.CustomIds {
-			if cid.TechnicalId == headers[i] {
-				(*res)[i] += cid.Value + "|"
+			if cid.TechnicalId == name {
+				values = append(values, cid.Value)
 			}
 		}
-		(*res)[i] = strings.TrimSuffix((*res)[i], "|")
+		res.CustomIDs[i] = strings.Join(values, "|")
 	}
 }
 
-// countSourceRefs counts the number of non-empty source code references in a project version.
 func (j *Job) countSourceRefs(version *project.ProjectVersion) int {
 	sourceCodeReference := 0
 	for _, source := range version.SourceExternal {
@@ -817,7 +785,6 @@ func (j *Job) countSourceRefs(version *project.ProjectVersion) int {
 	return sourceCodeReference
 }
 
-// countSourceRefsForApprovals counts the total number of source code references for all projects in the given approvals.
 func (j *Job) countSourceRefsForApprovals(rs *logy.RequestSession, approvals approval.Approval, prCache map[string]*project.Project) int {
 	sourceCodeReference := 0
 	for _, projectInfo := range approvals.Info.Projects {
@@ -972,7 +939,6 @@ func (j *Job) processSbom(rs *logy.RequestSession, pr *project.Project, ci compo
 	return
 }
 
-// countLockedSboms counts the number of manually locked SBOMs in the given SBOM list.
 func (j *Job) countLockedSboms(sboms *sbomlist.SbomList) (total, manual int) {
 	for _, sbom := range sboms.SpdxFileHistory {
 		if sbom.IsInUse || sbom.IsLocked {
@@ -985,7 +951,6 @@ func (j *Job) countLockedSboms(sboms *sbomlist.SbomList) (total, manual int) {
 	return
 }
 
-// renderBool returns "true" if the input is true, otherwise "false".
 func renderBool(in bool) string {
 	if in {
 		return "true"

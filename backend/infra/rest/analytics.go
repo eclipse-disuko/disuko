@@ -79,7 +79,7 @@ func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.R
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.csv\"")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.json\"")
 	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetReportAllName()), "")
 }
 
