@@ -67,7 +67,7 @@ func (handler *AnalyticsHandler) Report(w http.ResponseWriter, r *http.Request) 
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 
-	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetReportAllName()), "")
+	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetCurrentName()), "")
 }
 
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +80,7 @@ func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.R
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.json\"")
-	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetReportAllName()), "")
+	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetCurrentName()), "")
 }
 
 func (handler *AnalyticsHandler) Statistic(w http.ResponseWriter, r *http.Request) {

@@ -118,8 +118,12 @@ func Init(
 	}
 }
 
-func GetReportAllName() string {
+func GetCurrentName() string {
 	return "report_all.json"
+}
+
+func GetMonthlyName(t time.Time) string {
+	return strings.ToLower(t.Month().String()) + "_" + strconv.Itoa(t.Year()) + ".json"
 }
 
 func GetReportStorageFileNameOf(fileName string) string {
@@ -138,7 +142,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	tempHelper := temp.TempHelper{RequestSession: rs}
 	tempHelper.CreateRandomFolder()
 	defer tempHelper.RemoveAll()
-	tmpFileName := tempHelper.GetCompleteFileName(GetReportAllName())
+	tmpFileName := tempHelper.GetCompleteFileName(GetCurrentName())
 
 	customIdNames := j.customIdNames(rs)
 	report := Report{
@@ -153,7 +157,17 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	if err := os.WriteFile(tmpFileName, data, 0o600); err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "report json file", "header"), err)
 	}
-	j.uploadReport(rs, tmpFileName)
+	j.uploadReport(rs, GetCurrentName(), tmpFileName)
+
+	now := time.Now()
+	if now.Day() == 1 {
+		log.AddEntry(job.Info, "saving monthly report %s", GetMonthlyName(now))
+		monthlyFileName := tempHelper.GetCompleteFileName(GetMonthlyName(now))
+		if err := os.WriteFile(monthlyFileName, data, 0o600); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "report monthly json file", "header"), err)
+		}
+		j.uploadReport(rs, GetMonthlyName(now), monthlyFileName)
+	}
 
 	log.AddEntry(job.Info, "successfully report created of %d projects", len(report.Projects))
 	log.AddEntry(job.Info, "finished")
@@ -167,12 +181,12 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	}
 }
 
-func (j *Job) uploadReport(rs *logy.RequestSession, tmpFileName string) {
+func (j *Job) uploadReport(rs *logy.RequestSession, reportName string, tmpFileName string) {
 	fileReader, err := os.Open(tmpFileName)
 	if err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "read file error "+tmpFileName, "header"), err)
 	}
-	s3FileName := GetReportStorageFileNameOf(GetReportAllName())
+	s3FileName := GetReportStorageFileNameOf(reportName)
 	metadata := s3Helper.MetadataForApplication(rs, tmpFileName, rs.ReqID)
 	if s3Helper.ExistFile(rs, s3FileName) {
 		s3Helper.DeleteFile(rs, s3FileName)
