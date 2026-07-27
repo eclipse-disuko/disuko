@@ -69,14 +69,6 @@ type sbomStats struct {
 	totalComponentCount    int
 }
 
-type sbomType int
-
-const (
-	latestInternal sbomType = iota
-	latestExternal
-	latestUploaded
-)
-
 type (
 	licCache map[string]*license.License
 	prCache  map[string]*project.Project
