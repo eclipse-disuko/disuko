@@ -7,6 +7,7 @@ package report
 import (
 	"encoding/json"
 	"os"
+	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -170,6 +171,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 	}
 
 	log.AddEntry(job.Info, "successfully report created of %d projects", len(report.Projects))
+	j.cleanupOldMonthlyReports(rs, &log, now)
 	log.AddEntry(job.Info, "finished")
 	customRes.ProjectCnt = len(report.Projects)
 	customRes.FileName = tmpFileName
@@ -193,6 +195,43 @@ func (j *Job) uploadReport(rs *logy.RequestSession, reportName string, tmpFileNa
 	}
 	s3Helper.SaveFile(rs, s3FileName, fileReader, metadata)
 	logy.Infof(rs, "Report is uploaded to storage into folder %s", s3FileName)
+}
+
+func (j *Job) cleanupOldMonthlyReports(rs *logy.RequestSession, log *job.Log, now time.Time) {
+	cutoff := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC).AddDate(0, -12, 0)
+	folder := GetReportStorageFileNameOf("")
+	for obj := range s3Helper.ListObjects(rs, folder) {
+		fileName := path.Base(obj.Key)
+		monthTime, ok := parseMonthlyReportFileName(fileName)
+		if !ok || !monthTime.Before(cutoff) {
+			continue
+		}
+		s3FileName := GetReportStorageFileNameOf(fileName)
+		s3Helper.DeleteFile(rs, s3FileName)
+		log.AddEntry(job.Info, "deleted monthly report %s (older than 12 months)", fileName)
+		logy.Infof(rs, "Deleted old monthly report %s", s3FileName)
+	}
+}
+
+func parseMonthlyReportFileName(fileName string) (time.Time, bool) {
+	if !strings.HasSuffix(fileName, ".json") {
+		return time.Time{}, false
+	}
+	base := strings.TrimSuffix(fileName, ".json")
+	parts := strings.SplitN(base, "_", 2)
+	if len(parts) != 2 {
+		return time.Time{}, false
+	}
+	year, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return time.Time{}, false
+	}
+	for m := time.January; m <= time.December; m++ {
+		if strings.ToLower(m.String()) == parts[0] {
+			return time.Date(year, m, 1, 0, 0, 0, 0, time.UTC), true
+		}
+	}
+	return time.Time{}, false
 }
 
 func (j *Job) customIdNames(rs *logy.RequestSession) []string {
