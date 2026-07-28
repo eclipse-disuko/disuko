@@ -6,10 +6,12 @@
 import {MemStats} from '@disclosure-portal/model/Memstats';
 import SystemStatsResponse from '@disclosure-portal/model/Statistic';
 import AdminService from '@disclosure-portal/services/admin';
+import useSnackbar from '@shared/composables/useSnackbar';
 import {onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
+const {info} = useSnackbar();
 const systemProfile = ref<MemStats>({} as MemStats);
 const systemProfiles = ref<MemStats[]>([]);
 const stats = ref<SystemStatsResponse>(new SystemStatsResponse());
@@ -26,7 +28,13 @@ const getStats = async () => {
   stats.value = serverResponses.data;
 };
 
+const refreshStats = async () => {
+  await getStats();
+  info(t('MSG_GET_STATS_REFRESHED'));
+};
+
 const updateStats = async () => {
+  info(t('MSG_UPDATE_STATS_TAKES_TIME'));
   const serverResponses = await AdminService.updateStats();
   stats.value = serverResponses.data;
 };
@@ -40,11 +48,15 @@ onMounted(async () => {
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <DCActionButton large @click="getStats" :hint="t('TT_GET_STATS')" :text="t('TT_GET_STATS')"></DCActionButton>
+      <DCActionButton
+        large
+        @click="refreshStats"
+        :hint="t('TT_GET_STATS_HINT')"
+        :text="t('TT_GET_STATS')"></DCActionButton>
       <DCActionButton
         large
         @click="updateStats"
-        :hint="t('TT_UPDATE_STATS')"
+        :hint="t('TT_UPDATE_STATS_HINT')"
         :text="t('TT_UPDATE_STATS')"></DCActionButton>
       <DCActionButton
         large
