@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
-	"github.com/eclipse-disuko/disuko/jobs/report"
+	"github.com/eclipse-disuko/disuko/infra/service/report"
 
 	"github.com/eclipse-disuko/disuko/domain/analytics"
 	da "github.com/eclipse-disuko/disuko/domain/analytics"
