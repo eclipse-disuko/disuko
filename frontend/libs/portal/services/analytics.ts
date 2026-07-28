@@ -30,7 +30,13 @@ class AnalyticsService {
   }
 
   public downloadReport() {
-    return api.get(`/api/v1/${modelName}/report`, {
+    return api.get(`/api/v1/${modelName}/latest/csv`, {
+      responseType: 'blob',
+    });
+  }
+
+  public downloadReportXLSX() {
+    return api.get(`/api/v1/${modelName}/latest/xlsx`, {
       responseType: 'blob',
     });
   }

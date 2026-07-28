@@ -390,7 +390,8 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 				r.Post("/licenses/search", s.handlers.project.LicensesSearchHandler)    // test missing
 				r.Get("/occurrences", s.handlers.analytics.LicenseOccurrences)          // test missing
 				r.Get("/stats", s.handlers.analytics.Statistic)                         // test missing
-				r.Get("/report", s.handlers.analytics.Report)                           // test missing
+				r.Get("/latest/csv", s.handlers.analytics.Report)                       // test missing
+				r.Get("/latest/xlsx", s.handlers.analytics.ReportXLSX)                  // test missing
 			})
 			r.Route("/licenses", func(r chi.Router) {
 				r.Post("/", s.handlers.licenses.LicensePostHandler) // test missing

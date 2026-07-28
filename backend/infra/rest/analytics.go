@@ -71,6 +71,20 @@ func (handler *AnalyticsHandler) Report(w http.ResponseWriter, r *http.Request) 
 	report.WriteLastReportAsCSV(requestSession, w)
 }
 
+func (handler *AnalyticsHandler) ReportXLSX(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.AllowProject.Read {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.xlsx\"")
+
+	report.WriteLastReportAsXLSX(requestSession, w)
+}
+
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 

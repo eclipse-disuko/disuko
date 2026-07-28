@@ -39,6 +39,7 @@ import (
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/xuri/excelize/v2"
 	"golang.org/x/text/encoding/unicode"
 )
 
@@ -205,14 +206,7 @@ func (s *Service) cleanupOldMonthlyReports(rs *logy.RequestSession, log *job.Log
 }
 
 func WriteLastReportAsCSV(rs *logy.RequestSession, w io.Writer) {
-	fileContent := s3Helper.ReadFileFully(rs, GetReportStorageFileNameOf(GetCurrentName()), "")
-
-	var rep report.Report
-	if err := json.Unmarshal(fileContent, &rep); err != nil {
-		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonUnmarshall), err)
-	}
-
-	header, values := csvColumnsOf(rep)
+	header, values := readLastReportColumns(rs)
 
 	convWriter := unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewEncoder().Writer(w)
 	csvWriter := csv.NewWriter(convWriter)
@@ -229,9 +223,64 @@ func WriteLastReportAsCSV(rs *logy.RequestSession, w io.Writer) {
 	}
 }
 
+const reportSheetName = "Report"
+
+func WriteLastReportAsXLSX(rs *logy.RequestSession, w io.Writer) {
+	header, values := readLastReportColumns(rs)
+
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "close"), err)
+		}
+	}()
+
+	sheet := f.GetSheetName(0)
+	if err := f.SetSheetName(sheet, reportSheetName); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "sheet"), err)
+	}
+
+	if err := writeXLSXRow(f, reportSheetName, 1, header); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "header"), err)
+	}
+	for i, row := range values {
+		if err := writeXLSXRow(f, reportSheetName, i+2, row); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "data"), err)
+		}
+	}
+
+	if _, err := f.WriteTo(w); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "write"), err)
+	}
+}
+
+func writeXLSXRow(f *excelize.File, sheet string, rowIndex int, values []string) error {
+	for col, value := range values {
+		cell, err := excelize.CoordinatesToCellName(col+1, rowIndex)
+		if err != nil {
+			return err
+		}
+		if err := f.SetCellValue(sheet, cell, value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func readLastReportColumns(rs *logy.RequestSession) (header []string, rows [][]string) {
+	fileContent := s3Helper.ReadFileFully(rs, GetReportStorageFileNameOf(GetCurrentName()), "")
+
+	var rep report.Report
+	if err := json.Unmarshal(fileContent, &rep); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonUnmarshall), err)
+	}
+
+	return columnsOf(rep)
+}
+
 const customIDsFieldName = "CustomIDs"
 
-func csvColumnsOf(rep report.Report) (header []string, rows [][]string) {
+func columnsOf(rep report.Report) (header []string, rows [][]string) {
 	projectType := reflect.TypeFor[report.Project]()
 	for field := range projectType.Fields() {
 		if _, ok := field.Tag.Lookup("column"); !ok {
@@ -256,7 +305,7 @@ func csvColumnsOf(rep report.Report) (header []string, rows [][]string) {
 				row = append(row, customIDValues(value.Field(i), len(rep.CustomIDNames))...)
 				continue
 			}
-			row = append(row, csvCellValue(value.Field(i)))
+			row = append(row, cellValue(value.Field(i)))
 		}
 		rows = append(rows, row)
 	}
@@ -272,7 +321,7 @@ func customIDValues(v reflect.Value, count int) []string {
 	return values
 }
 
-func csvCellValue(v reflect.Value) string {
+func cellValue(v reflect.Value) string {
 	switch v.Kind() {
 	case reflect.String:
 		return v.String()
