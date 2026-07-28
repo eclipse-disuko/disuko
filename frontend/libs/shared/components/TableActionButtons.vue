@@ -38,6 +38,8 @@ const remainingButtons = computed(() => shownButtons.value.slice(1));
 
 const {sliderWidth, baseWidth, setupTableActionSlider, toggleSlide} = useTableActionSlider();
 
+const isExpanded = computed(() => sliderWidth.value !== baseWidth.value);
+
 if (props.variant === 'slider') {
   setupTableActionSlider(() => emit('slideToggle', sliderWidth.value), shownButtons.value.length);
 }
@@ -95,11 +97,9 @@ if (props.variant === 'slider') {
             :hint="shownButtons[0].hint"
             @clicked="emit(shownButtons[0].event)" />
         </div>
-        <template v-if="shownButtons.length >= 2">
+        <template v-if="shownButtons.length >= 2 && isExpanded">
           <template v-for="button in buttons" :key="button.icon">
-            <div
-              :style="{opacity: sliderWidth !== baseWidth ? 1 : 0}"
-              class="transition-[opacity] duration-200 ease-in-out">
+            <div class="transition-[opacity] duration-200 ease-in-out">
               <div v-if="(button?.show ?? true) && !(button?.disabled ?? false)" class="d-inline size-10">
                 <DIconButton
                   :icon="button.icon"

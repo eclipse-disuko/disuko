@@ -198,22 +198,23 @@ const retrieveSpdxLicenses = async () => {
 };
 
 const fillTables = (updateNotSelectedLicenses: boolean) => {
-  if (updateNotSelectedLicenses) {
-    notSelectedLicenses.value = [];
-  }
-  selectedLicenses.value = [];
+  const nextSelectedLicenses: LicenseSlim[] = [];
+  const nextNotSelectedLicenses = updateNotSelectedLicenses ? [] : notSelectedLicenses.value;
 
   allLicenses.value.forEach((license) => {
     let selected = false;
     for (const policyState of PolicyRules) {
-      selected = fillLicenseTbl(policyState, license) || selected;
+      selected = fillLicenseTbl(policyState, license, nextSelectedLicenses) || selected;
     }
     if (updateNotSelectedLicenses && !selected) {
-      notSelectedLicenses.value.push(license);
+      nextNotSelectedLicenses.push(license);
     }
   });
-  refreshPossible(selectedLicenses.value);
-  refreshPossible(notSelectedLicenses.value, false);
+
+  selectedLicenses.value = nextSelectedLicenses;
+  notSelectedLicenses.value = nextNotSelectedLicenses;
+  refreshPossible(nextSelectedLicenses);
+  refreshPossible(nextNotSelectedLicenses, false);
 };
 
 const refreshPossible = (items: LicenseSlim[], selected = true) => {
@@ -383,11 +384,11 @@ const getPossibleIsLicenseChart = (items: LicenseSlim[], selected = true): IDefa
     .value();
 };
 
-const fillLicenseTbl = (policyState: PolicyState, license: LicenseSlim): boolean => {
+const fillLicenseTbl = (policyState: PolicyState, license: LicenseSlim, selected: LicenseSlim[]): boolean => {
   for (const licenseId of getComponents(policyState)) {
     if (licenseId === license.licenseId) {
       if (mode.value === policyState) {
-        selectedLicenses.value.push(license);
+        selected.push(license);
       }
       return true;
     }
@@ -712,9 +713,11 @@ onMounted(async () => {
   await retrieveRule(ruleId.value);
   initBreadcrumbs();
 
-  await retrieveSpdxLicenses();
-  await calculatedPolicyRuleStore.retrieveClassifications();
-  await reloadLabels();
+  await Promise.all([
+    retrieveSpdxLicenses(),
+    calculatedPolicyRuleStore.retrieveClassifications(),
+    reloadLabels(),
+  ]);
 });
 
 const handleSetCalculatedEnabled = (value: boolean) => {
@@ -804,13 +807,13 @@ const handleSetCalculatedEnabled = (value: boolean) => {
       <v-row class="fill-height">
         <v-col :cols="canEditManual || canEditCalculated ? 6 : 12" class="fill-height">
           <div class="fill-height" :class="getActiveClassForPolicyFilterBtn(mode)">
-            <v-data-table
+            <v-data-table-virtual
               :loading="licensesLoading"
+              height="100%"
               fixed-header
               :headers="componentHeadersSelected"
               :class="getCssClass() + ' striped-table fill-height'"
               :search="filterSelected"
-              :items-per-page="DEFAULT_ITEMS_PER_PAGE"
               :items="filteredListSelected"
               @[canEditManual&&`click:row`]="
                 (event: Event, dataItem: DataTableItem<LicenseSlim>) => unselectLicense(dataItem.item)
@@ -846,24 +849,23 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                         location="bottom"
                         item-title="text"
                         item-value="value"
-                        menu
                         clearable
                         transition="scale-transition"
                         persistent-clear
                         :list-props="{class: 'striped-filter-dd py-0'}">
-                        <template v-slot:selection="{item, index}">
-                          <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                        <template v-slot:selection="{internalItem, index}">
+                          <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                           <span v-if="index === 1" class="pAdditionalFilter">
                             +{{ selectedFilterIsLicenseChartSelected.length - 1 }} others
                           </span>
                         </template>
-                        <template v-slot:item="{item, props}">
+                        <template v-slot:item="{internalItem, props}">
                           <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
                             <template v-slot:title="{}">
-                              <span class="pFilterEntry">{{ item.props.title }}</span>
+                              <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                             </template>
                           </v-list-item>
                         </template>
@@ -903,23 +905,22 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                         v-bind:menu-props="{location: 'bottom'}"
                         item-title="text"
                         item-value="value"
-                        menu
                         transition="scale-transition"
                         persistent-clear
                         :list-props="{class: 'striped-filter-dd py-0'}">
-                        <template v-slot:selection="{item, index}">
-                          <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                        <template v-slot:selection="{internalItem, index}">
+                          <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                           <span v-if="index === 1" class="pAdditionalFilter">
                             +{{ selectedFilterTypeSelected.length - 1 }} others
                           </span>
                         </template>
-                        <template v-slot:item="{item, props}">
+                        <template v-slot:item="{internalItem, props}">
                           <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
                             <template v-slot:title="{}">
-                              <span class="pFilterEntry">{{ item.props.title }}</span>
+                              <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                             </template>
                           </v-list-item>
                         </template>
@@ -963,23 +964,22 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                         v-bind:menu-props="{location: 'bottom'}"
                         item-title="text"
                         item-value="value"
-                        menu
                         transition="scale-transition"
                         persistent-clear
                         :list-props="{class: 'striped-filter-dd py-0'}">
-                        <template v-slot:selection="{item, index}">
-                          <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                        <template v-slot:selection="{internalItem, index}">
+                          <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                           <span v-if="index === 1" class="pAdditionalFilter">
                             +{{ selectedFilterApprovalSelected.length - 1 }} others
                           </span>
                         </template>
-                        <template v-slot:item="{item, props}">
+                        <template v-slot:item="{internalItem, props}">
                           <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
                             <template v-slot:title="{}">
-                              <span class="pFilterEntry">{{ item.props.title }}</span>
+                              <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                             </template>
                           </v-list-item>
                         </template>
@@ -1023,23 +1023,22 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                         v-bind:menu-props="{location: 'bottom'}"
                         item-title="text"
                         item-value="value"
-                        menu
                         transition="scale-transition"
                         persistent-clear
                         :list-props="{class: 'striped-filter-dd py-0'}">
-                        <template v-slot:selection="{item, index}">
-                          <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                        <template v-slot:selection="{internalItem, index}">
+                          <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                           <span v-if="index === 1" class="pAdditionalFilter">
                             +{{ selectedFilterFamilySelected.length - 1 }} others
                           </span>
                         </template>
-                        <template v-slot:item="{item, props}">
+                        <template v-slot:item="{internalItem, props}">
                           <v-list-item v-bind="props" class="px-2 py-0">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                             </template>
                             <template v-slot:title="{}">
-                              <span class="pFilterEntry">{{ item.props.title }}</span>
+                              <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                             </template>
                           </v-list-item>
                         </template>
@@ -1083,17 +1082,16 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                         v-bind:menu-props="{location: 'bottom'}"
                         item-title="text"
                         item-value="value"
-                        menu
                         transition="scale-transition"
                         persistent-clear
                         :list-props="{class: 'striped-filter-dd py-0'}">
-                        <template v-slot:selection="{item, index}">
-                          <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                        <template v-slot:selection="{internalItem, index}">
+                          <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                           <span v-if="index === 1" class="pAddtionalFilter">
                             +{{ selectedFilterClassificationsSelected.length - 1 }} others
                           </span>
                         </template>
-                        <template v-slot:item="{item, props}">
+                        <template v-slot:item="{internalItem, props}">
                           <v-list-item v-bind="props">
                             <template v-slot:prepend="{isSelected}">
                               <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
@@ -1101,11 +1099,11 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                             <template v-slot:title="{}">
                               <v-icon
                                 size="small"
-                                :color="getIconColorOfLevel(getWarnLevel(item.value))"
+                                :color="getIconColorOfLevel(getWarnLevel(internalItem.value))"
                                 class="mr-2"
-                                :icon="getIconOfLevel(getWarnLevel(item.value).toUpperCase())">
+                                :icon="getIconOfLevel(getWarnLevel(internalItem.value).toUpperCase())">
                               </v-icon>
-                              <span class="pFilterEntry">{{ item.props.title }}</span>
+                              <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                             </template>
                           </v-list-item>
                         </template>
@@ -1164,15 +1162,15 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                   :hint="t('TT_open_license')"
                   @clicked="openLicense(item)" />
               </template>
-            </v-data-table>
+            </v-data-table-virtual>
           </div>
         </v-col>
         <v-col cols="6" v-if="ruleLoaded && canEditManual" class="fill-height">
-          <v-data-table
+          <v-data-table-virtual
             :loading="licensesLoading"
+            height="100%"
             fixed-header
             :headers="componentHeadersUnSelected"
-            :items-per-page="DEFAULT_ITEMS_PER_PAGE"
             :items="filteredListNotSelected"
             :search="filterUnSelected"
             @click:row="(event: Event, dataItem: DataTableItem<LicenseSlim>) => selectLicense(dataItem.item)"
@@ -1213,19 +1211,19 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:selection="{item, index}">
-                        <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                      <template v-slot:selection="{internalItem, index}">
+                        <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterIsLicenseChartNotSelected.length - 1 }} others
                         </span>
                       </template>
-                      <template v-slot:item="{item, props}">
+                      <template v-slot:item="{internalItem, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
                           <template v-slot:title="{}">
-                            <span class="pFilterEntry">{{ item.props.title }}</span>
+                            <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -1269,19 +1267,19 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:selection="{item, index}">
-                        <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                      <template v-slot:selection="{internalItem, index}">
+                        <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterTypeNotSelected.length - 1 }} others
                         </span>
                       </template>
-                      <template v-slot:item="{item, props}">
+                      <template v-slot:item="{internalItem, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
                           <template v-slot:title="{}">
-                            <span class="pFilterEntry">{{ item.props.title }}</span>
+                            <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -1329,19 +1327,19 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:selection="{item, index}">
-                        <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                      <template v-slot:selection="{internalItem, index}">
+                        <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterApprovalNotSelected.length - 1 }} others
                         </span>
                       </template>
-                      <template v-slot:item="{item, props}">
+                      <template v-slot:item="{internalItem, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
                           <template v-slot:title="{}">
-                            <span class="pFilterEntry">{{ item.props.title }}</span>
+                            <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -1389,19 +1387,19 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:selection="{item, index}">
-                        <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                      <template v-slot:selection="{internalItem, index}">
+                        <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                         <span v-if="index === 1" class="pAdditionalFilter">
                           +{{ selectedFilterFamilyNotSelected.length - 1 }} others
                         </span>
                       </template>
-                      <template v-slot:item="{item, props}">
+                      <template v-slot:item="{internalItem, props}">
                         <v-list-item v-bind="props" class="px-2 py-0">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
                           </template>
                           <template v-slot:title="{}">
-                            <span class="pFilterEntry">{{ item.props.title }}</span>
+                            <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -1449,13 +1447,13 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                       transition="scale-transition"
                       persistent-clear
                       :list-props="{class: 'striped-filter-dd py-0'}">
-                      <template v-slot:selection="{item, index}">
-                        <span v-if="index === 0" class="pFilterEntry">{{ item.title }}</span>
+                      <template v-slot:selection="{internalItem, index}">
+                        <span v-if="index === 0" class="pFilterEntry">{{ internalItem.title }}</span>
                         <span v-if="index === 1" class="pAddtionalFilter">
                           +{{ selectedFilterClassificationsNotSelected.length - 1 }} others
                         </span>
                       </template>
-                      <template v-slot:item="{item, props}">
+                      <template v-slot:item="{internalItem, props}">
                         <v-list-item v-bind="props">
                           <template v-slot:prepend="{isSelected}">
                             <v-checkbox :model-value="isSelected" hide-details></v-checkbox>
@@ -1463,11 +1461,11 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                           <template v-slot:title="{}">
                             <v-icon
                               size="small"
-                              :color="getIconColorOfLevel(getWarnLevel(item.value))"
+                              :color="getIconColorOfLevel(getWarnLevel(internalItem.value))"
                               class="mr-2"
-                              :icon="getIconOfLevel(getWarnLevel(item.value).toUpperCase())">
+                              :icon="getIconOfLevel(getWarnLevel(internalItem.value).toUpperCase())">
                             </v-icon>
-                            <span class="pFilterEntry">{{ item.props.title }}</span>
+                            <span class="pFilterEntry">{{ internalItem.props.title }}</span>
                           </template>
                         </v-list-item>
                       </template>
@@ -1519,7 +1517,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                 </v-tooltip>
               </span>
             </template>
-          </v-data-table>
+          </v-data-table-virtual>
         </v-col>
         <v-col cols="6" v-if="canEditCalculated" class="fill-height">
           <div class="flex h-full flex-col">
@@ -1536,7 +1534,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
 <style scoped>
 .label-filter {
   @media (width < 1450px) {
-    flex-direction: column-reverse !important;
+    flex-direction: column-reverse;
   }
 }
 </style>

@@ -47,7 +47,7 @@ export const useTabsWindows = (
   const tabUrl = computed(() => {
     const tabs: Record<string, string> = {};
     urlPartList.forEach((url) => {
-      tabs[url] = `${baseUrl.value}/${url}`;
+      tabs[url] = baseUrl.value ? `${baseUrl.value}/${url}` : '';
     });
     return tabs;
   });
@@ -58,7 +58,10 @@ export const useTabsWindows = (
 
   onMounted(async () => {
     if (!tabFromUrl.value) {
-      await changeUrlForTab(tabUrl.value[selectedTab.value]);
+      const initialTabUrl = tabUrl.value[selectedTab.value];
+      if (initialTabUrl) {
+        await changeUrlForTab(initialTabUrl);
+      }
     } else if (!currentTabUrlMatch(selectedTab.value)) {
       selectedTab.value = tabFromUrl.value;
     }
@@ -66,7 +69,10 @@ export const useTabsWindows = (
 
   watch(selectedTab, async (newTab) => {
     if (!currentTabUrlMatch(newTab)) {
-      await changeUrlForTab(tabUrl.value[newTab]);
+      const nextTabUrl = tabUrl.value[newTab];
+      if (nextTabUrl) {
+        await changeUrlForTab(nextTabUrl);
+      }
     }
   });
 

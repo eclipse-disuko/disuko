@@ -30,13 +30,11 @@ const hasChanges = ref(false);
 const selectedFilterClassificationsSelected = ref<string[]>([]);
 const labelsMap = ref<IMap<Label>>({});
 const policyLabels = ref<Label[]>([]);
-const ruleId = ref('');
-
-onMounted(() => {
-  ruleId.value = router.currentRoute.value.params.id as string;
-});
+const ruleId = ref(String(router.currentRoute.value.params.id ?? ''));
 // This has to stay after declaration of ruleId
-const baseUrl = computed(() => `/dashboard/policyrules/${encodeURIComponent(ruleId.value)}`);
+const baseUrl = computed(() =>
+  ruleId.value ? `/dashboard/policyrules/${encodeURIComponent(ruleId.value)}` : '',
+);
 // This has to stay after declaration of baseUrl
 const {tabUrl, selectedTab} = useTabsWindows(baseUrl, [
   'tabPolicyRuleTable',
@@ -120,7 +118,7 @@ watch(
 <template>
   <v-container fluid data-testid="policy-rules-details">
     <v-row>
-      <v-col xs="12" md="auto" class="d-flex align-center">
+      <v-col cols="12" md="auto" class="d-flex align-center">
         <span class="text-h5 pr-2">{{ t('POLICY_RULE') }}</span>
         <span class="text-h5 px-2">{{ rule.name }}</span>
         <NewPolicyRuleDialog v-slot="{showDialog}" :policy-labels="policyLabels" :policy-rule="rule" @reload="reload">
@@ -159,7 +157,7 @@ watch(
             </v-tabs-window-item>
             <v-tabs-window-item value="tabPolicyRuleOverview" class="pa-3">
               <v-row class="pa-4">
-                <v-col md="6" xs="12" sm="12">
+                <v-col cols="12" md="6" sm="12">
                   <v-sheet class="d-flex flex-row">
                     <v-card-text>
                       <span class="text-caption text-grey-lighten-1">{{ t('CREATED') }}</span
@@ -188,7 +186,7 @@ watch(
                     </v-card-text>
                   </v-sheet>
                 </v-col>
-                <v-col md="6" xs="12" sm="12" v-if="!rule.applyToAll">
+                <v-col cols="12" md="6" sm="12" v-if="!rule.applyToAll">
                   <v-sheet class="d-flex flex-row">
                     <v-card-text>
                       <v-icon color="grey-lighten-1" size="x-small" class="mr-2">{{ icons.POLICY }}</v-icon>
@@ -206,7 +204,7 @@ watch(
                               bottom
                               v-for="(l, i) in labelSets"
                               :key="i">
-                              <template v-slot:activator="{props}">
+                              <template v-slot:activator>
                                 <v-sheet width="180" class="justify-center">
                                   <v-card-text class="pa-1 d-text d-secondary-text pl-5">
                                     {{ labelsMap?.[l] ? labelsMap?.[l].name : 'UNKNOWN_LABEL' }}
@@ -224,7 +222,7 @@ watch(
                     </v-card-text>
                   </v-sheet>
                 </v-col>
-                <v-col md="6" xs="12" sm="12" v-else>
+                <v-col cols="12" md="6" sm="12" v-else>
                   <v-sheet class="d-flex flex-row">
                     <v-card-text>
                       <span class="text-caption text-grey-lighten-1">{{ t('APPLY_TO_ALL_FLAG') }}</span>
@@ -236,10 +234,10 @@ watch(
               </v-row>
             </v-tabs-window-item>
             <v-tabs-window-item value="tabChangeLog">
-              <GridChangeLog ref="changeLog" :fetch-method="() => getChangeLog(ruleId)" />
+              <GridChangeLog ref="changeLog" :fetch-method="getChangeLog" />
             </v-tabs-window-item>
             <v-tabs-window-item v-if="isPolicyManager" value="tabAuditLog">
-              <GridAuditLog ref="auditLog" :fetch-method="() => getAuditTrail(ruleId)" />
+              <GridAuditLog ref="auditLog" :fetch-method="getAuditTrail" />
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>

@@ -26,6 +26,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
+import {isCancel} from 'axios';
 import {debounce} from 'lodash';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -79,6 +80,7 @@ const licenseDialogRef = ref();
 const currentLicenseForAction = ref<License | null>(null);
 const licenseDialogMode = ref<'edit' | 'duplicate'>('edit');
 const abort = ref<AbortController | null>(null);
+const isInitializing = ref(true);
 const itemsPerPage = ref(100);
 
 const options = computed(
@@ -577,23 +579,33 @@ const headerExpands = () => {
 };
 
 const reload = async () => {
-  if (abort.value) {
-    abort.value.abort();
-  }
+  abort.value?.abort();
 
   licensesLoading.value = true;
 
-  abort.value = new AbortController();
+  const requestAbort = new AbortController();
+  abort.value = requestAbort;
 
-  const {licenses, count, meta} = (await licenseService.search(options.value, abort.value.signal)).data;
+  try {
+    const {licenses, count, meta} = (await licenseService.search(options.value, requestAbort.signal)).data;
 
-  abort.value = null;
+    if (abort.value !== requestAbort) {
+      return;
+    }
 
-  items.value = licenses;
-  total.value = count;
-  metaData.value = meta;
-
-  licensesLoading.value = false;
+    items.value = licenses;
+    total.value = count;
+    metaData.value = meta;
+  } catch (error) {
+    if (!isCancel(error)) {
+      throw error;
+    }
+  } finally {
+    if (abort.value === requestAbort) {
+      abort.value = null;
+      licensesLoading.value = false;
+    }
+  }
 };
 
 const searchChanged = async () => {
@@ -625,6 +637,9 @@ watch(
 );
 
 const onUpdateOptions = async (tableOptions: {page: number; itemsPerPage: number; sortBy: SortItem[]}) => {
+  if (isInitializing.value) {
+    return;
+  }
   page.value = tableOptions.page;
   await reload();
 };
@@ -636,9 +651,8 @@ onMounted(async () => {
     return;
   }
 
-  await retrieveClassifications();
-
-  filterSets.value = await getSortedFilterSets();
+  const [, sortedFilterSets] = await Promise.all([retrieveClassifications(), getSortedFilterSets()]);
+  filterSets.value = sortedFilterSets;
 
   initBreadcrumbs();
 
@@ -652,10 +666,14 @@ onMounted(async () => {
   await reload();
 
   if (route.path.includes('filtersets') && route.params.id) {
-    await reloadFilter(route.params.id);
-  } else {
-    await reloadFilter('');
+    const filterSet = filterSets.value.find((filter) => filter._key === route.params.id);
+    if (filterSet) {
+      selectedFilterSet.value = filterSet;
+      await applyFilterSet(filterSet);
+    }
   }
+
+  isInitializing.value = false;
 });
 </script>
 

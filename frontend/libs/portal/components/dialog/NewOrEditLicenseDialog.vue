@@ -6,9 +6,7 @@
 import TabLinkObligations from '@disclosure-portal/components/dialog/classification/TabLinkObligations.vue';
 import GridAliases from '@disclosure-portal/components/grids/GridAliases.vue';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
-import {IObligation} from '@disclosure-portal/model/IObligation';
 import License, {ITextValue} from '@disclosure-portal/model/License';
-import adminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useRules from '@disclosure-portal/utils/Rules';
@@ -34,15 +32,18 @@ const props = defineProps({
     type: Object as () => License,
     required: false,
     default: undefined,
-    validator(value: unknown, props: any): boolean {
-      return props.mode === 'create' || ((props.mode === 'edit' || props.mode === 'duplicate') && value !== undefined);
+    validator(value: unknown, rawProps: any): boolean {
+      return (
+        rawProps.mode === 'create' ||
+        ((rawProps.mode === 'edit' || rawProps.mode === 'duplicate') && value !== undefined)
+      );
     },
   },
   mode: {
     type: String,
     required: false,
     default: 'create',
-    validator(value: any, props: any): boolean {
+    validator(value: any, rawProps: any): boolean {
       return ['create', 'edit', 'duplicate'].includes(value);
     },
   },
@@ -54,6 +55,9 @@ const props = defineProps({
 });
 
 const isLoading = ref(false);
+const isOpening = ref(false);
+const hasOpenedObligationsTab = ref(false);
+const hasOpenedAliasesTab = ref(false);
 
 const {t} = useI18n();
 
@@ -64,11 +68,15 @@ const selectedTab = ref(0);
 watch(selectedTab, async () => {
   if (selectedTab.value === displayedTab.value) return;
 
-  const isValid = (await formDialog.value!.validate()).valid;
+  if (!formDialog.value) return;
+
+  const isValid = (await formDialog.value.validate()).valid;
 
   await nextTick(() => {
     if (isValid) {
       displayedTab.value = selectedTab.value;
+      hasOpenedObligationsTab.value ||= displayedTab.value === 2;
+      hasOpenedAliasesTab.value ||= displayedTab.value === 5;
     } else {
       selectedTab.value = displayedTab.value;
     }
@@ -106,18 +114,49 @@ const item = ref<License>({
 });
 
 const isDatePickerVisible = ref(false);
+const licenseTextArea = ref<any | null>(null);
 // the date picker expects a date object, but this application does only work with strings, so we need a proxy object which does the conversion
 const dateProxy = computed({
   get: () => new Date(item.value.meta.reviewDate),
   set: (value: Date) => (item.value.meta.reviewDate = dayjs(value).format().split('T')[0]),
 });
 
-const obligationList = ref<IObligation[]>([]);
 const formError = '';
 const duplicateIdMessage = '';
 
 const rules = useRules();
 const snackbar = useSnackbar();
+const FLOW_BREADCRUMB_KEY = 'disuko.license.flow';
+
+const writeFlowBreadcrumb = (step: string, details: Record<string, unknown> = {}) => {
+  try {
+    const entriesRaw = localStorage.getItem(FLOW_BREADCRUMB_KEY);
+    const entries = entriesRaw ? JSON.parse(entriesRaw) : [];
+    entries.push({
+      ts: new Date().toISOString(),
+      step,
+      mode: props.mode,
+      details,
+    });
+    localStorage.setItem(FLOW_BREADCRUMB_KEY, JSON.stringify(entries.slice(-80)));
+  } catch (error) {
+    console.error('Failed to write license flow breadcrumb', error);
+  }
+};
+
+const toErrorDetails = (error: unknown) => {
+  if (error instanceof Error) {
+    return {message: error.message, stack: error.stack};
+  }
+  try {
+    return {message: JSON.stringify(error)};
+  } catch {
+    return {message: String(error)};
+  }
+};
+
+writeFlowBreadcrumb('module-loaded');
+
 const licenseNameRules = [
   ...rules.required(t('COL_NAME')),
   (value: string) => (value && value.length >= 3) || t('LICENSE_NAME_VALIDATION_MIN_LENGTH', {min: 3}),
@@ -131,9 +170,11 @@ const licenseTypeRules = rules.requiredOrEmpty(t('COL_LICENSE_TYPE'));
 const urlRules = [(value: string) => isURLOrEmpty(value) || t('VALIDATION_url')];
 
 const reset = async () => {
-  const response = (await adminService.getAllObligations()).data;
-  obligationList.value = response.items;
-
+  writeFlowBreadcrumb('reset:start');
+  const licenseRequest =
+    props.initialData && (props.mode === 'edit' || props.mode === 'duplicate')
+      ? licenseService.get(props.initialData.licenseId)
+      : null;
   selectedTab.value = 0;
   displayedTab.value = 0;
 
@@ -167,8 +208,9 @@ const reset = async () => {
     type: 0,
   });
 
-  if (props.initialData && (props.mode === 'edit' || props.mode === 'duplicate')) {
-    const licenseDetail = (await licenseService.get(props.initialData.licenseId)).data;
+  if (licenseRequest) {
+    writeFlowBreadcrumb('reset:load-license-detail:start', {licenseId: props.initialData!.licenseId});
+    const licenseDetail = (await licenseRequest).data;
 
     // duplicate content
     item.value._key = licenseDetail._key;
@@ -207,6 +249,7 @@ const reset = async () => {
         'License derived from "' + licenseDetail.name + '" (' + licenseDetail.licenseId + ') \n';
     }
   }
+  writeFlowBreadcrumb('reset:done');
 };
 
 /**
@@ -233,8 +276,12 @@ const decodeIfNecessary = (e: ClipboardEvent) => {
     e.stopPropagation();
     e.preventDefault();
 
-    // @ts-expect-error $el type is missing
-    const textAreaEl: HTMLTextAreaElement = this.$refs.licenseTextArea.$el.querySelector('textarea');
+    const textAreaRoot = licenseTextArea.value?.$el ?? licenseTextArea.value;
+    const textAreaEl: HTMLTextAreaElement | null = textAreaRoot?.querySelector?.('textarea') ?? null;
+    if (!textAreaEl) {
+      console.error('Could not resolve license textarea element.');
+      return;
+    }
     const contentBefore = textAreaEl.value.substring(0, textAreaEl.selectionStart);
     const contentAfter = textAreaEl.value.substring(textAreaEl.selectionEnd);
     item.value.text = `${contentBefore}${decodedPaste}${contentAfter}`;
@@ -246,8 +293,8 @@ const decodeIfNecessary = (e: ClipboardEvent) => {
       // this has to be done in $nextTick
       textAreaEl.setSelectionRange(cursorPositionAfterPaste, cursorPositionAfterPaste);
     });
-  } catch (e) {
-    console.error('Pasted text could or did not have to be decoded', e);
+  } catch (decodeError) {
+    console.error('Pasted text could or did not have to be decoded', decodeError);
   }
 };
 
@@ -256,8 +303,20 @@ const closeDialog = () => {
 };
 
 const showDialog = async () => {
-  await reset();
+  if (isOpening.value) return;
+
+  isOpening.value = true;
+  writeFlowBreadcrumb('show-dialog:start');
   visible.value = true;
+  hasOpenedObligationsTab.value = false;
+  hasOpenedAliasesTab.value = false;
+
+  try {
+    await reset();
+    writeFlowBreadcrumb('show-dialog:visible-true');
+  } finally {
+    isOpening.value = false;
+  }
 };
 
 watch(
@@ -275,11 +334,13 @@ const formDialog = ref<DiscoForm | null>(null);
 const doDialogAction = async () => {
   if (isLoading.value) return; // Verhindert mehrfaches Klicken
   isLoading.value = true;
+  writeFlowBreadcrumb('submit:start');
 
   item.value.name = item.value.name.trim();
   item.value.licenseId = item.value.licenseId.trim();
 
   const result = await formDialog.value!.validate();
+  writeFlowBreadcrumb('submit:validated', {valid: result.valid});
   if (result.valid) {
     // create a unique id for all new aliases
     item.value.aliases
@@ -288,22 +349,29 @@ const doDialogAction = async () => {
 
     try {
       if (props.mode === 'create' || props.mode === 'duplicate') {
+        writeFlowBreadcrumb('submit:create:request');
         await licenseService.create(item.value!);
+        writeFlowBreadcrumb('submit:create:success', {licenseId: item.value.licenseId});
         snackbar.info(t('DIALOG_license_create_success'));
       } else if (props.mode === 'edit') {
+        writeFlowBreadcrumb('submit:update:request', {key: item.value._key});
         await licenseService.update(item.value!, item.value!._key);
+        writeFlowBreadcrumb('submit:update:success', {licenseId: item.value.licenseId});
         snackbar.info(t('DIALOG_license_edit_success'));
       }
       closeDialog();
       emits('closed:successfully', item.value.licenseId);
     } catch (error: any) {
+      writeFlowBreadcrumb('submit:error', toErrorDetails(error));
       console.error(error);
       snackbar.error(t('DIALOG_license_create_error', {error: error.message}));
     } finally {
       isLoading.value = false;
+      writeFlowBreadcrumb('submit:finally');
     }
   } else {
     isLoading.value = false;
+    writeFlowBreadcrumb('submit:invalid');
   }
 };
 defineExpose({
@@ -370,7 +438,6 @@ defineExpose({
                       <v-row justify="start" class="pt-2">
                         <v-col
                           v-if="mode === 'create' || mode === 'duplicate'"
-                          xs="12"
                           sm="6"
                           md="6"
                           class="errorBorder">
@@ -387,7 +454,6 @@ defineExpose({
                         </v-col>
                         <v-col
                           v-if="mode === 'edit' && item.source !== 'spdx'"
-                          xs="12"
                           sm="6"
                           md="6"
                           class="errorBorder">
@@ -405,7 +471,6 @@ defineExpose({
                         </v-col>
                         <v-col
                           v-if="mode === 'edit' && item.source === 'spdx'"
-                          xs="12"
                           sm="6"
                           md="6"
                           class="errorBorder">
@@ -421,7 +486,6 @@ defineExpose({
                         </v-col>
                         <v-col
                           v-if="mode === 'create' || mode === 'duplicate'"
-                          xs="12"
                           sm="6"
                           md="6"
                           class="errorBorder">
@@ -438,7 +502,6 @@ defineExpose({
                         </v-col>
                         <v-col
                           v-if="mode === 'edit' && item.source !== 'spdx'"
-                          xs="12"
                           sm="6"
                           md="6"
                           class="errorBorder">
@@ -453,7 +516,7 @@ defineExpose({
                             :label="t('COL_LICENSE_ID')"
                             required></v-text-field>
                         </v-col>
-                        <v-col v-if="mode === 'edit' && item.source === 'spdx'" xs="12" sm="6" md="6">
+                        <v-col v-if="mode === 'edit' && item.source === 'spdx'" sm="6" md="6">
                           <v-text-field
                             autocomplete="off"
                             variant="outlined"
@@ -464,7 +527,7 @@ defineExpose({
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols="12" xs="12" sm="6" md="6" lg="6" class="errorBorder">
+                        <v-col cols="12" sm="6" md="6" lg="6" class="errorBorder">
                           <v-select
                             :items="licenseTypes"
                             v-model="item.meta.licenseType"
@@ -477,7 +540,7 @@ defineExpose({
                             hide-details="auto"
                             required></v-select>
                         </v-col>
-                        <v-col cols="12" xs="12" sm="6" md="6" lg="6" class="errorBorder">
+                        <v-col cols="12" sm="6" md="6" lg="6" class="errorBorder">
                           <v-select
                             class="required"
                             :rules="licenseFamilyRules"
@@ -492,7 +555,7 @@ defineExpose({
                         </v-col>
                       </v-row>
                       <v-row justify="start" class="">
-                        <v-col cols="12" xs="12" sm="6" md="6" lg="6">
+                        <v-col cols="12" sm="6" md="6" lg="6">
                           <v-select
                             :items="licenseApproval"
                             v-model="item.meta.approvalState"
@@ -502,7 +565,7 @@ defineExpose({
                             item-title="text"
                             hide-details="auto"></v-select>
                         </v-col>
-                        <v-col cols="12" xs="12" sm="6" md="6">
+                        <v-col cols="12" sm="6" md="6">
                           <v-select
                             :items="reviewStates"
                             v-model="item.meta.reviewState"
@@ -515,10 +578,9 @@ defineExpose({
                         <v-col
                           cols="12"
                           v-if="item.meta.reviewState === 'reviewed' && item.meta.reviewDate"
-                          xs="12"
                           sm="6"
                           md="6">
-                          <v-menu :close-on-content-click="false" :menu-props="{bottom: true, offsetY: true}">
+                          <v-menu :close-on-content-click="false" location="bottom">
                             <template v-slot:activator="{props}">
                               <v-text-field
                                 autocomplete="off"
@@ -526,7 +588,6 @@ defineExpose({
                                 v-bind="props"
                                 v-model="item.meta.reviewDate"
                                 :label="t('COL_REVIEW_DATE')"
-                                :menu-props="{bottom: true, offsetY: true}"
                                 append-inner-icon="mdi-calendar"
                                 readonly
                                 @click:append="isDatePickerVisible = true"
@@ -541,7 +602,7 @@ defineExpose({
                               scrollable />
                           </v-menu>
                         </v-col>
-                        <v-col xs="12" sm="6" md="6" v-if="mode !== 'create'" lg="6">
+                        <v-col sm="6" md="6" v-if="mode !== 'create'" lg="6">
                           <v-text-field
                             autocomplete="off"
                             variant="outlined"
@@ -553,7 +614,7 @@ defineExpose({
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols="12" xs="12">
+                        <v-col cols="12">
                           <v-text-field
                             autocomplete="off"
                             variant="outlined"
@@ -562,7 +623,7 @@ defineExpose({
                             :rules="urlRules"
                             :label="t('COL_LICENSE_URL')"></v-text-field>
                         </v-col>
-                        <v-col cols="12" xs="12">
+                        <v-col cols="12">
                           <v-text-field
                             autocomplete="off"
                             variant="outlined"
@@ -571,7 +632,7 @@ defineExpose({
                             :rules="urlRules"
                             :label="t('COL_SOURCE_URL')"></v-text-field>
                         </v-col>
-                        <v-col cols="12" xs="12">
+                        <v-col cols="12">
                           <v-switch
                             v-model="item.meta.isLicenseChart"
                             hide-details
@@ -598,12 +659,15 @@ defineExpose({
                     @paste="decodeIfNecessary"
                     :label="t('CD_LICENSE_TEXT')" />
                 </v-tabs-window-item>
-                <v-tabs-window-item :key="2" :value="2">
+                <v-tabs-window-item
+                  v-if="displayedTab === 2 || hasOpenedObligationsTab"
+                  v-show="displayedTab === 2"
+                  :key="2"
+                  :value="2">
                   <TabLinkObligations ref="tabContent2" v-model:obligations="item.meta.obligationsList" />
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="3" :key="3" class="expanding-container no-scrollbar" ref="tabItemWYSIWYG">
                   <v-textarea
-                    ref="licenseTextArea"
                     class="expand pt-2"
                     rows="20"
                     no-resize
@@ -622,12 +686,15 @@ defineExpose({
                     hide-details="auto"
                     :label="t('CD_LICENSE_CHANGELOG')" />
                 </v-tabs-window-item>
-                <v-tabs-window-item :value="5" :key="5">
+                <v-tabs-window-item
+                  v-if="displayedTab === 5 || hasOpenedAliasesTab"
+                  v-show="displayedTab === 5"
+                  :value="5"
+                  :key="5">
                   <GridAliases ref="tabContentAliases" v-model:license="item" mode="edit" />
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="6" :key="6" class="expanding-container">
                   <v-textarea
-                    ref="licenseTextArea"
                     class="expand pt-2"
                     rows="20"
                     no-resize

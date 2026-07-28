@@ -12,7 +12,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" xs="12" v-if="allObligations" class="pa-3">
-        <v-data-table
+        <v-data-table-virtual
           class="striped-table"
           :headers="headers"
           :search="search"
@@ -24,8 +24,6 @@
           select-strategy="all"
           v-model="selectedObligations"
           :sort-by="sortBy"
-          items-per-page="-1"
-          :hide-default-footer="true"
           :items="allObligations"
           :item-class="getCssClassForTableRow">
           <template v-slot:bottom>
@@ -68,7 +66,7 @@
               </v-tooltip>
             </span>
           </template>
-        </v-data-table>
+        </v-data-table-virtual>
       </v-col>
     </v-row>
   </div>

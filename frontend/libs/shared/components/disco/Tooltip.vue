@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
-import {computed} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref} from 'vue';
 
 interface Props {
   activator?: string;
@@ -77,6 +77,51 @@ const textSegments = computed<TextSegment[]>(() => {
 const hasLinks = computed(() => {
   return textSegments.value.some((segment) => segment.type === 'url');
 });
+
+const isLazy = computed(() => !props.asParent && props.activator === 'parent');
+const placeholder = ref<HTMLElement | null>(null);
+const isMounted = ref(false);
+const isOpen = ref(false);
+
+let parentElement: HTMLElement | null = null;
+let openTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearOpenTimer = () => {
+  if (openTimer !== null) {
+    clearTimeout(openTimer);
+    openTimer = null;
+  }
+};
+
+const onParentEnter = () => {
+  isMounted.value = true;
+  clearOpenTimer();
+  openTimer = setTimeout(() => (isOpen.value = true), TOOLTIP_OPEN_DELAY_IN_MS);
+};
+
+const onParentLeave = () => {
+  clearOpenTimer();
+  isOpen.value = false;
+};
+
+onMounted(() => {
+  if (!isLazy.value) return;
+
+  parentElement = placeholder.value?.parentElement ?? null;
+  parentElement?.addEventListener('pointerenter', onParentEnter);
+  parentElement?.addEventListener('pointerleave', onParentLeave);
+  parentElement?.addEventListener('focusin', onParentEnter);
+  parentElement?.addEventListener('focusout', onParentLeave);
+});
+
+onBeforeUnmount(() => {
+  clearOpenTimer();
+  parentElement?.removeEventListener('pointerenter', onParentEnter);
+  parentElement?.removeEventListener('pointerleave', onParentLeave);
+  parentElement?.removeEventListener('focusin', onParentEnter);
+  parentElement?.removeEventListener('focusout', onParentLeave);
+  parentElement = null;
+});
 </script>
 
 <template>
@@ -109,8 +154,11 @@ const hasLinks = computed(() => {
     </div>
   </v-tooltip>
 
+  <span v-else-if="isLazy && !isMounted" ref="placeholder" class="d-none"></span>
+
   <v-tooltip
     v-else
+    v-model="isOpen"
     :activator="activator"
     :location="location"
     :disabled="disabled"

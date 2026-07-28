@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AddChildrenDialog: typeof import('./../../libs/portal/components/dialog/project/AddChildrenDialog.vue')['default']
     AddChildrenErrorDialog: typeof import('./../../libs/portal/components/projects/children/AddChildrenErrorDialog.vue')['default']
     AddExternalSourceDialog: typeof import('./../../libs/discocli/components/dialogs/AddExternalSourceDialog.vue')['default']
     AdminGridProjects: typeof import('./../../libs/portal/components/projects/AdminGridProjects.vue')['default']
@@ -163,7 +162,6 @@ declare module 'vue' {
     PolicyDecisionList: typeof import('./../../libs/portal/components/projects/policyDecision/PolicyDecisionList.vue')['default']
     PolicyLicensesDialog: typeof import('./../../libs/discocli/components/dialogs/PolicyLicensesDialog.vue')['default']
     PolicyRuleClassificationDialog: typeof import('./../../libs/portal/components/dialog/PolicyRuleClassificationDialog.vue')['default']
-    PolicyRulesTable: typeof import('./../../libs/shared/components/disco/PolicyRulesTable.vue')['default']
     PolicyStatusTableRow: typeof import('./../../libs/portal/components/dialog/PolicyStatusTableRow.vue')['default']
     ProjectChildrenMembersAddedDialog: typeof import('./../../libs/portal/components/dialog/ProjectChildrenMembersAddedDialog.vue')['default']
     ProjectDetails: typeof import('./../../libs/discocli/views/ProjectDetails.vue')['default']

@@ -150,7 +150,6 @@ const typeWidth = computed(() => (appLanguage.value === 'en' ? 450 : 470));
                 item-title="text"
                 item-value="value"
                 multiple
-                menu
                 transition="scale-transition"
                 persistent-clear
                 :list-props="{class: 'striped-filter-dd py-0'}">

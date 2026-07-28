@@ -49,6 +49,10 @@
 }
 _*/
 
+.table-wrapper {
+  contain: layout paint;
+}
+
 .striped-table {
   border: 1px solid rgb(var(--v-theme-borderCard));
   border-radius: 4px !important;

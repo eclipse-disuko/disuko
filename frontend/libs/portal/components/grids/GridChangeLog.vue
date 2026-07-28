@@ -197,7 +197,7 @@ onMounted(async () => {
     </template>
     <template #table>
       <div ref="gridChangeLog" class="fill-height">
-        <v-data-table
+        <v-data-table-virtual
           item-key="_key"
           :headers="headers"
           :items="filteredItems"
@@ -414,7 +414,7 @@ onMounted(async () => {
               <v-icon color="primary" size="large">mdi mdi-chevron-right</v-icon>
             </router-link>
           </template>
-        </v-data-table>
+        </v-data-table-virtual>
       </div>
     </template>
   </TableLayout>
