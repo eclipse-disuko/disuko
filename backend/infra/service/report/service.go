@@ -39,6 +39,7 @@ import (
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
+	"golang.org/x/text/encoding/unicode"
 )
 
 const WITH = " with "
@@ -213,7 +214,9 @@ func WriteLastReportAsCSV(rs *logy.RequestSession, w io.Writer) {
 
 	header, values := csvColumnsOf(rep)
 
-	csvWriter := csv.NewWriter(w)
+	convWriter := unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewEncoder().Writer(w)
+	csvWriter := csv.NewWriter(convWriter)
+	csvWriter.Comma = '\t'
 	defer csvWriter.Flush()
 
 	if csvErr := csvWriter.Write(header); csvErr != nil {
