@@ -135,7 +135,7 @@ const {t} = useI18n();
 const stats = ref<Stats | null>(null);
 
 const downloadReport = async () => {
-  const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.json`;
+  const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.csv`;
   downloadFile(filename, AnalyticsService.downloadReport(), true);
 };
 
