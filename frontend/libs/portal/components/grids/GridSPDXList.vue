@@ -75,9 +75,9 @@ export default defineComponent({
     const {t} = useI18n();
     const {isAudited} = useApprovalCheck();
 
-    const selectedItems = ref<ProjectApprovable[]>(props.selectable ? [...props.projects] : []);
+    const selectedItems = ref<ProjectApprovable[]>(props.selectable ? [...(props.projects ?? [])] : []);
 
-    if (props.selectable && props.projects.length > 0) {
+    if (props.selectable && props.projects && props.projects.length > 0) {
       const selectedKeys = props.projects.map((item) => item.projectKey);
       emit('update:selectedProjects', selectedKeys);
     }
@@ -89,9 +89,9 @@ export default defineComponent({
 
     const allSbomPresenceItems = computed<DataTableHeaderFilterItems[]>(() => {
       const items: DataTableHeaderFilterItems[] = [];
-      if (props.projects.some((p) => p.spdxname !== ''))
+      if ((props.projects ?? []).some((p) => p.spdxname !== ''))
         items.push({value: FILTER_HAS_SBOM, text: t('FILTER_SBOM_PRESENT')});
-      if (props.projects.some((p) => p.spdxname === ''))
+      if ((props.projects ?? []).some((p) => p.spdxname === ''))
         items.push({value: FILTER_NO_SBOM, text: t('FILTER_SBOM_MISSING')});
       return items;
     });
@@ -190,7 +190,7 @@ export default defineComponent({
     };
 
     const filteredList = computed(() => {
-      let list = props.projects;
+      let list = props.projects ?? [];
       if (props.doFilter) {
         list = list.filter((p) => (props.filterIsFOSS ? !p.isNonFoss : p.isNonFoss));
       }
