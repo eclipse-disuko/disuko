@@ -297,22 +297,12 @@ const doDialogAction = async () => {
   }
   metaDoc.c6 = noFOSS.value || !selectedSbom.value;
 
-  let determinedFossVersion: 'default' | 'legacy' | 'vehicle-legacy';
-
-  if (config.useFutureIt && !vehicle.value) {
-    determinedFossVersion = fossVersion.value === 'default' ? 'default' : 'legacy';
-  } else if (config.useFutureProduct && vehicle.value) {
-    determinedFossVersion = fossVersion.value === 'default' ? 'default' : 'vehicle-legacy';
-  } else {
-    determinedFossVersion = vehicle.value ? 'vehicle-legacy' : 'legacy';
-  }
-
   const req: ExternalApprovalRequest = {
     comment: comment.value,
     guidProject: projectModel.value._key,
     metaDoc: metaDoc,
     withZip: withZip.value,
-    fossVersion: determinedFossVersion,
+    fossVersion: 'vanilla',
     selectedProjects: selectedProjects.value,
   };
 
