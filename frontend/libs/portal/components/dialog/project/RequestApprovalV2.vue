@@ -201,7 +201,7 @@ const doDialogAction = async () => {
         customerApprover2: ownerApprover2.value,
         supplierApprover1: developerApprover1.value,
         supplierApprover2: developerApprover2.value,
-        fossVersion: 'default',
+        fossVersion: 'vanilla',
       };
 
       projectService.createInternalApproval(req, projectModel.value._key).then(async (response) => {
