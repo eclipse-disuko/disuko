@@ -66,8 +66,9 @@ func (handler *AnalyticsHandler) Report(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.csv\"")
 
-	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetCurrentName()), "")
+	report.WriteLastReportAsCSV(requestSession, w)
 }
 
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {

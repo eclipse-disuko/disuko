@@ -5,9 +5,12 @@
 package report
 
 import (
+	"encoding/csv"
 	"encoding/json"
+	"io"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -197,6 +200,81 @@ func (s *Service) cleanupOldMonthlyReports(rs *logy.RequestSession, log *job.Log
 		s3Helper.DeleteFile(rs, s3FileName)
 		log.AddEntry(job.Info, "deleted monthly report %s (older than 12 months)", fileName)
 		logy.Infof(rs, "Deleted old monthly report %s", s3FileName)
+	}
+}
+
+func WriteLastReportAsCSV(rs *logy.RequestSession, w io.Writer) {
+	fileContent := s3Helper.ReadFileFully(rs, GetReportStorageFileNameOf(GetCurrentName()), "")
+
+	var rep report.Report
+	if err := json.Unmarshal(fileContent, &rep); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonUnmarshall), err)
+	}
+
+	header, values := csvColumnsOf(rep)
+
+	csvWriter := csv.NewWriter(w)
+	defer csvWriter.Flush()
+
+	if csvErr := csvWriter.Write(header); csvErr != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "header"), csvErr)
+	}
+	for _, row := range values {
+		if csvErr := csvWriter.Write(row); csvErr != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "data"), csvErr)
+		}
+	}
+}
+
+const customIDsFieldName = "CustomIDs"
+
+func csvColumnsOf(rep report.Report) (header []string, rows [][]string) {
+	projectType := reflect.TypeFor[report.Project]()
+	for field := range projectType.Fields() {
+		if _, ok := field.Tag.Lookup("column"); !ok {
+			continue
+		}
+		if field.Name == customIDsFieldName {
+			header = append(header, rep.CustomIDNames...)
+			continue
+		}
+		header = append(header, field.Tag.Get("column"))
+	}
+
+	for _, p := range rep.Projects {
+		value := reflect.ValueOf(p)
+		var row []string
+		for i := 0; i < projectType.NumField(); i++ {
+			field := projectType.Field(i)
+			if _, ok := field.Tag.Lookup("column"); !ok {
+				continue
+			}
+			if field.Name == customIDsFieldName {
+				row = append(row, customIDValues(value.Field(i), len(rep.CustomIDNames))...)
+				continue
+			}
+			row = append(row, csvCellValue(value.Field(i)))
+		}
+		rows = append(rows, row)
+	}
+	return header, rows
+}
+
+func customIDValues(v reflect.Value, count int) []string {
+	customIDs, _ := v.Interface().([]string)
+	values := make([]string, count)
+	for i := 0; i < count && i < len(customIDs); i++ {
+		values[i] = customIDs[i]
+	}
+	return values
+}
+
+func csvCellValue(v reflect.Value) string {
+	switch v.Kind() {
+	case reflect.String:
+		return v.String()
+	default:
+		return ""
 	}
 }
 
