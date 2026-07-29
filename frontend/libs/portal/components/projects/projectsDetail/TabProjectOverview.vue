@@ -87,22 +87,15 @@ const uuidLabel = computed(() => {
               <span>{{ t('TT_free_label') }}</span>
             </Tooltip>
           </span>
-          <DLabel
-            class="m-0"
-            :labelName="t('LBL_PROJECT_PARENT')"
-            :iconName="icons.BACKUP"
-            v-if="currentProject.isGroup"></DLabel>
-          <DLabel
-            class="m-0"
-            :labelName="t('LBL_PROJECT_CHILD')"
-            :iconName="icons.CHILD"
-            v-if="currentProject.parent"></DLabel>
-          <DLabel
-            class="m-0"
-            :labelName="t('LBL_PROJECT_NON_FOSS')"
-            :iconName="icons.NON_FOSS"
-            v-if="currentProject.isNoFoss">
-          </DLabel>
+          <span v-if="currentProject.isGroup">
+            <DLabel class="m-0" :labelName="t('LBL_PROJECT_PARENT')" :iconName="icons.BACKUP"></DLabel>
+          </span>
+          <span v-if="currentProject.parent">
+            <DLabel class="m-0" :labelName="t('LBL_PROJECT_CHILD')" :iconName="icons.CHILD"></DLabel>
+          </span>
+          <span v-if="currentProject.isNoFoss">
+            <DLabel class="m-0" :labelName="t('LBL_PROJECT_NON_FOSS')" :iconName="icons.NON_FOSS"></DLabel>
+          </span>
         </div>
       </v-col>
       <v-col cols="12" xs="12" :md="currentProject.isGroup ? '4' : currentProject.applicationMeta.id ? '7' : '6'">
