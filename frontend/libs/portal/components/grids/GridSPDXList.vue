@@ -13,7 +13,7 @@ import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@disclosu
 import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
-import {PropType, computed, defineComponent, ref} from 'vue';
+import {PropType, computed, defineComponent, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {openUrlInNewTab} from '@shared/utils/url';
 
@@ -35,6 +35,10 @@ export default defineComponent({
     selectable: {
       type: Boolean,
       default: false,
+    },
+    selectedProjects: {
+      type: Array as PropType<string[]>,
+      default: () => [],
     },
     doFilter: {
       type: Boolean,
@@ -75,12 +79,15 @@ export default defineComponent({
     const {t} = useI18n();
     const {isAudited} = useApprovalCheck();
 
-    const selectedItems = ref<ProjectApprovable[]>(props.selectable ? [...(props.projects ?? [])] : []);
-
-    if (props.selectable && props.projects && props.projects.length > 0) {
-      const selectedKeys = props.projects.map((item) => item.projectKey);
-      emit('update:selectedProjects', selectedKeys);
-    }
+    const selectedItems = ref<ProjectApprovable[]>(
+      (props.projects ?? []).filter((p) => props.selectedProjects.includes(p.projectKey)),
+    );
+    watch(
+      () => props.selectedProjects,
+      (newSelectedProjects) => {
+        selectedItems.value = (props.projects ?? []).filter((p) => newSelectedProjects.includes(p.projectKey));
+      },
+    );
 
     const FILTER_HAS_SBOM = 'has_sbom';
     const FILTER_NO_SBOM = 'no_sbom';
