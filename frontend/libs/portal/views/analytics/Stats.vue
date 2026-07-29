@@ -6,12 +6,19 @@
   <TableLayout has-tab has-title>
     <template #buttons>
       <DCActionButton
-        :text="t('BTN_DOWNLOAD')"
+        :text="t('BTN_DOWNLOAD_CSV')"
         large
         v-if="RightsUtils.rights().isProjectAnalyst()"
         icon="mdi-download"
-        :hint="t('TT_download_label_report')"
-        @click="downloadReport" />
+        :hint="t('TT_download_label_report_csv')"
+        @click="downloadReportCSV" />
+      <DCActionButton
+        :text="t('BTN_DOWNLOAD_XLSX')"
+        large
+        v-if="RightsUtils.rights().isProjectAnalyst()"
+        icon="mdi-download"
+        :hint="t('TT_download_label_report_xlsx')"
+        @click="downloadReportXLSX" />
     </template>
     <template #table>
       <v-table fixed-header density="compact" class="striped-table fill-height">
@@ -134,9 +141,14 @@ import {useI18n} from 'vue-i18n';
 const {t} = useI18n();
 const stats = ref<Stats | null>(null);
 
-const downloadReport = async () => {
+const downloadReportCSV = async () => {
   const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.csv`;
   downloadFile(filename, AnalyticsService.downloadReport(), true);
+};
+
+const downloadReportXLSX = async () => {
+  const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.xlsx`;
+  downloadFile(filename, AnalyticsService.downloadReportXLSX(), true);
 };
 
 onMounted(async () => {

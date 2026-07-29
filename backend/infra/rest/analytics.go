@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
-	"github.com/eclipse-disuko/disuko/jobs/report"
+	"github.com/eclipse-disuko/disuko/infra/service/report"
 
 	"github.com/eclipse-disuko/disuko/domain/analytics"
 	da "github.com/eclipse-disuko/disuko/domain/analytics"
@@ -66,8 +66,23 @@ func (handler *AnalyticsHandler) Report(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.csv\"")
 
-	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetReportAllName()), "")
+	report.WriteLastReportAsCSV(requestSession, w)
+}
+
+func (handler *AnalyticsHandler) ReportXLSX(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.AllowProject.Read {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.xlsx\"")
+
+	report.WriteLastReportAsXLSX(requestSession, w)
 }
 
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
@@ -79,8 +94,8 @@ func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.R
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.csv\"")
-	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetReportAllName()), "")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.json\"")
+	s3Helper.PerformDownload(requestSession, &w, report.GetReportStorageFileNameOf(report.GetCurrentName()), "")
 }
 
 func (handler *AnalyticsHandler) Statistic(w http.ResponseWriter, r *http.Request) {

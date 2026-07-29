@@ -80,21 +80,7 @@ func (s *Server) setupScheduling(ctx context.Context, rs *logy.RequestSession) {
 	)
 	s.scheduler.AddJobCb(job.CalculateUserStats, userStatsOTJob)
 
-	rep := report.Init(
-		s.repos.project,
-		s.repos.user,
-		s.repos.department,
-		s.repos.label,
-		s.repos.sbomList,
-		s.repos.approvalList,
-		s.repos.obligation,
-		s.repos.policyRules,
-		s.repos.licenseRules,
-		s.services.spdx,
-		s.repos.customid,
-		&s.services.projectLabelService,
-		s.repos.policyDecisions,
-	)
+	rep := report.Init(s.services.report)
 	s.scheduler.AddJobCb(job.Report, rep)
 
 	dummyDeletion := dummy.InitDeletionJob(

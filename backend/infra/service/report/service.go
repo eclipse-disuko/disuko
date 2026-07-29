@@ -1,0 +1,352 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
+package report
+
+import (
+	"encoding/csv"
+	"encoding/json"
+	"io"
+	"os"
+	"path"
+	"reflect"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/eclipse-disuko/disuko/conf"
+	"github.com/eclipse-disuko/disuko/domain/job"
+	"github.com/eclipse-disuko/disuko/domain/license"
+	"github.com/eclipse-disuko/disuko/domain/obligation"
+	"github.com/eclipse-disuko/disuko/domain/project"
+	"github.com/eclipse-disuko/disuko/domain/report"
+	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/s3Helper"
+	"github.com/eclipse-disuko/disuko/helper/temp"
+	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
+	"github.com/eclipse-disuko/disuko/infra/repository/customid"
+	"github.com/eclipse-disuko/disuko/infra/repository/department"
+	"github.com/eclipse-disuko/disuko/infra/repository/labels"
+	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
+	obligationRepo "github.com/eclipse-disuko/disuko/infra/repository/obligation"
+	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
+	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
+	sbomRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
+	userRepo "github.com/eclipse-disuko/disuko/infra/repository/user"
+	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/spdx"
+	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/xuri/excelize/v2"
+	"golang.org/x/text/encoding/unicode"
+)
+
+const WITH = " with "
+
+type sbomStats struct {
+	weakCopyLeftCount      int
+	strongCopyLeftCount    int
+	permissiveCount        int
+	networkCopyLeftCount   int
+	notDeclaredCount       int
+	andCount               int
+	orCount                int
+	withCount              int
+	mixedCount             int
+	massiveAnd             int
+	massiveOr              int
+	keepOfSourceCodeCount  int
+	GNU_CCSObligationCount int
+	noFossCount            int
+	totalComponentCount    int
+}
+
+type (
+	licCache map[string]*license.License
+	prCache  map[string]*project.Project
+	oblCache map[string]*obligation.Obligation
+)
+
+// GenResult holds the outcome of a report generation run.
+type GenResult struct {
+	ProjectCnt int
+	FileName   string
+}
+
+type Service struct {
+	Repo                projectRepo.IProjectRepository
+	RepoUser            userRepo.IUsersRepository
+	RepoDept            department.IDepartmentRepository
+	RepoLabel           labels.ILabelRepository
+	RepoSboms           sbomRepo.ISbomListRepository
+	RepoCustomId        customid.ICustomIdRepository
+	RepoApprovals       approvallist.IApprovalListRepository
+	RepoPolicyRule      policyrules.IPolicyRulesRepository
+	RepoLic             licenserules.ILicenseRulesRepository
+	RepoObligation      obligationRepo.IObligationRepository
+	SpdxService         *spdx.Service
+	ProjectLabelService *projectLabelService.ProjectLabelService
+	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
+}
+
+func Init(
+	repo projectRepo.IProjectRepository,
+	repoUser userRepo.IUsersRepository,
+	repoDept department.IDepartmentRepository,
+	repoLabel labels.ILabelRepository,
+	repoSboms sbomRepo.ISbomListRepository,
+	repoApprovals approvallist.IApprovalListRepository,
+	obligationRepository obligationRepo.IObligationRepository,
+	policyRuleRepository policyrules.IPolicyRulesRepository,
+	licenseRulesRepository licenserules.ILicenseRulesRepository,
+	spdxService *spdx.Service,
+	repoCustomId customid.ICustomIdRepository,
+	prjLabelService *projectLabelService.ProjectLabelService,
+	policyDecisionsRepository policydecisions.IPolicyDecisionsRepository,
+) *Service {
+	return &Service{
+		Repo:                repo,
+		RepoUser:            repoUser,
+		RepoDept:            repoDept,
+		RepoLabel:           repoLabel,
+		RepoSboms:           repoSboms,
+		RepoApprovals:       repoApprovals,
+		RepoObligation:      obligationRepository,
+		RepoPolicyRule:      policyRuleRepository,
+		RepoLic:             licenseRulesRepository,
+		SpdxService:         spdxService,
+		RepoCustomId:        repoCustomId,
+		ProjectLabelService: prjLabelService,
+		PolicyDecisionsRepo: policyDecisionsRepository,
+	}
+}
+
+func GetCurrentName() string {
+	return "report_all.json"
+}
+
+func GetMonthlyName(t time.Time) string {
+	return strings.ToLower(t.Month().String()) + "_" + strconv.Itoa(t.Year()) + ".json"
+}
+
+func GetReportStorageFileNameOf(fileName string) string {
+	return project.RemoveDoubleSlash(strings.Join([]string{conf.Config.Server.GetUploadPath(), "reports", fileName}, "/"))
+}
+
+func (s *Service) Generate(rs *logy.RequestSession, log *job.Log) GenResult {
+	tempHelper := temp.TempHelper{RequestSession: rs}
+	tempHelper.CreateRandomFolder()
+	defer tempHelper.RemoveAll()
+	tmpFileName := tempHelper.GetCompleteFileName(GetCurrentName())
+
+	g := newGeneration(rs, s)
+	rep := report.Report{
+		CustomIDNames: g.customIdNames,
+		Projects:      g.buildProjects(),
+	}
+
+	data, err := json.MarshalIndent(rep, "", "  ")
+	if err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonMarshalling, "report json file"), err)
+	}
+	if err := os.WriteFile(tmpFileName, data, 0o600); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "report json file", "header"), err)
+	}
+	s.uploadReport(rs, GetCurrentName(), tmpFileName)
+
+	now := time.Now()
+	if now.Day() == 1 {
+		log.AddEntry(job.Info, "saving monthly report %s", GetMonthlyName(now))
+		monthlyFileName := tempHelper.GetCompleteFileName(GetMonthlyName(now))
+		if err := os.WriteFile(monthlyFileName, data, 0o600); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "report monthly json file", "header"), err)
+		}
+		s.uploadReport(rs, GetMonthlyName(now), monthlyFileName)
+	}
+
+	log.AddEntry(job.Info, "successfully report created of %d projects", len(rep.Projects))
+	s.cleanupOldMonthlyReports(rs, log, now)
+
+	return GenResult{
+		ProjectCnt: len(rep.Projects),
+		FileName:   tmpFileName,
+	}
+}
+
+func (s *Service) uploadReport(rs *logy.RequestSession, reportName string, tmpFileName string) {
+	fileReader, err := os.Open(tmpFileName)
+	if err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCreateFile, "read file error "+tmpFileName, "header"), err)
+	}
+	s3FileName := GetReportStorageFileNameOf(reportName)
+	metadata := s3Helper.MetadataForApplication(rs, tmpFileName, rs.ReqID)
+	if s3Helper.ExistFile(rs, s3FileName) {
+		s3Helper.DeleteFile(rs, s3FileName)
+	}
+	s3Helper.SaveFile(rs, s3FileName, fileReader, metadata)
+	logy.Infof(rs, "Report is uploaded to storage into folder %s", s3FileName)
+}
+
+func (s *Service) cleanupOldMonthlyReports(rs *logy.RequestSession, log *job.Log, now time.Time) {
+	cutoff := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC).AddDate(0, -12, 0)
+	folder := GetReportStorageFileNameOf("")
+	for obj := range s3Helper.ListObjects(rs, folder) {
+		fileName := path.Base(obj.Key)
+		monthTime, ok := parseMonthlyReportFileName(fileName)
+		if !ok || !monthTime.Before(cutoff) {
+			continue
+		}
+		s3FileName := GetReportStorageFileNameOf(fileName)
+		s3Helper.DeleteFile(rs, s3FileName)
+		log.AddEntry(job.Info, "deleted monthly report %s (older than 12 months)", fileName)
+		logy.Infof(rs, "Deleted old monthly report %s", s3FileName)
+	}
+}
+
+func WriteLastReportAsCSV(rs *logy.RequestSession, w io.Writer) {
+	header, values := readLastReportColumns(rs)
+
+	convWriter := unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewEncoder().Writer(w)
+	csvWriter := csv.NewWriter(convWriter)
+	csvWriter.Comma = '\t'
+	defer csvWriter.Flush()
+
+	if csvErr := csvWriter.Write(header); csvErr != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "header"), csvErr)
+	}
+	for _, row := range values {
+		if csvErr := csvWriter.Write(row); csvErr != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "data"), csvErr)
+		}
+	}
+}
+
+const reportSheetName = "Report"
+
+func WriteLastReportAsXLSX(rs *logy.RequestSession, w io.Writer) {
+	header, values := readLastReportColumns(rs)
+
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "close"), err)
+		}
+	}()
+
+	sheet := f.GetSheetName(0)
+	if err := f.SetSheetName(sheet, reportSheetName); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "sheet"), err)
+	}
+
+	if err := writeXLSXRow(f, reportSheetName, 1, header); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "header"), err)
+	}
+	for i, row := range values {
+		if err := writeXLSXRow(f, reportSheetName, i+2, row); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "data"), err)
+		}
+	}
+
+	if _, err := f.WriteTo(w); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "report", "write"), err)
+	}
+}
+
+func writeXLSXRow(f *excelize.File, sheet string, rowIndex int, values []string) error {
+	for col, value := range values {
+		cell, err := excelize.CoordinatesToCellName(col+1, rowIndex)
+		if err != nil {
+			return err
+		}
+		if err := f.SetCellValue(sheet, cell, value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func readLastReportColumns(rs *logy.RequestSession) (header []string, rows [][]string) {
+	fileContent := s3Helper.ReadFileFully(rs, GetReportStorageFileNameOf(GetCurrentName()), "")
+
+	var rep report.Report
+	if err := json.Unmarshal(fileContent, &rep); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonUnmarshall), err)
+	}
+
+	return columnsOf(rep)
+}
+
+const customIDsFieldName = "CustomIDs"
+
+func columnsOf(rep report.Report) (header []string, rows [][]string) {
+	projectType := reflect.TypeFor[report.Project]()
+	for field := range projectType.Fields() {
+		if _, ok := field.Tag.Lookup("column"); !ok {
+			continue
+		}
+		if field.Name == customIDsFieldName {
+			header = append(header, rep.CustomIDNames...)
+			continue
+		}
+		header = append(header, field.Tag.Get("column"))
+	}
+
+	for _, p := range rep.Projects {
+		value := reflect.ValueOf(p)
+		var row []string
+		for i := 0; i < projectType.NumField(); i++ {
+			field := projectType.Field(i)
+			if _, ok := field.Tag.Lookup("column"); !ok {
+				continue
+			}
+			if field.Name == customIDsFieldName {
+				row = append(row, customIDValues(value.Field(i), len(rep.CustomIDNames))...)
+				continue
+			}
+			row = append(row, cellValue(value.Field(i)))
+		}
+		rows = append(rows, row)
+	}
+	return header, rows
+}
+
+func customIDValues(v reflect.Value, count int) []string {
+	customIDs, _ := v.Interface().([]string)
+	values := make([]string, count)
+	for i := 0; i < count && i < len(customIDs); i++ {
+		values[i] = customIDs[i]
+	}
+	return values
+}
+
+func cellValue(v reflect.Value) string {
+	switch v.Kind() {
+	case reflect.String:
+		return v.String()
+	default:
+		return ""
+	}
+}
+
+func parseMonthlyReportFileName(fileName string) (time.Time, bool) {
+	if !strings.HasSuffix(fileName, ".json") {
+		return time.Time{}, false
+	}
+	base := strings.TrimSuffix(fileName, ".json")
+	parts := strings.SplitN(base, "_", 2)
+	if len(parts) != 2 {
+		return time.Time{}, false
+	}
+	year, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return time.Time{}, false
+	}
+	for m := time.January; m <= time.December; m++ {
+		if strings.ToLower(m.String()) == parts[0] {
+			return time.Date(year, m, 1, 0, 0, 0, 0, time.UTC), true
+		}
+	}
+	return time.Time{}, false
+}

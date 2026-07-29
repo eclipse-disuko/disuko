@@ -16,6 +16,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/policy"
 	"github.com/eclipse-disuko/disuko/infra/service/project"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/report"
 	"github.com/eclipse-disuko/disuko/infra/service/scanremarks"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	userService "github.com/eclipse-disuko/disuko/infra/service/user"
@@ -34,6 +35,7 @@ type services struct {
 	wizard              project.WizardService
 	projectLabelService projectLabelService.ProjectLabelService
 	fossdd              fossdd.Service
+	report              *report.Service
 	overallReview       project.OverallReviewService
 	deletionService     *userService.DeletionService
 	userService         *userService.Service
@@ -76,6 +78,22 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 		PolicyDecisionsRepo: s.repos.policyDecisions,
 	}
 	fossDDS.ReadTemplates([]string{"vanilla"})
+
+	reportS := report.Init(
+		s.repos.project,
+		s.repos.user,
+		s.repos.department,
+		s.repos.label,
+		s.repos.sbomList,
+		s.repos.approvalList,
+		s.repos.obligation,
+		s.repos.policyRules,
+		s.repos.licenseRules,
+		spdxS,
+		s.repos.customid,
+		&plS,
+		s.repos.policyDecisions,
+	)
 
 	userServ := userService.Init(rs, s.repos.user, s.repos.approvalList, s.repos.project, s.repos.label)
 
@@ -132,6 +150,7 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 			ApplicationConnector:   s.connectors.application,
 		},
 		fossdd: fossDDS,
+		report: reportS,
 		overallReview: project.OverallReviewService{
 			AuditlogRepo: s.repos.auditLogList,
 			ProjectRepo:  s.repos.project,
