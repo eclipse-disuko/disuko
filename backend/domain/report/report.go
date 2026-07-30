@@ -130,7 +130,7 @@ type Project struct {
 	LatestStatusReviewDate                    string   `column:"latest status review date"`
 	LatestStatusReviewStatus                  string   `column:"latest status review status"`
 	LatestE2ReviewDate                        string   `column:"latest Management review date"`
-	LatestE2ReviewStatus                      string   `column:"latest Management review status"`
+	HasAuditedE2Review                        string   `column:"has audited Management review"`
 	LatestE2ReviewComment                     string   `column:"latest Management review comment"`
 	CustomIDs                                 []string `column:"customids"`
 }
