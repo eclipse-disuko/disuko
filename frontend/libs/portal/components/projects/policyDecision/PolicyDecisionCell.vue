@@ -129,10 +129,11 @@ const onDecisionClick = (option: DecisionOption) => {
           size="small"
           density="compact"
           class="h-auto min-h-7 py-0.5"
-          :color="option.color"
+          color="primary"
+          :icon-color="option.color"
           :icon="option.icon"
           :text="option.label"
-          :style="option.dimmed ? 'opacity: 0.38;' : ''"
+          :disabled="option.dimmed"
           @click.stop="onDecisionClick(option)">
           <template #tooltip>
             <template v-if="option.canMake">
@@ -168,8 +169,9 @@ const onDecisionClick = (option: DecisionOption) => {
       <DCActionButton
         size="small"
         density="compact"
-        class="h-auto min-h-7 px-1 py-0.5"
-        :color="appliedOnlyColor"
+        class="h-auto min-h-7 max-w-17 px-3 py-0.5"
+        color="primary"
+        :icon-color="appliedOnlyColor"
         :icon="appliedOnlyIcon"
         :text="t('INFO')">
         <template #tooltip>

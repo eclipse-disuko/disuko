@@ -18,7 +18,7 @@
     ]"
     @click="$emit('clicked')">
     <div class="d-inline discoActionBtnHover">
-      <v-icon :color="color ? color : 'primary'" :size="size" v-if="icon">{{ icon }}</v-icon>
+      <v-icon :color="iconColor ? iconColor : color ? color : 'primary'" :size="size" v-if="icon">{{ icon }}</v-icon>
       <span
         class="font-weight-bold px-1"
         v-if="text"
@@ -43,6 +43,7 @@ interface Props {
   hint?: string;
   variant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain';
   color?: string;
+  iconColor?: string;
   size?: string;
   disabled?: boolean;
   loading?: boolean;
