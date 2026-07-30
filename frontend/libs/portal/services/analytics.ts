@@ -4,6 +4,7 @@
 
 import {useApi} from '@shared/api/useApi';
 import {
+  CombinedReportRequest,
   CombinedSearchOptions,
   IAnalyticsComponentsSearchResponse,
   IAnalyticsLicenseSearchResponse,
@@ -37,6 +38,12 @@ class AnalyticsService {
 
   public downloadReportXLSX() {
     return api.get(`/api/v1/${modelName}/latest/xlsx`, {
+      responseType: 'blob',
+    });
+  }
+
+  public downloadCombinedReportXLSX(data: CombinedReportRequest) {
+    return api.post(`/api/v1/${modelName}/combined/xlsx`, data, {
       responseType: 'blob',
     });
   }

@@ -78,6 +78,15 @@ export interface CombinedSearchOptions {
   requestSearchOptions: SearchOptions;
 }
 
+export interface MonthYear {
+  month: number;
+  year: number;
+}
+
+export interface CombinedReportRequest {
+  months: MonthYear[];
+}
+
 export class Stats {
   public projectCount = 0;
   public projectActiveCount = 0;

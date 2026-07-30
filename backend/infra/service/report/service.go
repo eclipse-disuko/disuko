@@ -254,6 +254,77 @@ func WriteLastReportAsXLSX(rs *logy.RequestSession, w io.Writer) {
 	}
 }
 
+func WriteCombinedReportAsXLSX(rs *logy.RequestSession, months []time.Time, w io.Writer) {
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "close"), err)
+		}
+	}()
+
+	defaultSheet := f.GetSheetName(0)
+	sheetsWritten := 0
+
+	for _, month := range months {
+		fileName := GetMonthlyName(month)
+		s3FileName := GetReportStorageFileNameOf(fileName)
+		if !s3Helper.ExistFile(rs, s3FileName) {
+			logy.Warnf(rs, "combined report: monthly report %s not found, skipping", fileName)
+			continue
+		}
+
+		header, values := readMonthlyReportColumns(rs, s3FileName)
+
+		sheetName := monthlyReportSheetName(month)
+		sheetIndex, err := f.NewSheet(sheetName)
+		if err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "sheet"), err)
+		}
+		if sheetsWritten == 0 {
+			f.SetActiveSheet(sheetIndex)
+		}
+
+		if err := writeXLSXRow(f, sheetName, 1, header); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "header"), err)
+		}
+		for i, row := range values {
+			if err := writeXLSXRow(f, sheetName, i+2, row); err != nil {
+				exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "data"), err)
+			}
+		}
+		sheetsWritten++
+	}
+
+	if sheetsWritten > 0 {
+		if err := f.DeleteSheet(defaultSheet); err != nil {
+			exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "sheet"), err)
+		}
+	}
+
+	if _, err := f.WriteTo(w); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "write"), err)
+	}
+}
+
+func monthlyReportSheetName(month time.Time) string {
+	name := month.Month().String() + " " + strconv.Itoa(month.Year())
+	if len(name) > 31 {
+		name = name[:31]
+	}
+	return name
+}
+
+func readMonthlyReportColumns(rs *logy.RequestSession, s3FileName string) (header []string, rows [][]string) {
+	fileContent := s3Helper.ReadFileFully(rs, s3FileName, "")
+
+	var rep report.Report
+	if err := json.Unmarshal(fileContent, &rep); err != nil {
+		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorJsonUnmarshall), err)
+	}
+
+	return columnsOf(rep)
+}
+
 func writeXLSXRow(f *excelize.File, sheet string, rowIndex int, values []string) error {
 	for col, value := range values {
 		cell, err := excelize.CoordinatesToCellName(col+1, rowIndex)
