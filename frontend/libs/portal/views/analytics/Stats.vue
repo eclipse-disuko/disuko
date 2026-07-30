@@ -19,6 +19,32 @@
         icon="mdi-download"
         :hint="t('TT_download_label_report_xlsx')"
         @click="downloadReportXLSX" />
+      <v-menu v-if="RightsUtils.rights().isProjectAnalyst()" v-model="showMonthMenu" :close-on-content-click="false">
+        <template #activator="{props: menuProps}">
+          <DCActionButton
+            :text="t('BTN_DOWNLOAD_COMBINED_XLSX')"
+            large
+            icon="mdi-download"
+            :hint="t('TT_download_label_report_combined_xlsx')"
+            v-bind="menuProps" />
+        </template>
+        <v-card class="pa-4" min-width="260">
+          <v-checkbox
+            v-for="option in monthOptions"
+            :key="`${option.year}-${option.month}`"
+            v-model="selectedMonths"
+            :value="option"
+            :label="option.label"
+            density="compact"
+            hide-details />
+          <v-card-actions class="pt-3 pl-0">
+            <DCActionButton
+              :disabled="selectedMonths.length === 0"
+              @click="downloadCombinedReportXLSX"
+              :text="t('BTN_DOWNLOAD_SELECTED')" />
+          </v-card-actions>
+        </v-card>
+      </v-menu>
     </template>
     <template #table>
       <v-table fixed-header density="compact" class="striped-table fill-height">
@@ -130,7 +156,7 @@
 </template>
 
 <script lang="ts" setup>
-import {Stats} from '@disclosure-portal/model/Analytics';
+import {MonthYear, Stats} from '@disclosure-portal/model/Analytics';
 import AnalyticsService from '@disclosure-portal/services/analytics';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {RightsUtils} from '@disclosure-portal/utils/Rights';
@@ -141,6 +167,15 @@ import {useI18n} from 'vue-i18n';
 const {t} = useI18n();
 const stats = ref<Stats | null>(null);
 
+const showMonthMenu = ref(false);
+const selectedMonths = ref<(MonthYear & {label: string})[]>([]);
+
+const monthOptions: (MonthYear & {label: string})[] = [];
+for (let i = 0; i < 12; i++) {
+  const date = dayjs().subtract(i, 'month');
+  monthOptions.push({month: date.month() + 1, year: date.year(), label: date.format('MMMM YYYY')});
+}
+
 const downloadReportCSV = async () => {
   const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.csv`;
   downloadFile(filename, AnalyticsService.downloadReport(), true);
@@ -149,6 +184,12 @@ const downloadReportCSV = async () => {
 const downloadReportXLSX = async () => {
   const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.xlsx`;
   downloadFile(filename, AnalyticsService.downloadReportXLSX(), true);
+};
+
+const downloadCombinedReportXLSX = async () => {
+  const filename = `report_combined_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.xlsx`;
+  downloadFile(filename, AnalyticsService.downloadCombinedReportXLSX({months: selectedMonths.value}), true);
+  showMonthMenu.value = false;
 };
 
 onMounted(async () => {

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"slices"
 	"strconv"
+	"time"
 
 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
 	"github.com/eclipse-disuko/disuko/infra/service/report"
@@ -83,6 +84,26 @@ func (handler *AnalyticsHandler) ReportXLSX(w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump.xlsx\"")
 
 	report.WriteLastReportAsXLSX(requestSession, w)
+}
+
+func (handler *AnalyticsHandler) CombinedReportXLSX(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.AllowProject.Read {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	req := extractCombinedReportRequestBody(r)
+	months := make([]time.Time, 0, len(req.Months))
+	for _, m := range req.Months {
+		months = append(months, time.Date(m.Year, time.Month(m.Month), 1, 0, 0, 0, 0, time.UTC))
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\"disco_dump_combined.xlsx\"")
+
+	report.WriteCombinedReportAsXLSX(requestSession, months, w)
 }
 
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
@@ -271,4 +292,10 @@ func extractAnalyticsSearchRequestBody(r *http.Request) da.RequestSearchOptions 
 	var searchOptions da.RequestSearchOptions
 	validation.DecodeAndValidate(r, &searchOptions, false)
 	return searchOptions
+}
+
+func extractCombinedReportRequestBody(r *http.Request) da.CombinedReportRequestDto {
+	var req da.CombinedReportRequestDto
+	validation.DecodeAndValidate(r, &req, false)
+	return req
 }

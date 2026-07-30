@@ -18,6 +18,15 @@ type RequestSearchOptions struct {
 	ExactLicense   bool   `json:"exactLicense"`
 }
 
+type CombinedReportRequestDto struct {
+	Months []MonthYearDto `json:"months" validate:"required,min=1,max=12,dive"`
+}
+
+type MonthYearDto struct {
+	Month int `json:"month" validate:"gte=1,lte=12"`
+	Year  int `json:"year" validate:"gte=2000,lte=2100"`
+}
+
 type ResponseAnalyticsSearch struct {
 	Success bool                 `json:"success"`
 	Items   []SearchResponseItem `json:"result"`
