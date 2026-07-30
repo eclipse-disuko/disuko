@@ -295,9 +295,13 @@ func (g *generation) fillReviewStats(pr *project.Project, res *report.Project) {
 		latestReviewState   overallreview.State
 		latestReviewDate    time.Time
 		latestReviewComment string
+		hasAuditeReview     bool
 	)
 	for k := range pr.Versions {
 		for _, review := range pr.Versions[k].OverallReviews {
+			if review.State == overallreview.Audited {
+				hasAuditeReview = true
+			}
 			if review.Created.After(latestReviewDate) {
 				latestReviewDate = review.Created
 				latestReviewState = review.State
@@ -312,8 +316,10 @@ func (g *generation) fillReviewStats(pr *project.Project, res *report.Project) {
 	res.LatestStatusReviewStatus = string(latestReviewState)
 	if latestReviewState == overallreview.Audited {
 		res.LatestE2ReviewDate = latestReviewDate.Format(time.RFC3339)
-		res.LatestE2ReviewStatus = string(latestReviewState)
 		res.LatestE2ReviewComment = strings.ReplaceAll(latestReviewComment, "\n", " ")
+	}
+	if hasAuditeReview {
+		res.HasAuditedE2Review = string(overallreview.Audited)
 	}
 }
 
