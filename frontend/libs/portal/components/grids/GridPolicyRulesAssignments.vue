@@ -37,9 +37,9 @@
 <script setup lang="ts">
 import License from '@disclosure-portal/model/License';
 import {PolicyRulesAssignmentsDto} from '@disclosure-portal/model/PolicyRule';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import {default as LicenseService} from '@disclosure-portal/services/license';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {IAnnouncement} from '@disclosure-portal/model/AnnouncementsResponse';
 import announcementService from '@disclosure-portal/services/announcements';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

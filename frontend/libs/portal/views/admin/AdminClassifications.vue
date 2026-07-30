@@ -7,12 +7,12 @@ import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/Co
 import {useView} from '@disclosure-portal/composables/useView';
 import IObligation from '@disclosure-portal/model/IObligation';
 import {compareLevel} from '@disclosure-portal/model/Quality';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';

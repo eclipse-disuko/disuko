@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import {UserRequestDto} from '@shared/types/Users';
-import ProfileServer from '@disclosure-portal/services/profile';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import ProfileServer from '@shared/user/services/profile.service';
+import {useUserStore} from '@shared/user/stores/user.store';
 import termsOfUseEn from '@shared/assets/documents/terms_of_use/TermsOfUseCurrent.md?raw';
 import termsOfUseDe from '@shared/assets/documents/terms_of_use/TermsOfUseDe.md?raw';
 import useSnackbar from '@shared/composables/useSnackbar';

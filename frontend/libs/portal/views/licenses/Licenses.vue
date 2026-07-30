@@ -14,12 +14,12 @@ import License, {
   LicenseSlim,
   PossibleFilterValues,
 } from '@disclosure-portal/model/License';
-import {Group, Rights} from '@disclosure-portal/model/Rights';
+import {Group, Rights} from '@shared/user/models/Rights';
 import AdminService from '@disclosure-portal/services/admin';
 import filterSetService from '@disclosure-portal/services/filtersets';
 import licenseService from '@disclosure-portal/services/license';
-import {useUserStore} from '@disclosure-portal/stores/user';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import ITile from '@disclosure-portal/model/ITile';
 import adminService from '@disclosure-portal/services/admin';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

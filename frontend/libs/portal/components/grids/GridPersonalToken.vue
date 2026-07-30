@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import PersonalTokenDialog from '@disclosure-portal/components/dialog/PersonalTokenDialog.vue';
-import {PersonalToken} from '@disclosure-portal/model/PersonalToken';
-import profileService from '@disclosure-portal/services/profile';
+import {PersonalToken} from '@shared/user/models/PersonalToken';
+import profileService from '@shared/user/services/profile.service';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

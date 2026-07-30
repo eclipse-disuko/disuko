@@ -10,7 +10,7 @@ import ProjectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {canDeleteProject, getDeleteTooltip} from '@disclosure-portal/utils/project-deletion-error';
 import config from '@shared/utils/config';

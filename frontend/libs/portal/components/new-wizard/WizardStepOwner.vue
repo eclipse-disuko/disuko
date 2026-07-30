@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {useNewWizard} from '@disclosure-portal/composables/useNewWizard';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 

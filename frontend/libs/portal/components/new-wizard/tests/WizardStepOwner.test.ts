@@ -4,13 +4,13 @@
 
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {createTestingPinia} from '@pinia/testing';
 import {mount, VueWrapper} from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepOwner from '../WizardStepOwner.vue';
 
-vi.mock('@disclosure-portal/utils/Rights', () => ({
+vi.mock('@shared/user/utils/RightsUtils', () => ({
   RightsUtils: {
     rights: vi.fn(() => ({
       isInternal: true,

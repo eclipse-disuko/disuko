@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as Help from '@disclosure-portal/assets/documents/help';
-import {Rights} from '@disclosure-portal/model/Rights';
-import profileService from '@disclosure-portal/services/profile';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {Rights} from '@shared/user/models/Rights';
+import profileService from '@shared/user/services/profile.service';
+import {useUserStore} from '@shared/user/stores/user.store';
 import Dashboard from '@disclosure-portal/views/Dashboard.vue';
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router';
 

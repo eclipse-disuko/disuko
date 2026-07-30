@@ -9,7 +9,7 @@ import Label from '@disclosure-portal/model/Label';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import AdminService from '@disclosure-portal/services/admin';
 import policyRuleService from '@disclosure-portal/services/policyrules';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {formatDateTimeShort, IMap} from '@disclosure-portal/utils/View';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';

@@ -3,9 +3,9 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {Rights} from '@disclosure-portal/model/Rights';
-import {useUserStore} from '@disclosure-portal/stores/user';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {Rights} from '@shared/user/models/Rights';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import config from '@shared/utils/config';

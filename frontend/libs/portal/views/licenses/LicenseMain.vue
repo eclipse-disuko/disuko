@@ -96,8 +96,8 @@
 import {useHead} from '@unhead/vue';
 import LicenseModel from '@disclosure-portal/model/License';
 import LicenseService from '@disclosure-portal/services/license';
-import {useUserStore} from '@disclosure-portal/stores/user';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {computed, onBeforeMount, ref, watch} from 'vue';

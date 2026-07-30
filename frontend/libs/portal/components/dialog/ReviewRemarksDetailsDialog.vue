@@ -124,7 +124,7 @@ import {
   SetReviewRemarkStatusRequest,
 } from '@disclosure-portal/model/Quality';
 import versionService from '@disclosure-portal/services/version';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';

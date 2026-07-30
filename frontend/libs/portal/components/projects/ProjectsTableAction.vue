@@ -5,12 +5,12 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import adminService from '@disclosure-portal/services/admin';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {canDeleteProject, getDeleteTooltip} from '@disclosure-portal/utils/project-deletion-error';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {useClipboard} from '@shared/utils/clipboard';

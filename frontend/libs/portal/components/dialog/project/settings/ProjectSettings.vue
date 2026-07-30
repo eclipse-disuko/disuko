@@ -6,7 +6,7 @@
 import {PolicyLabels} from '@disclosure-portal/constants/policyLabels';
 import {Project, ProjectSettingsModel} from '@disclosure-portal/model/Project';
 import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
-import {Group} from '@disclosure-portal/model/Rights';
+import {Group} from '@shared/user/models/Rights';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
 import {useIdleStore} from '@shared/stores/idle.store';

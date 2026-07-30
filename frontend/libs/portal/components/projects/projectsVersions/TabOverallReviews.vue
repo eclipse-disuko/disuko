@@ -6,7 +6,7 @@
 import {OverallReview, OverallReviewState} from '@disclosure-portal/model/VersionDetails';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {formatDateAndTime, getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, ref} from 'vue';

@@ -5,11 +5,11 @@
 <script lang="ts">
 import UserMain from '@disclosure-portal/components/user/UserMain.vue';
 import {UserDto} from '@shared/types/Users';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {defineComponent, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 
 export default defineComponent({

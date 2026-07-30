@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {ChangeLogResponse, IPolicyRuleChangeLog} from '@disclosure-portal/model/ChangeLog';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {
   getIconColorForPolicyType,

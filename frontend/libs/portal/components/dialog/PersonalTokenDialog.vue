@@ -3,8 +3,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {CreatePersonalTokenRequest} from '@disclosure-portal/model/PersonalToken';
-import profileService from '@disclosure-portal/services/profile';
+import {CreatePersonalTokenRequest} from '@shared/user/models/PersonalToken';
+import profileService from '@shared/user/services/profile.service';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import TextArea from '@shared/components/disco/TextArea.vue';

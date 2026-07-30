@@ -14,7 +14,7 @@ import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';

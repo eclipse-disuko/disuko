@@ -2,9 +2,9 @@
 
 <script setup lang="ts">
 import {TaskDto} from '@shared/types/Users';
-import Profile from '@disclosure-portal/services/profile';
+import Profile from '@shared/user/services/profile.service';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
