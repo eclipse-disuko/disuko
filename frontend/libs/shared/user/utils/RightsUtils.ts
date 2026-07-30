@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Group} from '@disclosure-portal/model/Rights';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {Group} from '@shared/user/models/Rights';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useRouter} from 'vue-router';
 
 type AccessChecker = () => boolean;

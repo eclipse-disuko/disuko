@@ -3,10 +3,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import ProfileService from '@disclosure-portal/services/profile';
+import ProfileService from '@shared/user/services/profile.service';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useNewsboxStore} from '@disclosure-portal/stores/newsbox.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 

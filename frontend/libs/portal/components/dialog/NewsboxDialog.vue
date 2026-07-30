@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import {useNewsboxStore} from '@disclosure-portal/stores/newsbox.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {storeToRefs} from 'pinia';
 import {computed, ref, watch} from 'vue';
 import {useLanguageStore} from '@shared/stores/language.store';

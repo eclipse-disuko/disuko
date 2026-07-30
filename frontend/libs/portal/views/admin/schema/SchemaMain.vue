@@ -5,11 +5,11 @@
 <script lang="ts" setup>
 import Icons from '@disclosure-portal/constants/icons';
 import Label from '@disclosure-portal/model/Label';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import SchemaModel from '@disclosure-portal/model/Schema';
 import StatusDialogConfig from '@disclosure-portal/model/StatusDialogConfig';
 import AdminService from '@disclosure-portal/services/admin';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {formatDateTimeShort, IMap} from '@disclosure-portal/utils/View';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';

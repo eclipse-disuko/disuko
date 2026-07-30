@@ -133,7 +133,7 @@
 import {Stats} from '@disclosure-portal/model/Analytics';
 import AnalyticsService from '@disclosure-portal/services/analytics';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import dayjs from 'dayjs';
 import {onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

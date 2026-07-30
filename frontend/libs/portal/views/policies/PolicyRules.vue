@@ -9,7 +9,7 @@ import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import AdminService from '@disclosure-portal/services/admin';
 import policyRuleService from '@disclosure-portal/services/policyrules';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';

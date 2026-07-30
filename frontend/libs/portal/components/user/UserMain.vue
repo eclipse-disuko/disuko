@@ -5,12 +5,13 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import Icons from '@disclosure-portal/constants/icons';
-import SimpleProfileData from '@disclosure-portal/model/ProfileData';
+import SimpleProfileData from '@shared/user/models/ProfileData';
 import {UserDto, UserRequestDto} from '@shared/types/Users';
 import AdminService from '@disclosure-portal/services/admin';
-import profileService from '@disclosure-portal/services/profile';
+import profileService from '@shared/user/services/profile.service';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {createNavItemsGroup, useUserStore} from '@disclosure-portal/stores/user';
+import {createNavItemsGroup} from '@disclosure-portal/stores/navigation';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {formatDate} from '@disclosure-portal/utils/View';
 import config from '@shared/utils/config';
 import {ref} from 'vue';

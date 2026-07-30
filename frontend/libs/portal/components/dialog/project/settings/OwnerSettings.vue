@@ -4,8 +4,8 @@
 
 <script lang="ts" setup>
 import {CustomerMetaDTO, NoticeContactMetaDTO} from '@disclosure-portal/model/Project';
-import {Group, Rights} from '@disclosure-portal/model/Rights';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {Group, Rights} from '@shared/user/models/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useI18n} from 'vue-i18n';
 
 interface Props {

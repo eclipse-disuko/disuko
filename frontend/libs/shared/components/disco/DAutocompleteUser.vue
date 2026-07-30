@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import {UserDto} from '@shared/types/Users';
-import profileService from '@disclosure-portal/services/profile';
+import profileService from '@shared/user/services/profile.service';
 import projectService from '@disclosure-portal/services/projects';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {RuleFunction} from '@disclosure-portal/types/rules';
 import config from '@shared/utils/config';
 import {debounce} from 'lodash';

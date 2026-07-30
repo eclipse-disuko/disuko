@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {UserDto} from '@shared/types/Users';
 import AdminService from '@disclosure-portal/services/admin';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

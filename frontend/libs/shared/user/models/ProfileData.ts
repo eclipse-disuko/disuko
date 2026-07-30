@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import {UserDto} from '@shared/types/Users';
 
 export default interface SimpleProfileData {

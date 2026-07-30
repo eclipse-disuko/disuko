@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

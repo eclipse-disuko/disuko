@@ -20,7 +20,7 @@ import companyService from '@disclosure-portal/services/companies';
 import projectService from '@disclosure-portal/services/projects';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {deepCopy} from '@disclosure-portal/utils/Tools';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {defineStore} from 'pinia';

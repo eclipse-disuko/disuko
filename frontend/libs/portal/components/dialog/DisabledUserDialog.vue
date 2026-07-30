@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {logout} from '@disclosure-portal/utils/logout';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import {defineComponent, ref} from 'vue';

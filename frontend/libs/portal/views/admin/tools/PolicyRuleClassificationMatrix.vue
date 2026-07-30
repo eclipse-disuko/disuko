@@ -9,7 +9,7 @@ import {DEFAULT_CLASSIFICATION_NAMES} from '@disclosure-portal/model/IObligation
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import adminService from '@disclosure-portal/services/admin';
 import {policyRulesMatrixStore} from '@disclosure-portal/stores/classificationMatrix.store';
-import {RightsUtils} from '@disclosure-portal/utils/Rights';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import useSnackbar from '@shared/composables/useSnackbar';

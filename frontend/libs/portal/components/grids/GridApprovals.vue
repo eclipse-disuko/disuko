@@ -11,7 +11,7 @@ import {UserDto} from '@shared/types/Users';
 import projectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, SortItem} from '@shared/types/table';

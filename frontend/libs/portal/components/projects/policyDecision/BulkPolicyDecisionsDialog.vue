@@ -14,7 +14,7 @@ import {PolicyDecisionRequest} from '@disclosure-portal/model/PolicyDecision';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {

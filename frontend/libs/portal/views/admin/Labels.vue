@@ -7,9 +7,9 @@ import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/co
 import useDimensions from '@disclosure-portal/composables/useDimensions';
 import Icons from '@disclosure-portal/constants/icons';
 import Label from '@disclosure-portal/model/Label';
-import {Rights} from '@disclosure-portal/model/Rights';
+import {Rights} from '@shared/user/models/Rights';
 import AdminService from '@disclosure-portal/services/admin';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import eventBus from '@shared/utils/eventbus';
 import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';

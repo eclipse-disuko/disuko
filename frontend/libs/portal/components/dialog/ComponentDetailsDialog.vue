@@ -15,7 +15,7 @@ import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/Vers
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {useUserStore} from '@disclosure-portal/stores/user';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {
   getIconColorForPolicyType,
   getIconColorReviewRemarkLevel,
