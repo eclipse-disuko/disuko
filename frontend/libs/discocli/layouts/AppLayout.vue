@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import SettingsMenu from '@cli/components/SettingsMenu.vue';
 import {useAppStore} from '@cli/stores/app';
-import {computed, defineAsyncComponent} from 'vue';
+import releaseNotes from '@cli/assets/documents/release_notes/ReleaseNotes.md?raw';
+import ReleaseNotesDialog from '@shared/components/dialogs/ReleaseNotesDialog.vue';
+import ProviderPrivacyDialog from '@shared/components/dialogs/ProviderPrivacyDialog.vue';
+import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 
@@ -10,9 +13,8 @@ const router = useRouter();
 const appStore = useAppStore();
 
 const isLoggedIn = computed(() => appStore.isAuthenticated);
-const AsyncProviderPrivacyDialog = defineAsyncComponent(
-  () => import('@shared/components/dialogs/ProviderPrivacyDialog.vue'),
-);
+const version = computed(() => import.meta.env.VITE_VERSION);
+const versionDate = computed(() => import.meta.env.VITE_BUILD_DATE);
 
 const logout = async () => {
   await appStore.clearAuth();
@@ -56,14 +58,19 @@ const logout = async () => {
 
     <v-footer app height="40" class="gap-2 px-4" id="disco-footer">
       <v-spacer></v-spacer>
-      <v-divider v-if="isLoggedIn" vertical></v-divider>
-      <component :is="AsyncProviderPrivacyDialog" v-if="isLoggedIn" v-slot="{showDialog}">
+      <ProviderPrivacyDialog v-if="isLoggedIn" v-slot="{showDialog}">
         <span @click="showDialog" class="text-caption cursor-pointer hover:underline">
           {{ t('PPS') }}
         </span>
-      </component>
+      </ProviderPrivacyDialog>
+      <v-divider v-if="isLoggedIn" vertical></v-divider>
+      <ReleaseNotesDialog v-if="isLoggedIn" :releaseNotes="releaseNotes" v-slot="{showDialog}">
+        <span @click="showDialog" class="text-caption cursor-pointer hover:underline">
+          <span v-if="version">{{ t('FT_VERSION') }}{{ `${version} ` }}</span>
+          <span v-if="versionDate">{{ t('FT_VERSION_FROM') }} {{ versionDate }}</span>
+        </span>
+      </ReleaseNotesDialog>
     </v-footer>
-
     <DSnackbar />
   </v-app>
 </template>

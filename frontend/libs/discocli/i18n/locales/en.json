@@ -293,5 +293,8 @@
   "TAB_PRIVACY_STATEMENT": "Privacy Statement",
   "TAB_TERMS_OF_USE": "Terms of Use",
   "TAB_NOTICE": "Third Party Notices",
-  "TT_CopyText": "copy"
+  "TT_CopyText": "copy",
+  "RELEASE_NOTES": "Release Notes",
+  "FT_VERSION": "v",
+  "FT_VERSION_FROM": "from"
 }
