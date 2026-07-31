@@ -285,5 +285,8 @@
   "TAB_PRIVACY_STATEMENT": "Datenschutzhinweise",
   "TAB_TERMS_OF_USE": "Nutzungsbedingungen",
   "TAB_NOTICE": "Hinweise zu Drittanbietern",
-  "TT_CopyText": "kopieren"
+  "TT_CopyText": "kopieren",
+  "RELEASE_NOTES": "Neuerungen",
+  "FT_VERSION": "v",
+  "FT_VERSION_FROM": "von"
 }
