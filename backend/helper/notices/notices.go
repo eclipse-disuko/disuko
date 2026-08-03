@@ -9,7 +9,6 @@ import (
 	"slices"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/eclipse-disuko/disuko/domain/label"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
@@ -67,7 +66,6 @@ func GenerateJSONNotices(requestSession *logy.RequestSession, currentProject pro
 
 func GenerateHTMLNotices(requestSession *logy.RequestSession, currentProject project.Project, licenseRepository license2.ILicensesRepository, components components.ComponentInfos, contactMeta project.NoticeContactMeta, labelRepository labels.ILabelRepository) *strings.Builder {
 	var sb strings.Builder
-	sb.WriteString("<h1>Date: " + time.Now().Format("2006-01-02") + "</h1><br>")
 	sb.WriteString("<h1>Components:</h1><br>")
 
 	groupedComponents := groupComponentsByFOSSLicense(requestSession, licenseRepository, components)
