@@ -138,7 +138,7 @@ const getFileName = computed(() => {
       ending = 'json';
       break;
   }
-  return `${currentProject.value.name}_${currentVersionId.value}_notice.${ending}`;
+  return `${currentProject.value.name}_third-party-notices.${ending}`;
 });
 
 const getContentType = () => {
