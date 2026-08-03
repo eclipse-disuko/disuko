@@ -4,11 +4,11 @@
 
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
-import {compareFamily} from '@disclosure-portal/model/License';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {CalculatedRuleConfigType} from '@disclosure-portal/model/CalculatedPolicyRules';
 import AdminService from '@disclosure-portal/services/admin';
 import useViewTools from '@disclosure-portal/utils/View';
+import {sortByText} from '@shared/utils/sort';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -29,9 +29,12 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
     classificationsLoaded: false,
   });
 
-  const classificationOptions = computed(() =>
-    state.classifications.filter((c) => c?._key).map((c) => ({text: getNameForLanguage(c), value: c._key})),
-  );
+  const classificationOptions = computed(() => {
+    const options = state.classifications
+      .filter((classification) => classification._key)
+      .map((classification) => ({text: getNameForLanguage(classification), value: classification._key}));
+    return sortByText(options);
+  });
 
   const licenseChartOptions = computed<IDefaultSelectItem[]>(() => [
     {text: t('TABLE_LICENSE_CHART_STATUS_IS'), value: 'true'},
@@ -43,9 +46,7 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
   );
 
   const familyOptions = computed<IDefaultSelectItem[]>(() =>
-    getLicenseFamily()
-      .map((family) => ({text: family.text, value: family.value || 'not declared'}))
-      .sort((a, b) => compareFamily(a.value, b.value)),
+    getLicenseFamily().map((family) => ({text: family.text, value: family.value || 'not declared'})),
   );
 
   const licenseTypeOptions = computed<IDefaultSelectItem[]>(() =>
@@ -53,8 +54,8 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
   );
 
   const sourceOptions = computed<IDefaultSelectItem[]>(() => [
-    {text: 'spdx', value: 'spdx'},
     {text: 'custom', value: 'custom'},
+    {text: 'spdx', value: 'spdx'},
   ]);
 
   const getScopeFilterValues = (filterName: ScopeFilterName): Array<string | boolean> => {
