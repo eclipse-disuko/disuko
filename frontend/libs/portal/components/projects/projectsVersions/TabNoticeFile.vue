@@ -10,7 +10,7 @@ import VersionService from '@disclosure-portal/services/version';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {downloadFile, getIconColorScanRemarkLevel} from '@disclosure-portal/utils/View';
+import {downloadFile, formatDate, getIconColorScanRemarkLevel} from '@disclosure-portal/utils/View';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -138,7 +138,7 @@ const getFileName = computed(() => {
       ending = 'json';
       break;
   }
-  return `${currentProject.value.name}_${currentVersionId.value}_notice.${ending}`;
+  return `${currentProject.value.name}_third-party-notices.${ending}`;
 });
 
 const getContentType = () => {
@@ -153,7 +153,12 @@ const getContentType = () => {
 };
 
 const downloadNoticeFile = () => {
-  downloadFile(downloadContent.value, getFileName.value, getContentType()!);
+  const content =
+    selectedFormat.value === NoticeFileFormat.html
+      ? `<h1>Date: ${formatDate(new Date())}</h1><br>${downloadContent.value}`
+      : downloadContent.value;
+
+  downloadFile(content, getFileName.value, getContentType()!);
 };
 
 const showProjectSettingsDialog = async () => {

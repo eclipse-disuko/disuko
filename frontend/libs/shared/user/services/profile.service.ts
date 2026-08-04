@@ -2,7 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {CreatePersonalTokenRequest, CreatePersonalTokenResponse, PersonalToken} from '@shared/user/models/PersonalToken';
+import {
+  CreatePersonalTokenRequest,
+  CreatePersonalTokenResponse,
+  PersonalToken,
+} from '@shared/user/models/PersonalToken';
 import {useApi} from '@shared/api/useApi';
 import SimpleProfileData from '@shared/user/models/ProfileData';
 import {ProjectRoleDto, TaskDto, UserDto, UserRequestDto} from '@shared/types/Users';
