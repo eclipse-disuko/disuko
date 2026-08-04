@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {getLicenseApprovalTypeKeys, ITextValue} from '@disclosure-portal/model/License';
-import {sortByText} from '@shared/utils/sort';
+import {sortByAttribute} from '@shared/utils/sort';
 import {useI18n} from 'vue-i18n';
 
 /**
@@ -38,7 +38,7 @@ export function useLicense() {
     keys.forEach((key) => {
       result.push({value: key, text: getI18NTextOfPrefixKey(prefix, key)});
     });
-    return sortByText(result);
+    return sortByAttribute(result, 'text');
   }
 
   /**

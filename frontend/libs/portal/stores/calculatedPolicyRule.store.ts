@@ -8,7 +8,7 @@ import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {CalculatedRuleConfigType} from '@disclosure-portal/model/CalculatedPolicyRules';
 import AdminService from '@disclosure-portal/services/admin';
 import useViewTools from '@disclosure-portal/utils/View';
-import {sortByText} from '@shared/utils/sort';
+import {sortByAttribute} from '@shared/utils/sort';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -33,7 +33,7 @@ export const useCalculatedPolicyRuleStore = defineStore('calculatedPolicyRule', 
     const options = state.classifications
       .filter((classification) => classification._key)
       .map((classification) => ({text: getNameForLanguage(classification), value: classification._key}));
-    return sortByText(options);
+    return sortByAttribute(options, 'text');
   });
 
   const licenseChartOptions = computed<IDefaultSelectItem[]>(() => [
