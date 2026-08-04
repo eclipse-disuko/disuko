@@ -2,5 +2,5 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export const sortByText = <T extends {text: string}>(items: T[]): T[] =>
-  items.toSorted((left, right) => left.text.localeCompare(right.text));
+export const sortByAttribute = <T, K extends keyof T>(items: T[], key: K): T[] =>
+  items.toSorted((left, right) => String(left[key]).localeCompare(String(right[key])));
