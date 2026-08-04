@@ -197,8 +197,19 @@ func ExtractComponentInfo(componentInfo *[]components.ComponentInfo, componentTy
 		version := value.Get("versionInfo").String()
 		if componentType == components.FILE {
 			name = value.Get("fileName").String()
-			if value.Get("checksums").IsArray() && len(value.Get("checksums").Array()) > 0 {
-				version = value.Get("checksums.0.algorithm").String() + "/" + value.Get("checksums.0.checksumValue").String()[:6]
+
+			if checksums := value.Get("checksums"); checksums.IsArray() && len(checksums.Array()) > 0 {
+				algorithm := checksums.Get("0.algorithm").String()
+				checksumValue := checksums.Get("0.checksumValue").String()
+
+				const maxChecksumLength = 6
+				if len(checksumValue) > maxChecksumLength {
+					checksumValue = checksumValue[:maxChecksumLength]
+				}
+
+				if algorithm != "" && checksumValue != "" {
+					version = algorithm + "/" + checksumValue
+				}
 			}
 		}
 
