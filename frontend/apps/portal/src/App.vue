@@ -192,7 +192,7 @@ onMounted(async () => {
   }
 
   appStore.startTokenRefresher();
-  createNavItemsGroup();
+  createNavItemsGroup(t);
 });
 </script>
 

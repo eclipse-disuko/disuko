@@ -7,6 +7,7 @@ import ITile from '@disclosure-portal/model/ITile';
 import adminService from '@disclosure-portal/services/admin';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
+import {sortByAttribute} from '@shared/utils/sort';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {DashboardCounts} from '@shared/types/DashboardCounts';
@@ -217,7 +218,7 @@ const tiles = computed<ITile[]>(() => {
       expand: false,
     });
   }
-  return res;
+  return sortByAttribute(res, 'title', t);
 });
 
 onMounted(() => {
