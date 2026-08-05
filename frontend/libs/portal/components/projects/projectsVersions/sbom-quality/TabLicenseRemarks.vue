@@ -17,10 +17,12 @@ import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_
 import _ from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useRoute} from 'vue-router';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
 
 const {t} = useI18n();
+const route = useRoute();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const viewTools = useViewTools();
@@ -231,6 +233,13 @@ const filterOnType = (item: ObligationDTO): boolean => {
   return selectedFilterTypes.value.includes(item.type);
 };
 
+const handleFilterQuery = () => {
+  const filter = route.query.licenseRemarkLevel as string;
+  if (filter) {
+    selectedFilterStatus.value = [filter.toUpperCase()];
+  }
+};
+
 const downloadLicenseRemarksCsv = async () => {
   downloadFile(
     `${projectModel.value.name}_${version.value.name}_license_remarks.csv`,
@@ -245,10 +254,12 @@ const downloadLicenseRemarksCsv = async () => {
 };
 
 onMounted(async () => {
+  handleFilterQuery();
   await reload();
 });
 
 watch(() => spdx.value, reload);
+watch(() => route.path, handleFilterQuery);
 </script>
 
 <template>

@@ -496,11 +496,11 @@ const filterOnPolicyState = () => {
 
 const filterOnFamilyQuery = () => {
   const fam = route.query.family as string;
-  if (fam === 'not declared') {
-    selectedFilterFamily.value = [''];
-  } else if (fam) {
-    selectedFilterFamily.value = [fam];
+  if (!fam) {
+    return;
   }
+  const familyKey = fam === 'not declared' ? '' : fam;
+  selectedFilterFamily.value = [getI18NTextOfPrefixKey('LIC_FAMILY_', familyKey)];
 };
 
 const formatText = (text: string): string => {

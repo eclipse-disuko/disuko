@@ -259,7 +259,7 @@ function handleLegendClick(index: number, chartType: string) {
       openFilteredReviewRemarks({} as ChartEvent, [{index} as unknown as ArcElement]);
       break;
     case 'licenseRemarks':
-      openLicenseRemarks();
+      openLicenseRemarks({} as ChartEvent, [{index} as unknown as ArcElement]);
       break;
     case 'policyStates':
       openFilteredComponents({} as ChartEvent, [{index}]);
@@ -396,11 +396,19 @@ function addTransparencyToHex(hex: string, alpha = 0.3) {
   return `${hex}${opacity}`;
 }
 
-function openLicenseRemarks(): void {
+function openLicenseRemarks(event: ChartEvent, elements: ArcElement[]): void {
+  const labelMapping = {
+    [t('LR_CHART_ALARM')]: 'ALARM',
+    [t('LR_CHART_WARNING')]: 'WARNING',
+    [t('LR_CHART_INFORMATION')]: 'INFORMATION',
+  };
+
+  const mapped = resolveBarLabel<string>(elements, chartDataLicenseRemarks.value, labelMapping);
   router.push({
     path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
       versionDetails.value._key,
     )}/sbomQuality/${currentSpdx.value._key}/licenseRemarks`,
+    query: mapped ? {licenseRemarkLevel: mapped} : undefined,
   });
 }
 
