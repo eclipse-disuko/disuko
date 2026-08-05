@@ -6,8 +6,9 @@ import INavItem from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {useUserStore} from '@shared/user/stores/user.store';
+import {sortByAttribute} from '@shared/utils/sort';
 
-export const createNavItemsGroup = function () {
+export const createNavItemsGroup = function (t: (key: string) => string) {
   const rights = useUserStore().getRights;
   const items = [] as INavItem[];
   const adminItems = [] as INavItem[];
@@ -158,8 +159,10 @@ export const createNavItemsGroup = function () {
     );
   }
 
+  const sortedAdminItems = sortByAttribute(adminItems, 'title', t);
+
   // TODO: Using a store outside of a component, composable or store
-  useAppStore().setNavItemGroup(items, adminItems);
+  useAppStore().setNavItemGroup(items, sortedAdminItems);
 
   const res: ITile[] = [];
   const addTile = (title: string, url: string, icon: string, cnt?: number) => {
