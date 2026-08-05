@@ -494,7 +494,7 @@ func (handler *UserHandler) GetNewTokensForNonInternalHandlerForAdmin(w http.Res
 func (handler *UserHandler) handleGetNewTokens(w http.ResponseWriter, r *http.Request, forceNonInternal bool) {
 	requestSession := logy.GetRequestSession(r)
 	userName, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+	if !rights.IsDomainAdmin() {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 	currentUser := handler.loadRequestedUser(requestSession, r)
