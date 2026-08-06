@@ -91,7 +91,7 @@ func (r *ReviewSubscribe) sendMail(data observermngmt.OverallReviewData) {
 					logy.Errorf(data.RequestSession, "Could not send email %v", err)
 				}
 			}()
-			err := r.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeyReviewCreated, mailData)
+			err := r.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeyReviewCreated, mailData, nil)
 			if err != nil {
 				logy.Errorf(data.RequestSession, "Failed to send the email: %v", err)
 			} else {

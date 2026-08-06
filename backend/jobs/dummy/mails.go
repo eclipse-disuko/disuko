@@ -111,7 +111,7 @@ func (j *MailJob) sendMail(rs *logy.RequestSession, prj *project.Project, resp *
 	mailData.ProjectName = prj.Name
 	mailData.Days = days
 
-	err := j.mailService.SendMail(rs, resp.Email, mailtemplate.MailTemplateKeyDummyDeletion, mailData)
+	err := j.mailService.SendMail(rs, resp.Email, mailtemplate.MailTemplateKeyDummyDeletion, mailData, nil)
 	if err != nil {
 		log.AddEntry(job.Error, "Failed to send the email to %s", resp.Email)
 	} else {
