@@ -441,7 +441,7 @@ func (handler *UserHandler) UpdateLastSeen(w http.ResponseWriter, r *http.Reques
 func (handler *UserHandler) UpdateUserRolesHandlerForAdmin(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 	userName, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+	if !rights.IsDomainAdmin() {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
@@ -451,11 +451,36 @@ func (handler *UserHandler) UpdateUserRolesHandlerForAdmin(w http.ResponseWriter
 	}
 
 	userRolesData := handler.extractRolesRequestBody(r)
-	currentUser.Roles = userRolesData.Roles
+	currentUser.Roles = applyRequestedRoleRestriction(userRolesData.Roles, currentUser.Roles)
 
 	handler.UserRepository.Update(requestSession, currentUser)
 	dto := currentUser.ToDto()
 	render.JSON(w, r, dto)
+}
+
+func applyRequestedRoleRestriction(requestedRoles, currentRoles []string) []string {
+	allowedRoles := make(map[string]struct{}, len(currentRoles))
+	for _, role := range currentRoles {
+		allowedRoles[role] = struct{}{}
+	}
+
+	restrictedRoles := make([]string, 0, len(requestedRoles))
+	addedRoles := make(map[string]struct{}, len(requestedRoles))
+
+	for _, role := range requestedRoles {
+		if _, allowed := allowedRoles[role]; !allowed {
+			continue
+		}
+
+		if _, duplicate := addedRoles[role]; duplicate {
+			continue
+		}
+
+		restrictedRoles = append(restrictedRoles, role)
+		addedRoles[role] = struct{}{}
+	}
+
+	return restrictedRoles
 }
 
 func (handler *UserHandler) GetNewTokensHandlerForAdmin(w http.ResponseWriter, r *http.Request) {
@@ -469,7 +494,7 @@ func (handler *UserHandler) GetNewTokensForNonInternalHandlerForAdmin(w http.Res
 func (handler *UserHandler) handleGetNewTokens(w http.ResponseWriter, r *http.Request, forceNonInternal bool) {
 	requestSession := logy.GetRequestSession(r)
 	userName, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
-	if !(rights.AllowUsers.Create && rights.AllowUsers.Read && rights.AllowUsers.Update && rights.AllowUsers.Delete) {
+	if !rights.IsDomainAdmin() {
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 	currentUser := handler.loadRequestedUser(requestSession, r)

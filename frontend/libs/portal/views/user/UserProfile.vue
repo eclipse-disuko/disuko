@@ -27,7 +27,7 @@ export default defineComponent({
     const rolesSwitchable = ref(false);
     const reloadUserProfile = () => {
       userProfile.value = userStore.getProfile;
-      rolesSwitchable.value = RightsUtils.hasUsersAccess();
+      rolesSwitchable.value = RightsUtils.isDomainAdmin();
     };
 
     const initBreadcrumbs = () => {
