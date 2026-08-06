@@ -10,6 +10,8 @@ export interface IAnalyticsSearchRequest {
   license: string;
   exactComponent: boolean;
   exactLicense: boolean;
+  latestSbom?: boolean;
+  lastApprovedSbom?: boolean;
 }
 
 export interface SearchResponseItem {

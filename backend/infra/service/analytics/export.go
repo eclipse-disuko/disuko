@@ -12,6 +12,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/project/components"
 	sbomlist2 "github.com/eclipse-disuko/disuko/domain/project/sbomlist"
+	"github.com/eclipse-disuko/disuko/domain/user/approval"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
@@ -53,18 +54,21 @@ type SpdxAddedOptions struct {
 }
 
 type SearchOptions struct {
-	Rs          *logy.RequestSession
-	Component   string
-	License     string
-	ProjectKeys []string
-	Offset      int
-	Limit       int
-	SortCol     string
-	Asc         bool
+	Rs               *logy.RequestSession
+	Component        string
+	License          string
+	ProjectKeys      []string
+	LatestSbom       bool
+	LastApprovedSbom bool
+	Offset           int
+	Limit            int
+	SortCol          string
+	Asc              bool
 }
 
 type DataHandler interface {
 	HandleSpdxAdded(SpdxAddedOptions)
+	HandleSpdxApproved(SpdxAddedOptions)
 	HandleSpdxDeleted(*logy.RequestSession, string)
 	Reset()
 	Occurrences(*logy.RequestSession) []*analytics.Occurrence
@@ -97,6 +101,50 @@ func (a *Analytics) ExportSPDX(requestSession *logy.RequestSession, pr *project.
 	})
 }
 
+func (a *Analytics) ExportApprovedSPDX(requestSession *logy.RequestSession, pr *project.Project, version *project.ProjectVersion, spdx *project.SpdxFileBase) {
+	compInfo := a.SpdxService.GetComponentInfos(requestSession, pr, version.Key, spdx)
+	rules := a.PolicyRuleRepository.FindPolicyRulesForLabel(requestSession, pr.PolicyLabels)
+	policyDecisions := a.PolicyDecisionsRepo.FindByKey(requestSession, pr.Key, false)
+	isVehicle := a.ProjectLabelService.HasVehiclePlatformLabel(requestSession, pr)
+	evalRes := compInfo.EvaluatePolicyRules(rules, policyDecisions, isVehicle, spdx.Uploaded, spdx.Key)
+	var parent *project.Project
+	if pr.Parent != "" {
+		parent = a.ProjectRepository.FindByKey(requestSession, pr.Parent, false)
+	}
+	a.Handler.HandleSpdxApproved(SpdxAddedOptions{
+		rs:       requestSession,
+		project:  pr,
+		parent:   parent,
+		version:  version,
+		evalRes:  evalRes,
+		spdxFile: spdx,
+	})
+}
+
+func (a *Analytics) HandleApprovalFinalized(requestSession *logy.RequestSession, projectKey, versionKey, spdxKey string) {
+	spdxFile := a.SbomListrepository.FindFile(requestSession, versionKey, spdxKey)
+	if spdxFile == nil || spdxFile.ApprovalInfo.Status != string(approval.ApApproved) {
+		return
+	}
+
+	pr := a.ProjectRepository.FindByKey(requestSession, projectKey, false)
+	if pr == nil || pr.Deleted {
+		return
+	}
+	var version *project.ProjectVersion
+	for _, v := range pr.Versions {
+		if v.Key == versionKey {
+			version = v
+			break
+		}
+	}
+	if version == nil || version.Deleted {
+		return
+	}
+
+	a.ExportApprovedSPDX(requestSession, pr, version, spdxFile)
+}
+
 func (a *Analytics) DeleteProject(requestSession *logy.RequestSession, project *project.Project) {
 	for _, v := range project.Versions {
 		if v.Deleted {
@@ -111,8 +159,9 @@ func (a *Analytics) DeleteVersion(requestSession *logy.RequestSession, project *
 	if versionSBoms == nil || len(versionSBoms.SpdxFileHistory) == 0 || version.Deleted {
 		return
 	}
-	spdx := versionSBoms.SpdxFileHistory.GetLatest()
-	go a.Handler.HandleSpdxDeleted(requestSession, spdx.Key)
+	for _, spdx := range versionSBoms.SpdxFileHistory {
+		go a.Handler.HandleSpdxDeleted(requestSession, spdx.Key)
+	}
 }
 
 func (a *Analytics) Reinitialise(requestSession *logy.RequestSession) {

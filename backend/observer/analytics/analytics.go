@@ -31,6 +31,7 @@ func (a *Analytics) RegisterHandlers() {
 	observermngmt.RegisterHandler(observermngmt.LicenseAliasAdded, a.OnAliasAdded)
 	observermngmt.RegisterHandler(observermngmt.LicenseAliasDeleted, a.OnAliasDeleted)
 	observermngmt.RegisterHandler(observermngmt.ProjectUpdated, a.OnProjectUpdated)
+	observermngmt.RegisterHandler(observermngmt.ApprovalFinalized, a.OnApprovalFinalized)
 }
 
 func (a *Analytics) OnSpdxAdded(eventId observermngmt.EventId, arg interface{}) {
@@ -51,6 +52,24 @@ func (a *Analytics) OnSpdxDeleted(eventId observermngmt.EventId, arg interface{}
 	go exception.TryCatchAndLog(data.RequestSession, func() {
 		a.service.Handler.HandleSpdxDeleted(data.RequestSession, data.SpdxFile.Key)
 	})
+}
+
+func (a *Analytics) OnApprovalFinalized(eventId observermngmt.EventId, arg interface{}) {
+	data, ok := arg.(observermngmt.ApprovalData)
+	if !ok || data.Approval == nil {
+		return
+	}
+	for _, p := range data.Approval.Info.Projects {
+		if p.ApprovableSPDX.SpdxKey == "" || p.ApprovableSPDX.VersionKey == "" {
+			continue
+		}
+		projectKey := p.ProjectKey
+		versionKey := p.ApprovableSPDX.VersionKey
+		spdxKey := p.ApprovableSPDX.SpdxKey
+		go exception.TryCatchAndLog(data.RequestSession, func() {
+			a.service.HandleApprovalFinalized(data.RequestSession, projectKey, versionKey, spdxKey)
+		})
+	}
 }
 
 func (a *Analytics) OnVersionDeleted(eventId observermngmt.EventId, arg interface{}) {

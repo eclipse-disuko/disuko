@@ -907,14 +907,16 @@ func (projectHandler *ProjectHandler) ProjectComponentSearchHandler(w http.Respo
 	}
 
 	searchResponse := projectHandler.AnalyticsService.Search(sa.SearchOptions{
-		Rs:          requestSession,
-		Component:   search.AnalyticsRequestSearchOptions.Component,
-		License:     search.AnalyticsRequestSearchOptions.License,
-		ProjectKeys: keys(userProjects),
-		Offset:      int(offset),
-		Limit:       int(limit),
-		SortCol:     sortCol,
-		Asc:         asc,
+		Rs:               requestSession,
+		Component:        search.AnalyticsRequestSearchOptions.Component,
+		License:          search.AnalyticsRequestSearchOptions.License,
+		ProjectKeys:      keys(userProjects),
+		LatestSbom:       search.AnalyticsRequestSearchOptions.LatestSbom,
+		LastApprovedSbom: search.AnalyticsRequestSearchOptions.LastApprovedSbom,
+		Offset:           int(offset),
+		Limit:            int(limit),
+		SortCol:          sortCol,
+		Asc:              asc,
 	})
 	render.JSON(w, r, searchResponse)
 }

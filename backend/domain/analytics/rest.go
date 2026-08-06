@@ -12,10 +12,12 @@ import (
 )
 
 type RequestSearchOptions struct {
-	Component      string `json:"component" validate:"gte=0,lte=200"`
-	License        string `json:"license" validate:"gte=0,lte=500"`
-	ExactComponent bool   `json:"exactComponent"`
-	ExactLicense   bool   `json:"exactLicense"`
+	Component        string `json:"component" validate:"gte=0,lte=200"`
+	License          string `json:"license" validate:"gte=0,lte=500"`
+	ExactComponent   bool   `json:"exactComponent"`
+	ExactLicense     bool   `json:"exactLicense"`
+	LatestSbom       bool   `json:"latestSbom"`
+	LastApprovedSbom bool   `json:"lastApprovedSbom"`
 }
 
 type CombinedReportRequestDto struct {
