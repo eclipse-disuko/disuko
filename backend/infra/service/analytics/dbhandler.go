@@ -77,16 +77,84 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 		return
 	}
 
-	qc = database.New().SetMatcher(database.AttributeMatcher(
-		"ProjectVersionKey",
-		database.EQ,
-		options.version.Key,
-	))
-	prev := h.analyticsRepository.Query(options.rs, qc)
-	if len(prev) > 0 {
-		h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true)
+	prevLatest := h.queryVersionAnalytics(options.rs, options.version.Key, true)
+	if len(prevLatest) > 0 {
+		if prevLatest[0].SBomStatus == approval.ApApproved {
+			h.deleteAnalyticsEntries(options.rs, h.queryVersionAnalytics(options.rs, options.version.Key, false))
+			bulkSession := h.analyticsRepository.StartSession(base.UpdateSession, 3000)
+			for _, e := range prevLatest {
+				e.IsLatestSbom = false
+				h.analyticsRepository.Update(options.rs, e)
+			}
+			bulkSession.EndSession()
+		} else {
+			h.deleteAnalyticsEntries(options.rs, prevLatest)
+		}
 	}
 
+	h.storeAnalyticsEntries(options, true)
+}
+
+func (h *DbHandler) HandleSpdxApproved(options SpdxAddedOptions) {
+	l, acquired := h.lockService.Acquire(locks.Options{
+		Blocking: true,
+		Key:      lockKey,
+		Timeout:  lockTimeout,
+	})
+	if !acquired {
+		return
+	}
+	defer h.lockService.Release(l)
+
+	qc := database.New().SetMatcher(database.AttributeMatcher(
+		"SBomKey",
+		database.EQ,
+		options.spdxFile.Key,
+	))
+	existingForKey := h.analyticsRepository.Query(options.rs, qc)
+	if len(existingForKey) > 0 {
+		bulkSession := h.analyticsRepository.StartSession(base.UpdateSession, 3000)
+		for _, e := range existingForKey {
+			e.SBomStatus = approval.ApprovalStatus(options.spdxFile.ApprovalInfo.Status)
+			h.analyticsRepository.Update(options.rs, e)
+		}
+		bulkSession.EndSession()
+
+		h.deleteAnalyticsEntries(options.rs, h.queryOtherApprovedAnalytics(options.rs, options.version.Key, options.spdxFile.Key))
+		return
+	}
+
+	h.deleteAnalyticsEntries(options.rs, h.queryVersionAnalytics(options.rs, options.version.Key, false))
+	h.storeAnalyticsEntries(options, false)
+}
+
+func (h *DbHandler) queryVersionAnalytics(session *logy.RequestSession, versionKey string, isLatest bool) []*da.Analytics {
+	qc := database.New().SetMatcher(database.AndChain(
+		database.AttributeMatcher(
+			"ProjectVersionKey",
+			database.EQ,
+			versionKey,
+		),
+		database.AttributeMatcher(
+			"IsLatestSbom",
+			database.EQ,
+			isLatest,
+		),
+	))
+	return h.analyticsRepository.Query(session, qc)
+}
+
+func (h *DbHandler) queryOtherApprovedAnalytics(session *logy.RequestSession, versionKey, exceptSBomKey string) []*da.Analytics {
+	res := make([]*da.Analytics, 0)
+	for _, e := range h.queryVersionAnalytics(session, versionKey, false) {
+		if e.SBomKey != exceptSBomKey {
+			res = append(res, e)
+		}
+	}
+	return res
+}
+
+func (h *DbHandler) storeAnalyticsEntries(options SpdxAddedOptions, isLatest bool) {
 	licenses := make(map[string]bool)
 	components := make(map[string]bool)
 
@@ -148,6 +216,7 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 				SBomName:       options.spdxFile.MetaInfo.Name,
 				SBomStatus:     approval.ApprovalStatus(options.spdxFile.ApprovalInfo.Status),
 				SBomLastUpdate: options.spdxFile.Updated,
+				IsLatestSbom:   isLatest,
 			}
 			bulkSession.AddEnt(&a)
 			exception.TryCatch(func() {
@@ -194,6 +263,30 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 	h.processOccurrences(options.rs, occurrenceUpdates)
 }
 
+func (h *DbHandler) deleteAnalyticsEntries(session *logy.RequestSession, entries []*da.Analytics) {
+	if len(entries) == 0 {
+		return
+	}
+	bulkSession := h.analyticsRepository.StartSession(base.DeleteSession, 3000)
+	defer bulkSession.EndSession()
+	occurrenceUpdates := make(map[string]*analytics.Occurrence)
+	for _, result := range entries {
+		for _, l := range result.Licenses.List {
+			if o, found := occurrenceUpdates[l.OrigName]; found {
+				o.Count++
+			} else {
+				occurrenceUpdates[l.OrigName] = &da.Occurrence{
+					OrigName:          l.OrigName,
+					ReferencedLicense: l.ReferencedLicense,
+					Count:             1,
+				}
+			}
+		}
+		bulkSession.AddEnt(result)
+	}
+	h.processOccurrencesDeletion(session, occurrenceUpdates)
+}
+
 func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, alreadyAcquired bool) {
 	if !alreadyAcquired {
 		l, acquired := h.lockService.Acquire(locks.Options{
@@ -217,25 +310,7 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 		return
 	}
 
-	bulkSession := h.analyticsRepository.StartSession(base.DeleteSession, 3000)
-	defer bulkSession.EndSession()
-	occurrenceUpdates := make(map[string]*analytics.Occurrence)
-	for _, result := range existing {
-		for _, l := range result.Licenses.List {
-			if o, found := occurrenceUpdates[l.OrigName]; found {
-				o.Count++
-			} else {
-				occurrenceUpdates[l.OrigName] = &da.Occurrence{
-					OrigName:          l.OrigName,
-					ReferencedLicense: l.ReferencedLicense,
-					Count:             1,
-				}
-			}
-		}
-
-		bulkSession.AddEnt(result)
-	}
-	h.processOccurrencesDeletion(session, occurrenceUpdates)
+	h.deleteAnalyticsEntries(session, existing)
 }
 
 func (h *DbHandler) processOccurrences(session *logy.RequestSession, updates map[string]*analytics.Occurrence) {
@@ -332,6 +407,8 @@ func (h *DbHandler) HandleSearch(options SearchOptions) analytics.ResponseAnalyt
 		options.Component,
 		options.ProjectKeys,
 		options.License,
+		options.LatestSbom,
+		options.LastApprovedSbom,
 		options.Offset,
 		options.Limit,
 		options.SortCol,

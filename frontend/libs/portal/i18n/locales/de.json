@@ -589,6 +589,8 @@
   "TT_COPY_TOKEN": "Token kopieren",
   "LBL_MY_PROJECTS": "Meine Projekte",
   "LBL_EXACT_MATCH": "Exakte Suche",
+  "LBL_LATEST_SBOM": "Neuestes SBOM",
+  "LBL_LAST_APPROVED_SBOM": "Letztes freigegebenes SBOM",
   "LABEL_SPDX_SCHEMA": "Validiert anhand des SBOM-Schemas",
   "LABEL_SBOM_VALID": "gültig",
   "LABEL_SBOM_INVALID": "ungültig",

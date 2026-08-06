@@ -6,6 +6,7 @@ package analytics
 
 import (
 	"github.com/eclipse-disuko/disuko/domain/analytics"
+	"github.com/eclipse-disuko/disuko/domain/user/approval"
 	"github.com/eclipse-disuko/disuko/infra/repository/base"
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/logy"
@@ -50,12 +51,36 @@ func NewAnalyticsRepository(requestSession *logy.RequestSession) IAnalyticsRepos
 	return analyticsRepository
 }
 
-func (repository *analyticsRepositoryStruct) FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, component string, keys []string, entryLicense string, offset, limit int, sortCol string, asc bool) []*analytics.Analytics {
+func (repository *analyticsRepositoryStruct) FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, component string, keys []string, entryLicense string, latestSbom, lastApprovedSbom bool, offset, limit int, sortCol string, asc bool) []*analytics.Analytics {
 	qc := database.New().SetMatcher(
 		database.AttributeMatcher(
 			"Deleted",
 			database.EQ,
 			false))
+
+	if latestSbom || lastApprovedSbom {
+		var sbomSelectionGroup []database.MatchGroup
+		if latestSbom {
+			sbomSelectionGroup = append(sbomSelectionGroup, database.AttributeMatcher(
+				"IsLatestSbom",
+				database.EQ,
+				true,
+			))
+		}
+		if lastApprovedSbom {
+			sbomSelectionGroup = append(sbomSelectionGroup, database.AttributeMatcher(
+				"SBomStatus",
+				database.EQ,
+				approval.ApApproved,
+			))
+		}
+		qc.SetMatcher(database.AndChain(
+			*qc.Matcher,
+			database.OrChain(
+				sbomSelectionGroup...,
+			),
+		))
+	}
 
 	if component != "" {
 		qc.SetMatcher(database.AndChain(

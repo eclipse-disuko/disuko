@@ -37,4 +37,5 @@ type Analytics struct {
 	SBomName       string
 	SBomStatus     approval.ApprovalStatus
 	SBomLastUpdate time.Time
+	IsLatestSbom bool
 }

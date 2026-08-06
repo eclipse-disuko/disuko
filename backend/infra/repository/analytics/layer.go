@@ -14,5 +14,5 @@ const AnalyticsCollectionName = "analytics"
 
 type IAnalyticsRepository interface {
 	base.IBaseRepositoryWithSoftDelete[*da.Analytics]
-	FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, componentName string, keys []string, licenceEffective string, offset, limit int, sortCol string, asc bool) []*da.Analytics
+	FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, componentName string, keys []string, licenceEffective string, latestSbom, lastApprovedSbom bool, offset, limit int, sortCol string, asc bool) []*da.Analytics
 }

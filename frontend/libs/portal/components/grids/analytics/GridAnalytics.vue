@@ -41,6 +41,8 @@ const selectedHeaders = ref<number[]>([]);
 const licenseSearch = ref<string | null>(null);
 const myProjects = ref(false);
 const exactMatch = ref(false);
+const latestSbom = ref(true);
+const lastApprovedSbom = ref(false);
 const loadingAnalytics = ref(false);
 const loadingComponents = ref(false);
 const loadingLicenses = ref(false);
@@ -62,6 +64,10 @@ watch(
   },
 );
 
+watch([() => latestSbom.value, () => lastApprovedSbom.value], () => {
+  reloadAnalytics();
+});
+
 const reloadAnalytics = async (newInput = true) => {
   loadingAnalytics.value = true;
   items.value = [];
@@ -71,6 +77,8 @@ const reloadAnalytics = async (newInput = true) => {
     license: licenseSearch.value,
     exactComponent: exactMatch.value,
     exactLicense: exactMatch.value,
+    latestSbom: latestSbom.value,
+    lastApprovedSbom: lastApprovedSbom.value,
   };
   const combinedSearchOptions = {
     analyticsRequestSearchOptions: analyticsSearchRequest,
@@ -163,7 +171,7 @@ watch(
   <TableLayout has-tab has-title>
     <template #buttons>
       <div class="grid w-full grid-cols-12 gap-3">
-        <div class="flex flex-row sm:col-span-5 md:col-span-4 lg:col-span-3">
+        <div class="col-span-12 flex flex-row flex-wrap">
           <v-checkbox
             v-model="myProjects"
             hide-details
@@ -171,6 +179,8 @@ watch(
             @change="myProjectsChanged"
             :label="t('LBL_MY_PROJECTS')" />
           <v-checkbox v-model="exactMatch" hide-details color="primary" :label="t('LBL_EXACT_MATCH')" />
+          <v-checkbox v-model="latestSbom" hide-details color="primary" :label="t('LBL_LATEST_SBOM')" />
+          <v-checkbox v-model="lastApprovedSbom" hide-details color="primary" :label="t('LBL_LAST_APPROVED_SBOM')" />
         </div>
         <v-spacer class="sm:col-span-1 md:col-span-2 lg:col-span-3"></v-spacer>
         <div class="sm:col-span-3 md:col-span-3 lg:col-span-3">
