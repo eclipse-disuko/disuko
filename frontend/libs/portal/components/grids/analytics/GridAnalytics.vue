@@ -162,51 +162,45 @@ watch(
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid w-full grid-cols-12 gap-3">
-        <div class="flex flex-row sm:col-span-5 md:col-span-4 lg:col-span-3">
-          <v-checkbox
-            v-model="myProjects"
-            hide-details
-            color="primary"
-            @change="myProjectsChanged"
-            :label="t('LBL_MY_PROJECTS')" />
-          <v-checkbox v-model="exactMatch" hide-details color="primary" :label="t('LBL_EXACT_MATCH')" />
-        </div>
-        <v-spacer class="sm:col-span-1 md:col-span-2 lg:col-span-3"></v-spacer>
-        <div class="sm:col-span-3 md:col-span-3 lg:col-span-3">
-          <v-autocomplete
-            :label="t('labelSearchComponent')"
-            variant="outlined"
-            clearable
-            density="compact"
-            v-model="componentSearch"
-            single-line
-            @update:search="debouncedSearchComponents"
-            :loading="loadingComponents"
-            :items="components"
-            return-object
-            hide-details="auto"
-            :no-filter="true"
-            autocomplete="off" />
-        </div>
-        <div class="sm:col-span-3 md:col-span-3 lg:col-span-3">
-          <v-autocomplete
-            :label="t('labelSearchLicense')"
-            variant="outlined"
-            clearable
-            v-model="licenseSearch"
-            density="compact"
-            single-line
-            @change="reloadAnalytics"
-            @update:search="debouncedSearchLicenses"
-            :loading="loadingLicenses"
-            :items="licenses"
-            return-object
-            hide-details="auto"
-            :no-filter="true"
-            autocomplete="off" />
-        </div>
-      </div>
+      <v-checkbox
+        v-model="myProjects"
+        hide-details
+        color="primary"
+        @change="myProjectsChanged"
+        :label="t('LBL_MY_PROJECTS')" />
+      <v-checkbox v-model="exactMatch" hide-details color="primary" :label="t('LBL_EXACT_MATCH')" />
+      <v-spacer></v-spacer>
+      <v-autocomplete
+        :label="t('labelSearchComponent')"
+        variant="outlined"
+        clearable
+        density="compact"
+        class="w-64"
+        v-model="componentSearch"
+        single-line
+        @update:search="debouncedSearchComponents"
+        :loading="loadingComponents"
+        :items="components"
+        return-object
+        hide-details="auto"
+        :no-filter="true"
+        autocomplete="off" />
+      <v-autocomplete
+        :label="t('labelSearchLicense')"
+        variant="outlined"
+        clearable
+        v-model="licenseSearch"
+        density="compact"
+        class="w-64"
+        single-line
+        @change="reloadAnalytics"
+        @update:search="debouncedSearchLicenses"
+        :loading="loadingLicenses"
+        :items="licenses"
+        return-object
+        hide-details="auto"
+        :no-filter="true"
+        autocomplete="off" />
     </template>
 
     <template #table>
