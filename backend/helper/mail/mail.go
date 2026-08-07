@@ -41,7 +41,7 @@ func explicitUTF8Subject(subject string) string {
 	return "=?UTF-8?B?" + base64.StdEncoding.EncodeToString([]byte(subject)) + "?="
 }
 
-func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl string, data any) error {
+func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl string, data any, extraCc []string) error {
 	if c.Host == "" {
 		return nil
 	}
@@ -67,6 +67,7 @@ func (c Client) Send(to string, cc string, bcc string, bodyTmpl, subjectTmpl str
 	}
 
 	ccAddrs := splitAddresses(cc)
+	ccAddrs = append(ccAddrs, extraCc...)
 	bccAddrs := splitAddresses(bcc)
 
 	msgLines := []string{

@@ -219,7 +219,7 @@ func (a *ApprovalMail) sendMail(rs *logy.RequestSession, user *user.User, templa
 				logy.Errorf(rs, "Could not send email %v", err)
 			}
 		}()
-		err := a.mailService.SendMail(rs, user.Email, template, data)
+		err := a.mailService.SendMail(rs, user.Email, template, data, nil)
 		if err != nil {
 			logy.Errorf(rs, "Failed to send the email: %v", err)
 		} else {

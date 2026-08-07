@@ -15,7 +15,7 @@ type Service struct {
 	TemplateRepo mailtemplates.IMailTemplatesRepository
 }
 
-func (s *Service) SendMail(rs *logy.RequestSession, to string, templateKey mailtemplate.MailTemplateKey, data any) error {
+func (s *Service) SendMail(rs *logy.RequestSession, to string, templateKey mailtemplate.MailTemplateKey, data any, extraCc []string) error {
 	tmpl := s.TemplateRepo.FindByKey(rs, string(templateKey), false)
 	if tmpl == nil {
 		return fmt.Errorf("template not found %s", templateKey)
@@ -25,7 +25,7 @@ func (s *Service) SendMail(rs *logy.RequestSession, to string, templateKey mailt
 			return fmt.Errorf("mail data type %T does not match expected type %T for template %s", data, expected, templateKey)
 		}
 	}
-	if err := s.Client.Send(to, tmpl.Cc, tmpl.Bcc, tmpl.Message, tmpl.Subject, data); err != nil {
+	if err := s.Client.Send(to, tmpl.Cc, tmpl.Bcc, tmpl.Message, tmpl.Subject, data, extraCc); err != nil {
 		return fmt.Errorf("sending mail: %w", err)
 	}
 	return nil
@@ -40,7 +40,7 @@ func (s *Service) SendTestMail(rs *logy.RequestSession, to string, templateKey m
 	if expected, ok := mailtemplate.MailTemplateDataTypes[templateKey]; ok {
 		data = FillWithPlaceholders(expected)
 	}
-	if err := s.Client.Send(to, "", "", message, tmpl.Subject, data); err != nil {
+	if err := s.Client.Send(to, "", "", message, tmpl.Subject, data, nil); err != nil {
 		return fmt.Errorf("sending test mail: %w", err)
 	}
 	return nil

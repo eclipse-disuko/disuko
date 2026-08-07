@@ -49,7 +49,7 @@ func (handler *MailHandler) SendMail(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 
-		err := handler.Service.SendMail(requestSession, recipient, mailtemplate.MailTemplateKeyTaskApproval, mailData)
+		err := handler.Service.SendMail(requestSession, recipient, mailtemplate.MailTemplateKeyTaskApproval, mailData, nil)
 		if err != nil {
 			logy.Errorf(requestSession, "Failed to send the email: %v", err)
 		} else {

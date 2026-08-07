@@ -102,7 +102,7 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 			DeletionDate: deletionDate,
 			InactiveDays: sendMailOnDay,
 		}
-		err := j.mailService.SendMail(rs, u.Email, inactiveMailTemplate, data)
+		err := j.mailService.SendMail(rs, u.Email, inactiveMailTemplate, data, nil)
 		if err != nil {
 			log.AddEntry(job.Error, "failed to send mail to %s: %s", u.Email, err)
 			logy.Errorf(rs, "failed to send inactive mail to %s: %s", u.Email, err)

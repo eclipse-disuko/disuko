@@ -66,7 +66,7 @@ func (s *SpdxSubscribe) sendMail(data observermngmt.SpdxData) {
 					logy.Errorf(data.RequestSession, "Could not send email %v", err)
 				}
 			}()
-			err := s.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeySpdxUploaded, mailData)
+			err := s.mailService.SendMail(data.RequestSession, targetUser.Email, mailtemplate.MailTemplateKeySpdxUploaded, mailData, nil)
 			if err != nil {
 				logy.Errorf(data.RequestSession, "Failed to send the email: %v", err)
 			} else {
