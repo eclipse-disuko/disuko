@@ -6,10 +6,8 @@ import INavItem, {INavItemGroup} from '@disclosure-portal/model/INavItem';
 import ITile from '@disclosure-portal/model/ITile';
 import sessionService from '@disclosure-portal/services/session';
 import {LabelsTools} from '@disclosure-portal/utils/Labels';
-import {sortByAttribute} from '@shared/utils/sort';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {DashboardCounts} from '@shared/types/DashboardCounts';
 
@@ -33,8 +31,6 @@ function resolveInitialAppLanguage(): string {
 }
 
 export const useAppStore = defineStore('app', () => {
-  const {t} = useI18n();
-
   // State as reactive object with type
   const state = reactive({
     appLanguage: resolveInitialAppLanguage(),
@@ -85,7 +81,7 @@ export const useAppStore = defineStore('app', () => {
     state.notificationMessage = msg;
   };
 
-  const setNavItemGroup = (items: INavItem[], adminItems: INavItem[], sorted = false) => {
+  const setNavItemGroup = (items: INavItem[], adminItems: INavItem[]) => {
     state.navItemGroup.items = items;
     if (adminItems.length > 0) {
       Object.assign(state.navItemGroup.adminItem, {
@@ -97,7 +93,7 @@ export const useAppStore = defineStore('app', () => {
         tooltip: 'ADMIN_DASHBOARD',
         subItems: [] as INavItem[],
       });
-      state.navItemGroup.adminItem.subItems = sorted ? sortByAttribute(adminItems, 'title', t) : adminItems;
+      state.navItemGroup.adminItem.subItems = adminItems;
     } else {
       Object.assign(state.navItemGroup.adminItem, {
         title: '',

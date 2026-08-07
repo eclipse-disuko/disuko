@@ -218,7 +218,10 @@ const tiles = computed<ITile[]>(() => {
       expand: false,
     });
   }
-  return sortByAttribute(res, 'title', t);
+  return sortByAttribute(
+    res.map((tile) => ({tile, label: t(tile.title)})),
+    'label',
+  ).map(({tile}) => tile);
 });
 
 onMounted(() => {

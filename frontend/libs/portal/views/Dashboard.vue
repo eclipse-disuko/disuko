@@ -14,6 +14,7 @@ import {logout} from '@disclosure-portal/utils/logout';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {ThemeColor, useThemeStore} from '@shared/stores/theme.store';
 import config from '@shared/utils/config';
+import {sortByAttribute} from '@shared/utils/sort';
 import {storeToRefs} from 'pinia';
 import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -57,6 +58,13 @@ const version = computed(() => {
 });
 const versionDate = computed(() => {
   return import.meta.env.VITE_BUILD_DATE + ' - INTERNAL DATA';
+});
+const sortedAdminSubItems = computed(() => {
+  const subItems = appStore.navItemGroup.adminItem?.subItems ?? [];
+  return sortByAttribute(
+    subItems.map((item) => ({item, label: t(item.title)})),
+    'label',
+  ).map(({item}) => item);
 });
 
 const collapseDrawer = () => {
@@ -177,7 +185,7 @@ watch(
           <NavItem :item="appStore.navItemGroup.adminItem"></NavItem>
 
           <div v-if="!navIsCollapsed">
-            <div v-for="item in appStore.navItemGroup.adminItem.subItems" :key="item.path">
+            <div v-for="item in sortedAdminSubItems" :key="item.path">
               <SubNavItem :item="item" v-if="item.condition"></SubNavItem>
             </div>
           </div>
