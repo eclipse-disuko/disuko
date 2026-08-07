@@ -159,7 +159,7 @@ export const createNavItemsGroup = function () {
   }
 
   // TODO: Using a store outside of a component, composable or store
-  useAppStore().setNavItemGroup(items, adminItems, true);
+  useAppStore().setNavItemGroup(items, adminItems);
 
   const res: ITile[] = [];
   const addTile = (title: string, url: string, icon: string, cnt?: number) => {
