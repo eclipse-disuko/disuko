@@ -132,12 +132,12 @@ const possibleStatus = computed((): DataTableHeaderFilterItems[] => {
   );
 });
 
-const headers: DataTableHeader[] = [
+const headers = computed((): DataTableHeader[] => [
   {
     title: 'COL_ACTIONS',
     align: 'start',
     width: sliderWidth.value,
-    key: 'actions',
+    value: 'actions',
   },
   {
     title: 'COL_LEVEL',
@@ -216,11 +216,15 @@ const headers: DataTableHeader[] = [
     width: 100,
     sortable: true,
   },
-];
+]);
 
 const tableName = 'ReviewRemarksGrid';
-const headerSettings = useHeaderSettings({tableName, headers});
+const headerSettings = useHeaderSettings({tableName, headers: headers.value});
 const {filteredHeaders} = headerSettings;
+
+const syncHeaderSettings = () => {
+  headerSettings.resetHeaderSettings({tableName, headers: headers.value});
+};
 
 const sortItems = ref([{key: 'level', order: 'desc' as const}]);
 
@@ -560,7 +564,7 @@ onMounted(() => {
       <DSearchField v-model="search" />
     </div>
 
-    <div class="fill-height action-slider-table">
+    <div class="fill-height action-slider-table has-select-column">
       <v-data-table
         v-model="selected"
         :loading="loading"
@@ -686,7 +690,8 @@ onMounted(() => {
             @copy="copyRemarkToClipboard(item)"
             @close="openCloseRemarkDialog(item)"
             @cancel="openCancelRemarkDialog(item)"
-            @reopen="openReopenRemarkDialog(item)" />
+            @reopen="openReopenRemarkDialog(item)"
+            @slideToggle="syncHeaderSettings" />
         </template>
       </v-data-table>
     </div>
