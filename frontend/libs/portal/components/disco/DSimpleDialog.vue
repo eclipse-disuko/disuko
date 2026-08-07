@@ -3,56 +3,25 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <template>
-  <v-dialog
-    v-model="localValue"
-    @input="$emit('update:modelValue', localValue)"
-    @click:outside="$emit('update:modelValue', false)"
-    width="auto"
-    max-width="1000px"
-    content-class="d-simple-dialog"
-    scrollable>
-    <DialogLayout :config="dialogConfig" @close="$emit('update:modelValue', false)">
+  <v-dialog v-model="localValue" width="auto" max-width="1000px" content-class="d-simple-dialog" scrollable>
+    <DialogLayout :config="dialogConfig" @close="localValue = false">
       <slot />
     </DialogLayout>
   </v-dialog>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import DialogLayout, {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
-import {computed, defineComponent, ref, watch} from 'vue';
+import {computed} from 'vue';
 
-export default defineComponent({
-  components: {
-    DialogLayout,
-  },
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    modelValue: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  setup(props) {
-    const localValue = ref(false);
+interface Props {
+  title: string;
+}
 
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        localValue.value = newValue;
-      },
-    );
+const props = defineProps<Props>();
+const localValue = defineModel<boolean>({required: true});
 
-    const dialogConfig = computed<DialogLayoutConfig>(() => ({
-      title: props.title,
-    }));
-
-    return {
-      localValue,
-      dialogConfig,
-    };
-  },
-});
+const dialogConfig = computed<DialogLayoutConfig>(() => ({
+  title: props.title,
+}));
 </script>
