@@ -162,4 +162,14 @@ if (props.variant === 'slider') {
     padding-right: 0 !important;
   }
 }
+
+// show-select injects a checkbox column before "actions", shifting it to 2nd child
+.action-slider-table.has-select-column > .v-table > .v-table__wrapper > table {
+  > thead > tr > th:nth-child(2) {
+    transition: width ease-in-out 0.2s;
+  }
+  > tbody > tr > td:nth-child(2) {
+    padding-right: 0 !important;
+  }
+}
 </style>
