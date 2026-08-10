@@ -1,12 +1,12 @@
-import {useAxios} from '@shared/api/useAxios';
-import {AxiosResponse} from 'axios';
+import config from '@shared/utils/config';
+import axios, {AxiosResponse} from 'axios';
 import {setupAuthInterceptors} from '@cli/services/authInterceptor';
 import {initInterceptors} from './interceptors';
 
 type ApiBundle = {
   NO_IDLE_PARAM: string;
   getData: <T>(promise: Promise<AxiosResponse<T>>) => Promise<T | null>;
-  api: ReturnType<typeof useAxios>['instance'];
+  api: ReturnType<typeof axios.create>;
 };
 
 let cachedApi: ApiBundle | null = null;
@@ -16,7 +16,12 @@ export const getApi = (): ApiBundle => {
     return cachedApi;
   }
 
-  const {instance, NO_IDLE_PARAM} = useAxios();
+  const instance = axios.create({
+    withCredentials: true,
+    baseURL: config.PUBLIC_API_ENDPOINT,
+  });
+  const NO_IDLE_PARAM = 'noIdle';
+
   initInterceptors(instance);
   setupAuthInterceptors(instance);
 
