@@ -226,15 +226,9 @@ onMounted(async () => {
 <template>
   <TableLayout has-tab has-title>
     <template #buttons>
-      <div class="grid w-full grid-cols-12">
-        <div class="sm:col-span-5 md:col-span-4 lg:col-span-2">
-          <v-checkbox v-model="unreferencedOnly" hide-details color="primary" :label="t('LABEL_UNREF_ONLY')" />
-        </div>
-        <v-spacer class="sm:col-span-2 md:col-span-4 lg:col-span-7"></v-spacer>
-        <div class="sm:col-span-5 md:col-span-4 lg:col-span-3">
-          <DSearchField v-model="search" />
-        </div>
-      </div>
+      <v-checkbox v-model="unreferencedOnly" hide-details color="primary" :label="t('LABEL_UNREF_ONLY')" />
+      <v-spacer></v-spacer>
+      <DSearchField v-model="search" />
     </template>
     <template #table>
       <v-data-table
