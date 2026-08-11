@@ -222,6 +222,9 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 	occurrenceUpdates := make(map[string]*analytics.Occurrence)
 	for _, result := range existing {
 		for _, l := range result.Licenses.List {
+			if l.OrigName != result.EntryLicense {
+				continue
+			}
 			if o, found := occurrenceUpdates[l.OrigName]; found {
 				o.Count++
 			} else {
@@ -231,9 +234,10 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 					Count:             1,
 				}
 			}
+			break
 		}
-
 		bulkSession.AddEnt(result)
+
 	}
 	h.processOccurrencesDeletion(session, occurrenceUpdates)
 }
@@ -328,7 +332,8 @@ func (h *DbHandler) ResetWithStatus(statusChannel chan string) {
 
 func (h *DbHandler) HandleSearch(options SearchOptions) analytics.ResponseAnalyticsSearch {
 	logy.Infof(options.Rs, "searching for component %s and license %s", options.Component, options.License)
-	foundComponents := h.analyticsRepository.FindByNameAndProjectKeysAndLicense(options.Rs,
+	foundComponents := h.analyticsRepository.FindByNameAndProjectKeysAndLicense(
+		options.Rs,
 		options.Component,
 		options.ProjectKeys,
 		options.License,
