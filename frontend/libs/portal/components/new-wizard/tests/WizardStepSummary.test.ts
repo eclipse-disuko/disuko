@@ -6,8 +6,8 @@ import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
 import {createTestingPinia} from '@pinia/testing';
-import {mount, VueWrapper} from '@vue/test-utils';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {config, mount, VueWrapper} from '@vue/test-utils';
+import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepSummary from '../WizardStepSummary.vue';
 
 vi.mock('@disclosure-portal/utils/View', () => ({
@@ -18,6 +18,22 @@ describe('WizardStepSummary', () => {
   let wrapper: VueWrapper;
   let wizardStore: any;
   let labelStore: any;
+  const originalTMock = config.global.mocks?.$t;
+
+  beforeAll(() => {
+    if (config.global.mocks && '$t' in config.global.mocks) {
+      delete config.global.mocks.$t;
+    }
+  });
+
+  afterAll(() => {
+    if (originalTMock) {
+      config.global.mocks = {
+        ...config.global.mocks,
+        $t: originalTMock,
+      };
+    }
+  });
 
   const createWrapper = (options = {}) => {
     return mount(WizardStepSummary, {

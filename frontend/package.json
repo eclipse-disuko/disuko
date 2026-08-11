@@ -73,6 +73,7 @@
     "@types/sanitize-html": "~2.16.0",
     "@vitejs/plugin-basic-ssl": "~2.3.0",
     "@vitejs/plugin-vue": "~6.0.4",
+    "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
     "@vue/compiler-sfc": "~3.5.13",
     "@vue/language-server": "~2.2.6",

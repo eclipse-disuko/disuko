@@ -6,8 +6,8 @@ import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {createTestingPinia} from '@pinia/testing';
-import {mount, VueWrapper} from '@vue/test-utils';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {config, mount, VueWrapper} from '@vue/test-utils';
+import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepOwner from '../WizardStepOwner.vue';
 
 vi.mock('@shared/user/utils/RightsUtils', () => ({
@@ -36,6 +36,22 @@ vi.mock('@disclosure-portal/composables/useNewWizard', () => ({
 describe('WizardStepOwner', () => {
   let wrapper: VueWrapper;
   let wizardStore: any;
+  const originalTMock = config.global.mocks?.$t;
+
+  beforeAll(() => {
+    if (config.global.mocks && '$t' in config.global.mocks) {
+      delete config.global.mocks.$t;
+    }
+  });
+
+  afterAll(() => {
+    if (originalTMock) {
+      config.global.mocks = {
+        ...config.global.mocks,
+        $t: originalTMock,
+      };
+    }
+  });
 
   const createWrapper = (options = {}) => {
     return mount(WizardStepOwner, {
