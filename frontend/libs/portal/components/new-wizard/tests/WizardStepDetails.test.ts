@@ -6,14 +6,30 @@ import {useCapabilitiesStore} from '@disclosure-portal/stores/capabilities';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
 import {createTestingPinia} from '@pinia/testing';
-import {mount, VueWrapper} from '@vue/test-utils';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {config, mount, VueWrapper} from '@vue/test-utils';
+import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepDetails from '../WizardStepDetails.vue';
 
 describe('WizardStepDetails', () => {
   let wrapper: VueWrapper;
   let wizardStore: any;
   let capabilitiesStore: any;
+  const originalTMock = config.global.mocks?.$t;
+
+  beforeAll(() => {
+    if (config.global.mocks && '$t' in config.global.mocks) {
+      delete config.global.mocks.$t;
+    }
+  });
+
+  afterAll(() => {
+    if (originalTMock) {
+      config.global.mocks = {
+        ...config.global.mocks,
+        $t: originalTMock,
+      };
+    }
+  });
 
   const createWrapper = (options = {}) => {
     return mount(WizardStepDetails, {
