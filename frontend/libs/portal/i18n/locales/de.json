@@ -2100,6 +2100,8 @@
   "POLICY_DECISION_CREATE": "Neue Policy Rule Entscheidung",
   "POLICY_DECISION_CREATED": "Policy Rule Entscheidung erstellt",
   "policy_decision_create_error_title": "Policy Rule Entscheidung erstellen",
+  "review_remark_create_error_title": "Review-Bemerkung erstellen",
+  "REVIEW_REMARK_EXISTS": "Review-Bemerkung existiert bereits",
   "WARNED_POLICY_DECISION_VERIFICATION_NOTE_TEXT": "Ich bestätige, dass ich die Risiken für dieses spezifische Projekt untersucht, Maßnahmen zur Risikominderung in Betracht gezogen und eine bewusste Lizenz-Entscheidung getroffen habe.",
   "DENIED_POLICY_DECISION_VERIFICATION_NOTE_TEXT": "Ich habe sichergestellt, dass der offizielle Freigabeprozess eingehalten wurde, um fortfahren zu können. Die Freigabeentscheidung wird offiziell dokumentiert und für zukünftige Referenzzwecke archiviert.",
   "TOKEN_INFO_WARN_HINT": "Der Projekt-Token ist vertraulich zu behandeln und darf nur über verschlüsselte Kommunikationskanäle übermittelt werden. Übertragen Sie die Projekt-UUID aus Sicherheitsgründen nicht in derselben Nachricht wie das Projekttoken.",
