@@ -6,6 +6,7 @@ package checklist
 
 import (
 	"slices"
+	"sort"
 	"strings"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -122,6 +123,46 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
+	seenIncoming := make(map[rrKey]struct{}, len(remarks))
+	newRemarks := make([]*reviewremarks.Remark, 0, len(remarks))
+
+	for _, remark := range remarks {
+		k := makeRrKey(remark)
+
+		if _, exists := seenIncoming[k]; exists {
+			continue
+		}
+
+		seenIncoming[k] = struct{}{}
+		newRemarks = append(newRemarks, remark)
+	}
+
+	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
+	if rr != nil {
+		existingKeys := make(map[rrKey]struct{}, len(rr.Remarks))
+		for _, existingRemark := range rr.Remarks {
+			k := makeRrKey(existingRemark)
+			existingKeys[k] = struct{}{}
+		}
+
+		newRemarksToSave := make([]*reviewremarks.Remark, 0, len(newRemarks))
+		for _, newRemark := range newRemarks {
+			k := makeRrKey(newRemark)
+
+			if _, exists := existingKeys[k]; exists {
+				continue
+			}
+
+			existingKeys[k] = struct{}{}
+			newRemarksToSave = append(newRemarksToSave, newRemark)
+		}
+		newRemarks = newRemarksToSave
+	}
+
+	if len(newRemarks) == 0 {
+		return
+	}
+
 	if !spdxBase.IsInUse {
 		spdxBase.IsInUse = true
 		s.SbomListRepo.Update(rs, sbomList)
@@ -131,7 +172,6 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		s.ProjectRepo.Update(rs, pr)
 	}
 
-	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
 	if rr == nil {
 		rr = &reviewremarks.ReviewRemarks{
 			RootEntity: domain.NewRootEntityWithKey(version.Key),
@@ -144,7 +184,42 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	s.ReviewRemarkRepo.Update(rs, rr)
 }
 
-func (e *execution) retainSBOM() {
+type rrKey struct {
+	sbomId     string
+	components string
+	licenses   string
+}
+
+func makeRrKey(r *reviewremarks.Remark) rrKey {
+	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+	const (
+		fieldSeparator = "\x1f"
+		itemSeparator  = "\x1e"
+	)
+
+	componentKeys := make([]string, 0, len(r.Components))
+	for _, cmp := range r.Components {
+		componentKeys = append(componentKeys, strings.Join([]string{
+			norm(cmp.ComponentName),
+			norm(cmp.ComponentVersion),
+		}, fieldSeparator))
+	}
+	sort.Strings(componentKeys)
+
+	licenseKeys := make([]string, 0, len(r.Licenses))
+	for _, lic := range r.Licenses {
+		licenseKeys = append(licenseKeys, strings.Join([]string{
+			norm(lic.LicenseId),
+			norm(lic.LicenseName),
+		}, fieldSeparator))
+	}
+	sort.Strings(licenseKeys)
+
+	return rrKey{
+		sbomId:     norm(r.SBOMId),
+		components: strings.Join(componentKeys, itemSeparator),
+		licenses:   strings.Join(licenseKeys, itemSeparator),
+	}
 }
 
 func (e *execution) do() []*reviewremarks.Remark {
