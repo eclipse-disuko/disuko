@@ -27,6 +27,10 @@ type MonthYearDto struct {
 	Year  int `json:"year" validate:"gte=2000,lte=2100"`
 }
 
+type AvailableMonthlyReportsResponseDto struct {
+	Months []MonthYearDto `json:"months"`
+}
+
 type ResponseAnalyticsSearch struct {
 	Success bool                 `json:"success"`
 	Items   []SearchResponseItem `json:"result"`

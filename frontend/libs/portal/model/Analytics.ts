@@ -87,6 +87,10 @@ export interface CombinedReportRequest {
   months: MonthYear[];
 }
 
+export interface AvailableMonthlyReportsResponse {
+  months: MonthYear[];
+}
+
 export class Stats {
   public projectCount = 0;
   public projectActiveCount = 0;

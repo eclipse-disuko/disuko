@@ -5,13 +5,29 @@
 import {architectures, targetPlatforms} from '@disclosure-portal/model/NewWizard';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {createTestingPinia} from '@pinia/testing';
-import {mount} from '@vue/test-utils';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {config, mount} from '@vue/test-utils';
+import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepArchitecture from '../WizardStepArchitecture.vue';
 
 describe('WizardStepArchitecture', () => {
   let wrapper: any;
   let wizardStore: any;
+  const originalTMock = config.global.mocks?.$t;
+
+  beforeAll(() => {
+    if (config.global.mocks && '$t' in config.global.mocks) {
+      delete config.global.mocks.$t;
+    }
+  });
+
+  afterAll(() => {
+    if (originalTMock) {
+      config.global.mocks = {
+        ...config.global.mocks,
+        $t: originalTMock,
+      };
+    }
+  });
 
   beforeEach(() => {
     wrapper = mount(WizardStepArchitecture, {
