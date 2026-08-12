@@ -6,6 +6,8 @@ package reviewremarks
 
 import (
 	"encoding/json"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
@@ -270,4 +272,42 @@ func (r *Remark) Comment(author, fullName, content string) {
 		AuthorFullName: fullName,
 		Content:        data,
 	})
+}
+
+type RrKey struct {
+	sbomId     string
+	components string
+	licenses   string
+}
+
+func (r *Remark) MakeRrKey() RrKey {
+	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+	const (
+		fieldSeparator = "\x1f"
+		itemSeparator  = "\x1e"
+	)
+
+	componentKeys := make([]string, 0, len(r.Components))
+	for _, cmp := range r.Components {
+		componentKeys = append(componentKeys, strings.Join([]string{
+			norm(cmp.ComponentName),
+			norm(cmp.ComponentVersion),
+		}, fieldSeparator))
+	}
+	sort.Strings(componentKeys)
+
+	licenseKeys := make([]string, 0, len(r.Licenses))
+	for _, lic := range r.Licenses {
+		licenseKeys = append(licenseKeys, strings.Join([]string{
+			norm(lic.LicenseId),
+			norm(lic.LicenseName),
+		}, fieldSeparator))
+	}
+	sort.Strings(licenseKeys)
+
+	return RrKey{
+		sbomId:     norm(r.SBOMId),
+		components: strings.Join(componentKeys, itemSeparator),
+		licenses:   strings.Join(licenseKeys, itemSeparator),
+	}
 }

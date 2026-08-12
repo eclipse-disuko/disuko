@@ -57,10 +57,25 @@ func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionI
 		s.ReviewRemarksRepository.Save(s.RequestSession, remarks)
 		return true
 	}
+
+	if reviewRemarkExists(remarks.Remarks, &r) {
+		return false
+	}
+
 	remarks.Remarks = append(remarks.Remarks, &r)
 	s.ReviewRemarksRepository.Update(s.RequestSession, remarks)
 	s.AuditLogListRepository.CreateAuditEntryByKey(s.RequestSession, versionId, author, message.ReviewRemarkCreated, audit.DiffWithReporter, r, reviewremarks.Remark{})
 	return true
+}
+
+func reviewRemarkExists(existingRemarks []*reviewremarks.Remark, newRemark *reviewremarks.Remark) bool {
+	newKey := newRemark.MakeRrKey()
+	for _, existingRemark := range existingRemarks {
+		if existingRemark.MakeRrKey() == newKey {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *ReviewRemarksService) EditReviewRemark(prj *project.Project, versionId, reviewId, author, fullName string, data reviewremarks.ReviewRemarkRequestDto) bool {
