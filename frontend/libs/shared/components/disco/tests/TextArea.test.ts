@@ -76,9 +76,7 @@ describe('TextArea', () => {
 
   it('applies the required rule when required is true', () => {
     const wrapper = createWrapper({required: true});
-    const rules = wrapper.findComponent(vTextareaStub).props('rules') as Array<
-      (v: unknown) => boolean | string
-    >;
+    const rules = wrapper.findComponent(vTextareaStub).props('rules') as Array<(v: unknown) => boolean | string>;
 
     expect(rules).toHaveLength(1);
     expect(rules[0]('')).toBe('Required.');

@@ -76,7 +76,8 @@ describe('ReleaseNotesDialog', () => {
 
   it('opens the dialog via a custom slot invoking showDialog', async () => {
     const wrapper = createWrapper({
-      default: '<template #default="{ showDialog }"><button class="custom-open" @click="showDialog">open</button></template>',
+      default:
+        '<template #default="{ showDialog }"><button class="custom-open" @click="showDialog">open</button></template>',
     });
 
     await wrapper.find('.custom-open').trigger('click');

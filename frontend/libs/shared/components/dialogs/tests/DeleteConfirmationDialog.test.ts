@@ -38,7 +38,8 @@ describe('DeleteConfirmationDialog', () => {
     return mount(DeleteConfirmationDialog, {
       props,
       slots: {
-        default: '<template #default="{ showDialog }"><button class="open-btn" @click="showDialog">open</button></template>',
+        default:
+          '<template #default="{ showDialog }"><button class="open-btn" @click="showDialog">open</button></template>',
       },
       global: {
         stubs: {...vuetifyStubs, DCloseButton: DCloseButtonStub, DCActionButton: DCActionButtonStub},

@@ -70,7 +70,10 @@ describe('ExpansionPanel', () => {
   });
 
   it('renders the optional text and the body slot inside the panel content', () => {
-    const wrapper = createWrapper({title: 'My Panel', text: 'Some description'}, {body: '<span class="body">Body content</span>'});
+    const wrapper = createWrapper(
+      {title: 'My Panel', text: 'Some description'},
+      {body: '<span class="body">Body content</span>'},
+    );
 
     expect(wrapper.text()).toContain('Some description');
     expect(wrapper.find('.body').exists()).toBe(true);

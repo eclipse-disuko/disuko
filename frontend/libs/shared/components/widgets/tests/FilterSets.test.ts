@@ -117,7 +117,9 @@ describe('FilterSets', () => {
     // Assigning selectedFilterSet (directly, or via the v-select) re-fetches it through
     // onFilterSetChange; echo back a filter set matching the requested key so that flow resolves
     // instead of leaving an unhandled rejection.
-    getFilterSetMock.mockImplementation((key: string) => Promise.resolve(buildFilterSet({_key: key, name: 'Existing'})));
+    getFilterSetMock.mockImplementation((key: string) =>
+      Promise.resolve(buildFilterSet({_key: key, name: 'Existing'})),
+    );
   });
 
   const createWrapper = () => {

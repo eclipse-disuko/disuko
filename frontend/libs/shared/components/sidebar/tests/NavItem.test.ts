@@ -8,7 +8,8 @@ import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import NavItem from '../NavItem.vue';
 
 const VTooltipStub = {
-  template: '<div class="v-tooltip"><slot name="activator" :props="{}" /><div class="tooltip-text"><slot /></div></div>',
+  template:
+    '<div class="v-tooltip"><slot name="activator" :props="{}" /><div class="tooltip-text"><slot /></div></div>',
 };
 
 const VListItemStub = {

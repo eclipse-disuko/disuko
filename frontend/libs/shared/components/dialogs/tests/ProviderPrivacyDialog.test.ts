@@ -66,7 +66,8 @@ describe('ProviderPrivacyDialog', () => {
   const createWrapper = () => {
     return mount(ProviderPrivacyDialog, {
       slots: {
-        default: '<template #default="{ showDialog }"><button class="open-btn" @click="showDialog">open</button></template>',
+        default:
+          '<template #default="{ showDialog }"><button class="open-btn" @click="showDialog">open</button></template>',
       },
       global: {
         stubs: {
@@ -130,7 +131,13 @@ describe('ProviderPrivacyDialog', () => {
     await wrapper.find('.open-btn').trigger('click');
 
     const markdowns = wrapper.findAllComponents(MarkdownStub);
-    expect(markdowns.map((md) => md.props('text'))).toEqual([ProviderDe, LegalNoticeDe, PrivacyStatementDe, TermsOfUseDe, NoticeDe]);
+    expect(markdowns.map((md) => md.props('text'))).toEqual([
+      ProviderDe,
+      LegalNoticeDe,
+      PrivacyStatementDe,
+      TermsOfUseDe,
+      NoticeDe,
+    ]);
   });
 
   it('closes the dialog when DCloseButton is clicked', async () => {

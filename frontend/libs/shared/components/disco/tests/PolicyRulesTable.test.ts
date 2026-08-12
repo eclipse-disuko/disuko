@@ -103,7 +103,10 @@ describe('PolicyRulesTable', () => {
   };
 
   it('filters out items whose status is not in the active status filter by default', () => {
-    const items = [buildItem({key: 'active-rule', status: 'active'}), buildItem({key: 'deprecated-rule', status: 'deprecated'})];
+    const items = [
+      buildItem({key: 'active-rule', status: 'active'}),
+      buildItem({key: 'deprecated-rule', status: 'deprecated'}),
+    ];
     const wrapper = createWrapper({}, items);
 
     expect(wrapper.find('[data-key="active-rule"]').exists()).toBe(true);

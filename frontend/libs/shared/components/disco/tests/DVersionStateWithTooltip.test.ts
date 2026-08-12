@@ -10,7 +10,8 @@ import DVersionStateWithTooltip from '../DVersionStateWithTooltip.vue';
 
 const VTooltipStub = {
   props: ['location', 'maxWidth', 'contentClass'],
-  template: '<div class="v-tooltip"><slot name="activator" :props="{}" /><div class="tooltip-content"><slot /></div></div>',
+  template:
+    '<div class="v-tooltip"><slot name="activator" :props="{}" /><div class="tooltip-content"><slot /></div></div>',
 };
 
 const VIconStub = {

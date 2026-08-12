@@ -78,9 +78,7 @@ describe('TextField', () => {
 
   it('applies the default required rule when required is true and no custom rules are given', () => {
     const wrapper = createWrapper({required: true});
-    const rules = wrapper.findComponent(vTextFieldStub).props('rules') as Array<
-      (v: unknown) => boolean | string
-    >;
+    const rules = wrapper.findComponent(vTextFieldStub).props('rules') as Array<(v: unknown) => boolean | string>;
 
     expect(rules).toHaveLength(1);
     expect(rules[0]('')).toBe('Required.');
