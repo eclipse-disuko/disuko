@@ -39,10 +39,10 @@ type ReviewRemarksService struct {
 	SpdxService             *spdx.Service
 }
 
-func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionId string, data reviewremarks.ReviewRemarkRequestDto, author string) bool {
+func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionId string, data reviewremarks.ReviewRemarkRequestDto, author string) (bool, *string) {
 	valid, r := s.parseAndValidate(prj, versionId, data)
 	if !valid {
-		return false
+		return false, nil
 	}
 	r.Author = author
 	r.Origin = project.OriginUi
@@ -55,17 +55,17 @@ func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionI
 			},
 		}
 		s.ReviewRemarksRepository.Save(s.RequestSession, remarks)
-		return true
+		return true, nil
 	}
 
 	if reviewRemarkExists(remarks.Remarks, &r) {
-		return false
+		return false, new(message.ReviewRemarkExists)
 	}
 
 	remarks.Remarks = append(remarks.Remarks, &r)
 	s.ReviewRemarksRepository.Update(s.RequestSession, remarks)
 	s.AuditLogListRepository.CreateAuditEntryByKey(s.RequestSession, versionId, author, message.ReviewRemarkCreated, audit.DiffWithReporter, r, reviewremarks.Remark{})
-	return true
+	return true, nil
 }
 
 func reviewRemarkExists(existingRemarks []*reviewremarks.Remark, newRemark *reviewremarks.Remark) bool {

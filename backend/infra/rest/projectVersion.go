@@ -2429,8 +2429,16 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 		LicenseRulesRepo:        projectHandler.LicenseRulesRepository,
 		SpdxService:             projectHandler.SpdxService,
 	}
-	if !rrs.CreateReviewRemark(currentProject, version.Key, createData, username) {
-		exception.ThrowExceptionBadRequestResponse()
+	success, errMsg := rrs.CreateReviewRemark(currentProject, version.Key, createData, username)
+	if !success {
+		if errMsg != nil {
+			render.JSON(w, r, SuccessResponse{
+				Success: false,
+				Message: *errMsg,
+			})
+		} else {
+			exception.ThrowExceptionBadRequestResponse()
+		}
 		return
 	}
 
