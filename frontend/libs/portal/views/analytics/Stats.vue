@@ -192,7 +192,13 @@ onMounted(async () => {
 
   const {months} = (await AnalyticsService.getAvailableMonthlyReports()).data;
   monthOptions.value = months
-    .map((m) => ({...m, label: dayjs().year(m.year).month(m.month - 1).format('MMMM YYYY')}))
+    .map((m) => ({
+      ...m,
+      label: dayjs()
+        .year(m.year)
+        .month(m.month - 1)
+        .format('MMMM YYYY'),
+    }))
     .sort((a, b) => b.year - a.year || b.month - a.month);
 });
 </script>
