@@ -106,6 +106,23 @@ func (handler *AnalyticsHandler) CombinedReportXLSX(w http.ResponseWriter, r *ht
 	report.WriteCombinedReportAsXLSX(requestSession, months, w)
 }
 
+func (handler *AnalyticsHandler) AvailableMonthlyReports(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+
+	_, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !rights.AllowProject.Read {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	months := report.ListAvailableMonthlyReports(requestSession)
+	response := da.AvailableMonthlyReportsResponseDto{Months: make([]da.MonthYearDto, 0, len(months))}
+	for _, m := range months {
+		response.Months = append(response.Months, da.MonthYearDto{Month: int(m.Month()), Year: m.Year()})
+	}
+
+	render.JSON(w, r, response)
+}
+
 func (handler *AnalyticsHandler) InternalReport(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 

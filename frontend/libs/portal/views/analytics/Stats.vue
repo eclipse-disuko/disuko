@@ -169,12 +169,7 @@ const stats = ref<Stats | null>(null);
 
 const showMonthMenu = ref(false);
 const selectedMonths = ref<(MonthYear & {label: string})[]>([]);
-
-const monthOptions: (MonthYear & {label: string})[] = [];
-for (let i = 0; i < 12; i++) {
-  const date = dayjs().subtract(i, 'month');
-  monthOptions.push({month: date.month() + 1, year: date.year(), label: date.format('MMMM YYYY')});
-}
+const monthOptions = ref<(MonthYear & {label: string})[]>([]);
 
 const downloadReportCSV = async () => {
   const filename = `report_${dayjs().format('YYYY-MM-DD_hh_mm_ss')}.csv`;
@@ -194,5 +189,10 @@ const downloadCombinedReportXLSX = async () => {
 
 onMounted(async () => {
   stats.value = (await AnalyticsService.getStats()).data as Stats;
+
+  const {months} = (await AnalyticsService.getAvailableMonthlyReports()).data;
+  monthOptions.value = months
+    .map((m) => ({...m, label: dayjs().year(m.year).month(m.month - 1).format('MMMM YYYY')}))
+    .sort((a, b) => b.year - a.year || b.month - a.month);
 });
 </script>

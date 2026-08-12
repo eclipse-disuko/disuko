@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -304,6 +305,23 @@ func WriteCombinedReportAsXLSX(rs *logy.RequestSession, months []time.Time, w io
 	if _, err := f.WriteTo(w); err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorCsvGeneration, "combined report", "write"), err)
 	}
+}
+
+func ListAvailableMonthlyReports(rs *logy.RequestSession) []time.Time {
+	folder := GetReportStorageFileNameOf("")
+	var months []time.Time
+	for obj := range s3Helper.ListObjects(rs, folder) {
+		fileName := path.Base(obj.Key)
+		monthTime, ok := parseMonthlyReportFileName(fileName)
+		if !ok {
+			continue
+		}
+		months = append(months, monthTime)
+	}
+	sort.Slice(months, func(i, j int) bool {
+		return months[i].After(months[j])
+	})
+	return months
 }
 
 func monthlyReportSheetName(month time.Time) string {

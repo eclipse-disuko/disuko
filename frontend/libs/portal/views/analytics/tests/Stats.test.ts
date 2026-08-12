@@ -9,11 +9,18 @@ import {flushPromises} from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import Stats from '../Stats.vue';
 
-const {getStatsMock, downloadReportMock, downloadReportXLSXMock, downloadCombinedReportXLSXMock} = vi.hoisted(() => ({
+const {
+  getStatsMock,
+  downloadReportMock,
+  downloadReportXLSXMock,
+  downloadCombinedReportXLSXMock,
+  getAvailableMonthlyReportsMock,
+} = vi.hoisted(() => ({
   getStatsMock: vi.fn(),
   downloadReportMock: vi.fn(),
   downloadReportXLSXMock: vi.fn(),
   downloadCombinedReportXLSXMock: vi.fn(),
+  getAvailableMonthlyReportsMock: vi.fn(),
 }));
 
 vi.mock('@disclosure-portal/services/analytics', () => ({
@@ -22,6 +29,7 @@ vi.mock('@disclosure-portal/services/analytics', () => ({
     downloadReport: downloadReportMock,
     downloadReportXLSX: downloadReportXLSXMock,
     downloadCombinedReportXLSX: downloadCombinedReportXLSXMock,
+    getAvailableMonthlyReports: getAvailableMonthlyReportsMock,
   },
 }));
 
@@ -53,9 +61,13 @@ describe('Stats', () => {
     downloadReportMock.mockReset();
     downloadReportXLSXMock.mockReset();
     downloadCombinedReportXLSXMock.mockReset();
+    getAvailableMonthlyReportsMock.mockReset();
     downloadReportMock.mockResolvedValue({data: 'csv'});
     downloadReportXLSXMock.mockResolvedValue({data: 'xlsx'});
     downloadCombinedReportXLSXMock.mockResolvedValue({data: 'xlsx'});
+    getAvailableMonthlyReportsMock.mockResolvedValue({
+      data: {months: [{month: 1, year: 2026}]},
+    });
   });
 
   // Stats.vue has no breadcrumbs call, so that step of the standard checklist is skipped here.
@@ -110,5 +122,27 @@ describe('Stats', () => {
       months: [{month: 1, year: 2026, label: 'January 2026'}],
     });
     expect((wrapper.vm as unknown as {showMonthMenu: boolean}).showMonthMenu).toBe(false);
+  });
+
+  it('limits selectable months to those available from the backend', async () => {
+    getStatsMock.mockResolvedValue({data: {}});
+    getAvailableMonthlyReportsMock.mockResolvedValue({
+      data: {
+        months: [
+          {month: 3, year: 2026},
+          {month: 1, year: 2026},
+        ],
+      },
+    });
+
+    const {wrapper} = createWrapper([Group.UserProjectAnalyst]);
+    await flushPromises();
+
+    expect(getAvailableMonthlyReportsMock).toHaveBeenCalledTimes(1);
+    const monthOptions = (wrapper.vm as unknown as {monthOptions: {month: number; year: number}[]}).monthOptions;
+    expect(monthOptions).toEqual([
+      {month: 3, year: 2026, label: 'March 2026'},
+      {month: 1, year: 2026, label: 'January 2026'},
+    ]);
   });
 });

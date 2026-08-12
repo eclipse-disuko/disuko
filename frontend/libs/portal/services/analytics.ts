@@ -4,6 +4,7 @@
 
 import {useApi} from '@shared/api/useApi';
 import {
+  AvailableMonthlyReportsResponse,
   CombinedReportRequest,
   CombinedSearchOptions,
   IAnalyticsComponentsSearchResponse,
@@ -46,6 +47,10 @@ class AnalyticsService {
     return api.post(`/api/v1/${modelName}/combined/xlsx`, data, {
       responseType: 'blob',
     });
+  }
+
+  public async getAvailableMonthlyReports() {
+    return api.get<AvailableMonthlyReportsResponse>(`/api/v1/${modelName}/combined/months`);
   }
 
   public async searchLicenses(data: IAnalyticsSearchRequest) {
