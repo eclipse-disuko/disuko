@@ -185,27 +185,28 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
             @click:row="onRowClick"
             class="striped-table fill-height cursor-pointer">
             <template v-slot:item.prStatus="{item}">
-              <Tooltip as-parent location="bottom" content-class="dpTooltip">
+              <span>
+                <Tooltip location="bottom" content-class="dpTooltip">
+                  <span v-if="item.policyRuleStatus?.length">
+                    <div v-for="(prStatus, index) in item.policyRuleStatus" :key="index">
+                      {{ prStatus.name }} ({{ prStatus.licenseMatched }})
+                      <div v-if="prStatus.description" class="text-caption">
+                        {{ prStatus.description }}
+                      </div>
+                    </div>
+                  </span>
+                  <span v-else>
+                    {{ t(policyStateToTranslationKey(PolicyState.NOT_SET)) }}
+                  </span>
+                </Tooltip>
                 <v-icon small :color="getIconColorForPolicyType(getEffectivePrStatus(item))">
                   {{ getIconForPolicyType(getEffectivePrStatus(item)) }}
                 </v-icon>
-                <span v-if="item.policyRuleStatus?.length">
-                  <div v-for="(prStatus, index) in item.policyRuleStatus" :key="index">
-                    {{ prStatus.name }} ({{ prStatus.licenseMatched }})
-                    <div v-if="prStatus.description" class="text-caption">
-                      {{ prStatus.description }}
-                    </div>
-                  </div>
-                </span>
-                <span v-else>
-                  {{ t(policyStateToTranslationKey(PolicyState.NOT_SET)) }}
-                </span>
-              </Tooltip>
+              </span>
             </template>
             <template v-slot:item.scanRemarkLevel="{item}">
               <span v-if="item.scanRemarks?.length">
-                <Tooltip as-parent location="bottom" content-class="dpTooltip">
-                  <v-icon small :color="getIconColorScanRemarkLevel(item.scanRemarkLevel)"> mdi-circle </v-icon>
+                <Tooltip location="bottom" content-class="dpTooltip">
                   <span>
                     <div v-for="(remark, index) in item.scanRemarks" :key="index">
                       <strong>{{ getTextOfLevel(remark.status) }}</strong
@@ -214,12 +215,12 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
                     <div class="text-caption">{{ t('TT_SEE_SCAN_REMARKS_TAB') }}</div>
                   </span>
                 </Tooltip>
+                <v-icon small :color="getIconColorScanRemarkLevel(item.scanRemarkLevel)"> mdi-circle </v-icon>
               </span>
             </template>
             <template v-slot:item.usedDecision="{item}">
               <span v-if="item?.usedDecision">
-                <Tooltip as-parent location="bottom" content-class="dpTooltip">
-                  <v-icon small>mdi-information-outline</v-icon>
+                <Tooltip location="bottom" content-class="dpTooltip">
                   <span>
                     <div class="text-subtitle-1">{{ t('TT_LICENSE_DECISION') }}</div>
                     <div class="d-text d-secondary-text">{{ t('TT_FOR_THE_EXPRESSION') }}</div>
@@ -228,6 +229,7 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
                     <div class="text-subtitle-1">{{ item.usedDecision.name }} ({{ item.usedDecision.licenseID }})</div>
                   </span>
                 </Tooltip>
+                <v-icon small>mdi-information-outline</v-icon>
               </span>
             </template>
           </v-data-table>
