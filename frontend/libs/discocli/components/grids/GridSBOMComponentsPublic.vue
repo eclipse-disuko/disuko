@@ -3,7 +3,6 @@ import SbomComponentDetailDialog from '@cli/components/dialogs/SbomComponentDeta
 import {comparePolicyStatus, PolicyState} from '@cli/models/PolicyRule';
 import {compareScanRemarkStatus, SpdxStatusComponent, SpdxStatusInformation} from '@cli/models/Sbom';
 import {projectService} from '@cli/services/projectService';
-import {useView} from '@disclosure-portal/composables/useView';
 import {
   getIconColorForPolicyType,
   getIconColorScanRemarkLevel,
@@ -24,7 +23,6 @@ const version = computed(() => route.params.version as string);
 const sbomId = computed(() => route.params.spdx as string);
 
 const {t} = useI18n();
-const {getTextOfLevel} = useView();
 const search = ref('');
 const sortItems = ref<DataTableSortItem[]>([{key: 'prStatus', order: 'asc'}]);
 
@@ -186,7 +184,7 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
             class="striped-table fill-height cursor-pointer">
             <template v-slot:item.prStatus="{item}">
               <span>
-                <Tooltip location="bottom" content-class="dpTooltip">
+                <Tooltip>
                   <span v-if="item.policyRuleStatus?.length">
                     <div v-for="(prStatus, index) in item.policyRuleStatus" :key="index">
                       {{ prStatus.name }} ({{ prStatus.licenseMatched }})
@@ -206,10 +204,10 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
             </template>
             <template v-slot:item.scanRemarkLevel="{item}">
               <span v-if="item.scanRemarks?.length">
-                <Tooltip location="bottom" content-class="dpTooltip">
+                <Tooltip>
                   <span>
-                    <div v-for="(remark, index) in item.scanRemarks" :key="index">
-                      <strong>{{ getTextOfLevel(remark.status) }}</strong
+                    <div v-for="(remark, index) in item.scanRemarks" :key="index" class="mb-1">
+                      <strong>{{ remark.remark }}</strong
                       >: {{ remark.description }}
                     </div>
                     <div class="text-caption">{{ t('TT_SEE_SCAN_REMARKS_TAB') }}</div>
@@ -220,7 +218,7 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
             </template>
             <template v-slot:item.usedDecision="{item}">
               <span v-if="item?.usedDecision">
-                <Tooltip location="bottom" content-class="dpTooltip">
+                <Tooltip>
                   <span>
                     <div class="text-subtitle-1">{{ t('TT_LICENSE_DECISION') }}</div>
                     <div class="d-text d-secondary-text">{{ t('TT_FOR_THE_EXPRESSION') }}</div>
