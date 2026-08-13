@@ -57,6 +57,12 @@ export class PolicyRuleStatus {
   public licenseRecommendationWeight: number | null = null;
 }
 
+export interface ComponentScanRemark {
+  status: ScanRemarkLevel;
+  remarkKey: string;
+  descriptionKey: string;
+}
+
 export interface IComponentInfo {
   spdxId: string;
   name: string;
@@ -177,6 +183,7 @@ export class ComponentInfo implements IComponentInfo {
   public policyDecisionDeniedReason = '';
   public licenseRecommended = '';
   public licenseRecommendedMsg = '';
+  public scanRemarks: ComponentScanRemark[] = [];
 }
 
 export class ComponentInfoSlim {

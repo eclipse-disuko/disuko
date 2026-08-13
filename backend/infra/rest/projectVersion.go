@@ -1585,12 +1585,35 @@ func (projectHandler *ProjectHandler) ProjectVersionComponentsForSbom(w http.Res
 	policyDecisionDeniedReason := evaluatePolicyDecisionDeniedReason(isResponsible, rights.IsFossOffice(), isVehicle)
 	isAllowDeniedPolicyDecision := evaluateIsAllowDeniedPolicyDecision(rights.IsDomainAdmin(), rights.IsFossOffice(), isVehicle)
 
+	componentInfoDtos := evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession)
+	scanRemarks := projectHandler.createQualityScanRemarks(requestSession, currentProject, &selectedSpdx.MetaInfo, evalRes, projectHandler.LabelRepository)
+	attachScanRemarksToComponentInfo(componentInfoDtos, scanRemarks)
+
 	response := components.ComponentsInfoResponse{
-		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession),
+		ComponentInfo:                  componentInfoDtos,
 		ComponentStats:                 evalRes.Stats,
 		BulkPolicyDecisionDeniedReason: policyDecisionDeniedReason,
 	}
 	render.JSON(w, r, response)
+}
+
+
+func attachScanRemarksToComponentInfo(componentInfos []components.ComponentInfoDto, scanRemarks []project.QualityScanRemarks) {
+	remarksBySpdxId := make(map[string][]*components.ScanRemarkDto)
+	for _, remark := range scanRemarks {
+		if remark.SpdxId == "" {
+			continue
+		}
+		remarksBySpdxId[remark.SpdxId] = append(remarksBySpdxId[remark.SpdxId], &components.ScanRemarkDto{
+			Status:         string(remark.Status),
+			RemarkKey:      remark.RemarkKey,
+			DescriptionKey: remark.DescriptionKey,
+		})
+	}
+
+	for i := range componentInfos {
+		componentInfos[i].ScanRemarks = remarksBySpdxId[componentInfos[i].SpdxId]
+	}
 }
 
 func evaluatePolicyDecisionDeniedReason(isResponsible, isFossOfficeUser, isVehicle bool) string {

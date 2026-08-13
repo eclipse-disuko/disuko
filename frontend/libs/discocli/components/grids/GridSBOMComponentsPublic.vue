@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import SbomComponentDetailDialog from '@cli/components/dialogs/SbomComponentDetailDialog.vue';
 import {comparePolicyStatus, PolicyState} from '@cli/models/PolicyRule';
-import {SpdxStatusComponent, SpdxStatusInformation} from '@cli/models/Sbom';
+import {compareScanRemarkStatus, SpdxStatusComponent, SpdxStatusInformation} from '@cli/models/Sbom';
 import {projectService} from '@cli/services/projectService';
+import {useView} from '@disclosure-portal/composables/useView';
 import {
   getIconColorForPolicyType,
+  getIconColorScanRemarkLevel,
   getIconForPolicyType,
+  getWorstScanRemarkLevel,
   policyStateToTranslationKey,
 } from '@disclosure-portal/utils/View';
+import Tooltip from '@shared/components/disco/Tooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
@@ -21,6 +24,7 @@ const version = computed(() => route.params.version as string);
 const sbomId = computed(() => route.params.spdx as string);
 
 const {t} = useI18n();
+const {getTextOfLevel} = useView();
 const search = ref('');
 const sortItems = ref<DataTableSortItem[]>([{key: 'prStatus', order: 'asc'}]);
 
@@ -77,6 +81,15 @@ const componentHeaders = computed<DataTableHeader[]>(() => [
     sort: comparePolicyStatus,
   },
   {
+    key: 'scanRemarkLevel',
+    title: t('COL_SCAN_REMARK'),
+    align: 'center',
+    width: 100,
+    sortable: true,
+    class: 'text-uppercase text-medium-emphasis text-subtitle-2 font-weight-bold',
+    sort: compareScanRemarkStatus,
+  },
+  {
     key: 'usedDecision',
     title: t('COL_DECISION'),
     align: 'center',
@@ -119,7 +132,12 @@ const componentHeaders = computed<DataTableHeader[]>(() => [
 ]);
 
 // Computed components list
-const components = computed(() => spdxStatus.value?.components || []);
+const components = computed(() =>
+  (spdxStatus.value?.components || []).map((component) => ({
+    ...component,
+    scanRemarkLevel: getWorstScanRemarkLevel(component.scanRemarks || []),
+  })),
+);
 
 // Dialog ref
 const remarksDialog = ref<InstanceType<typeof SbomComponentDetailDialog> | null>(null);
@@ -167,12 +185,10 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
             @click:row="onRowClick"
             class="striped-table fill-height cursor-pointer">
             <template v-slot:item.prStatus="{item}">
-              <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" content-class="dpTooltip">
-                <template v-slot:activator="{props}">
-                  <v-icon small v-bind="props" :color="getIconColorForPolicyType(getEffectivePrStatus(item))">
-                    {{ getIconForPolicyType(getEffectivePrStatus(item)) }}
-                  </v-icon>
-                </template>
+              <Tooltip as-parent location="bottom" content-class="dpTooltip">
+                <v-icon small :color="getIconColorForPolicyType(getEffectivePrStatus(item))">
+                  {{ getIconForPolicyType(getEffectivePrStatus(item)) }}
+                </v-icon>
                 <span v-if="item.policyRuleStatus?.length">
                   <div v-for="(prStatus, index) in item.policyRuleStatus" :key="index">
                     {{ prStatus.name }} ({{ prStatus.licenseMatched }})
@@ -184,14 +200,26 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
                 <span v-else>
                   {{ t(policyStateToTranslationKey(PolicyState.NOT_SET)) }}
                 </span>
-              </v-tooltip>
+              </Tooltip>
+            </template>
+            <template v-slot:item.scanRemarkLevel="{item}">
+              <span v-if="item.scanRemarks?.length">
+                <Tooltip as-parent location="bottom" content-class="dpTooltip">
+                  <v-icon small :color="getIconColorScanRemarkLevel(item.scanRemarkLevel)"> mdi-circle </v-icon>
+                  <span>
+                    <div v-for="(remark, index) in item.scanRemarks" :key="index">
+                      <strong>{{ getTextOfLevel(remark.status) }}</strong
+                      >: {{ remark.description }}
+                    </div>
+                    <div class="text-caption">{{ t('TT_SEE_SCAN_REMARKS_TAB') }}</div>
+                  </span>
+                </Tooltip>
+              </span>
             </template>
             <template v-slot:item.usedDecision="{item}">
               <span v-if="item?.usedDecision">
-                <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom" content-class="dpTooltip">
-                  <template v-slot:activator="{props}">
-                    <v-icon small v-bind="props">mdi-information-outline</v-icon>
-                  </template>
+                <Tooltip as-parent location="bottom" content-class="dpTooltip">
+                  <v-icon small>mdi-information-outline</v-icon>
                   <span>
                     <div class="text-subtitle-1">{{ t('TT_LICENSE_DECISION') }}</div>
                     <div class="d-text d-secondary-text">{{ t('TT_FOR_THE_EXPRESSION') }}</div>
@@ -199,7 +227,7 @@ const onRowClick = (_event: Event, dataItem: unknown) => {
                     <div class="d-text d-secondary-text">{{ t('TT_A_DECISION_WAS_MADE') }}</div>
                     <div class="text-subtitle-1">{{ item.usedDecision.name }} ({{ item.usedDecision.licenseID }})</div>
                   </span>
-                </v-tooltip>
+                </Tooltip>
               </span>
             </template>
           </v-data-table>

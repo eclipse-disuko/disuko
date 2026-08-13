@@ -8,6 +8,7 @@ import useDimensions from '@disclosure-portal/composables/useDimensions';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import {compareFamily} from '@disclosure-portal/model/License';
 import {PolicyState, PolicyStates} from '@disclosure-portal/model/PolicyRule';
+import {ScanRemarkLevel} from '@disclosure-portal/model/Quality';
 import {
   ComponentInfo,
   ComponentInfoSlim,
@@ -24,8 +25,11 @@ import {formatDateAndTime} from '@disclosure-portal/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
   getIconColorForPolicyType,
+  getIconColorScanRemarkLevel,
   getIconForPolicyType,
   getPrStatusSortIndex,
+  getScanRemarkStatusSortIndex,
+  getWorstScanRemarkLevel,
   policyStateToTranslationKey,
   sortPolicyStatesByOrder,
 } from '@disclosure-portal/utils/View';
@@ -40,6 +44,7 @@ import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 type TabelItem = ComponentInfo & {
   showPolicyDecision: boolean;
   showLicenseDecision: boolean;
+  scanRemarkLevel: ScanRemarkLevel;
 };
 
 const route = useRoute();
@@ -96,6 +101,14 @@ const headers: DataTableHeader[] = [
     align: 'center',
     value: 'prStatus',
     width: 150,
+    selectable: true,
+  },
+  {
+    title: 'COL_SCAN_REMARK',
+    sortable: true,
+    align: 'center',
+    value: 'scanRemarkLevel',
+    width: 100,
     selectable: true,
   },
   {
@@ -253,6 +266,9 @@ const customKeySort = {
     const prStatus1Index = getPrStatusSortIndex(value1Str);
     const prStatus2Index = getPrStatusSortIndex(value2Str);
     return prStatus2Index - prStatus1Index;
+  },
+  scanRemarkLevel: (a: ScanRemarkLevel, b: ScanRemarkLevel) => {
+    return getScanRemarkStatusSortIndex(b) - getScanRemarkStatusSortIndex(a);
   },
   worstFamily: (a: string, b: string) => {
     const value1Str = a ?? '';
@@ -459,6 +475,7 @@ const getTableItems = (componentInfo: ComponentInfo[]): TabelItem[] =>
       ...info,
       showPolicyDecision: canMakeDecision || info.policyDecisionsApplied.length > 0,
       showLicenseDecision: Boolean(info.licenseRuleApplied) || info.canChooseLicense,
+      scanRemarkLevel: getWorstScanRemarkLevel(info.scanRemarks),
     };
   });
 
@@ -741,6 +758,18 @@ onUnmounted(async () => {
               <v-icon small :color="getIconColorForPolicyType(item.prStatus)">
                 {{ getIconForPolicyType(item.prStatus) }}
               </v-icon>
+            </span>
+          </template>
+          <template v-slot:[`item.scanRemarkLevel`]="{item}">
+            <span v-if="item.scanRemarks?.length">
+              <Tooltip>
+                <div v-for="(remark, index) in item.scanRemarks" :key="index" class="mb-1">
+                  <strong>{{ t('' + remark.remarkKey) }}</strong
+                  >: {{ t(remark.descriptionKey) }}
+                </div>
+                <div class="text-caption">{{ t('TT_SEE_SCAN_REMARKS_TAB') }}</div>
+              </Tooltip>
+              <v-icon small :color="getIconColorScanRemarkLevel(item.scanRemarkLevel)">mdi-circle</v-icon>
             </span>
           </template>
           <template v-slot:[`item.showPolicyDecision`]="{item}">

@@ -130,6 +130,26 @@ export function getScanRemarkStatusSortIndex(prStatus: ScanRemarkLevel): number 
   }
 }
 
+export function getWorstScanRemarkLevel(remarks?: {status: string}[] | null): ScanRemarkLevel {
+  if (!remarks || remarks.length === 0) {
+    return ScanRemarkLevel.NOT_SET;
+  }
+
+  let worst = ScanRemarkLevel.NOT_SET;
+
+  for (const remark of remarks) {
+    const status = remark.status as ScanRemarkLevel;
+    const statusRank = getScanRemarkStatusSortIndex(status);
+    const worstRank = getScanRemarkStatusSortIndex(worst);
+
+    if (statusRank < worstRank) {
+      worst = status;
+    }
+  }
+
+  return worst;
+}
+
 export function getIconForDiffType(type: ComponentDiffType): string {
   switch (type) {
     case ComponentDiffType.NEW:
