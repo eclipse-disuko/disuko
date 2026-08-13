@@ -122,6 +122,46 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
+	seenIncoming := make(map[reviewremarks.RrKey]struct{}, len(remarks))
+	newRemarks := make([]*reviewremarks.Remark, 0, len(remarks))
+
+	for _, remark := range remarks {
+		k := remark.MakeRrKey()
+
+		if _, exists := seenIncoming[k]; exists {
+			continue
+		}
+
+		seenIncoming[k] = struct{}{}
+		newRemarks = append(newRemarks, remark)
+	}
+
+	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
+	if rr != nil {
+		existingKeys := make(map[reviewremarks.RrKey]struct{}, len(rr.Remarks))
+		for _, existingRemark := range rr.Remarks {
+			k := existingRemark.MakeRrKey()
+			existingKeys[k] = struct{}{}
+		}
+
+		newRemarksToSave := make([]*reviewremarks.Remark, 0, len(newRemarks))
+		for _, newRemark := range newRemarks {
+			k := newRemark.MakeRrKey()
+
+			if _, exists := existingKeys[k]; exists {
+				continue
+			}
+
+			existingKeys[k] = struct{}{}
+			newRemarksToSave = append(newRemarksToSave, newRemark)
+		}
+		newRemarks = newRemarksToSave
+	}
+
+	if len(newRemarks) == 0 {
+		return
+	}
+
 	if !spdxBase.IsInUse {
 		spdxBase.IsInUse = true
 		s.SbomListRepo.Update(rs, sbomList)
@@ -131,7 +171,6 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		s.ProjectRepo.Update(rs, pr)
 	}
 
-	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
 	if rr == nil {
 		rr = &reviewremarks.ReviewRemarks{
 			RootEntity: domain.NewRootEntityWithKey(version.Key),
@@ -142,9 +181,6 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	}
 	rr.Remarks = append(rr.Remarks, remarks...)
 	s.ReviewRemarkRepo.Update(rs, rr)
-}
-
-func (e *execution) retainSBOM() {
 }
 
 func (e *execution) do() []*reviewremarks.Remark {

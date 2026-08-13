@@ -150,18 +150,34 @@ const currentSbom = computed(() =>
   Array.isArray(route.params.currentSbom) ? route.params.currentSbom[0] : route.params.currentSbom,
 );
 
+const naturalOrder = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
 const componentsDisplay = computed(() => {
   if (!item.value?.components) {
     return [];
   }
 
-  return item.value.components.map((c, index) => ({
-    key: `${c.componentName}-${c.componentVersion}-${index}`,
-    id: c.componentId,
-    to: `/dashboard/projects/${props.projectUuid}/versions/${props.versionUuid}/component/${currentSbom.value}/${c.componentId}`,
-    name: c.componentName,
-    version: c.componentVersion,
-  }));
+  return item.value.components
+    .map((c, index) => ({
+      key: `${c.componentName}-${c.componentVersion}-${index}`,
+      id: c.componentId,
+      to: `/dashboard/projects/${props.projectUuid}/versions/${props.versionUuid}/component/${currentSbom.value}/${c.componentId}`,
+      name: c.componentName ?? '',
+      version: c.componentVersion ?? '',
+    }))
+    .sort((left, right) => {
+      const nameCompare = naturalOrder.compare(left.name, right.name);
+      if (nameCompare !== 0) {
+        return nameCompare;
+      }
+
+      const versionCompare = naturalOrder.compare(left.version, right.version);
+      if (versionCompare !== 0) {
+        return versionCompare;
+      }
+
+      return naturalOrder.compare(left.id, right.id);
+    });
 });
 
 const licensesDisplay = computed(() => {
@@ -169,11 +185,21 @@ const licensesDisplay = computed(() => {
     return [];
   }
 
-  return item.value.licenses.map((l, index) => ({
-    key: `${l.licenseId}-${index}`,
-    to: `/dashboard/licenses/${l.licenseId}/details`,
-    label: l.licenseName === '' ? `${l.licenseId} (${t('TT_REVIEW_REMARK_DIALOG_LICENSE_UNKNOWN')})` : l.licenseName,
-  }));
+  return item.value.licenses
+    .map((l, index) => ({
+      key: `${l.licenseId}-${index}`,
+      to: `/dashboard/licenses/${l.licenseId}/details`,
+      id: l.licenseId,
+      label: l.licenseName === '' ? `${l.licenseId} (${t('TT_REVIEW_REMARK_DIALOG_LICENSE_UNKNOWN')})` : l.licenseName,
+    }))
+    .sort((left, right) => {
+      const labelCompare = naturalOrder.compare(left.label, right.label);
+      if (labelCompare !== 0) {
+        return labelCompare;
+      }
+
+      return naturalOrder.compare(left.id, right.id);
+    });
 });
 
 const descriptionParts = computed(() => {

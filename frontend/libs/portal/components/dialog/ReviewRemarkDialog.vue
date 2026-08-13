@@ -20,6 +20,9 @@ import _ from 'lodash';
 import {computed, Ref, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
+import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
+import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
+import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 
 const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
 
@@ -58,6 +61,8 @@ const licensesLoading = ref(false);
 const selectedLicenses = ref<(LicenseMeta | null)[]>([null]);
 
 const dialogActionDisabled = ref(false);
+
+const errorDialog = ref<ErrorDialogInterface | null>(null);
 
 const licenses = computed((): LicenseMeta[] => {
   if (!sbomAllLicenses.value) {
@@ -270,7 +275,16 @@ const doDialogAction = async () => {
       );
       snack(t('DIALOG_remark_edit_success'));
     } else {
-      await versionService.createReviewRemark(projectModel.value._key, versionID.value, reviewRemarkRequest);
+      let response = (
+        await versionService.createReviewRemark(projectModel.value._key, versionID.value, reviewRemarkRequest)
+      ).data;
+      if (!response.success) {
+        const dialog = new ErrorDialogConfig();
+        dialog.title = t('review_remark_create_error_title');
+        dialog.description = t(response.message);
+        errorDialog.value?.open(dialog);
+        return;
+      }
       snack(t('DIALOG_remark_create_success'));
     }
     emit('reload');
@@ -496,4 +510,5 @@ defineExpose({open});
       </v-form>
     </DialogLayout>
   </v-dialog>
+  <ErrorDialog ref="errorDialog" />
 </template>

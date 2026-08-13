@@ -407,6 +407,7 @@ const (
 	ErrorUserTokenSigningKeyMissing           = "ERROR_USER_TOKEN_SIGNING_KEY_MISSING"
 	ErrorUserTokenNotFound                    = "ERROR_USER_TOKEN_NOT_FOUND"
 	ErrorUserTokenAlreadyExpired              = "ERROR_USER_TOKEN_ALREADY_EXPIRED"
+	ReviewRemarkExists                        = "REVIEW_REMARK_EXISTS"
 )
 
 func InitI18N() {
