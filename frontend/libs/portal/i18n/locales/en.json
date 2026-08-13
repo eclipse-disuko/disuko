@@ -588,6 +588,8 @@
   "COL_SPDX_TYPE": "Type ",
   "COL_SPDX_STATUS": "Policy ",
   "LABEL_NOTICE_FILE": "Third Party Notices",
+  "COL_SCAN_REMARK": "Scan Remark",
+  "TT_SEE_SCAN_REMARKS_TAB": "See SBOM Quality > Scan Remarks for details",
   "COL_TYPE": "Type ",
   "COL_REQUESTOR": "Requestor ",
   "COL_TITLE": "Title ",

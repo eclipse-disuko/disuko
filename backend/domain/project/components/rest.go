@@ -36,6 +36,13 @@ type UnmatchedLicenseDto struct {
 	Known          bool   `json:"known"`
 }
 
+
+type ScanRemarkDto struct {
+	Status         string `json:"status"`
+	RemarkKey      string `json:"remarkKey"`
+	DescriptionKey string `json:"descriptionKey"`
+}
+
 type ComponentInfoDto struct {
 	SpdxId             string                 `json:"spdxId"`
 	Name               string                 `json:"name"`
@@ -68,6 +75,8 @@ type ComponentInfoDto struct {
 
 	LicenseRecommended    *string `json:"licenseRecommended"`
 	LicenseRecommendedMsg *string `json:"licenseRecommendedMsg"`
+
+	ScanRemarks []*ScanRemarkDto `json:"scanRemarks"`
 }
 
 type ComponentInfoSlimDto struct {

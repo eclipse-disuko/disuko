@@ -1,5 +1,7 @@
 {
   "COL_SPDX_POLICY": "Policy",
+  "COL_SCAN_REMARK": "Scan Remark",
+  "TT_SEE_SCAN_REMARKS_TAB": "See SBOM Quality > Scan Remarks for details",
   "TITLE_POLICY_LICENSES": "Policy Licenses",
   "COL_LICENSE_NAME": "License Name",
   "COL_LICENSE_REMARK": "License Remark",

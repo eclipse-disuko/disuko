@@ -613,6 +613,8 @@
   "COL_SPDX_TYPE": "Typ ",
   "COL_SPDX_STATUS": "Policy",
   "LABEL_NOTICE_FILE": "Lizenzen Dritter",
+  "COL_SCAN_REMARK": "Prüfbemerkung",
+  "TT_SEE_SCAN_REMARKS_TAB": "Details unter SBOM Qualität > Prüfbemerkungen",
   "COL_TYPE": "Typ ",
   "COL_REQUESTOR": "Antragsteller ",
   "COL_TITLE": "Titel ",
