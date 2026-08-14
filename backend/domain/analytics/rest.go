@@ -90,6 +90,7 @@ type OccurrenceDto struct {
 	OrigName          string                  `json:"origName"`
 	ReferencedLicense string                  `json:"referencedLicense"`
 	Count             int                     `json:"count"`
+	SBomType          SbomType                `json:"sbomType"`
 	License           *license.LicenseSlimDto `json:"license,omitempty"`
 }
 

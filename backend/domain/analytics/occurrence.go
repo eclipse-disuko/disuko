@@ -15,6 +15,7 @@ type Occurrence struct {
 	OrigName          string
 	ReferencedLicense string
 	Count             int
+	SBomType          SbomType
 }
 
 func (entity *Occurrence) ToDto(lic *license.License) *OccurrenceDto {
@@ -22,6 +23,7 @@ func (entity *Occurrence) ToDto(lic *license.License) *OccurrenceDto {
 	res.Count = entity.Count
 	res.OrigName = entity.OrigName
 	res.ReferencedLicense = entity.ReferencedLicense
+	res.SBomType = entity.SBomType
 	if lic != nil {
 		res.License = lic.ToSlimDto()
 	}

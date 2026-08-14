@@ -122,14 +122,15 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 			continue
 		}
 		for _, l := range result.Component.GetLicensesEffective().List {
-			if sbomType == da.SbomTypeLatest {
-				if o, found := occurrenceUpdates[l.OrigName]; found {
+			if sbomType == da.SbomTypeLatest || sbomType == da.SbomTypeLatestApproved {
+				if o, found := occurrenceUpdates[occKey(l.OrigName, sbomType)]; found {
 					o.Count++
 				} else {
-					occurrenceUpdates[l.OrigName] = &da.Occurrence{
+					occurrenceUpdates[occKey(l.OrigName, sbomType)] = &da.Occurrence{
 						OrigName:          l.OrigName,
 						ReferencedLicense: l.ReferencedLicense,
 						Count:             1,
+						SBomType:          sbomType,
 					}
 				}
 			}
@@ -254,7 +255,11 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 	defer bulkSession.EndSession()
 	occurrenceUpdates := make(map[string]*analytics.Occurrence)
 	for _, result := range existing {
-		if result.SBomType != "" && result.SBomType != da.SbomTypeLatest {
+		entrySbomType := result.SBomType
+		if entrySbomType == "" {
+			entrySbomType = da.SbomTypeLatest
+		}
+		if entrySbomType != da.SbomTypeLatest && entrySbomType != da.SbomTypeLatestApproved {
 			bulkSession.AddEnt(result)
 			continue
 		}
@@ -262,13 +267,14 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 			if l.OrigName != result.EntryLicense {
 				continue
 			}
-			if o, found := occurrenceUpdates[l.OrigName]; found {
+			if o, found := occurrenceUpdates[occKey(l.OrigName, entrySbomType)]; found {
 				o.Count++
 			} else {
-				occurrenceUpdates[l.OrigName] = &da.Occurrence{
+				occurrenceUpdates[occKey(l.OrigName, entrySbomType)] = &da.Occurrence{
 					OrigName:          l.OrigName,
 					ReferencedLicense: l.ReferencedLicense,
 					Count:             1,
+					SBomType:          entrySbomType,
 				}
 			}
 			break
@@ -285,7 +291,7 @@ func (h *DbHandler) processOccurrences(session *logy.RequestSession, updates map
 	defer bulkSession.EndSession()
 	for _, u := range updates {
 		var new *analytics.Occurrence
-		if i := occIndex(curr, u.OrigName); i != -1 {
+		if i := occIndex(curr, u.OrigName, u.SBomType); i != -1 {
 			new = curr[i]
 			new.ReferencedLicense = u.ReferencedLicense
 			new.Count += u.Count
@@ -303,7 +309,7 @@ func (h *DbHandler) processOccurrencesDeletion(session *logy.RequestSession, upd
 	bulkSession := h.analyticsOccurrencesRepository.StartSession(base.DeleteSession, 100)
 	defer bulkSession.EndSession()
 	for _, u := range updates {
-		i := occIndex(curr, u.OrigName)
+		i := occIndex(curr, u.OrigName, u.SBomType)
 		if i == -1 {
 			continue
 		}
@@ -316,13 +322,21 @@ func (h *DbHandler) processOccurrencesDeletion(session *logy.RequestSession, upd
 	}
 }
 
-func occIndex(haystack []*da.Occurrence, needle string) int {
+func occIndex(haystack []*da.Occurrence, needle string, sbomType da.SbomType) int {
 	for i, o := range haystack {
-		if o.OrigName == needle {
+		entrySbomType := o.SBomType
+		if entrySbomType == "" {
+			entrySbomType = da.SbomTypeLatest
+		}
+		if o.OrigName == needle && entrySbomType == sbomType {
 			return i
 		}
 	}
 	return -1
+}
+
+func occKey(origName string, sbomType da.SbomType) string {
+	return string(sbomType) + "|" + origName
 }
 
 func (h *DbHandler) HandleSpdxDeleted(session *logy.RequestSession, key string) {
@@ -447,8 +461,10 @@ func (h *DbHandler) HandleLicenseIdAdded(session *logy.RequestSession, origName,
 	if len(existing) == 0 {
 		return
 	}
-	existing[0].ReferencedLicense = referencedName
-	h.analyticsOccurrencesRepository.Update(session, existing[0])
+	for _, e := range existing {
+		e.ReferencedLicense = referencedName
+		h.analyticsOccurrencesRepository.Update(session, e)
+	}
 }
 
 func (h *DbHandler) HandleLicenseIdDeleted(session *logy.RequestSession, id string) {
@@ -470,8 +486,10 @@ func (h *DbHandler) HandleLicenseIdDeleted(session *logy.RequestSession, id stri
 	if len(existing) == 0 {
 		return
 	}
-	existing[0].ReferencedLicense = ""
-	h.analyticsOccurrencesRepository.Update(session, existing[0])
+	for _, e := range existing {
+		e.ReferencedLicense = ""
+		h.analyticsOccurrencesRepository.Update(session, e)
+	}
 }
 
 func (h *DbHandler) HandleLicenseSearch(session *logy.RequestSession, license string, exact bool) da.ResponseLicensesSearch {
@@ -486,8 +504,22 @@ func (h *DbHandler) HandleLicenseSearch(session *logy.RequestSession, license st
 	return searchResponse
 }
 
-func (h *DbHandler) Occurrences(session *logy.RequestSession) []*analytics.Occurrence {
-	return h.analyticsOccurrencesRepository.FindAll(session, false)
+func (h *DbHandler) Occurrences(session *logy.RequestSession, sbomType analytics.SbomType) []*analytics.Occurrence {
+	all := h.analyticsOccurrencesRepository.FindAll(session, false)
+	if sbomType == "" || sbomType == da.SbomTypeLatestAndApproved {
+		return all
+	}
+	filtered := make([]*analytics.Occurrence, 0, len(all))
+	for _, o := range all {
+		entrySbomType := o.SBomType
+		if entrySbomType == "" {
+			entrySbomType = da.SbomTypeLatest
+		}
+		if entrySbomType == sbomType {
+			filtered = append(filtered, o)
+		}
+	}
+	return filtered
 }
 
 func (h *DbHandler) HandleCompanyChanged(session *logy.RequestSession, prKey string, companyId string) {

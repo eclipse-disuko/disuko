@@ -12,6 +12,7 @@ import {
   IAnalyticsSearchRequest,
   IAnalyticsSearchResponse,
   OccurencesRes,
+  SbomType,
 } from '@disclosure-portal/model/Analytics';
 
 const {api} = useApi();
@@ -23,8 +24,10 @@ class AnalyticsService {
     return api.post<IAnalyticsSearchResponse>(`/api/v1/${modelName}/search?all=${all}`, data);
   }
 
-  public async searchOccurrencies() {
-    return api.get<OccurencesRes>(`/api/v1/${modelName}/occurrences`);
+  public async searchOccurrencies(sbomType?: SbomType) {
+    return api.get<OccurencesRes>(`/api/v1/${modelName}/occurrences`, {
+      params: {sbomType},
+    });
   }
 
   public async searchComponents(data: IAnalyticsSearchRequest) {

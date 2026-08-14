@@ -27,6 +27,8 @@ func NewLicensesRepository(requestSession *logy.RequestSession) *occurrencesRepo
 			[][]string{
 				{"ReferencedLicense"},
 				{"OrigName"},
+				{"SBomType"},
+				{"OrigName", "SBomType"},
 			},
 		),
 	}

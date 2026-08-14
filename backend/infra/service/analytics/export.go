@@ -70,7 +70,7 @@ type DataHandler interface {
 	HandleSpdxAdded(SpdxAddedOptions)
 	HandleSpdxDeleted(*logy.RequestSession, string)
 	Reset()
-	Occurrences(*logy.RequestSession) []*analytics.Occurrence
+	Occurrences(*logy.RequestSession, analytics.SbomType) []*analytics.Occurrence
 	HandleSearch(SearchOptions) analytics.ResponseAnalyticsSearch
 	HandleComponentSearch(*logy.RequestSession, string, bool) analytics.ResponseComponentsSearch
 	HandleLicenseSearch(*logy.RequestSession, string, bool) analytics.ResponseLicensesSearch
