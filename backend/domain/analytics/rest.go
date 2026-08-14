@@ -7,8 +7,8 @@ package analytics
 import (
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/license"
-	"github.com/eclipse-disuko/disuko/domain/user/approval"
 )
 
 type RequestSearchOptions struct {
@@ -16,6 +16,7 @@ type RequestSearchOptions struct {
 	License        string `json:"license" validate:"gte=0,lte=500"`
 	ExactComponent bool   `json:"exactComponent"`
 	ExactLicense   bool   `json:"exactLicense"`
+	SbomType       string `json:"sbomType" validate:"omitempty,oneof=LATEST LATEST_APPROVED LATEST_AND_LATEST_APPROVED"`
 }
 
 type CombinedReportRequestDto struct {
@@ -56,24 +57,25 @@ type Statistic struct {
 }
 
 type SearchResponseItem struct {
-	Key                string                  `json:"key"`
-	Name               string                  `json:"name"`
-	ComponentName      string                  `json:"componentName"`
-	ComponentVersion   string                  `json:"componentVersion"`
-	ProjectVersionKey  string                  `json:"projectVersionKey"`
-	ProjectVersionName string                  `json:"projectVersionName"`
-	Type               ItemType                `json:"type"`
-	LicenseDeclared    string                  `json:"licenseDeclared"`
-	LicenseConcluded   string                  `json:"licenseConcluded"`
-	EntryLicense       string                  `json:"entryLicense"`
-	SBomName           string                  `json:"sbomName"`
-	SBomStatus         approval.ApprovalStatus `json:"sbomStatus"`
-	Responsible        string                  `json:"responsible"`
-	LastUpdate         time.Time               `json:"lastUpdate"`
-	OwnerDeptId        string                  `bson:"-" json:"-"`
-	OwnerCompany       string                  `json:"ownerCompany"`
-	OwnerDept          string                  `json:"ownerDep"`
-	OwnerDeptMissing   bool                    `json:"ownerDeptMissing"`
+	Key                string             `json:"key"`
+	Name               string             `json:"name"`
+	ComponentName      string             `json:"componentName"`
+	ComponentVersion   string             `json:"componentVersion"`
+	ProjectVersionKey  string             `json:"projectVersionKey"`
+	ProjectVersionName string             `json:"projectVersionName"`
+	Type               ItemType           `json:"type"`
+	LicenseDeclared    string             `json:"licenseDeclared"`
+	LicenseConcluded   string             `json:"licenseConcluded"`
+	EntryLicense       string             `json:"entryLicense"`
+	SBomName           string             `json:"sbomName"`
+	SBomStatus         approval.StateInfo `json:"sbomStatus"`
+	SBomType           SbomType           `json:"sbomType"`
+	Responsible        string             `json:"responsible"`
+	LastUpdate         time.Time          `json:"lastUpdate"`
+	OwnerDeptId        string             `bson:"-" json:"-"`
+	OwnerCompany       string             `json:"ownerCompany"`
+	OwnerDept          string             `json:"ownerDep"`
+	OwnerDeptMissing   bool               `json:"ownerDeptMissing"`
 }
 
 type ItemType string

@@ -4,14 +4,6 @@
 
 package approval
 
-type ApprovalStatus string
-
-const (
-	ApRequested ApprovalStatus = "REQUESTED"
-	ApApproved  ApprovalStatus = "APPROVED"
-	ApDeclined  ApprovalStatus = "DECLINED"
-)
-
 type RequestApprovalDto struct {
 	RequestCreateDisclosureDocumentDto
 	UserRequested string           `json:"requestUser" validate:"required,gte=3,lte=50"`

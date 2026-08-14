@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain/analytics"
-	"github.com/eclipse-disuko/disuko/domain/user/approval"
+	"github.com/eclipse-disuko/disuko/domain/approval"
 
 	"github.com/eclipse-disuko/disuko/domain"
 	da "github.com/eclipse-disuko/disuko/domain/analytics"
@@ -57,6 +57,11 @@ func InitDbHandler(
 }
 
 func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
+	sbomType := options.sbomType
+	if sbomType == "" {
+		sbomType = da.SbomTypeLatest
+	}
+
 	l, acquired := h.lockService.Acquire(locks.Options{
 		Blocking: true,
 		Key:      lockKey,
@@ -67,24 +72,38 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 	}
 	defer h.lockService.Release(l)
 
-	qc := database.New().SetMatcher(database.AttributeMatcher(
-		"SBomKey",
-		database.EQ,
-		options.spdxFile.Key,
+	qc := database.New().SetMatcher(database.AndChain(
+		database.AttributeMatcher(
+			"SBomKey",
+			database.EQ,
+			options.spdxFile.Key,
+		),
+		database.AttributeMatcher(
+			"SBomType",
+			database.EQ,
+			sbomType,
+		),
 	))
 	existing := len(h.analyticsRepository.Query(options.rs, qc)) > 0
 	if existing {
 		return
 	}
 
-	qc = database.New().SetMatcher(database.AttributeMatcher(
-		"ProjectVersionKey",
-		database.EQ,
-		options.version.Key,
+	qc = database.New().SetMatcher(database.AndChain(
+		database.AttributeMatcher(
+			"ProjectVersionKey",
+			database.EQ,
+			options.version.Key,
+		),
+		database.AttributeMatcher(
+			"SBomType",
+			database.EQ,
+			sbomType,
+		),
 	))
 	prev := h.analyticsRepository.Query(options.rs, qc)
 	if len(prev) > 0 {
-		h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true)
+		h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true, sbomType)
 	}
 
 	licenses := make(map[string]bool)
@@ -103,13 +122,15 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 			continue
 		}
 		for _, l := range result.Component.GetLicensesEffective().List {
-			if o, found := occurrenceUpdates[l.OrigName]; found {
-				o.Count++
-			} else {
-				occurrenceUpdates[l.OrigName] = &da.Occurrence{
-					OrigName:          l.OrigName,
-					ReferencedLicense: l.ReferencedLicense,
-					Count:             1,
+			if sbomType == da.SbomTypeLatest {
+				if o, found := occurrenceUpdates[l.OrigName]; found {
+					o.Count++
+				} else {
+					occurrenceUpdates[l.OrigName] = &da.Occurrence{
+						OrigName:          l.OrigName,
+						ReferencedLicense: l.ReferencedLicense,
+						Count:             1,
+					}
 				}
 			}
 			licenseName := l.OrigName
@@ -146,8 +167,9 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 
 				SBomKey:        options.spdxFile.Key,
 				SBomName:       options.spdxFile.MetaInfo.Name,
-				SBomStatus:     approval.ApprovalStatus(options.spdxFile.ApprovalInfo.Status),
+				SBomStatus:     approval.StateInfo(options.spdxFile.ApprovalInfo.Status),
 				SBomLastUpdate: options.spdxFile.Updated,
+				SBomType:       sbomType,
 			}
 			bulkSession.AddEnt(&a)
 			exception.TryCatch(func() {
@@ -194,7 +216,7 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 	h.processOccurrences(options.rs, occurrenceUpdates)
 }
 
-func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, alreadyAcquired bool) {
+func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, alreadyAcquired bool, sbomType da.SbomType) {
 	if !alreadyAcquired {
 		l, acquired := h.lockService.Acquire(locks.Options{
 			Blocking: true,
@@ -207,11 +229,22 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 		defer h.lockService.Release(l)
 	}
 
-	qc := database.New().SetMatcher(database.AttributeMatcher(
+	matcher := database.AttributeMatcher(
 		"SBomKey",
 		database.EQ,
 		key,
-	))
+	)
+	if sbomType != "" {
+		matcher = database.AndChain(
+			matcher,
+			database.AttributeMatcher(
+				"SBomType",
+				database.EQ,
+				sbomType,
+			),
+		)
+	}
+	qc := database.New().SetMatcher(matcher)
 	existing := h.analyticsRepository.Query(session, qc)
 	if len(existing) == 0 {
 		return
@@ -221,6 +254,10 @@ func (h *DbHandler) handleSpdxDeleted(session *logy.RequestSession, key string, 
 	defer bulkSession.EndSession()
 	occurrenceUpdates := make(map[string]*analytics.Occurrence)
 	for _, result := range existing {
+		if result.SBomType != "" && result.SBomType != da.SbomTypeLatest {
+			bulkSession.AddEnt(result)
+			continue
+		}
 		for _, l := range result.Licenses.List {
 			if l.OrigName != result.EntryLicense {
 				continue
@@ -289,7 +326,7 @@ func occIndex(haystack []*da.Occurrence, needle string) int {
 }
 
 func (h *DbHandler) HandleSpdxDeleted(session *logy.RequestSession, key string) {
-	h.handleSpdxDeleted(session, key, false)
+	h.handleSpdxDeleted(session, key, false, "")
 }
 
 func (h *DbHandler) Reset() {
@@ -305,7 +342,9 @@ func (h *DbHandler) Reset() {
 
 	h.analyticsRepository.DatabaseConn().Truncate()
 	h.analyticsLicensesRepository.DatabaseConn().Truncate()
+	h.analyticsLicensesRepository.Reset()
 	h.analyticsComponentsRepository.DatabaseConn().Truncate()
+	h.analyticsComponentsRepository.Reset()
 	h.analyticsOccurrencesRepository.DatabaseConn().Truncate()
 }
 
@@ -331,12 +370,17 @@ func (h *DbHandler) ResetWithStatus(statusChannel chan string) {
 }
 
 func (h *DbHandler) HandleSearch(options SearchOptions) analytics.ResponseAnalyticsSearch {
+	sbomType := options.SbomType
+	if sbomType == "" {
+		sbomType = da.SbomTypeLatest
+	}
 	logy.Infof(options.Rs, "searching for component %s and license %s", options.Component, options.License)
 	foundComponents := h.analyticsRepository.FindByNameAndProjectKeysAndLicense(
 		options.Rs,
 		options.Component,
 		options.ProjectKeys,
 		options.License,
+		sbomType,
 		options.Offset,
 		options.Limit,
 		options.SortCol,
@@ -357,6 +401,7 @@ func (h *DbHandler) HandleSearch(options SearchOptions) analytics.ResponseAnalyt
 			EntryLicense:       c.EntryLicense,
 			SBomName:           c.SBomName,
 			SBomStatus:         c.SBomStatus,
+			SBomType:           c.SBomType,
 			LastUpdate:         c.SBomLastUpdate,
 			OwnerDeptId:        c.OwnerDeptId,
 		}

@@ -3,7 +3,12 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
-import {CombinedSearchOptions, IAnalyticsSearchRequest, SearchResponseItem} from '@disclosure-portal/model/Analytics';
+import {
+  CombinedSearchOptions,
+  IAnalyticsSearchRequest,
+  SbomType,
+  SearchResponseItem,
+} from '@disclosure-portal/model/Analytics';
 import AnalyticsService from '@disclosure-portal/services/analytics';
 import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
 import {createProjectURL, createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
@@ -41,6 +46,7 @@ const selectedHeaders = ref<number[]>([]);
 const licenseSearch = ref<string | null>(null);
 const myProjects = ref(false);
 const exactMatch = ref(false);
+const sbomTypeFilter = ref<SbomType | 'BOTH'>('BOTH');
 const loadingAnalytics = ref(false);
 const loadingComponents = ref(false);
 const loadingLicenses = ref(false);
@@ -71,6 +77,7 @@ const reloadAnalytics = async (newInput = true) => {
     license: licenseSearch.value,
     exactComponent: exactMatch.value,
     exactLicense: exactMatch.value,
+    sbomType: sbomType.value,
   };
   const combinedSearchOptions = {
     analyticsRequestSearchOptions: analyticsSearchRequest,
@@ -118,6 +125,20 @@ const debouncedSearchLicenses = debounce(async (query: string) => {
 }, 400);
 
 const myProjectsChanged = () => {
+  reloadAnalytics(true);
+};
+
+const sbomType = computed<SbomType | undefined>(() => {
+  return sbomTypeFilter.value === 'BOTH' ? undefined : sbomTypeFilter.value;
+});
+
+const sbomTypeItems = computed(() => [
+  {title: t('LBL_LATEST_SBOM'), value: 'LATEST'},
+  {title: t('LBL_LATEST_APPROVED_SBOM'), value: 'LATEST_APPROVED'},
+  {title: t('LBL_SBOM_TYPE_BOTH'), value: 'BOTH'},
+]);
+
+const sbomTypeFilterChanged = () => {
   reloadAnalytics(true);
 };
 
@@ -169,6 +190,15 @@ watch(
         @change="myProjectsChanged"
         :label="t('LBL_MY_PROJECTS')" />
       <v-checkbox v-model="exactMatch" hide-details color="primary" :label="t('LBL_EXACT_MATCH')" />
+      <v-select
+        :label="t('LBL_SBOM_TYPE')"
+        variant="outlined"
+        density="compact"
+        class="w-64"
+        v-model="sbomTypeFilter"
+        :items="sbomTypeItems"
+        @update:model-value="sbomTypeFilterChanged"
+        hide-details="auto" />
       <v-spacer></v-spacer>
       <v-autocomplete
         :label="t('labelSearchComponent')"

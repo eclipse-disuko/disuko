@@ -911,6 +911,7 @@ func (projectHandler *ProjectHandler) ProjectComponentSearchHandler(w http.Respo
 		Component:   search.AnalyticsRequestSearchOptions.Component,
 		License:     search.AnalyticsRequestSearchOptions.License,
 		ProjectKeys: keys(userProjects),
+		SbomType:    analytics2.SbomType(search.AnalyticsRequestSearchOptions.SbomType),
 		Offset:      int(offset),
 		Limit:       int(limit),
 		SortCol:     sortCol,

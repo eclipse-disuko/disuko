@@ -5,11 +5,14 @@
 import {SearchOptions} from '@disclosure-portal/utils/Table';
 import {LicenseSlim, PossibleFilterValues} from './License';
 
+export type SbomType = 'LATEST' | 'LATEST_APPROVED';
+
 export interface IAnalyticsSearchRequest {
   component: string;
   license: string;
   exactComponent: boolean;
   exactLicense: boolean;
+  sbomType?: SbomType;
 }
 
 export interface SearchResponseItem {

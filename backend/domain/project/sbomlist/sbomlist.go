@@ -8,6 +8,7 @@ import (
 	"sort"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/project"
 )
 
@@ -26,6 +27,19 @@ func (h Histories) GetLatest() *project.SpdxFileBase {
 	})
 
 	return h[0]
+}
+
+func (h Histories) GetLatestApproved() *project.SpdxFileBase {
+	var latest *project.SpdxFileBase
+	for _, s := range h {
+		if s.ApprovalInfo.Status != string(approval.Approved) && s.ApprovalInfo.Status != string(approval.SupplierApproved) {
+			continue
+		}
+		if latest == nil || s.Updated.After(latest.Updated) {
+			latest = s
+		}
+	}
+	return latest
 }
 
 func (h Histories) GetByKey(key string) *project.SpdxFileBase {

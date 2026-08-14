@@ -5,6 +5,7 @@
 package analytics
 
 import (
+	da "github.com/eclipse-disuko/disuko/domain/analytics"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/infra/service/analytics"
 	"github.com/eclipse-disuko/disuko/observermngmt"
@@ -31,6 +32,7 @@ func (a *Analytics) RegisterHandlers() {
 	observermngmt.RegisterHandler(observermngmt.LicenseAliasAdded, a.OnAliasAdded)
 	observermngmt.RegisterHandler(observermngmt.LicenseAliasDeleted, a.OnAliasDeleted)
 	observermngmt.RegisterHandler(observermngmt.ProjectUpdated, a.OnProjectUpdated)
+	observermngmt.RegisterHandler(observermngmt.ApprovalFinalized, a.OnApprovalFinalized)
 }
 
 func (a *Analytics) OnSpdxAdded(eventId observermngmt.EventId, arg interface{}) {
@@ -39,7 +41,7 @@ func (a *Analytics) OnSpdxAdded(eventId observermngmt.EventId, arg interface{}) 
 		return
 	}
 	go exception.TryCatchAndLog(data.RequestSession, func() {
-		a.service.ExportSPDX(data.RequestSession, data.Project, data.Version, data.SpdxFile)
+		a.service.ExportSPDX(data.RequestSession, data.Project, data.Version, data.SpdxFile, da.SbomTypeLatest)
 	})
 }
 
@@ -154,4 +156,14 @@ func (a *Analytics) OnProjectUpdated(eventId observermngmt.EventId, arg interfac
 			a.service.Handler.HandleResponsibleChanged(data.RequestSession, data.New.Key, newRes.UserId)
 		})
 	}
+}
+
+func (a *Analytics) OnApprovalFinalized(eventId observermngmt.EventId, arg interface{}) {
+	data, ok := arg.(observermngmt.ApprovalData)
+	if !ok {
+		return
+	}
+	go exception.TryCatchAndLog(data.RequestSession, func() {
+		a.service.HandleApprovalFinalized(data.RequestSession, data.Approval)
+	})
 }

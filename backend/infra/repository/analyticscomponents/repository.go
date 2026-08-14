@@ -58,6 +58,10 @@ func (r *componentsRepositoryStruct) InitIndex(requestSession *logy.RequestSessi
 	r.index = names
 }
 
+func (r *componentsRepositoryStruct) Reset() {
+	r.index = nil
+}
+
 func (r *componentsRepositoryStruct) SearchByName(requestSession *logy.RequestSession, name string, exact bool) []string {
 	return r.search(name, exact)
 }

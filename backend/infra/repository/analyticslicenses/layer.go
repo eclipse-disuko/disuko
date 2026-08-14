@@ -18,4 +18,5 @@ type ILicensesRepository interface {
 	InitIndex(session *logy.RequestSession)
 	FindByName(requestSession *logy.RequestSession, name string) []*analytics.License
 	AddToIndex(requestSession *logy.RequestSession, name string)
+	Reset()
 }

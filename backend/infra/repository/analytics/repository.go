@@ -29,8 +29,11 @@ func NewAnalyticsRepository(requestSession *logy.RequestSession) IAnalyticsRepos
 			nil,
 			[][]string{
 				{"ProjectVersionKey"},
+				{"ProjectVersionKey", "SBomType"},
 				{"SBomKey"},
+				{"SBomKey", "SBomType"},
 				{"SBomName"},
+				{"SBomType"},
 				{"ProjectVersionName"},
 				{"ProjectName"},
 				{"ProjectKey"},
@@ -50,13 +53,37 @@ func NewAnalyticsRepository(requestSession *logy.RequestSession) IAnalyticsRepos
 	return analyticsRepository
 }
 
-func (repository *analyticsRepositoryStruct) FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, component string, keys []string, entryLicense string, offset, limit int, sortCol string, asc bool) []*analytics.Analytics {
+func (repository *analyticsRepositoryStruct) FindByNameAndProjectKeysAndLicense(requestSession *logy.RequestSession, component string, keys []string, entryLicense string, sbomType analytics.SbomType, offset, limit int, sortCol string, asc bool) []*analytics.Analytics {
 	qc := database.New().SetMatcher(
 		database.AttributeMatcher(
 			"Deleted",
 			database.EQ,
 			false))
 
+	if sbomType == analytics.SbomTypeLatestAndApproved {
+		qc.SetMatcher(database.AndChain(
+			*qc.Matcher,
+			database.OrChain(
+				database.AttributeMatcher(
+					"SBomType",
+					database.EQ,
+					analytics.SbomTypeLatest,
+				),
+				database.AttributeMatcher(
+					"SBomType",
+					database.EQ,
+					analytics.SbomTypeLatestApproved,
+				),
+			)))
+	} else if sbomType != "" {
+		qc.SetMatcher(database.AndChain(
+			*qc.Matcher,
+			database.AttributeMatcher(
+				"SBomType",
+				database.EQ,
+				sbomType,
+			)))
+	}
 	if component != "" {
 		qc.SetMatcher(database.AndChain(
 			*qc.Matcher,
