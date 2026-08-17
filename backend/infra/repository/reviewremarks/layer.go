@@ -12,5 +12,5 @@ import (
 
 type IReviewRemarksRepository interface {
 	base.IBaseRepositoryWithSoftDelete[*rr.ReviewRemarks]
-	FindByKeyFilteredByComponentId(requestSession *logy.RequestSession, key string, spdxId string) *rr.ReviewRemarks
+	FindByKeyFilteredBySbomIdAndComponentId(requestSession *logy.RequestSession, key string, sbomId string, componentId string) *rr.ReviewRemarks
 }

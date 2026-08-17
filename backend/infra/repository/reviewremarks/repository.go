@@ -30,7 +30,7 @@ func NewReviewRemarskRepositry(requestSession *logy.RequestSession) IReviewRemar
 	}
 }
 
-func (repo *reviewRemarksRepositoryStruct) FindByKeyFilteredByComponentId(requestSession *logy.RequestSession, key string, spdxId string) *rr.ReviewRemarks {
+func (repo *reviewRemarksRepositoryStruct) FindByKeyFilteredBySbomIdAndComponentId(requestSession *logy.RequestSession, key string, sbomId string, spdxId string) *rr.ReviewRemarks {
 	reviewRemarks := repo.FindByKey(requestSession, key, false)
 	if reviewRemarks == nil {
 		return nil
@@ -38,6 +38,10 @@ func (repo *reviewRemarksRepositoryStruct) FindByKeyFilteredByComponentId(reques
 
 	var filteredRemarks []*rr.Remark
 	for _, remark := range reviewRemarks.Remarks {
+		if remark.SBOMId != sbomId {
+			continue
+		}
+
 		for _, component := range remark.Components {
 			if component.ComponentId == spdxId {
 				filteredRemarks = append(filteredRemarks, remark)

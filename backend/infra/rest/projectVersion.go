@@ -918,13 +918,20 @@ func (projectHandler *ProjectHandler) ComponentReviewRemarksGetHandler(w http.Re
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ParamSpdxidEmpty))
 	}
 
+	sbomUuidEscaped := chi.URLParam(r, "sbomUuid")
+	sbomUuid, err := url.QueryUnescape(sbomUuidEscaped)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ParamSbomUuidEmpty))
+	if sbomUuid == "" {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ParamSbomUuidEmpty))
+	}
+
 	currentProject, version, requestSession := projectHandler.retrieveProjectAndVersion2(r)
 	_, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
 	if !rights.AllowProjectVersion.Read {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ReadVersionReviewRemarks))
 	}
 
-	remarksList := projectHandler.ReviewRemarksRepository.FindByKeyFilteredByComponentId(requestSession, version.Key, spdxId)
+	remarksList := projectHandler.ReviewRemarksRepository.FindByKeyFilteredBySbomIdAndComponentId(requestSession, version.Key, sbomUuid, spdxId)
 
 	if remarksList == nil {
 		render.JSON(w, r, []reviewremarks.RemarkDto{})
