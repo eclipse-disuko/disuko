@@ -379,14 +379,10 @@ watch(() => route.path, handleFilterQuery);
       </template>
       <template #[`item.warnLevel`]="{item}">
         <span>
-          <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom>
-            <template #activator="{props, targetRef}">
-              <v-icon v-bind="props" v-on="targetRef" :color="getIconColorOfLevel(item.warnLevel)" dense>{{
-                getIconOfLevel(item.warnLevel)
-              }}</v-icon>
-            </template>
+          <Tooltip>
             <span>{{ getTextOfLevel(item.warnLevel) }}</span>
-          </v-tooltip>
+          </Tooltip>
+          <v-icon :color="getIconColorOfLevel(item.warnLevel)">{{ getIconOfLevel(item.warnLevel) }}</v-icon>
         </span>
       </template>
       <template #[`item.remark`]="{item}">
@@ -396,14 +392,12 @@ watch(() => route.path, handleFilterQuery);
         {{ viewTools.getNameForLanguage(item) }}
       </template>
       <template #[`item.description`]="{item}">
-        <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom>
-          <template #activator="{props, targetRef}">
-            <span v-bind="props" v-on="targetRef">
-              {{ getStrWithMaxLength(180, t(viewTools.getDescriptionForLanguage(item))) }}
-            </span>
-          </template>
+        <Tooltip>
           <span>{{ t(viewTools.getDescriptionForLanguage(item)) }}</span>
-        </v-tooltip>
+        </Tooltip>
+        <span>
+          {{ getStrWithMaxLength(180, t(viewTools.getDescriptionForLanguage(item))) }}
+        </span>
       </template>
       <template #[`item.data-table-expand`]="{item}">
         <v-icon
