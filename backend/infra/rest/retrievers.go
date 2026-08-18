@@ -21,7 +21,7 @@ import (
 )
 
 func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, patAuthService *patauth.Service, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
-	currentProject, origin := retrieveProjectFromPublicRequest(rs, prRepo, patAuthService, r, true, true)
+	currentProject, origin := retrieveProjectFromPublicRequest(rs, prRepo, patAuthService, r, true, true, false)
 
 	versionEscaped := chi.URLParam(r, "version")
 	versionName, err := url.QueryUnescape(versionEscaped)
@@ -44,11 +44,18 @@ func retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, prRepo 
 	return currentProject, version, origin
 }
 
-func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, patAuthService *patauth.Service, r *http.Request, withVersions bool, denyDeprecated bool) (*project.Project, string) {
+func retrieveProjectFromPublicRequest(rs *logy.RequestSession, prRepo project2.IProjectRepository, patAuthService *patauth.Service, r *http.Request, withVersions bool, denyDeprecated bool, group bool) (*project.Project, string) {
 	prID := extractProjectKeyFromRequest(r)
 	pr := prRepo.FindByKey(rs, prID, !withVersions)
 	if pr == nil {
 		exception.ThrowExceptionClient404Message(message.GetI18N(message.ErrorDbRead, project2.ProjectCollectionName), "project not found: "+prID)
+	}
+	if pr.IsGroup != group {
+		if group {
+			exception.ThrowExceptionClientMessage3(message.GetI18N(message.OperationNotAllowedOnProject))
+		} else {
+			exception.ThrowExceptionClientMessage3(message.GetI18N(message.OperationNotAllowedOnGroups))
+		}
 	}
 	if denyDeprecated && pr.IsDeprecated() {
 		exception.ThrowExceptionSendDeniedResponseRaw(message.GetI18N(message.DeprecatedProjectError), "")
@@ -159,11 +166,15 @@ func (p *ProjectHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.Req
 }
 
 func (h *ProjectHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true)
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true, false)
+}
+
+func (h *ProjectHandler) retrieveGroupFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true, true)
 }
 
 func (h *PolicyRulesHandler) retrieveProjectFromPublicRequest(rs *logy.RequestSession, r *http.Request, withVersions bool) (*project.Project, string) {
-	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true)
+	return retrieveProjectFromPublicRequest(rs, h.ProjectRepository, h.PATAuthService, r, withVersions, true, false)
 }
 
 func (s *SPDXHandler) retrieveProjectAndVersionFromPublicRequest(rs *logy.RequestSession, r *http.Request) (*project.Project, *project.ProjectVersion, string) {
