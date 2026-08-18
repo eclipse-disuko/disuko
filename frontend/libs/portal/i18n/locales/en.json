@@ -888,6 +888,7 @@
   "TT_cancel_review_remark": "cancel review remark",
   "TT_reopen_review_remark": "re-open review remark",
   "TT_edit_review_remark": "edit review remark",
+  "TT_view_review_remark": "view review remark",
   "LICENSE_COPY_BTN_TOOLTIP": "copy license",
   "FT_VERSION": "v",
   "LABEL_VERSION": "Version",

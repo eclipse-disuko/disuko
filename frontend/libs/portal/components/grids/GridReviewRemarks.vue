@@ -479,6 +479,7 @@ const getActionButtons = (item: ReviewRemark): TableActionButtonsProps['buttons'
   return [
     {
       icon: hasComments ? 'mdi-comment-multiple-outline' : 'mdi-comment-outline',
+      hint: t('TT_view_review_remark'),
       event: 'view',
       show: true,
     },
