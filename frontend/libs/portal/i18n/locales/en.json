@@ -2016,6 +2016,7 @@
   "CHECKLIST_TRIGGER_COMPONENT_NAME": "Component Name Contains OR",
   "CHECKLIST_EXECUTE": "Execute",
   "CHECKLIST_EXECUTE_DT": "Execute Checklist",
+  "CHECKLIST_EXECUTE_TT": "execute checklist",
   "CHECKLIST_EXECUTED": "Executed Checklist",
   "LBL_TRIGGER_TYPE": "Trigger Type",
   "LBL_NAME": "Name",

@@ -351,6 +351,9 @@ onMounted(async () => {
       </template>
 
       <template #[`item.status`]="{item}">
+        <Tooltip>
+          <span>{{ t('SCAN_REMARK_STATUS_' + item.status) }}</span>
+        </Tooltip>
         <div>
           <v-icon :color="getIconColorScanRemarkLevel(item.status)" x-small>mdi-circle</v-icon>
         </div>

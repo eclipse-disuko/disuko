@@ -1998,6 +1998,7 @@
   "CHECKLIST_TRIGGER_COMPONENT_NAME": "Komponentenname enthält ODER",
   "CHECKLIST_EXECUTE": "Ausführen",
   "CHECKLIST_EXECUTE_DT": "Prüfliste ausführen",
+  "CHECKLIST_EXECUTE_TT": "Prüfliste ausführen",
   "CHECKLIST_EXECUTED": "Prüfliste ausgeführt",
   "LBL_TRIGGER_TYPE": "Trigger Typ",
   "LBL_NAME": "Name",
