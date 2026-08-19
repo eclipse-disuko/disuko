@@ -2257,7 +2257,7 @@ func (projectHandler *ProjectHandler) ProjectGetExternHandler(w http.ResponseWri
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, _ := projectHandler.retrieveProjectFromPublicRequest(requestSession, r, false)
+	currentProject, _ := projectHandler.retrieveGroupFromPublicRequest(requestSession, r, false)
 	if !currentProject.IsGroup {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ProjectGroupRequired))
 	}
@@ -2300,7 +2300,7 @@ func (projectHandler *ProjectHandler) ProjectGetChildrenExternHandler(w http.Res
 //	@security	Bearer
 func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
-	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.PATAuthService, r, true, false)
+	currentProject, _ := retrieveProjectFromPublicRequest(requestSession, projectHandler.ProjectRepository, projectHandler.PATAuthService, r, true, false, false)
 	projectHandler.HandleProjectStatus(requestSession, currentProject, w, r)
 }
 
