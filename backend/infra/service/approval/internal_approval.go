@@ -142,6 +142,7 @@ func (s *ApprovalService) processInternalApprovalUpdate(pr *project.Project, tar
 		}
 		targetApproval.Internal.ApproveComments[approverRole] = req.Comment
 		if (approverRole == approval.Supplier1 || approverRole == approval.Supplier2) && targetApproval.Internal.SupplierDone() {
+			s.setApprovalSpdxStatus(targetApproval, approval.SupplierApproved)
 			if targetApproval.Internal.Approver[approval.Customer1] != "" {
 				s.setApproverRole(targetApproval, approval.Customer1)
 				s.CreateInternalApprovalTask(targetApproval, approval.Customer1)

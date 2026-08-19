@@ -18,4 +18,5 @@ type IComponentsRepository interface {
 	InitIndex(requestSession *logy.RequestSession)
 	FindByNameAndVersion(requestSession *logy.RequestSession, name, version string) []*analytics.Component
 	AddToIndex(requestSession *logy.RequestSession, name string)
+	Reset()
 }
