@@ -17,10 +17,11 @@ jobs:
       - uses: actions/setup-node@v6
         continue-on-error: true
         with:
-          node-version-file: 'frontend/package.json'
+          node-version-file: "frontend/package.json"
           registry-url: https://registry.npmjs.org/
       - run: npm install
       - run: npm run format:check
+      - run: npm run lint:shared-import-boundary
       - run: npm run check:unknown-tags:portal:ci
       - run: npm run check:unknown-tags:discocli:ci
       - run: MODE=production npm run build-ignore-errors

@@ -9,6 +9,7 @@
     "dev:cli": "cd ./apps/discocli && vite",
     "typecheck": "cd ./apps/portal && vue-tsc --noEmit",
     "lint": "oxlint",
+    "lint:shared-import-boundary": "oxlint -c .oxlintrc.shared-import-boundary.json libs/shared",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",

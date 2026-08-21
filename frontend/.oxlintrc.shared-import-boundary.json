@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "no-restricted-imports": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "libs/shared/**/*.ts",
+        "libs/shared/**/*.tsx",
+        "libs/shared/**/*.mts",
+        "libs/shared/**/*.cts",
+        "libs/shared/**/*.vue"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@disclosure-portal/*", "@cli/*"],
+                "message": "libs/shared must stay app-agnostic. Do not import app aliases (@disclosure-portal/* or @cli/*) from shared code."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "libs/shared/components/sidebar/SubNavItem.vue",
+        "libs/shared/components/sidebar/NavItem.vue",
+        "libs/shared/components/disco/PolicyRulesTable.vue",
+        "libs/shared/components/disco/DRuleButtons.vue",
+        "libs/shared/components/disco/DVersionStateWithTooltip.vue",
+        "libs/shared/components/disco/DAutocompleteCompany.vue",
+        "libs/shared/components/disco/DAutocompleteUser.vue",
+        "libs/shared/components/disco/DDateCellWithTooltip.vue",
+        "libs/shared/components/disco/interfaces.ts",
+        "libs/shared/components/widgets/DiscoFileUpload.vue",
+        "libs/shared/layouts/TableLayout.vue",
+        "libs/shared/components/widgets/FilterSets.vue"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}
