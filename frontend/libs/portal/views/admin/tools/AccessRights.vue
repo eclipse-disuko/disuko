@@ -287,7 +287,8 @@ onMounted(() => {
                         v-for="(v, k) in rights[1]"
                         :key="k"
                         :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-                        location="bottom">
+                        location="bottom"
+                        content-class="dpTooltip">
                         <template v-slot:activator="{props}">
                           <span
                             v-if="k === 'upload' || k === 'download'"
@@ -403,7 +404,8 @@ onMounted(() => {
                         v-for="(v, k) in rights[1]"
                         :key="k"
                         :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-                        location="bottom">
+                        location="bottom"
+                        content-class="dpTooltip">
                         <template v-slot:activator="{props}">
                           <span v-bind="props" class="tableCRUDIcon">
                             <v-icon v-if="v" color="primary">mdi-check</v-icon>

@@ -256,14 +256,14 @@ onMounted(async () => {
             'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS,
           }">
           <template v-slot:item.url="{item}">
-            <v-tooltip v-if="!item.url.startsWith('file://')" :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom">
-              <template v-slot:activator="{props}">
-                <span v-bind="props">
-                  <DExternalLink :text="getStrWithMaxLength(45, item.url)" :url="item.url"></DExternalLink>
-                </span>
-              </template>
-              <span>{{ t('OPEN_URL_EXTERN') }} {{ item.url }}</span>
-            </v-tooltip>
+            <span v-if="!item.url.startsWith('file://')">
+              <Tooltip>
+                <span>{{ t('OPEN_URL_EXTERN') }} {{ item.url }}</span>
+              </Tooltip>
+              <span>
+                <DExternalLink :text="getStrWithMaxLength(45, item.url)" :url="item.url"></DExternalLink>
+              </span>
+            </span>
             <span v-else>{{ item.url }}</span>
           </template>
           <template v-slot:item.created="{item}">
