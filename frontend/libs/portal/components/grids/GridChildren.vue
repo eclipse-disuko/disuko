@@ -220,17 +220,10 @@ const getStatusClass = computed(() => (status?: string) => {
           <DDateCellWithTooltip :value="item.version.created" v-if="item.version" />
         </template>
         <template #[`item.description`]="{item}">
-          <v-tooltip
-            :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
-            bottom
-            max-width="480"
-            v-if="item.version"
-            content-class="dpTooltip">
-            <template v-slot:activator="{props}">
-              <span v-bind="props"> {{ getStrWithMaxLength(50, '' + item.version.description) }}</span>
-            </template>
+          <Tooltip v-if="item.version">
             {{ item.version.description }}
-          </v-tooltip>
+          </Tooltip>
+          <span v-if="item.version">{{ getStrWithMaxLength(50, '' + item.version.description) }}</span>
         </template>
       </v-data-table>
     </template>
