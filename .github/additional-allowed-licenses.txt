@@ -1,0 +1,2 @@
+# Needed for golang libraries
+LicenseRef-scancode-google-patent-license-golang
