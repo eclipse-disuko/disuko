@@ -76,7 +76,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
     "@vue/compiler-sfc": "~3.5.13",
-    "@vue/language-server": "^3.3.11",
+    "@vue/language-server": "~3.3.11",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "~0.7.0",
     "jsdom": "^27.2.0",
@@ -105,9 +105,9 @@
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"
   },
   "allowScripts": {
-    "v-code-diff@1.13.1": true,
-    "vue-demi@0.14.10": true,
-    "esbuild@0.25.12": true,
-    "@parcel/watcher@2.5.1": true
+    "v-code-diff": true,
+    "vue-demi": true,
+    "esbuild": true,
+    "@parcel/watcher": true
   }
 }
