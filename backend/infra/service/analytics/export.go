@@ -128,7 +128,7 @@ func (a *Analytics) Reinitialise(requestSession *logy.RequestSession) {
 		exception.TryCatch(func() {
 			a.exportProject(requestSession, p, repos(a))
 		}, func(ex exception.Exception) {
-			logy.Errorw(requestSession, "Error %s", ex.ErrorMessage)
+			logy.Errorf(requestSession, "Error %s", ex.ErrorMessage)
 			exception.LogException(requestSession, ex)
 		})
 

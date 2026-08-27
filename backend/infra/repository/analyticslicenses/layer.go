@@ -16,6 +16,6 @@ type ILicensesRepository interface {
 	base.IBaseRepositoryWithSoftDelete[*analytics.License]
 	SearchLicenceByName(requestSession *logy.RequestSession, name string, exact bool) []string
 	InitIndex(session *logy.RequestSession)
-	FindByName(requestSession *logy.RequestSession, name string) []*analytics.License
+	ExistByName(requestSession *logy.RequestSession, name string) bool
 	AddToIndex(requestSession *logy.RequestSession, name string)
 }

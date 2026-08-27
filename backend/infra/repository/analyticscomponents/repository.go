@@ -5,6 +5,7 @@
 package analyticscomponents
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/eclipse-disuko/disuko/helper"
@@ -33,7 +34,6 @@ func NewComponentsRepository(requestSession *logy.RequestSession) IComponentsRep
 			nil,
 			nil,
 			[][]string{
-				{"Name", "Version"},
 				{"Name"},
 			},
 		),
@@ -41,13 +41,9 @@ func NewComponentsRepository(requestSession *logy.RequestSession) IComponentsRep
 	return componentsRepositoryStruct
 }
 
-func (r *componentsRepositoryStruct) search(search string, exact bool) []string {
-	return helper.Search(r.index, search, exact)
-}
-
 func (r *componentsRepositoryStruct) InitIndex(requestSession *logy.RequestSession) {
 	qc := database.New()
-	qACs := r.BaseRepository.Query(requestSession, qc)
+	qACs := r.Query(requestSession, qc)
 	var names []string
 	for _, c := range qACs {
 		if strings.TrimSpace(c.Name) == "" {
@@ -59,23 +55,11 @@ func (r *componentsRepositoryStruct) InitIndex(requestSession *logy.RequestSessi
 }
 
 func (r *componentsRepositoryStruct) SearchByName(requestSession *logy.RequestSession, name string, exact bool) []string {
-	return r.search(name, exact)
+	return helper.Search(r.index, name, exact)
 }
 
-func (r *componentsRepositoryStruct) FindByNameAndVersion(requestSession *logy.RequestSession, name, version string) []*analytics.Component {
-	qc := database.New().SetMatcher(database.AndChain(
-		database.AttributeMatcher(
-			"Name",
-			database.EQ,
-			name,
-		),
-		database.AttributeMatcher(
-			"Version",
-			database.EQ,
-			version,
-		),
-	))
-	return r.Query(requestSession, qc)
+func (r *componentsRepositoryStruct) ExistByName(requestSession *logy.RequestSession, name string) bool {
+	return slices.Contains(r.index, name)
 }
 
 func (r *componentsRepositoryStruct) AddToIndex(requestSession *logy.RequestSession, name string) {

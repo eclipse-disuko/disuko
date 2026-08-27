@@ -12,5 +12,4 @@ type Component struct {
 	domain.RootEntity `bson:"inline"`
 	domain.SoftDelete `bson:"inline"`
 	Name              string
-	Version           string
 }
