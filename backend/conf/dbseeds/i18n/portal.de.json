@@ -286,7 +286,7 @@
   "DLG_CONFIRMATION_START_JOB": "Sind Sie sicher, dass Sie diesen Job starten möchten: ",
   "DLG_CONFIRMATION_START_ONETIME_JOB": "Sind Sie sicher, dass Sie diese Einmalausführung wiederholen möchten: ",
   "DLG_DISABLED_USER_TITLE": "Benutzer deaktiviert",
-  "DLG_DISABLED_USER_TEXT": "Ihr Konto ist nicht aktiviert, bitte wenden Sie sich an den Administrator",
+  "DLG_DISABLED_USER_TEXT": "Ihr Konto ist nicht aktiviert. Bitte wenden Sie sich an den Support.",
   "DLG_RENEWAL_TITLE": "Token erneuert",
   "DLG_RENEWAL_DESCRIPTION": "Neues Token erstellt mit Secret:\n",
   "DIALOG_internal_token_renew_success": "Internes Token erfolgreich erneuert",

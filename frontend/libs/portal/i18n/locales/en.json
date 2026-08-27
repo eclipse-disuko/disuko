@@ -276,7 +276,7 @@
   "DLG_CONFIRMATION_START_JOB": "Are you sure, you want to start the job: ",
   "DLG_CONFIRMATION_START_ONETIME_JOB": "Are you sure, you want to rerun the onetime job: ",
   "DLG_DISABLED_USER_TITLE": "User deactivated",
-  "DLG_DISABLED_USER_TEXT": "Your account is not active, please notify the admin",
+  "DLG_DISABLED_USER_TEXT": "Your account is not active. Please contact support.",
   "DLG_RENEWAL_TITLE": "Token renewed",
   "DLG_RENEWAL_DESCRIPTION": "New token created with secret:\n",
   "DIALOG_NEW_TOKEN_MESSAGE": "New token has been generated:",
