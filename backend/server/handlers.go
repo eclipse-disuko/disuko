@@ -45,6 +45,7 @@ type handlers struct {
 	publicAuth    rest.PublicAuthHandler
 	i18n          rest.I18nHandler
 	mailTemplate  rest.MailTemplateHandler
+	featureFlag   rest.FeatureFlagHandler
 }
 
 func (s *Server) setupHandlers() {
@@ -271,6 +272,9 @@ func (s *Server) setupHandlers() {
 		MailTemplatesRepository: s.repos.mailTemplates,
 		UserRepository:          s.repos.user,
 		MailService:             s.services.mail,
+	}
+	s.handlers.featureFlag = rest.FeatureFlagHandler{
+		Repo: s.repos.featureFlag,
 	}
 
 	// TODO: quick fix, move spdx retriever into service

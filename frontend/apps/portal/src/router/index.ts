@@ -520,6 +520,17 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'admin/featureswitches',
+        name: 'FeatureSwitches',
+        component: FeatureSwitches,
+        meta: {
+          title: {
+            en: 'Feature Switches',
+            de: 'Feature-Schalter',
+          },
+        },
+      },
+      {
         path: 'admin/i18n',
         name: 'I18nAdmin',
         component: I18nAdmin,
@@ -966,6 +977,13 @@ router.beforeEach((to, from, next) => {
     }
     if (to.path.includes('admin/featureflags')) {
       if (rights.isApplicationAdmin()) {
+        return next();
+      } else {
+        return next({path: '/dashboard/home'});
+      }
+    }
+    if (to.path.includes('admin/featureswitches')) {
+      if (rights.isDomainAdmin()) {
         return next();
       } else {
         return next({path: '/dashboard/home'});

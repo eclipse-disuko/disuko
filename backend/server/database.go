@@ -27,15 +27,16 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/analyticscomponents"
 	"github.com/eclipse-disuko/disuko/infra/repository/analyticslicenses"
 	announcement "github.com/eclipse-disuko/disuko/infra/repository/announcements"
-	"github.com/eclipse-disuko/disuko/infra/repository/mailtemplates"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/deletionaudit"
 	"github.com/eclipse-disuko/disuko/infra/repository/department"
 	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
+	"github.com/eclipse-disuko/disuko/infra/repository/featureflag"
 	"github.com/eclipse-disuko/disuko/infra/repository/jobs"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
 	"github.com/eclipse-disuko/disuko/infra/repository/license"
+	"github.com/eclipse-disuko/disuko/infra/repository/mailtemplates"
 	migration "github.com/eclipse-disuko/disuko/infra/repository/migration"
 	"github.com/eclipse-disuko/disuko/infra/repository/obligation"
 	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
@@ -86,6 +87,7 @@ type dbRepos struct {
 	userstats            userstatsRepo.IUserStatsRepository
 	policyDecisions      policydecisions.IPolicyDecisionsRepository
 	i18nLocale           i18nRepo.II18nRepository
+	featureFlag          featureflag.IFeatureFlagRepository
 }
 
 func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
@@ -126,6 +128,7 @@ func (s *Server) setupDatabase(requestSession *logy.RequestSession) {
 		userstats:            userstatsRepo.NewUsersRepository(requestSession),
 		policyDecisions:      policydecisions.NewPolicyDecisionsRepository(requestSession),
 		i18nLocale:           i18nRepo.NewI18nRepository(requestSession),
+		featureFlag:          featureflag.NewFeatureFlagRepository(requestSession),
 	}
 	err := s.repos.seedDb(requestSession)
 	if err != nil {

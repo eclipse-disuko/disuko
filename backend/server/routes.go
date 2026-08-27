@@ -346,6 +346,13 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Delete("/{id}", s.handlers.label.DeleteLabel)  // test missing
 					r.Get("/csv", s.handlers.label.CreateCSVHandler) // test missing
 				})
+				r.Route("/featureflags", func(r chi.Router) {
+					r.Get("/", s.handlers.featureFlag.GetAllHandler)
+					r.Post("/", s.handlers.featureFlag.CreateHandler)
+					r.Get("/{id}", s.handlers.featureFlag.GetByKeyHandler)
+					r.Put("/{id}", s.handlers.featureFlag.UpdateHandler)
+					r.Delete("/{id}", s.handlers.featureFlag.DeleteHandler)
+				})
 				r.Route("/templates/review", func(r chi.Router) {
 					r.Get("/", s.handlers.template.GetReviewTemplates)
 					r.Get("/{id}", s.handlers.template.GetReviewTemplate)

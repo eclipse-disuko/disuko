@@ -385,6 +385,26 @@ class AdminService {
   public getUpcomingDeletions() {
     return api.get<UpcomingDeletion[]>(`/api/v1/${modelName}/users/upcomingDeletions`);
   }
+
+  public getFeatureFlags(): Promise<AxiosResponse<FeatureFlag[]>> {
+    return api.get<FeatureFlag[]>(`/api/v1/${modelName}/featureflags`);
+  }
+
+  public getFeatureFlag(id: string): Promise<AxiosResponse<FeatureFlag>> {
+    return api.get<FeatureFlag>(`/api/v1/${modelName}/featureflags/${encodeURIComponent(id)}`);
+  }
+
+  public createFeatureFlag(item: FeatureFlag): Promise<AxiosResponse<FeatureFlag>> {
+    return api.post<FeatureFlag>(`/api/v1/${modelName}/featureflags`, item);
+  }
+
+  public updateFeatureFlag(item: FeatureFlag): Promise<AxiosResponse<FeatureFlag>> {
+    return api.put<FeatureFlag>(`/api/v1/${modelName}/featureflags/${encodeURIComponent(item._key)}`, item);
+  }
+
+  public deleteFeatureFlag(id: string) {
+    return api.delete<ISuccessRsponse>(`/api/v1/${modelName}/featureflags/${encodeURIComponent(id)}`);
+  }
 }
 
 const adminService = new AdminService();

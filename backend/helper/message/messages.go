@@ -152,6 +152,9 @@ const (
 	SbomComponentsError                       = "SBOM_COMPONENTS_ERROR"
 	SbomCreateFile                            = "SBOM_CREATE_FILE"
 	IncorectLabelType                         = "INCORECT_LABEL_TYPE"
+	IncorrectFeatureFlagType                  = "INCORRECT_FEATURE_FLAG_TYPE"
+	ErrorFeatureFlagAlreadyExist              = "ERROR_FEATURE_FLAG_ALREADY_EXIST"
+	ErrorFeatureFlagNotFound                  = "ERROR_FEATURE_FLAG_NOT_FOUND"
 	ProjectToken                              = "PROJECT_TOKEN"
 	Error                                     = "ERROR"
 	ErrorNotAJobType                          = "ERROR_NOT_A_JOB_TYPE"
@@ -508,7 +511,10 @@ func InitI18N() {
 	addI18NKeyValue(SrContainsNonLatinLettersDescription, "The Package URL contains one or more non-Latin characters. It is recommended to check this package to prevent potential supply chain dependency attacks, for example combo-squatting.")
 	addI18NKeyValue(FetchS3File, "Error fetching file from S3")
 	addI18NKeyValue(SbomReadInReqFile, "The SBOM file could not be read (%v)")
+	addI18NKeyValue(ErrorFeatureFlagAlreadyExist, "feature flag with key %s already exists")
+	addI18NKeyValue(ErrorFeatureFlagNotFound, "feature flag with key %s not found")
 	addI18NKeyValue(SbomCreateFile, "The SBOM file could not be created / saved")
+	addI18NKeyValue(IncorrectFeatureFlagType, "feature flag type is incorrect")
 	addI18NKeyValue(IncorectLabelType, "label type is incorrect")
 	addI18NKeyValue(ProjectToken, "Project uuid wrong")
 	addI18NKeyValue(Error, "")

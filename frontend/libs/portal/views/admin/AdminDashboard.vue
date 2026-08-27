@@ -217,6 +217,16 @@ const tiles = computed<ITile[]>(() => {
       expandGroup: false,
       expand: false,
     });
+    res.push({
+      color: 'primary',
+      cnt: -1,
+      visible: true,
+      title: 'FEATURE_SWITCHES',
+      url: '/dashboard/admin/featureswitches',
+      icon: 'mdi-toggle-switch-outline',
+      expandGroup: false,
+      expand: false,
+    });
   }
   return sortByAttribute(
     res.map((tile) => ({tile, label: t(tile.title)})),
