@@ -55,7 +55,7 @@ func InitDbHandler(
 	}
 }
 
-func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
+func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions, skipExistCheck bool) {
 	sbomType := options.sbomType
 	if sbomType == "" {
 		sbomType = da.SbomTypeLatest
@@ -71,38 +71,40 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 	}
 	defer h.lockService.Release(l)
 
-	qc := database.New().SetMatcher(database.AndChain(
-		database.AttributeMatcher(
-			"SBomKey",
-			database.EQ,
-			options.spdxFile.Key,
-		),
-		database.AttributeMatcher(
-			"SBomType",
-			database.EQ,
-			sbomType,
-		),
-	))
-	existing := len(h.analyticsRepository.Query(options.rs, qc)) > 0
-	if existing {
-		return
-	}
+	if !skipExistCheck {
+		qc := database.New().SetMatcher(database.AndChain(
+			database.AttributeMatcher(
+				"SBomKey",
+				database.EQ,
+				options.spdxFile.Key,
+			),
+			database.AttributeMatcher(
+				"SBomType",
+				database.EQ,
+				sbomType,
+			),
+		))
+		existing := len(h.analyticsRepository.Query(options.rs, qc)) > 0
+		if existing {
+			return
+		}
 
-	qc = database.New().SetMatcher(database.AndChain(
-		database.AttributeMatcher(
-			"ProjectVersionKey",
-			database.EQ,
-			options.version.Key,
-		),
-		database.AttributeMatcher(
-			"SBomType",
-			database.EQ,
-			sbomType,
-		),
-	))
-	prev := h.analyticsRepository.Query(options.rs, qc)
-	if len(prev) > 0 {
-		h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true, sbomType)
+		qc = database.New().SetMatcher(database.AndChain(
+			database.AttributeMatcher(
+				"ProjectVersionKey",
+				database.EQ,
+				options.version.Key,
+			),
+			database.AttributeMatcher(
+				"SBomType",
+				database.EQ,
+				sbomType,
+			),
+		))
+		prev := h.analyticsRepository.Query(options.rs, qc)
+		if len(prev) > 0 {
+			h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true, sbomType)
+		}
 	}
 
 	bulkSession := h.analyticsRepository.StartSession(base.UpdateSession, 3000)
