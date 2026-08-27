@@ -16,7 +16,7 @@ type IComponentsRepository interface {
 	base.IBaseRepositoryWithSoftDelete[*analytics.Component]
 	SearchByName(requestSession *logy.RequestSession, name string, exact bool) []string
 	InitIndex(requestSession *logy.RequestSession)
-	FindByNameAndVersion(requestSession *logy.RequestSession, name, version string) []*analytics.Component
+	ExistByName(requestSession *logy.RequestSession, name string) bool
 	AddToIndex(requestSession *logy.RequestSession, name string)
 	Reset()
 }

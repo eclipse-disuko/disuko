@@ -5,6 +5,7 @@
 package analyticslicenses
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/eclipse-disuko/disuko/helper"
@@ -63,15 +64,8 @@ func (r *licensesRepositoryStruct) SearchLicenceByName(requestSession *logy.Requ
 	return r.search(name, exact)
 }
 
-func (r *licensesRepositoryStruct) FindByName(requestSession *logy.RequestSession, name string) []*analytics.License {
-	qc := database.New().SetMatcher(database.AndChain(
-		database.AttributeMatcher(
-			"Name",
-			database.EQ,
-			name,
-		),
-	))
-	return r.Query(requestSession, qc)
+func (r *licensesRepositoryStruct) ExistByName(requestSession *logy.RequestSession, name string) bool {
+	return slices.Contains(r.index, name)
 }
 
 func (r *licensesRepositoryStruct) AddToIndex(requestSession *logy.RequestSession, name string) {

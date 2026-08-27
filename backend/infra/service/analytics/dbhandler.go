@@ -5,7 +5,6 @@
 package analytics
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -106,9 +105,6 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 		h.handleSpdxDeleted(options.rs, prev[0].SBomKey, true, sbomType)
 	}
 
-	licenses := make(map[string]bool)
-	components := make(map[string]bool)
-
 	bulkSession := h.analyticsRepository.StartSession(base.UpdateSession, 3000)
 	defer bulkSession.EndSession()
 	bulkSessionComps := h.analyticsComponentsRepository.StartSession(base.UpdateSession, 3000)
@@ -174,39 +170,29 @@ func (h *DbHandler) HandleSpdxAdded(options SpdxAddedOptions) {
 			}
 			bulkSession.AddEnt(&a)
 			exception.TryCatch(func() {
-				componentVersion := strings.ToLower(result.Component.Version)
-				key := fmt.Sprintf("%s-%s", componentName, componentVersion)
-				if _, found := components[key]; !found {
-					byNameAndVersion := h.analyticsComponentsRepository.FindByNameAndVersion(options.rs, componentName, componentVersion)
-					if len(byNameAndVersion) == 0 {
-						h.analyticsComponentsRepository.AddToIndex(options.rs, componentName)
-						bulkSessionComps.AddEnt(
-							&da.Component{
-								RootEntity: domain.NewRootEntity(),
-								Name:       componentName,
-								Version:    componentVersion,
-							},
-						)
-					}
-					components[key] = true
+				if !h.analyticsComponentsRepository.ExistByName(options.rs, componentName) {
+					logy.Infof(options.rs, "storing component %s", componentName)
+					h.analyticsComponentsRepository.AddToIndex(options.rs, componentName)
+					bulkSessionComps.AddEnt(
+						&da.Component{
+							RootEntity: domain.NewRootEntity(),
+							Name:       componentName,
+						},
+					)
 				}
 			}, func(e exception.Exception) {
 				logy.Infof(options.rs, "failed to store component %s", e.Error)
 			})
 			exception.TryCatch(func() {
-				if _, found := licenses[licenseName]; !found {
-					byName := h.analyticsLicensesRepository.FindByName(options.rs, licenseName)
-					if len(byName) == 0 {
-						logy.Infof(options.rs, "storing license %s", licenseName)
-						h.analyticsLicensesRepository.AddToIndex(options.rs, licenseName)
-						bulkSessionLic.AddEnt(
-							&da.License{
-								RootEntity: domain.NewRootEntity(),
-								Name:       licenseName,
-							},
-						)
-					}
-					licenses[licenseName] = true
+				if !h.analyticsLicensesRepository.ExistByName(options.rs, licenseName) {
+					logy.Infof(options.rs, "storing license %s", licenseName)
+					h.analyticsLicensesRepository.AddToIndex(options.rs, licenseName)
+					bulkSessionLic.AddEnt(
+						&da.License{
+							RootEntity: domain.NewRootEntity(),
+							Name:       licenseName,
+						},
+					)
 				}
 			}, func(e exception.Exception) {
 				logy.Infof(options.rs, "failed to store license %s", e.Error)
