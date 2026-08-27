@@ -14,6 +14,7 @@ type QualityTab = {
   id: string;
   buttonIcon: string;
   buttonText: string;
+  tooltipText: string;
   expandText: string;
 };
 
@@ -42,24 +43,28 @@ const tabs = ref<QualityTab[]>([
     id: 'scanRemarks',
     buttonIcon: 'mdi-text-search-variant',
     buttonText: 'TAB_SCAN_REMARKS',
+    tooltipText: 'TT_TAB_SCAN_REMARKS',
     expandText: 'QT_INTRO_TEXT_SCAN_REMARKS',
   },
   {
     id: 'licenseRemarks',
     buttonIcon: 'mdi-gavel',
     buttonText: 'TAB_LICENSE_REMARKS',
+    tooltipText: 'TT_TAB_LICENSE_REMARKS',
     expandText: 'QT_INTRO_TEXT_SCAN_REMARKS',
   },
   {
     id: 'reviewRemarks',
     buttonIcon: 'mdi-message-draw',
     buttonText: 'TAB_REVIEW_REMARKS',
+    tooltipText: 'TT_TAB_REVIEW_REMARKS',
     expandText: 'QT_INTRO_TEXT_REVIEW_REMARKS',
   },
   {
     id: 'generalRemarks',
     buttonIcon: 'mdi-bank-outline',
     buttonText: 'TAB_GENERAL_REMARKS',
+    tooltipText: 'TT_TAB_GENERAL_REMARKS',
     expandText: '',
   },
 ]);
@@ -138,19 +143,19 @@ watch(
 <template>
   <TableLayout has-tab has-title gap="0">
     <template #buttons>
-      <v-btn
-        v-for="tab in tabs"
-        color="primary"
-        size="small"
-        :key="tab.id"
-        @click="changeTab(tab)"
-        :variant="selectedTabId === tab.id ? 'flat' : 'tonal'"
-        :class="{active: selectedTabId === tab.id}"
-        class="text-none"
-        min-width="130px">
-        <v-icon :color="selectedTabId === tab.id ? 'white' : 'primary'" class="pr-2">{{ tab.buttonIcon }}</v-icon>
-        {{ t(tab.buttonText) }}
-      </v-btn>
+      <Tooltip v-for="tab in tabs" :key="tab.id" :text="t(tab.tooltipText)" as-parent>
+        <v-btn
+          color="primary"
+          size="small"
+          @click="changeTab(tab)"
+          :variant="selectedTabId === tab.id ? 'flat' : 'tonal'"
+          :class="{active: selectedTabId === tab.id}"
+          class="text-none"
+          min-width="130px">
+          <v-icon :color="selectedTabId === tab.id ? 'white' : 'primary'" class="pr-2">{{ tab.buttonIcon }}</v-icon>
+          {{ t(tab.buttonText) }}
+        </v-btn>
+      </Tooltip>
       <v-spacer></v-spacer>
       <v-btn variant="text" size="small" class="text-none" v-if="showExpansionPanel" @click="dialog = 'info'">
         <v-icon color="primary" icon="mdi-chevron-right" class="mr-2" />
