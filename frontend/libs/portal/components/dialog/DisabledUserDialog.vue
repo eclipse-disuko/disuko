@@ -14,12 +14,7 @@ const show = ref(false);
 
 const dialogConfig = computed(() => ({
   title: t('DLG_DISABLED_USER_TITLE'),
-  primaryButton: {
-    text: t('BTN_LOGOUT'),
-    hint: t('TT_DISABLED_USER_LOGOUT'),
-    icon: 'mdi mdi-logout',
-    iconColor: 'default',
-  },
+  primaryButton: {text: t('BTN_OK')},
   showCloseButton: false,
 }));
 
