@@ -13,11 +13,19 @@ export interface DialogLayoutConfig {
   title: string;
   titleTooltip?: string;
   secondaryButton?: {text: string; disabled?: boolean; loading?: boolean};
-  primaryButton?: {text: string; disabled?: boolean; loading?: boolean};
+  primaryButton?: {
+    text: string;
+    disabled?: boolean;
+    loading?: boolean;
+    hint?: string;
+    icon?: string;
+    iconColor?: string;
+  };
   icon?: string;
   iconColor?: string; // optional icon color override
   showIdle?: boolean; // show global idle spinner while loading is true
   loading?: boolean; // used together with showIdle
+  showCloseButton?: boolean;
 }
 
 const props = defineProps<{
@@ -52,7 +60,7 @@ watch(
         <slot name="title-right"></slot>
       </template>
       <v-spacer></v-spacer>
-      <DCloseButton class="-mr-4" @click="emit('close')" />
+      <DCloseButton v-if="config.showCloseButton !== false" class="-mr-4" @click="emit('close')" />
     </Stack>
 
     <v-card-text class="p-0 pt-8">
@@ -97,7 +105,10 @@ watch(
           @click="emit('primaryAction')"
           :disabled="config?.primaryButton?.disabled"
           :loading="config?.primaryButton?.loading"
-          :text="config?.primaryButton?.text" />
+          :text="config?.primaryButton?.text"
+          :hint="config?.primaryButton?.hint"
+          :icon="config?.primaryButton?.icon"
+          :iconColor="config?.primaryButton?.iconColor" />
       </template>
     </Stack>
   </v-card>

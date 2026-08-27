@@ -105,7 +105,7 @@ const showAPIError = (error: DHTTPError) => {
   }
 
   if (error.code === '403' && error.title === 'USER_DISABLED') {
-    // TODO: Add Dialog here to inform user about status
+    dud.value?.open();
     return;
   }
 
@@ -166,7 +166,9 @@ onMounted(async () => {
   languageStore.initializeLanguage();
   eventKeyStore.initEventKeyStore();
 
-  const [simpleProfileData, locales] = await Promise.all([profileService.getProfileData(), loadLocales()]);
+  const profileAndLocales = await Promise.all([profileService.getProfileData(), loadLocales()]).catch(() => null);
+  if (!profileAndLocales) return;
+  const [simpleProfileData, locales] = profileAndLocales;
 
   appStore.setPublishedLanguages(locales);
   locale.value = appStore.getAppLanguage;
