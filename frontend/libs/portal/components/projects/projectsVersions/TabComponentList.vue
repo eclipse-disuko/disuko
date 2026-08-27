@@ -188,6 +188,7 @@ const decisionFilterButtons = computed(() => [
   {
     key: 'policy' as const,
     label: t('COL_POLICY_DECISION'),
+    tooltip: t('TT_COMPONENTS_POLICY_DECISION'),
     count: policyDecisionCount.value,
     icon: 'mdi-checkbox-marked-circle-plus-outline',
     activeIconColor: 'orange',
@@ -195,6 +196,7 @@ const decisionFilterButtons = computed(() => [
   {
     key: 'license' as const,
     label: t('COL_LICENSE_DECISION'),
+    tooltip: t('TT_COMPONENTS_LICENSE_DECISION'),
     count: licenseDecisionCount.value,
     icon: 'mdi-text-box-edit-outline',
     activeIconColor: 'primary',
@@ -579,15 +581,15 @@ const ruleCallback: IRuleBtnCallbacks = {
   getToolTipKeyForPolicyFilterBtn: (policy: PolicyState) => {
     switch (policy) {
       case PolicyState.NOT_SET:
-        return 'TT_COMPONENTS_TOTAL';
+        return 'TT_COMPONENTS_OVERVIEW_TOTAL';
       case PolicyState.DENY:
-        return 'TT_COMPONENTS_DENIED';
+        return 'TT_COMPONENTS_OVERVIEW_DENIED';
       case PolicyState.NOASSERTION:
-        return 'TT_COMPONENTS_NOASSERTION';
+        return 'TT_COMPONENTS_OVERVIEW_NOASSERTION';
       case PolicyState.QUESTIONED:
-        return 'TT_COMPONENTS_QUESTIONED';
+        return 'TT_COMPONENTS_OVERVIEW_QUESTIONED';
       case PolicyState.WARN:
-        return 'TT_COMPONENTS_WARNED';
+        return 'TT_COMPONENTS_OVERVIEW_WARNED';
       case PolicyState.ALLOW:
         return 'TT_COMPONENTS_ALLOWED';
       default:
@@ -628,7 +630,7 @@ onUnmounted(async () => {
     <template #buttons>
       <DRuleButtons :policies="policies" :callbacks="ruleCallback" :selected-policies="selectedFilterPolicyTypes" />
       <span v-for="btn in decisionFilterButtons" :key="btn.key">
-        <Tooltip>{{ btn.label }}</Tooltip>
+        <Tooltip>{{ btn.tooltip }}</Tooltip>
         <v-btn
           :variant="decisionFilter[btn.key] ? 'flat' : 'tonal'"
           color="primary"

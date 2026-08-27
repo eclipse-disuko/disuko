@@ -93,32 +93,33 @@ const handlePolicySelect = (policy: PolicyState) => {
       v-for="(policy, i) in policies"
       :key="i"
       content-class="dpTooltip">
-      <template v-slot:activator>
-        <v-btn
-          :variant="isSelected(policy) ? 'flat' : 'tonal'"
-          xcolor="ruleButton"
-          color="primary"
-          size="small"
-          v-if="policy"
-          :class="[
-            'text-none',
-            {active: isSelected(policy)},
-            isSelected(policy) ? callbacks.getActiveClassForPolicyFilterBtn(policy) : '',
-          ]"
-          :style="getStyle(policy)"
-          @click.stop="handlePolicySelect(policy)"
-          :min-width="minWidth"
-          :disabled="!forceClickable && callbacks.getCountForPolicyFilterBtn(policy) === 0">
-          <v-icon
-            :color="getBtnIconColorForPolicyFilterBtn(policy)"
+      <template v-slot:activator="{props: tooltipProps}">
+        <span v-if="policy" v-bind="tooltipProps" class="inline-block">
+          <v-btn
+            :variant="isSelected(policy) ? 'flat' : 'tonal'"
+            xcolor="ruleButton"
+            color="primary"
+            size="small"
+            :class="[
+              'text-none',
+              {active: isSelected(policy)},
+              isSelected(policy) ? callbacks.getActiveClassForPolicyFilterBtn(policy) : '',
+            ]"
             :style="getStyle(policy)"
-            :icon="getIconPolicyType(policy)"
-            class="mr-1" />
-          <span v-if="policy">
-            {{ callbacks.getCountForPolicyFilterBtn(policy) }}
-            {{ t(getTextKeyForPolicyFilterBtn(policy)) }}
-          </span>
-        </v-btn>
+            @click.stop="handlePolicySelect(policy)"
+            :min-width="minWidth"
+            :disabled="!forceClickable && callbacks.getCountForPolicyFilterBtn(policy) === 0">
+            <v-icon
+              :color="getBtnIconColorForPolicyFilterBtn(policy)"
+              :style="getStyle(policy)"
+              :icon="getIconPolicyType(policy)"
+              class="mr-1" />
+            <span>
+              {{ callbacks.getCountForPolicyFilterBtn(policy) }}
+              {{ t(getTextKeyForPolicyFilterBtn(policy)) }}
+            </span>
+          </v-btn>
+        </span>
       </template>
       <span v-if="policy">{{ t(callbacks.getToolTipKeyForPolicyFilterBtn(policy)) }}</span>
     </v-tooltip>
