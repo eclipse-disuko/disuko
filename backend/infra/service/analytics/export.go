@@ -24,7 +24,6 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
 	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
-	projectService "github.com/eclipse-disuko/disuko/infra/service/project"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
 )
@@ -67,7 +66,7 @@ type SearchOptions struct {
 }
 
 type DataHandler interface {
-	HandleSpdxAdded(SpdxAddedOptions)
+	HandleSpdxAdded(SpdxAddedOptions, bool)
 	HandleSpdxDeleted(*logy.RequestSession, string)
 	Reset()
 	Occurrences(*logy.RequestSession, analytics.SbomType) []*analytics.Occurrence
@@ -98,7 +97,7 @@ func (a *Analytics) ExportSPDX(requestSession *logy.RequestSession, pr *project.
 		evalRes:  evalRes,
 		spdxFile: spdx,
 		sbomType: sbomType,
-	})
+	}, false)
 }
 
 func (a *Analytics) HandleApprovalFinalized(requestSession *logy.RequestSession, appr *approval.Approval) {
@@ -162,7 +161,7 @@ func (a *Analytics) Reinitialise(requestSession *logy.RequestSession) {
 			continue
 		}
 		exception.TryCatch(func() {
-			a.exportProject(requestSession, p, repos(a))
+			a.exportProject(requestSession, p, true)
 		}, func(ex exception.Exception) {
 			logy.Errorf(requestSession, "Error %s", ex.ErrorMessage)
 			exception.LogException(requestSession, ex)
@@ -205,16 +204,7 @@ func (a *Analytics) Search(options SearchOptions) analytics.ResponseAnalyticsSea
 	return res
 }
 
-func repos(a *Analytics) projectService.RepositoryHolder {
-	return projectService.RepositoryHolder{
-		ProjectRepository:      a.ProjectRepository,
-		LicenseRepository:      a.LicenseRepository,
-		SBOMListRepository:     a.SbomListrepository,
-		LicenseRulesRepository: a.LicenseRulesRepository,
-	}
-}
-
-func (a *Analytics) exportProject(requestSession *logy.RequestSession, pr *project.Project, repos projectService.RepositoryHolder) {
+func (a *Analytics) exportProject(requestSession *logy.RequestSession, pr *project.Project, reinit bool) {
 	if pr.Deleted {
 		return
 	}
@@ -231,16 +221,16 @@ func (a *Analytics) exportProject(requestSession *logy.RequestSession, pr *proje
 			parent = a.ProjectRepository.FindByKey(requestSession, pr.Parent, false)
 		}
 		latest := versionSBoms.SpdxFileHistory.GetLatest()
-		a.exportSpdxFile(requestSession, pr, parent, version, latest, analytics.SbomTypeLatest)
+		a.exportSpdxFile(requestSession, pr, parent, version, latest, analytics.SbomTypeLatest, reinit)
 
 		latestApproved := versionSBoms.SpdxFileHistory.GetLatestApproved()
 		if latestApproved != nil {
-			a.exportSpdxFile(requestSession, pr, parent, version, latestApproved, analytics.SbomTypeLatestApproved)
+			a.exportSpdxFile(requestSession, pr, parent, version, latestApproved, analytics.SbomTypeLatestApproved, reinit)
 		}
 	}
 }
 
-func (a *Analytics) exportSpdxFile(requestSession *logy.RequestSession, pr, parent *project.Project, version *project.ProjectVersion, spdx *project.SpdxFileBase, sbomType analytics.SbomType) {
+func (a *Analytics) exportSpdxFile(requestSession *logy.RequestSession, pr, parent *project.Project, version *project.ProjectVersion, spdx *project.SpdxFileBase, sbomType analytics.SbomType, reinit bool) {
 	compInfo := a.SpdxService.GetComponentInfos(requestSession, pr, version.Key, spdx)
 	rules := a.PolicyRuleRepository.FindPolicyRulesForLabel(requestSession, pr.PolicyLabels)
 	policyDecisions := a.PolicyDecisionsRepo.FindByKey(requestSession, pr.Key, false)
@@ -254,7 +244,7 @@ func (a *Analytics) exportSpdxFile(requestSession *logy.RequestSession, pr, pare
 		evalRes:  evalRes,
 		spdxFile: spdx,
 		sbomType: sbomType,
-	})
+	}, reinit)
 }
 
 func (a *Analytics) getSbomList(requestSession *logy.RequestSession, key string) *sbomlist2.SbomList {
