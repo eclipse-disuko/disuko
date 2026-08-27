@@ -479,6 +479,7 @@ const getActionButtons = (item: ReviewRemark): TableActionButtonsProps['buttons'
   return [
     {
       icon: hasComments ? 'mdi-comment-multiple-outline' : 'mdi-comment-outline',
+      hint: t('TT_view_review_remark'),
       event: 'view',
       show: true,
     },
@@ -534,6 +535,7 @@ onMounted(() => {
           :text="t('CHECKLIST')"
           icon="mdi-plus"
           :disabled="!checklistAvailable"
+          :hint="t('CHECKLIST_EXECUTE_TT')"
           @click="executeDialog?.open(lists)" />
         <DCActionButton
           v-if="!projectModel.isDeprecated"
@@ -629,14 +631,12 @@ onMounted(() => {
           </GridFilterHeader>
         </template>
         <template #[`item.level`]="{item}">
-          <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" bottom content-class="dpTooltip">
-            <template #activator="{}">
-              <v-icon v-on="on" :color="getIconColorReviewRemarkLevel(item.level)">
-                {{ getIconReviewRemarkLevel(item.level) }}
-              </v-icon>
-            </template>
+          <Tooltip>
             <span>{{ t('REMARK_LEVEL_' + item.level) }}</span>
-          </v-tooltip>
+          </Tooltip>
+          <v-icon :color="getIconColorReviewRemarkLevel(item.level)">
+            {{ getIconReviewRemarkLevel(item.level) }}
+          </v-icon>
         </template>
         <template #[`item.status`]="{item}">
           <span>{{ t('REMARK_STATUS_' + item.status) }}</span>

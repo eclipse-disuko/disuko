@@ -384,6 +384,8 @@ const (
 	SpdxNotLocked                             = "SPDX_NOT_LOCKED"
 	SpdxRetainedForApprovalOrReview           = "SPDX_RETAINED_FOR_APPROVAL_OR_REVIEW"
 	ProjectGroupRequired                      = "PROJECT_GROUP_REQUIRED"
+	OperationNotAllowedOnGroups               = "OPERATION_NOT_ALLOWED_ON_GROUP"
+	OperationNotAllowedOnProject              = "OPERATION_NOT_ALLOWED_ON_PROJECTS"
 	ErrorProjectHasDummyLabel                 = "ERROR_PROJECT_HAS_DUMMY_LABEL"
 	ChoiceDeniedResp                          = "CHOICE_DENIED_RESP"
 	ChoiceDeniedMassive                       = "CHOICE_DENIED_MASSIVE"
@@ -407,6 +409,7 @@ const (
 	ErrorUserTokenSigningKeyMissing           = "ERROR_USER_TOKEN_SIGNING_KEY_MISSING"
 	ErrorUserTokenNotFound                    = "ERROR_USER_TOKEN_NOT_FOUND"
 	ErrorUserTokenAlreadyExpired              = "ERROR_USER_TOKEN_ALREADY_EXPIRED"
+	ReviewRemarkExists                        = "REVIEW_REMARK_EXISTS"
 )
 
 func InitI18N() {
@@ -723,6 +726,8 @@ func InitI18N() {
 	addI18NKeyValue(SpdxNotLocked, "SPDX is not locked.")
 	addI18NKeyValue(SpdxRetainedForApprovalOrReview, "SPDX cannot be unlocked because it is retained for approval, review, FOSS DD generation, or status review.")
 	addI18NKeyValue(ProjectGroupRequired, "Project group is required for this operation.")
+	addI18NKeyValue(OperationNotAllowedOnGroups, "Operation is not allowed on group projects.")
+	addI18NKeyValue(OperationNotAllowedOnProject, "Operation is not allowed on projects.")
 	addI18NKeyValue(ErrorJsonValidatingForm, "Form Data is not valid.")
 	addI18NKeyValue(PolicyDecisionOperationNotAuthorized, "User is not authorized to perform operations on policy rule decision for this project")
 	addI18NKeyValue(InvalidPolicyDecisionData, "Invalid policy decision data. Allowed decisions are: ALLOW, DENY")

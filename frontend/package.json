@@ -9,6 +9,7 @@
     "dev:cli": "cd ./apps/discocli && vite",
     "typecheck": "cd ./apps/portal && vue-tsc --noEmit",
     "lint": "oxlint",
+    "lint:shared-import-boundary": "oxlint -c .oxlintrc.shared-import-boundary.json libs/shared",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
@@ -46,7 +47,7 @@
     "markdown-it": "^14.2.0",
     "mitt": "3.0.1",
     "pinia": "3.0.4",
-    "sanitize-html": "2.17.0",
+    "sanitize-html": "2.17.6",
     "screenfull": "6.0.2",
     "unplugin-vue-markdown": "32.0.0",
     "v-code-diff": "1.13.1",
@@ -59,7 +60,7 @@
   },
   "engines": {
     "node": "^24.15.0",
-    "npm": "^11.12.1"
+    "npm": "^12.0.0"
   },
   "devDependencies": {
     "@babel/types": "~7.28.0",
@@ -76,7 +77,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
     "@vue/compiler-sfc": "~3.5.13",
-    "@vue/language-server": "~2.2.6",
+    "@vue/language-server": "~3.3.11",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "~0.7.0",
     "jsdom": "^27.2.0",
@@ -87,9 +88,9 @@
     "tailwindcss": "~4.3.1",
     "typescript": "~5.8.2",
     "unplugin-vue-components": "~0.26.0",
-    "vite": "^8.1.0",
-    "vite-plugin-oxlint": "~2.0.1",
-    "vite-plugin-vue-devtools": "~8.0.7",
+    "vite": "^8.2.1",
+    "vite-plugin-oxlint": "~2.1.2",
+    "vite-plugin-vue-devtools": "~8.2.1",
     "vite-plugin-vuetify": "~2.1.1",
     "vitest": "^4.1.9",
     "vue-auto-import-checker": "^1.1.0",
@@ -103,5 +104,11 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"
+  },
+  "allowScripts": {
+    "v-code-diff": true,
+    "vue-demi": true,
+    "esbuild": true,
+    "@parcel/watcher": true
   }
 }

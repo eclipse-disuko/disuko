@@ -31,14 +31,12 @@
         </template>
         <template #item.warnLevel="{item}">
           <span>
-            <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom">
-              <template #activator="{props}">
-                <v-icon v-bind="props" :color="getIconColorOfLevel(item.warnLevel)">
-                  {{ getIconOfLevel(item.warnLevel) }}
-                </v-icon>
-              </template>
+            <Tooltip>
               <span>{{ getTextOfLevel(item.warnLevel) }}</span>
-            </v-tooltip>
+            </Tooltip>
+            <v-icon :color="getIconColorOfLevel(item.warnLevel)">
+              {{ getIconOfLevel(item.warnLevel) }}
+            </v-icon>
           </span>
         </template>
         <template #item.name="{item}">

@@ -212,7 +212,16 @@ func (handler *AnalyticsHandler) LicenseOccurrences(w http.ResponseWriter, r *ht
 		exception.ThrowExceptionSendDeniedResponse()
 	}
 
-	os := handler.AnalyticsService.Handler.Occurrences(requestSession)
+	sbomType := da.SbomTypeLatest
+	if raw := r.URL.Query().Get("sbomType"); raw != "" {
+		valid, parsed := da.ParseSbomType(raw)
+		if !valid {
+			exception.ThrowExceptionBadRequestResponse()
+		}
+		sbomType = parsed
+	}
+
+	os := handler.AnalyticsService.Handler.Occurrences(requestSession, sbomType)
 	licCache := make(map[string]*license2.License)
 	var list []analytics.OccurrenceDto
 

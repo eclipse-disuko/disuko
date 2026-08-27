@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts" setup>
-import {SearchOccurrenciesItem} from '@disclosure-portal/model/Analytics';
+import {SbomType, SearchOccurrenciesItem} from '@disclosure-portal/model/Analytics';
 import {ISelectItemWithCount} from '@disclosure-portal/model/ISelectItem';
 import {PossibleFilterValues, compareFamily, getLicenseApprovalTypeKeys} from '@disclosure-portal/model/License';
 import AnalyticsService from '@disclosure-portal/services/analytics';
@@ -39,6 +39,7 @@ const possibleApproval = ref<ISelectItemWithCount[]>([]);
 const menuType = ref(false);
 const selectedFilterType = ref<string[]>([]);
 const possibleType = ref<ISelectItemWithCount[]>([]);
+const sbomTypeFilter = ref<SbomType>('LATEST');
 const sortBy = ref<SortItem[]>([]);
 const headers = ref<DataTableHeader[]>([
   {title: t('COL_LICENSE_ID'), align: 'start', value: 'origName', width: '240'},
@@ -190,7 +191,7 @@ const reload = async () => {
   isLoading.value = true;
   items.value = [];
   try {
-    const result = await AnalyticsService.searchOccurrencies();
+    const result = await AnalyticsService.searchOccurrencies(sbomTypeFilter.value);
     setPossibleValues(result.data.possibleValues);
     items.value = result.data.list;
   } catch (error: any) {
@@ -199,6 +200,16 @@ const reload = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const sbomTypeItems = computed(() => [
+  {title: t('LBL_LATEST_SBOM'), value: 'LATEST'},
+  {title: t('LBL_LATEST_APPROVED_SBOM'), value: 'LATEST_APPROVED'},
+  {title: t('LBL_SBOM_TYPE_BOTH'), value: 'LATEST_AND_LATEST_APPROVED'},
+]);
+
+const sbomTypeFilterChanged = () => {
+  reload();
 };
 
 const onClickRow = (event: Event, table: DataTableItem<SearchOccurrenciesItem>) => {
@@ -227,6 +238,15 @@ onMounted(async () => {
   <TableLayout has-tab has-title>
     <template #buttons>
       <v-checkbox v-model="unreferencedOnly" hide-details color="primary" :label="t('LABEL_UNREF_ONLY')" />
+      <v-select
+        :label="t('LBL_SBOM_TYPE')"
+        variant="outlined"
+        density="compact"
+        class="w-64"
+        v-model="sbomTypeFilter"
+        :items="sbomTypeItems"
+        @update:model-value="sbomTypeFilterChanged"
+        hide-details="auto" />
       <v-spacer></v-spacer>
       <DSearchField v-model="search" />
     </template>

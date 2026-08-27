@@ -37,6 +37,7 @@ func NewLicensesRepository(requestSession *logy.RequestSession) *licensesReposit
 	}
 	return licensesRepositoryStruct
 }
+
 func (r *licensesRepositoryStruct) InitIndex(requestSession *logy.RequestSession) {
 	qc := database.New()
 	qACs := r.BaseRepository.Query(requestSession, qc)
@@ -48,6 +49,10 @@ func (r *licensesRepositoryStruct) InitIndex(requestSession *logy.RequestSession
 		names = append(names, c.Name)
 	}
 	r.index = names
+}
+
+func (r *licensesRepositoryStruct) Reset() {
+	r.index = nil
 }
 
 func (r *licensesRepositoryStruct) search(search string, exact bool) []string {
@@ -68,6 +73,7 @@ func (r *licensesRepositoryStruct) FindByName(requestSession *logy.RequestSessio
 	))
 	return r.Query(requestSession, qc)
 }
+
 func (r *licensesRepositoryStruct) AddToIndex(requestSession *logy.RequestSession, name string) {
 	r.index = append(r.index, name)
 }

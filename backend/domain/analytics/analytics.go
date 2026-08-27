@@ -8,9 +8,31 @@ import (
 	"time"
 
 	"github.com/eclipse-disuko/disuko/domain"
+	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/project/components"
-	"github.com/eclipse-disuko/disuko/domain/user/approval"
 )
+
+type SbomType string
+
+const (
+	SbomTypeLatest            SbomType = "LATEST"
+	SbomTypeLatestApproved    SbomType = "LATEST_APPROVED"
+	SbomTypeLatestAndApproved SbomType = "LATEST_AND_LATEST_APPROVED"
+)
+
+func ParseSbomType(value string) (valid bool, result SbomType) {
+	switch value {
+	case string(SbomTypeLatest):
+		valid, result = true, SbomTypeLatest
+	case string(SbomTypeLatestApproved):
+		valid, result = true, SbomTypeLatestApproved
+	case string(SbomTypeLatestAndApproved):
+		valid, result = true, SbomTypeLatestAndApproved
+	default:
+		valid, result = false, ""
+	}
+	return
+}
 
 type Analytics struct {
 	domain.RootEntity `bson:"inline"`
@@ -35,6 +57,7 @@ type Analytics struct {
 
 	SBomKey        string
 	SBomName       string
-	SBomStatus     approval.ApprovalStatus
+	SBomStatus     approval.StateInfo
 	SBomLastUpdate time.Time
+	SBomType       SbomType
 }

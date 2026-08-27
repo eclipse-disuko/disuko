@@ -1,0 +1,40 @@
+name: 'Dependency Review'
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v6
+      - name: 'Fetch Eclipse Approved and Valid Licenses'
+        id: eclipse-licenses
+        run: |
+          LICENSES=$(curl -sSf https://www.eclipse.org/legal/licenses/licenses.json \
+            | jq -r '[(.approved, .valid) | keys[]] | join(",")' \
+            | sed 's/UNLICENSE/Unlicense/g')
+          echo "list=${LICENSES}" >> "$GITHUB_OUTPUT"
+      - name: 'Add Additional Allowed Licenses'
+        id: all-allowed-licenses
+        run: |
+          EXTRA=$(grep -v '^\s*$' .github/additional-allowed-licenses.txt | grep -v '^\s*#' | paste -sd ',')
+          BASE="${{ steps.eclipse-licenses.outputs.list }}"
+          if [ -n "$EXTRA" ]; then
+            COMBINED="${BASE},${EXTRA}"
+          else
+            COMBINED="${BASE}"
+          fi
+          echo "list=${COMBINED}" >> "$GITHUB_OUTPUT"
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 #v5.0.0
+        with:
+          allow-licenses: ${{ steps.all-allowed-licenses.outputs.list }}
+          comment-summary-in-pr: always
+          show-patched-versions: true

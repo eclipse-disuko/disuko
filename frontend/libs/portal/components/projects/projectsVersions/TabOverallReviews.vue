@@ -7,7 +7,12 @@ import {OverallReview, OverallReviewState} from '@disclosure-portal/model/Versio
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
-import {formatDateAndTime, getIconColor, getVersionStateIcon} from '@disclosure-portal/utils/Table';
+import {
+  formatDateAndTime,
+  getIconColor,
+  getOverallReviewTranslationKey,
+  getVersionStateIcon,
+} from '@disclosure-portal/utils/Table';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -126,6 +131,9 @@ const showOverallAuditDialog = async () => {
         :items="items"
         :footer-props="{'items-per-page-options': DEFAULT_ITEMS_PER_PAGE_OPTIONS}">
         <template v-slot:[`item.state`]="{item}">
+          <Tooltip>
+            {{ t(getOverallReviewTranslationKey(item.state)) }}
+          </Tooltip>
           <v-icon :color="getIconColor(enumToLowerCase(item.state))" small>
             {{ getVersionStateIcon(enumToLowerCase(item.state)) }}
           </v-icon>

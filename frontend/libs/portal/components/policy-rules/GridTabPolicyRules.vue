@@ -1136,25 +1136,21 @@ const handleSetCalculatedEnabled = (value: boolean) => {
 
               <template v-slot:item.meta.classifications="{item}">
                 <span @click.stop="openClassifications(item.meta.classifications, item.name, item.licenseId)">
-                  <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom">
-                    <template v-slot:activator="{props}">
-                      <v-icon
-                        v-bind="props"
-                        color="primary"
-                        size="small"
-                        icon="mdi-chevron-right"
-                        :class="
-                          item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'
-                        "></v-icon>
-                      <v-icon
-                        v-bind="props"
-                        density="compact"
-                        style="font-size: 20px"
-                        :icon="getIconOfLevel(item.meta.prevalentClassificationLevel)"
-                        :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"></v-icon>
-                    </template>
+                  <Tooltip>
                     <span>{{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}</span>
-                  </v-tooltip>
+                  </Tooltip>
+                  <v-icon
+                    color="primary"
+                    size="small"
+                    icon="mdi-chevron-right"
+                    :class="
+                      item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'
+                    "></v-icon>
+                  <v-icon
+                    density="compact"
+                    style="font-size: 20px"
+                    :icon="getIconOfLevel(item.meta.prevalentClassificationLevel)"
+                    :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"></v-icon>
                 </span>
               </template>
               <template v-slot:item.actions="{item}">
@@ -1499,24 +1495,18 @@ const handleSetCalculatedEnabled = (value: boolean) => {
             </template>
             <template v-slot:item.meta.classifications="{item}">
               <span @click.stop="openClassifications(item.meta.classifications, item.name, item.licenseId)">
-                <v-tooltip :open-delay="TOOLTIP_OPEN_DELAY_IN_MS" location="bottom">
-                  <template v-slot:activator="{props}">
-                    <v-icon
-                      v-bind="props"
-                      color="primary"
-                      small
-                      :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'"
-                      >mdi-chevron-right</v-icon
-                    >
-                    <v-icon
-                      v-bind="props"
-                      style="font-size: 20px"
-                      :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)"
-                      >{{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}</v-icon
-                    >
-                  </template>
+                <Tooltip>
                   <span>{{ t('TT_OPEN_CLASSIFICATIONS', {license: item.name}) }}</span>
-                </v-tooltip>
+                </Tooltip>
+                <v-icon
+                  color="primary"
+                  small
+                  :class="item.meta.prevalentClassificationLevel.toUpperCase() === 'WARNING' ? 'mr-1' : 'mr-2'">
+                  mdi-chevron-right
+                </v-icon>
+                <v-icon style="font-size: 20px" :color="getIconColorOfLevel(item.meta.prevalentClassificationLevel)">
+                  {{ getIconOfLevel(item.meta.prevalentClassificationLevel) }}
+                </v-icon>
               </span>
             </template>
           </v-data-table>

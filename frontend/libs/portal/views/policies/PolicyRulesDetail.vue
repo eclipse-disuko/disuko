@@ -205,7 +205,8 @@ watch(
                               :open-delay="TOOLTIP_OPEN_DELAY_IN_MS"
                               bottom
                               v-for="(l, i) in labelSets"
-                              :key="i">
+                              :key="i"
+                              content-class="dpTooltip">
                               <template v-slot:activator="{props}">
                                 <v-sheet width="180" class="justify-center">
                                   <v-card-text class="pa-1 d-text d-secondary-text pl-5">

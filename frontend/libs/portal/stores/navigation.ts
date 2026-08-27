@@ -135,6 +135,13 @@ export const createNavItemsGroup = function () {
         active: false,
       } as INavItem,
       {
+        title: 'UPCOMING_DELETIONS',
+        path: '/dashboard/admin/deletions',
+        iconName: 'mdi-delete-clock-outline',
+        condition: rights.isDomainAdmin(),
+        active: false,
+      } as INavItem,
+      {
         title: 'NEWSBOX',
         path: '/dashboard/admin/newsbox',
         iconName: 'mdi-newspaper-variant',

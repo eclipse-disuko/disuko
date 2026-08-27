@@ -918,13 +918,20 @@ func (projectHandler *ProjectHandler) ComponentReviewRemarksGetHandler(w http.Re
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ParamSpdxidEmpty))
 	}
 
+	sbomUuidEscaped := chi.URLParam(r, "sbomUuid")
+	sbomUuid, err := url.QueryUnescape(sbomUuidEscaped)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.ParamSbomUuidEmpty))
+	if sbomUuid == "" {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ParamSbomUuidEmpty))
+	}
+
 	currentProject, version, requestSession := projectHandler.retrieveProjectAndVersion2(r)
 	_, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
 	if !rights.AllowProjectVersion.Read {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.ReadVersionReviewRemarks))
 	}
 
-	remarksList := projectHandler.ReviewRemarksRepository.FindByKeyFilteredByComponentId(requestSession, version.Key, spdxId)
+	remarksList := projectHandler.ReviewRemarksRepository.FindByKeyFilteredBySbomIdAndComponentId(requestSession, version.Key, sbomUuid, spdxId)
 
 	if remarksList == nil {
 		render.JSON(w, r, []reviewremarks.RemarkDto{})
@@ -1585,12 +1592,35 @@ func (projectHandler *ProjectHandler) ProjectVersionComponentsForSbom(w http.Res
 	policyDecisionDeniedReason := evaluatePolicyDecisionDeniedReason(isResponsible, rights.IsFossOffice(), isVehicle)
 	isAllowDeniedPolicyDecision := evaluateIsAllowDeniedPolicyDecision(rights.IsDomainAdmin(), rights.IsFossOffice(), isVehicle)
 
+	componentInfoDtos := evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession)
+	scanRemarks := projectHandler.createQualityScanRemarks(requestSession, currentProject, &selectedSpdx.MetaInfo, evalRes, projectHandler.LabelRepository)
+	attachScanRemarksToComponentInfo(componentInfoDtos, scanRemarks)
+
 	response := components.ComponentsInfoResponse{
-		ComponentInfo:                  evalRes.ToComponentInfoDtos(isResponsible, policyDecisionDeniedReason, isAllowDeniedPolicyDecision, projectHandler.ObligationRepository, projectHandler.LicenseRepository, requestSession),
+		ComponentInfo:                  componentInfoDtos,
 		ComponentStats:                 evalRes.Stats,
 		BulkPolicyDecisionDeniedReason: policyDecisionDeniedReason,
 	}
 	render.JSON(w, r, response)
+}
+
+
+func attachScanRemarksToComponentInfo(componentInfos []components.ComponentInfoDto, scanRemarks []project.QualityScanRemarks) {
+	remarksBySpdxId := make(map[string][]*components.ScanRemarkDto)
+	for _, remark := range scanRemarks {
+		if remark.SpdxId == "" {
+			continue
+		}
+		remarksBySpdxId[remark.SpdxId] = append(remarksBySpdxId[remark.SpdxId], &components.ScanRemarkDto{
+			Status:         string(remark.Status),
+			RemarkKey:      remark.RemarkKey,
+			DescriptionKey: remark.DescriptionKey,
+		})
+	}
+
+	for i := range componentInfos {
+		componentInfos[i].ScanRemarks = remarksBySpdxId[componentInfos[i].SpdxId]
+	}
 }
 
 func evaluatePolicyDecisionDeniedReason(isResponsible, isFossOfficeUser, isVehicle bool) string {
@@ -2429,8 +2459,16 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 		LicenseRulesRepo:        projectHandler.LicenseRulesRepository,
 		SpdxService:             projectHandler.SpdxService,
 	}
-	if !rrs.CreateReviewRemark(currentProject, version.Key, createData, username) {
-		exception.ThrowExceptionBadRequestResponse()
+	success, errMsg := rrs.CreateReviewRemark(currentProject, version.Key, createData, username)
+	if !success {
+		if errMsg != nil {
+			render.JSON(w, r, SuccessResponse{
+				Success: false,
+				Message: *errMsg,
+			})
+		} else {
+			exception.ThrowExceptionBadRequestResponse()
+		}
 		return
 	}
 
