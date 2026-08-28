@@ -8,6 +8,8 @@ import {logout} from '@disclosure-portal/utils/logout';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
+const props = defineProps<{supportUrl?: string}>();
+
 const {t} = useI18n();
 const userStore = useUserStore();
 const show = ref(false);
@@ -33,7 +35,15 @@ defineExpose({open});
   <v-dialog v-model="show" width="600" persistent>
     <DialogLayout :config="dialogConfig" @primary-action="logoutUser">
       <Stack>
-        <span>{{ t('DLG_DISABLED_USER_TEXT') }}</span>
+        <span class="inline-flex items-center whitespace-nowrap">
+          <span>{{ t('DLG_DISABLED_USER_TEXT') }}</span>
+          <span v-if="props.supportUrl" class="ml-1 inline-flex items-center whitespace-nowrap">
+            <DExternalLink
+              :text="t('DLG_DISABLED_USER_SUPPORT_LINK')"
+              :url="props.supportUrl"
+              :tooltip="false"></DExternalLink>
+          </span>
+        </span>
       </Stack>
     </DialogLayout>
   </v-dialog>
