@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Version} from '@cli/models/Project';
+import {Version} from '@shared/model/Project';
 import {projectService} from '@cli/services/projectService';
 import {useAppStore} from '@cli/stores/app';
 import useSnackbar from '@shared/composables/useSnackbar';

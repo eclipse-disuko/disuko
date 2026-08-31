@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import IObligation from '@disclosure-portal/model/IObligation';
+import IObligation from '@shared/model/IObligation';
+import {ClassificationWithCount, compareFamily, familyWeight, LicenseFamily} from '@shared/model/License';
+
+export {ClassificationWithCount, compareFamily, familyWeight, LicenseFamily} from '@shared/model/License';
 
 interface ILicenseSlim {
   _key: string;
@@ -166,11 +169,6 @@ export class LicenseWithSimilarity {
   public similarity = 0.0;
 }
 
-export class ClassificationWithCount {
-  public classification: IObligation = {} as IObligation;
-  public count = 0;
-}
-
 export interface PossibleFilterValues {
   possibleCharts: Record<string, number>;
   possibleSources: Record<string, number>;
@@ -214,41 +212,6 @@ export class LicensesResponse extends LicensesResponseDTO {
 
 export function getLicenseApprovalTypeKeys(): string[] {
   return ['', 'pending', 'check', 'assigning', 'approved', 'forbidden', 'deprecated'] as string[];
-}
-
-export enum LicenseFamily {
-  PERMISSIVE = 'permissive',
-  WEAKCOPYLEFT = 'weak copyleft',
-  STRONGCOPYLEFT = 'strong copyleft',
-  NETWORKCOPYLEFT = 'network copyleft',
-  NOTDECLARED = 'not declared',
-}
-
-export const familyWeight: Map<string, number> = new Map<string, number>([
-  ['', -1],
-  ['unknown', 0],
-  [LicenseFamily.NOTDECLARED, 1],
-  [LicenseFamily.NETWORKCOPYLEFT, 2],
-  [LicenseFamily.STRONGCOPYLEFT, 3],
-  [LicenseFamily.WEAKCOPYLEFT, 4],
-  [LicenseFamily.PERMISSIVE, 5],
-]);
-
-export function compareFamily(aRaw: string, bRaw: string): number {
-  const a = aRaw.toLowerCase().replace('_', ' ');
-  const b = bRaw.toLowerCase().replace('_', ' ');
-
-  const weightA = familyWeight.get(a);
-  if (!weightA) {
-    console.warn(`Unknown license family: ${a}`);
-  }
-
-  const weightB = familyWeight.get(b);
-  if (!weightB) {
-    console.warn(`Unknown license family: ${b}`);
-  }
-
-  return (weightA ?? 0) - (weightB ?? 0);
 }
 
 export interface lookupRequest {

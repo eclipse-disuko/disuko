@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SbomComponentDetailDialog from '@cli/components/dialogs/SbomComponentDetailDialog.vue';
-import {comparePolicyStatus, PolicyState} from '@cli/models/PolicyRule';
+import {comparePolicyStatus, PolicyState} from '@shared/model/PolicyRule';
 import {compareScanRemarkStatus, SpdxStatusComponent, SpdxStatusInformation} from '@cli/models/Sbom';
 import {projectService} from '@cli/services/projectService';
 import {

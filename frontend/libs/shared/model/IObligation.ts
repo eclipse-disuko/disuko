@@ -1,0 +1,65 @@
+// SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+//
+// SPDX-License-Identifier: Apache-2.0
+
+export interface IObligation {
+  _key: string;
+  name: string;
+  nameDe: string;
+  type: string;
+  warnLevel: string;
+  description: string;
+  descriptionDe: string;
+  autoApproved: boolean;
+  created: string;
+  updated: string;
+  spdxid: string;
+  remark: string;
+}
+
+export interface IObligationResponseAll {
+  count: number;
+  items: IObligation[];
+}
+
+export interface IDefaultSelectItem {
+  text: string;
+  value: string;
+}
+
+export interface ISelectItemWithCount extends IDefaultSelectItem {
+  count: number;
+}
+
+export class ObligationDTO implements IObligation {
+  _key = '';
+  autoApproved = false;
+  created = '';
+  description = '';
+  descriptionDe = '';
+  name = '';
+  nameDe = '';
+  type = '';
+  updated = '';
+  warnLevel = '';
+  spdxid = '';
+  remark = '';
+}
+
+export default class Obligation extends ObligationDTO {
+  constructor(dto: ObligationDTO) {
+    super();
+    Object.assign(this, dto);
+  }
+}
+
+export const DEFAULT_CLASSIFICATION_NAMES = new Set<string>([
+  'Permissive',
+  'Copyleft (weak)',
+  'Copyleft (strong)',
+  'Copyleft (network protective)',
+  'Anti-Tivoization',
+  'Severe patent retaliation',
+  'Doing Business with US',
+  'Unclear or Ambiguous',
+]);

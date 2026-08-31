@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
-import {PolicyRulesAssignmentsDto} from '@disclosure-portal/model/PolicyRule';
+import {PolicyRulesAssignmentsDto} from '@shared/model/PolicyRule';
 import {config, mount} from '@vue/test-utils';
 import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ref} from 'vue';

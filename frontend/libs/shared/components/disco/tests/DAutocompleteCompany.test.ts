@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Department} from '@disclosure-portal/model/Department';
+import {Department} from '@shared/model/Department';
 import {config, mount} from '@vue/test-utils';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {nextTick} from 'vue';

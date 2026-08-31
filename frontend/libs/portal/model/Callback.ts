@@ -2,4 +2,4 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export type ICallback = () => void;
+export * from '@shared/model/Callback';

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {FilterSetDto} from '@disclosure-portal/model/FilterSet';
+import {FilterSetDto} from '@shared/model/FilterSet';
 import {vuetifyStubs} from '@disclosure-portal/test-utils/vuetify-stubs';
 import {config, mount} from '@vue/test-utils';
 import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
