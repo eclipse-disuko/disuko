@@ -108,7 +108,7 @@ const headers: DataTableHeader[] = [
     sortable: true,
     align: 'center',
     value: 'scanRemarkLevel',
-    width: 100,
+    width: 120,
     selectable: true,
   },
   {
@@ -116,7 +116,7 @@ const headers: DataTableHeader[] = [
     sortable: true,
     align: 'center',
     value: 'showPolicyDecision',
-    width: 100,
+    width: 140,
     selectable: true,
   },
   {
@@ -124,7 +124,7 @@ const headers: DataTableHeader[] = [
     sortable: true,
     align: 'center',
     value: 'showLicenseDecision',
-    width: 100,
+    width: 140,
     selectable: true,
   },
   {
