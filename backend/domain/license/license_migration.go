@@ -39,5 +39,5 @@ type LicenseMigration struct {
 		This means, that the license was not complete loaded!
 		Do not save this license otherwise, we will delete the not loaded data in the database.
 	*/
-	Optimized bool `bson: "-" json:"-"`
+	Optimized bool `bson:"-" json:"-"`
 }
