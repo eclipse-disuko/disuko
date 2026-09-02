@@ -22,6 +22,7 @@ import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculated
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
+import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _, {indexOf} from 'lodash';
@@ -85,6 +86,7 @@ const menuClassificationNot = ref(false);
 const menuIsLicenseChartNotSelected = ref(false);
 const {info} = useSnackbar();
 const classificationsDialogRef = ref();
+const saveConfirmationVisible = ref(false);
 
 const canEditManual = computed(() => isPolicyManager.value && !rule.value.deprecated && !rule.value.calculated);
 const canEditCalculated = computed(() => isPolicyManager.value && rule.value.calculated);
@@ -524,6 +526,28 @@ const saveChanges = async () => {
   hasChanges.value = false;
 };
 
+const saveConfirmationConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: t('DLG_CONFIRMATION_TITLE'),
+    primaryButton: {text: t('BTN_YES')},
+    secondaryButton: {text: t('BTN_NO')},
+  }),
+);
+
+const showSaveConfirmation = () => {
+  saveConfirmationVisible.value = true;
+};
+
+const confirmSaveChanges = async () => {
+  saveConfirmationVisible.value = false;
+  await saveChanges();
+};
+
+const discardChanges = async () => {
+  saveConfirmationVisible.value = false;
+  await reload();
+};
+
 const policies = ref(PolicyRules);
 
 const ruleCallback: IRuleBtnCallbacks = {
@@ -758,7 +782,7 @@ const handleSetCalculatedEnabled = (value: boolean) => {
                   :text="t('BTN_SAVE')"
                   icon="mdi-content-save"
                   :hint="t('BTN_SAVE')"
-                  @click="saveChanges" />
+                  @click="showSaveConfirmation" />
                 <DCActionButton
                   variant="outlined"
                   :text="t('MANUAL_RULES')"
@@ -1521,6 +1545,15 @@ const handleSetCalculatedEnabled = (value: boolean) => {
       </v-row>
     </template>
   </TableLayout>
+  <v-dialog v-model="saveConfirmationVisible" content-class="small" width="800" max-width="500">
+    <DialogLayout
+      :config="saveConfirmationConfig"
+      @primary-action="confirmSaveChanges"
+      @secondary-action="discardChanges"
+      @close="discardChanges">
+      <v-card-text class="pa-0">{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</v-card-text>
+    </DialogLayout>
+  </v-dialog>
   <ClassificationsPerLicenseDialog ref="classificationsDialogRef"></ClassificationsPerLicenseDialog>
 </template>
 <style scoped>
