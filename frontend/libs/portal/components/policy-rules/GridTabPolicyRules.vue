@@ -1545,13 +1545,23 @@ const handleSetCalculatedEnabled = (value: boolean) => {
       </v-row>
     </template>
   </TableLayout>
-  <v-dialog v-model="saveConfirmationVisible" content-class="small" width="800" max-width="500">
+  <v-dialog v-model="saveConfirmationVisible" persistent content-class="small" width="800" max-width="500">
     <DialogLayout
       :config="saveConfirmationConfig"
       @primary-action="confirmSaveChanges"
       @secondary-action="discardChanges"
       @close="discardChanges">
-      <v-card-text class="pa-0">{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</v-card-text>
+      <v-card-text class="pa-0">
+        <Stack class="gap-0">
+          <div>{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</div>
+          <div class="f-modal-alert">
+            <div class="f-modal-icon f-modal-warning scaleWarning">
+              <span class="f-modal-body pulseWarningIns"></span>
+              <span class="f-modal-dot pulseWarningIns"></span>
+            </div>
+          </div>
+        </Stack>
+      </v-card-text>
     </DialogLayout>
   </v-dialog>
   <ClassificationsPerLicenseDialog ref="classificationsDialogRef"></ClassificationsPerLicenseDialog>

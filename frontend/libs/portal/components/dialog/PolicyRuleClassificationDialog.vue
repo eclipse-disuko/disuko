@@ -35,6 +35,8 @@ const obligations = ref<IObligation[]>([]);
 const name = ref('');
 const rules = ref<Record<string, RuleStatus>>({});
 const originalItem = ref<PolicyRule | null>(null);
+const originalName = ref('');
+const originalRules = ref<Record<string, RuleStatus>>({});
 
 const buildDto = (base: PolicyRule): Partial<PolicyRule> => ({
   _key: base._key,
@@ -85,9 +87,11 @@ const saveConfirmationConfig = computed(
 );
 
 const open = (existing: PolicyRule & {rules?: Record<string, RuleStatus>}) => {
-  name.value = existing.name;
-  rules.value = existing.rules ? {...existing.rules} : toRuleStatusMap(existing);
   originalItem.value = existing;
+  originalName.value = existing.name;
+  originalRules.value = existing.rules ? {...existing.rules} : toRuleStatusMap(existing);
+  name.value = originalName.value;
+  rules.value = {...originalRules.value};
   dialog.value?.reset();
   isVisible.value = true;
 };
@@ -130,10 +134,8 @@ const confirmSaveChanges = async () => {
 };
 
 const discardChanges = () => {
-  if (originalItem.value) {
-    name.value = originalItem.value.name;
-    rules.value = originalItem.value.rules ? {...originalItem.value.rules} : toRuleStatusMap(originalItem.value);
-  }
+  name.value = originalName.value;
+  rules.value = {...originalRules.value};
   saveConfirmationVisible.value = false;
 };
 
@@ -201,7 +203,17 @@ defineExpose({open});
       @primary-action="confirmSaveChanges"
       @secondary-action="discardChanges"
       @close="discardChanges">
-      <v-card-text class="pa-0">{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</v-card-text>
+      <v-card-text class="pa-0">
+        <Stack class="gap-0">
+          <div>{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</div>
+          <div class="f-modal-alert">
+            <div class="f-modal-icon f-modal-warning scaleWarning">
+              <span class="f-modal-body pulseWarningIns"></span>
+              <span class="f-modal-dot pulseWarningIns"></span>
+            </div>
+          </div>
+        </Stack>
+      </v-card-text>
     </DialogLayout>
   </v-dialog>
 </template>
