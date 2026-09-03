@@ -298,6 +298,9 @@ func (g *generation) fillReviewStats(pr *project.Project, res *report.Project) {
 		hasAuditeReview     bool
 	)
 	for k := range pr.Versions {
+		if pr.Versions[k].Deleted {
+			continue
+		}
 		for _, review := range pr.Versions[k].OverallReviews {
 			if review.State == overallreview.Audited {
 				hasAuditeReview = true
@@ -326,6 +329,9 @@ func (g *generation) fillReviewStats(pr *project.Project, res *report.Project) {
 func (g *generation) fillSourceStats(pr *project.Project, res *report.Project) {
 	codeReferenceCount := 0
 	for k := range pr.Versions {
+		if pr.Versions[k].Deleted {
+			continue
+		}
 		codeReferenceCount += countSourceRefs(pr.Versions[k])
 	}
 	res.NumberOfCodeReference = strconv.Itoa(codeReferenceCount)
@@ -349,6 +355,9 @@ func (g *generation) fillSbomStats(pr *project.Project, res *report.Project) {
 			latestSbomVersion *project.ProjectVersion
 		)
 		for k := range iP.Versions {
+			if iP.Versions[k].Deleted {
+				continue
+			}
 			sboms := g.service.RepoSboms.FindByKey(g.rs, k, false)
 			if sboms == nil {
 				continue
