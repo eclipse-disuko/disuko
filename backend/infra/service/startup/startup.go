@@ -130,6 +130,7 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
 		{Name: "MIGRATE_SYNC_PROJECT_AND_SBOM_RETENTION_FLAGS", Do: startUpHandler.migrateSyncProjectAndSbomRetentionFlags},
 		{Name: "MIGRATE_REMOVE_ORPHANED_SBOM_FILES", Do: startUpHandler.migrateRemoveOrphanedSbomFiles},
+		{Name: "MIGRATE_SBOM_SYNC_IS_LOCKED_WITH_IS_IN_USE", Do: startUpHandler.migrateSbomSyncIsLockedWithIsInUse},
 	}
 
 	steps = append(steps, ext...)
@@ -844,4 +845,26 @@ func extractVersionAndSbomFromS3Path(path string) (versionUUID string, sbomUUID 
 	}
 
 	return versionUUID, sbomUUID, true
+}
+
+func (startUpHandler *StartUpHandler) migrateSbomSyncIsLockedWithIsInUse(rs *logy.RequestSession) {
+	logy.Infof(rs, "migrateSbomSyncIsLockedWithIsInUse - START")
+	sbomLists := startUpHandler.SbomListRepository.FindAll(rs, false)
+	for _, sbomList := range sbomLists {
+		changed := false
+		for _, spdx := range sbomList.SpdxFileHistory {
+			if !spdx.IsInUse {
+				continue
+			}
+			if !spdx.IsLocked {
+				spdx.IsLocked = true
+				changed = true
+				logy.Infof(rs, "migrateSbomSyncIsLockedWithIsInUse - flag 'IsLocked' set to 'true' for channel/sbom: %s/%s", sbomList.Key, spdx.Key)
+			}
+		}
+		if changed {
+			startUpHandler.SbomListRepository.UpdateWithoutTimestamp(rs, sbomList)
+		}
+	}
+	logy.Infof(rs, "migrateSbomSyncIsLockedWithIsInUse - END")
 }

@@ -78,7 +78,7 @@ export default defineConfig(({mode}) => {
         strictMessage: false,
         runtimeOnly: false,
       }),
-      isDevelopment && vueDevTools({launchEditor: 'code'}),
+      isDevelopment && vueDevTools({launchEditor: 'idea'}),
       !hasCerts && viteBasicSslPlugin(),
       visualizer({
         filename: `bundle-disclosure-portal.html`,

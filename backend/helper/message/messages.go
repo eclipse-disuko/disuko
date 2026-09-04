@@ -410,6 +410,14 @@ const (
 	ErrorUserTokenNotFound                    = "ERROR_USER_TOKEN_NOT_FOUND"
 	ErrorUserTokenAlreadyExpired              = "ERROR_USER_TOKEN_ALREADY_EXPIRED"
 	ReviewRemarkExists                        = "REVIEW_REMARK_EXISTS"
+	ReviewRemarkExistsForSbom                 = "REVIEW_REMARK_EXISTS_FOR_SBOM"
+	PolicyDecisionExistsForSbom               = "POLICY_DECISION_EXISTS_FOR_SBOM"
+	LicenseDecisionExistsForSbom              = "LICENSE_DECISION_EXISTS_FOR_SBOM"
+	ExternalApprovalExistsForSbom             = "EXTERNAL_APPROVAL_EXISTS_FOR_SBOM"
+	InternalApprovalExistsForSbom             = "INTERNAL_APPROVAL_EXISTS_FOR_SBOM"
+	PlausibilityCheckExistsForSbom            = "PLAUSIBILITY_CHECK_EXISTS_FOR_SBOM"
+	LockedByUser                              = "LOCKED_BY_USER"
+	LockedByPublicApiCall                     = "LOCKED_BY_PUBLIC_API_CALL"
 )
 
 func InitI18N() {

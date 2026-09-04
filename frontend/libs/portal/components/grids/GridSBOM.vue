@@ -401,7 +401,7 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
       hint: item.isLocked ? t('TT_unlock_spdx') : t('TT_lock_spdx'),
       event: 'toggleLock',
       show: isOwnerOrDomainAdmin.value,
-      disabled: projectModel.value.isDeprecated,
+      disabled: projectModel.value.isDeprecated || item.isToRetain,
     },
 
     {
@@ -546,8 +546,22 @@ onMounted(async () => {
             }}</span>
             <br v-if="item.isToRetain" />
             <span v-if="item.isToRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">{{
-              t('SBOM_MARKED_FOR_RETENTION')
+              item.lastRetentionReason
+                ? `${t('SBOM_MARKED_FOR_RETENTION')}: ${t(item.lastRetentionReason)}`
+                : t('SBOM_MARKED_FOR_RETENTION')
             }}</span>
+            <br v-if="item.isLocked && !item.isToRetain" />
+            <span
+              v-if="item.isLocked && !item.isToRetain"
+              class="font-weight-bold text-[rgb(var(--v-theme-warning))]"
+              >{{
+                `${t('SBOM_MARKED_FOR_RETENTION')}${
+                  item.lastRetentionReason || item.lockedBy ? ': ' : ''
+                }${item.lastRetentionReason ? t(item.lastRetentionReason) : ''}${
+                  item.lastRetentionReason && item.lockedBy ? ' ' : ''
+                }${item.lockedBy ? t(item.lockedBy) : ''}`
+              }}</span
+            >
           </template>
           <template #[`item.overallReview`]="{item}">
             <DOverallStateIcon v-if="item.overallReview" :review="item.overallReview" />

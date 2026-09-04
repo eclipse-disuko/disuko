@@ -87,7 +87,7 @@ func (s *ApprovalService) CreateInternalApproval(pr *project.Project, req approv
 		s.ApprovalListRepo.Update(s.RequestSession, approvalList)
 	}
 
-	s.markSbomIsInUse(info.Projects)
+	s.markSbomIsInUse(info.Projects, message.InternalApprovalExistsForSbom)
 	return appr.Key
 }
 

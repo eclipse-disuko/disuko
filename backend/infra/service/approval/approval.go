@@ -22,6 +22,7 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/hash"
 	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
@@ -334,30 +335,13 @@ func (s *ApprovalService) deletePending(app *approval.Approval) {
 	}
 }
 
-func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable) {
+func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable, retentionReason string) {
 	for _, projectApprovable := range projects {
 		spdxKey := projectApprovable.ApprovableSPDX.SpdxKey
 		versionKey := projectApprovable.ApprovableSPDX.VersionKey
 		if spdxKey == "" || versionKey == "" {
 			continue
 		}
-
-		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, versionKey, false)
-		if sbomList == nil {
-			continue
-		}
-
-		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key != spdxKey {
-				continue
-			}
-			if sbom.IsInUse {
-				break
-			}
-
-			sbom.IsInUse = true
-			s.SBOMListRepo.Update(s.RequestSession, sbomList)
-			break
-		}
+		sbom_helper.EnsureSbomIsInUse(s.RequestSession, s.SBOMListRepo, versionKey, spdxKey, retentionReason)
 	}
 }
