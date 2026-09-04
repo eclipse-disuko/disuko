@@ -215,6 +215,8 @@ export class SpdxFile {
   public approvalInfo = new ApprovalInfo();
   public isInUse = false;
   public isLocked = false;
+  public lastRetentionReason = '';
+  public lockedBy = '';
   public isToDelete = false;
   public isToRetain = false;
   public isRecent = false;

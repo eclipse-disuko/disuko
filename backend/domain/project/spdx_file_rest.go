@@ -54,8 +54,10 @@ type SpdxFileDto struct {
 
 	OverallReview *overallreview.OverallReviewDto `json:"overallReview"`
 
-	IsInUse  bool `json:"isInUse"`
-	IsLocked bool `json:"isLocked"`
+	IsInUse             bool   `json:"isInUse"`
+	IsLocked            bool   `json:"isLocked"`
+	LastRetentionReason string `json:"lastRetentionReason"`
+	LockedBy            string `json:"lockedBy"`
 
 	IsToDelete bool `json:"isToDelete"`
 	IsToRetain bool `json:"isToRetain"`
@@ -67,19 +69,21 @@ func (entity *SpdxFileBase) ToDto() *SpdxFileDto {
 		overallReviewDto = entity.OverallReview.ToDto()
 	}
 	return &SpdxFileDto{
-		Key:           entity.Key,
-		Created:       entity.Created,
-		Updated:       entity.Updated,
-		Hash:          entity.Hash,
-		MetaInfo:      entity.MetaInfo.ToDto(),
-		ApprovalInfo:  entity.ApprovalInfo.ToDto(),
-		Uploaded:      entity.Uploaded,
-		Origin:        entity.Origin,
-		Uploader:      entity.Uploader,
-		Tag:           entity.Tag,
-		OverallReview: overallReviewDto,
-		IsInUse:       entity.IsInUse,
-		IsLocked:      entity.IsLocked,
+		Key:                 entity.Key,
+		Created:             entity.Created,
+		Updated:             entity.Updated,
+		Hash:                entity.Hash,
+		MetaInfo:            entity.MetaInfo.ToDto(),
+		ApprovalInfo:        entity.ApprovalInfo.ToDto(),
+		Uploaded:            entity.Uploaded,
+		Origin:              entity.Origin,
+		Uploader:            entity.Uploader,
+		Tag:                 entity.Tag,
+		OverallReview:       overallReviewDto,
+		IsInUse:             entity.IsInUse,
+		IsLocked:            entity.IsLocked,
+		LastRetentionReason: entity.LastRetentionReason,
+		LockedBy:            entity.LockedBy,
 	}
 }
 

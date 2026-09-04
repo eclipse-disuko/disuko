@@ -129,7 +129,6 @@ func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectR
 func IsSpdxToRetain(spdx *project.SpdxFileBase, version *project.ProjectVersion) bool {
 	spdxIsInUse := AnyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
 		spdx.ApprovalInfo.IsInApproval ||
-		spdx.IsLocked ||
 		spdx.IsInUse
 	return spdxIsInUse
 }

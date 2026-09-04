@@ -24,6 +24,7 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/checklist"
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/eclipse-disuko/disuko/domain/department"
@@ -1604,7 +1605,6 @@ func (projectHandler *ProjectHandler) ProjectVersionComponentsForSbom(w http.Res
 	render.JSON(w, r, response)
 }
 
-
 func attachScanRemarksToComponentInfo(componentInfos []components.ComponentInfoDto, scanRemarks []project.QualityScanRemarks) {
 	remarksBySpdxId := make(map[string][]*components.ScanRemarkDto)
 	for _, remark := range scanRemarks {
@@ -2473,19 +2473,7 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 	}
 
 	if createData.SBOMId != "" {
-		sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
-		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key != createData.SBOMId {
-				continue
-			}
-			if sbom.IsInUse {
-				break
-			}
-
-			sbom.IsInUse = true
-			projectHandler.SbomListRepository.Update(requestSession, sbomList)
-			break
-		}
+		sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, createData.SBOMId, message.ReviewRemarkExistsForSbom)
 		projectHandler.markProjectSbomRetainFlag(requestSession, currentProject)
 	}
 

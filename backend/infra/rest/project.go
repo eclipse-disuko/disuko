@@ -19,6 +19,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/decisions"
 	"github.com/eclipse-disuko/disuko/domain/department"
 	policydecisions2 "github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"go.uber.org/zap/zapcore"
 
@@ -2893,7 +2894,7 @@ func (projectHandler *ProjectHandler) CreateBulkPolicyDecisions(w http.ResponseW
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntriesByKey(requestSession, currentProject.Key, auditEntries)
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, sbomId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, sbomId, message.PolicyDecisionExistsForSbom)
 
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
@@ -3026,7 +3027,7 @@ func (projectHandler *ProjectHandler) CreatePolicyDecision(w http.ResponseWriter
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.PolicyDecisionCreated, cmp.Diff, newPolicyDecision, policydecisions2.PolicyDecision{})
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, policyDecisionData.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, policyDecisionData.SBOMId, message.PolicyDecisionExistsForSbom)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "policy decision created",
@@ -3180,7 +3181,7 @@ func (projectHandler *ProjectHandler) CreateLicenseRule(w http.ResponseWriter, r
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.LicenseRuleCreated, cmp.Diff, licenseRule, licenserules2.LicenseRule{})
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, licenseRule.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, licenseRule.SBOMId, message.LicenseDecisionExistsForSbom)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "license rule created",
@@ -3360,31 +3361,17 @@ func (projectHandler *ProjectHandler) CheckProjectDeletionEligibility(
 	return ""
 }
 
-func (projectHandler *ProjectHandler) markSbomUsageFlags(requestSession *logy.RequestSession, prj *project.Project, version *project.ProjectVersion, sbomUuid string) {
-	projectHandler.markSbomIsInUse(requestSession, version, sbomUuid)
-	projectHandler.markProjectSbomRetainFlag(requestSession, prj)
-}
-
-func (projectHandler *ProjectHandler) markSbomIsInUse(requestSession *logy.RequestSession, version *project.ProjectVersion, sbomUuid string) {
-	sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
-	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
+func (projectHandler *ProjectHandler) markSbomUsageFlags(
+	requestSession *logy.RequestSession,
+	prj *project.Project,
+	version *project.ProjectVersion,
+	sbomUuid string,
+	retentionReason string,
+) {
+	if !sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, sbomUuid, retentionReason) {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-
-	for _, spdx := range sbomList.SpdxFileHistory {
-		if spdx.Key != sbomUuid {
-			continue
-		}
-		if spdx.IsInUse {
-			return
-		}
-
-		spdx.IsInUse = true
-		projectHandler.SbomListRepository.Update(requestSession, sbomList)
-		return
-	}
-
-	exception.ThrowExceptionBadRequestResponse()
+	projectHandler.markProjectSbomRetainFlag(requestSession, prj)
 }
 
 func (projectHandler *ProjectHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
