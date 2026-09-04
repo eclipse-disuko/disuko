@@ -299,8 +299,13 @@ const getActionButtons = (item: SBOM): TableActionButtonsProps['buttons'] => {
   return [
     {
       icon: item.details?.isLocked ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline',
-      hint: item.details?.isLocked ? t('TT_unlock_sbom') : t('TT_lock_sbom'),
+      hint: item.details?.isRetain
+        ? t('TT_LOCKED_BY_SYSTEM')
+        : item.details?.isLocked
+          ? t('TT_unlock_sbom')
+          : t('TT_lock_sbom'),
       event: 'toggleLock',
+      disabled: item.details?.isRetain,
       show: true,
     },
     {
@@ -394,6 +399,11 @@ const getActionButtons = (item: SBOM): TableActionButtonsProps['buttons'] => {
               </div>
               <span v-if="item.details?.isRetain" class="font-weight-bold text-[rgb(var(--v-theme-success))]">
                 {{ t('SBOM_MARKED_FOR_RETENTION') }}
+              </span>
+              <span
+                v-if="item.details?.isLocked && !item.details?.isRetain"
+                class="font-weight-bold text-[rgb(var(--v-theme-warning))]">
+                {{ `${t('SBOM_MARKED_FOR_RETENTION')}: ${t('LOCKED_BY_USER_OR_PUBLIC_API_CALL')}` }}
               </span>
             </template>
 
