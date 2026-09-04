@@ -5,7 +5,12 @@
 import {LicenseRuleSlim} from '@disclosure-portal/model/LicenseRule';
 import {UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {ScanRemarkLevel} from '@disclosure-portal/model/Quality';
+import {OverallReview, SpdxFileSlim, VersionSlim, VersionSlimDto} from '@shared/model/VersionDetails';
+import type {Nullable} from '@shared/model/VersionDetails';
 import {PolicyDecisionSlim} from './PolicyDecision';
+
+export type {Nullable} from '@shared/model/VersionDetails';
+export {OverallReview, SpdxFileSlim, VersionSlim, VersionSlimDto} from '@shared/model/VersionDetails';
 
 export class MetaInfo {
   public name = '';
@@ -200,8 +205,6 @@ export class ApprovalInfo {
   public status = '';
 }
 
-export type Nullable<T> = T | null;
-
 export class SpdxFile {
   public _key = '';
   public created = '';
@@ -221,53 +224,12 @@ export class SpdxFile {
   public overallReview?: OverallReview;
 }
 
-export class SpdxFileSlim {
-  public _key = '';
-  public projectVersionId = '';
-  public uploaded: Date = new Date();
-  public updated = '';
-  public name = '';
-}
-
 export enum OverallReviewState {
   UNREVIEWED = 'UNREVIEWED',
   ACCEPTABLE = 'ACCEPTABLE',
   ACCEPTABLE_AFTER_CHANGES = 'ACCEPTABLE_AFTER_CHANGES',
   AUDITED = 'AUDITED',
   NOT_ACCEPTABLE = 'NOT_ACCEPTABLE',
-}
-
-export class OverallReview {
-  public created = '';
-  public updated = '';
-  public state = OverallReviewState.UNREVIEWED;
-  public comment = '';
-  public sbomId = '';
-  public sbomName = '';
-  public sbomUploaded = '';
-  public creator = '';
-  public creatorFullName = '';
-}
-
-export class VersionSlimDto {
-  public _key = '';
-  public parentKey = '';
-  public name = '1.0';
-  public description = '';
-  public created = '';
-  public updated = '';
-  public status = '';
-  public currentSpdxFile: SpdxFileSlim = new SpdxFileSlim();
-  public spdxFileHistory: SpdxFileSlim[] = [];
-  public isDeleted = false;
-  public overallReviews: OverallReview[] = [];
-}
-
-export class VersionSlim extends VersionSlimDto {
-  constructor(dto: VersionSlimDto) {
-    super();
-    Object.assign(this, dto);
-  }
 }
 
 export class ComponentsInfoResponse {

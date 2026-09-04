@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {Department} from '@disclosure-portal/model/Department';
+import {Department} from '@shared/model/Department';
 import companyService from '@disclosure-portal/services/companies';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import _ from 'lodash';

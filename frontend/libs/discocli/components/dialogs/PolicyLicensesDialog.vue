@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type {License, PolicyCat, PolicyRule} from '@cli/models/PolicyRule';
-import {POLICY_STATUS_DEFS} from '@cli/models/PolicyRule';
+import {License, PolicyCat, PolicyRule} from '@shared/model/PolicyRule';
+import {POLICY_STATUS_DEFS} from '@shared/model/PolicyRule';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import DialogLayout, {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import {computed, ref} from 'vue';

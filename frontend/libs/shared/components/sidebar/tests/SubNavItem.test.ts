@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import INavItem from '@disclosure-portal/model/INavItem';
+import INavItem from '@shared/model/INavItem';
 import {config, mount} from '@vue/test-utils';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import SubNavItem from '../SubNavItem.vue';

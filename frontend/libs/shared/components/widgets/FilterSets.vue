@@ -6,10 +6,10 @@
 import {IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import ConfirmationDialog from '@disclosure-portal/components/dialog/ConfirmationDialog.vue';
 import {useLicense} from '@disclosure-portal/composables/useLicense';
-import {Filter, FilterSetDto, FilterSetRequestDto} from '@disclosure-portal/model/FilterSet';
-import {IObligation, ISelectItemWithCount} from '@disclosure-portal/model/IObligation';
-import {ClassificationWithCount, compareFamily} from '@disclosure-portal/model/License';
-import {Nullable} from '@disclosure-portal/model/VersionDetails';
+import {Filter, FilterSetDto, FilterSetRequestDto} from '@shared/model/FilterSet';
+import {IObligation, ISelectItemWithCount} from '@shared/model/IObligation';
+import {ClassificationWithCount, compareFamily} from '@shared/model/License';
+import {Nullable} from '@shared/model/VersionDetails';
 import AdminService from '@disclosure-portal/services/admin';
 import filterSetService from '@disclosure-portal/services/filtersets';
 import licenseService from '@disclosure-portal/services/license';

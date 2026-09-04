@@ -2,7 +2,7 @@ import {SBOM} from '@cli/models/Sbom';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs} from 'vue';
 import type {Router} from 'vue-router';
-import type {Project} from '../models/Project';
+import {Project} from '@shared/model/Project';
 import {authService} from '../services/authService';
 import {projectService} from '../services/projectService';
 

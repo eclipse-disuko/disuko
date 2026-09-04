@@ -2,16 +2,4 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export default class SchemaPostRequest {
-  public name: string;
-  public version: string;
-  public description: string;
-  public label: string;
-
-  public constructor() {
-    this.name = '';
-    this.version = '';
-    this.description = '';
-    this.label = '';
-  }
-}
+export {default} from '@shared/model/SchemaPostRequest';
