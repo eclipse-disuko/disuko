@@ -6,7 +6,6 @@ package rest
 
 import (
 	"io"
-	"math"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -15,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
 	"go.uber.org/zap/zapcore"
@@ -27,8 +25,9 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
 	"github.com/google/go-cmp/cmp"
-	levenshtein "github.com/ka-weihe/fast-levenshtein"
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/eclipse-disuko/disuko/domain/audit"
@@ -1037,9 +1036,7 @@ func (licensesHandler *LicensesHandler) LicenseCompareHandler(w http.ResponseWri
 	for _, l := range allLicenses {
 		simplifiedCompareText := simplifyText(l.Text)
 
-		distance := levenshtein.Distance(licenseText, simplifiedCompareText)
-		lenA, lenB := utf8.RuneCountInString(licenseText), utf8.RuneCountInString(simplifiedCompareText)
-		similarity := 1 - float64(distance)/math.Max(float64(lenA), float64(lenB))
+		similarity := strutil.Similarity(licenseText, simplifiedCompareText, metrics.NewLevenshtein())
 
 		licenseWithSimilarities = append(licenseWithSimilarities, licenseWithSimilarityHolder{License: *l, Similarity: similarity})
 	}
