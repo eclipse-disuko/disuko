@@ -25,6 +25,7 @@ import {usePolicyRulesUtils} from '@disclosure-portal/utils/policyRules';
 import {useUrls} from '@shared/composables/useUrls';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import ClassificationMatrixDialog from '@disclosure-portal/components/policy-rules/ClassificationMatrixDialog.vue';
+import {sortByAttribute} from '@shared/utils/sort';
 
 const {t} = useI18n();
 const breadcrumbs = useBreadcrumbsStore();
@@ -83,7 +84,7 @@ const reload = async () => {
 };
 
 const reloadLabels = async () => {
-  policyLabels.value = (await AdminService.getPolicyLabels()).data;
+  policyLabels.value = sortByAttribute((await AdminService.getPolicyLabels()).data, 'name');
 };
 
 const showDeletionConfirmationDialog = (item: PolicyRule) => {

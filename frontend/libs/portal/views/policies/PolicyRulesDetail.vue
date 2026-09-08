@@ -17,6 +17,7 @@ import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
+import {sortByAttribute} from '@shared/utils/sort';
 
 const {t, locale} = useI18n();
 const router = useRouter();
@@ -75,7 +76,7 @@ const getAuditTrail = async () => {
 };
 
 const reloadLabels = async () => {
-  policyLabels.value = (await AdminService.getPolicyLabels()).data;
+  policyLabels.value = sortByAttribute((await AdminService.getPolicyLabels()).data, 'name');
   createLabelsMap();
 };
 
