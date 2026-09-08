@@ -110,6 +110,22 @@ describe('HeaderSettings', () => {
     expect(menu.props('selectedItems')).toEqual(['col-a', 'col-c']);
   });
 
+  it('passes required columns as disabled menu items', () => {
+    setupHeaderSettingsMock({
+      selectableHeaders: ref([
+        {value: 'col-a', text: 'Column A'},
+        {value: 'component-name', text: 'Component Name', required: true, disabled: true},
+      ]),
+    });
+    const wrapper = createWrapper();
+
+    const menu = wrapper.findComponent(GridHeaderMenuStub);
+    expect(menu.props('allItems')[1]).toMatchObject({
+      value: 'component-name',
+      disabled: true,
+    });
+  });
+
   it('shows the reset option only when selection differs from the initial selection', () => {
     setupHeaderSettingsMock({selectedHeaders: ref([0, 1, 2]), initialSelectedHeaders: ref([0, 1, 2])});
     const unchanged = createWrapper();

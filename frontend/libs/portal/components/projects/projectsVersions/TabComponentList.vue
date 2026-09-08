@@ -131,6 +131,7 @@ const headers: DataTableHeader[] = [
     title: 'COL_COMPONENT_NAME',
     align: 'start',
     value: 'name',
+    required: true,
     selectable: true,
     sortable: true,
     width: 250,
