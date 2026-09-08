@@ -36,7 +36,7 @@ func (s *Service) CheckVersionHasNonDeletableSboms(requestSession *logy.RequestS
 		return false
 	}
 	for _, spdxFile := range sbomList.SpdxFileHistory {
-		if IsSpdxToRetain(spdxFile, version) {
+		if isSpdxRetainedOrLocked(spdxFile, version) {
 			return true
 		}
 	}
@@ -92,7 +92,7 @@ func CheckVersionHasNonDeletableSboms(requestSession *logy.RequestSession, sbomL
 		return false
 	}
 	for _, spdxFile := range sbomList.SpdxFileHistory {
-		if IsSpdxToRetain(spdxFile, version) {
+		if isSpdxRetainedOrLocked(spdxFile, version) {
 			return true
 		}
 	}
@@ -126,14 +126,25 @@ func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectR
 	return false
 }
 
+// IsSpdxToRetain checks if an SPDX file should be retained based on system level or business rules.
 func IsSpdxToRetain(spdx *project.SpdxFileBase, version *project.ProjectVersion) bool {
-	spdxIsInUse := AnyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
+	return anyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
 		spdx.ApprovalInfo.IsInApproval ||
 		spdx.IsInUse
-	return spdxIsInUse
 }
 
-func AnyOverallReviewMatches(spdxKey string, overallReviews []overallreview.OverallReview) bool {
+// IsSpdxProtectedFromDeletion checks if an SPDX file is protected from deletion.
+func IsSpdxProtectedFromDeletion(spdx *project.SpdxFileBase, prj *project.Project, version *project.ProjectVersion) bool {
+	return spdx.Key == prj.ApprovableSPDX.SpdxKey ||
+		isSpdxRetainedOrLocked(spdx, version)
+}
+
+func isSpdxRetainedOrLocked(spdx *project.SpdxFileBase, version *project.ProjectVersion) bool {
+	return spdx.IsLocked ||
+		IsSpdxToRetain(spdx, version)
+}
+
+func anyOverallReviewMatches(spdxKey string, overallReviews []overallreview.OverallReview) bool {
 	for _, overallReview := range overallReviews {
 		if spdxKey == overallReview.SBOMId {
 			return true

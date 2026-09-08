@@ -2602,14 +2602,12 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 			if sbomLockRetained.IsSpdxToRetain(sbomEntity, version) {
 				spdxFileDto.IsToRetain = true
 			}
-			if !IsSpdxInUse(sbomEntity, currentProject, version) {
+			if !sbomLockRetained.IsSpdxProtectedFromDeletion(sbomEntity, currentProject, version) {
 				if unusedSpdxCount < 5 {
 					unusedSpdxCount++
 				} else {
 					spdxFileDto.IsToDelete = true
 				}
-			} else {
-				spdxFileDto.IsInUse = true
 			}
 
 			newResult.Items = append(newResult.Items, project.ResponseFlatSbomItem{

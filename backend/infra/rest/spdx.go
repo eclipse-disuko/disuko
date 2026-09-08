@@ -168,7 +168,7 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 			spdxKeysForDeletion := make([]string, 0)
 			spdxDeleted := make([]*project.SpdxFileBase, 0)
 			for _, currentSpdx := range spdxFileHistory {
-				if IsSpdxInUse(currentSpdx, currentProject, version) {
+				if sbomLockRetained.IsSpdxProtectedFromDeletion(currentSpdx, currentProject, version) {
 					spdxRemaining = append(spdxRemaining, currentSpdx)
 				} else {
 					if unusedSpdxCount < 5 {
@@ -281,7 +281,7 @@ func (spdxHandler *SPDXHandler) SpdxDeleteFileHandler(w http.ResponseWriter, r *
 	l, spdxToDelete := spdxHandler.resolveSbomListAndSpdx(requestSession, version.Key, spdxFileKey)
 	isLatest := l.SpdxFileHistory.GetLatest() == spdxToDelete
 
-	if IsSpdxInUse(spdxToDelete, currentProject, version) {
+	if sbomLockRetained.IsSpdxProtectedFromDeletion(spdxToDelete, currentProject, version) {
 		exception.ThrowExceptionClientWithHttpCode(message.ErrorSpdxInUse, message.GetI18N(message.ErrorSpdxInUse).Text, "", exception.HTTP_CODE_SHOW_NO_REQUEST_ID)
 	}
 
@@ -899,12 +899,4 @@ func getContactMetaOfGroupOrProject(requestSession *logy.RequestSession, project
 	}
 
 	return contactMeta
-}
-
-func IsSpdxInUse(spdx *project.SpdxFileBase, prj *project.Project, version *project.ProjectVersion) bool {
-	spdxIsInUse := spdx.Key == prj.ApprovableSPDX.SpdxKey ||
-		sbomlockRetained.AnyOverallReviewMatches(spdx.Key, version.OverallReviews) ||
-		spdx.ApprovalInfo.IsInApproval ||
-		spdx.IsInUse
-	return spdxIsInUse
 }
