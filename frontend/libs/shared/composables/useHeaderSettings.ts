@@ -42,7 +42,8 @@ export const useHeaderSettings = (props: UseHeaderSettingsParams) => {
           text: headers.value[headerIndex].title.includes(',')
             ? getMultiTitle(headers.value[headerIndex].title)
             : t(headers.value[headerIndex].title),
-          disabled: settingsColumn.value?.value === headers.value[headerIndex]?.value,
+          disabled:
+            settingsColumn.value?.value === headers.value[headerIndex]?.value || headers.value[headerIndex].required,
         }) as DataTableHeaderFilterItems,
     ),
   );
@@ -91,7 +92,7 @@ export const useHeaderSettings = (props: UseHeaderSettingsParams) => {
       .filter((header) =>
         Boolean(
           newHeaders.find((newHeader) => {
-            // This should be impossible, but for security purposes we also check if it is the settings-column
+            // This should be impossible, but for security purposes we also check the settings column.
             const isSettingsColumn = header.value === settingsColumn.value?.value;
             return newHeader === header.value || isSettingsColumn;
           }),
@@ -103,7 +104,11 @@ export const useHeaderSettings = (props: UseHeaderSettingsParams) => {
   };
 
   const updateSelectedHeaders = (newHeaders: number[]) => {
-    localStorage.value[tableName.value] = newHeaders;
+    const requiredHeaderIndexes = selectableHeaders.value
+      .map((header, index) => (header.required ? index : -1))
+      .filter((index) => index >= 0);
+
+    localStorage.value[tableName.value] = [...new Set([...newHeaders, ...requiredHeaderIndexes])];
   };
 
   const resetHeaderSettings = (newProps: UseHeaderSettingsParams) => {

@@ -36,6 +36,7 @@ export type DataTableHeader = {
    */
   filterable?: boolean;
   selectable?: boolean;
+  required?: boolean;
   align?: 'start' | 'end' | 'center';
   width?: string | number;
   minWidth?: string | number;
@@ -66,6 +67,7 @@ export type DataTableHeaderFilterItems = {
   chip?: string;
   chipColor?: string;
   disabled?: boolean;
+  required?: boolean;
 };
 
 export type DataTabelIndex = {
