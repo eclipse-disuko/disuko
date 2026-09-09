@@ -2675,10 +2675,15 @@ func (p *ProjectHandler) ProjectUpdateTaskApprovableSPDX(w http.ResponseWriter, 
 		currentProject.ApprovableSPDX.VersionName = version.Name
 	}
 
-	currentProject.EnsureSbomToRetain()
+	if reqData.SpdxKey != "" {
+		currentProject.EnsureSbomToRetain()
+	} else if !p.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
+		currentProject.ReleaseSbomRetention()
+	}
+
 	p.ProjectRepository.Update(requestSession, currentProject)
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (p *ProjectHandler) getApproverFullNames(requestSession *logy.RequestSession, app approval2.Approval, cache map[string]string) [4]string {

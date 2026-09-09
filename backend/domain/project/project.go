@@ -813,3 +813,7 @@ func (entity *Project) EnsureSbomToRetain() bool {
 	entity.HasSBOMToRetain = true
 	return true
 }
+
+func (entity *Project) ReleaseSbomRetention() {
+	entity.HasSBOMToRetain = false
+}
