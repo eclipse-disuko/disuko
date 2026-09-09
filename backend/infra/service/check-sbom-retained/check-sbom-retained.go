@@ -85,47 +85,6 @@ func (s *Service) CheckIfRetainedSbom(requestSession *logy.RequestSession, versi
 	return false
 }
 
-// Backward compatibility functions - keeping the original function signatures
-func checkVersionHasNonDeletableSboms(requestSession *logy.RequestSession, sbomListRepository sbomlist.ISbomListRepository, version *project.ProjectVersion) bool {
-	sbomList := sbomListRepository.FindByKey(requestSession, version.Key, false)
-	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
-		return false
-	}
-	for _, spdxFile := range sbomList.SpdxFileHistory {
-		if isSpdxRetainedOrLocked(spdxFile, version) {
-			return true
-		}
-	}
-	return false
-}
-
-func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectRepository Iproject.IProjectRepository, sbomListRepository sbomlist.ISbomListRepository, currentProject *project.Project) bool {
-	if currentProject.IsGroup {
-		// Iterate over each child project.
-		for _, childKey := range currentProject.Children {
-			childProj := ProjectRepository.FindByKey(requestSession, childKey, false)
-			if childProj == nil {
-				continue
-			}
-			versions := childProj.GetVersions()
-			for i := 0; i < len(versions); i++ {
-				if checkVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
-					return true
-				}
-			}
-		}
-	} else {
-		// Iterate over the project's own versions.
-		versions := currentProject.GetVersions()
-		for i := 0; i < len(versions); i++ {
-			if checkVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 // IsSpdxToRetain checks if an SPDX file should be retained based on system level or business rules.
 func IsSpdxToRetain(spdx *project.SpdxFileBase, version *project.ProjectVersion) bool {
 	return anyOverallReviewMatches(spdx.Key, version.OverallReviews) ||

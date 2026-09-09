@@ -554,7 +554,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxUnlockHandler(w http.ResponseWriter, r
 		spdxHandler.SbomListRepository.Update(rs, l)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(rs, version.Key, project.OriginApi, message.SpdxFileUnlocked, spdx)
 		// Check if there are still any retained SBOMs(due to review or higher priority ), if not set HasSBOMToRetain to false
-		if !sbomlockRetained.HasAnyVersionWithRetainedSbom(rs, spdxHandler.ProjectRepository, spdxHandler.SbomListRepository, currentProject) {
+		if !spdxHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(rs, currentProject) {
 			currentProject.HasSBOMToRetain = false
 			spdxHandler.ProjectRepository.Update(rs, currentProject)
 		}
@@ -617,7 +617,7 @@ func (spdxHandler *SPDXHandler) SpdxToggleLockHandler(w http.ResponseWriter, r *
 
 	spdxHandler.SbomListRepository.Update(requestSession, l)
 	spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(requestSession, versionKey, user, message.SpdxFileUnlocked, spdx)
-	if !sbomlockRetained.HasAnyVersionWithRetainedSbom(requestSession, spdxHandler.ProjectRepository, spdxHandler.SbomListRepository, currentProject) {
+	if !spdxHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
 		currentProject.HasSBOMToRetain = false
 		spdxHandler.ProjectRepository.Update(requestSession, currentProject)
 	}
