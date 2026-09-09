@@ -161,20 +161,20 @@ const headers: DataTableHeader[] = [
     selectable: true,
   },
   {
-    title: 'COL_LICENSE_FAMILY',
-    align: 'start',
-    sortable: true,
-    width: 180,
-    value: 'worstFamily',
-    selectable: true,
-  },
-  {
     title: 'COL_SPDX_LICENSE_EFFECTIVE',
     align: 'start',
     width: 200,
     value: 'licenseEffective',
     selectable: true,
     sortable: true,
+  },
+  {
+    title: 'COL_LICENSE_FAMILY',
+    align: 'start',
+    sortable: true,
+    width: 180,
+    value: 'worstFamily',
+    selectable: true,
   },
 ];
 
