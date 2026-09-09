@@ -61,9 +61,11 @@ type SpdxFileDto struct {
 
 	IsToDelete bool `json:"isToDelete"`
 	IsToRetain bool `json:"isToRetain"`
+
+	IsApprovableSpdx bool `json:"isApprovableSpdx"`
 }
 
-func (entity *SpdxFileBase) ToDto() *SpdxFileDto {
+func (entity *SpdxFileBase) ToDto(isApprovable bool) *SpdxFileDto {
 	var overallReviewDto *overallreview.OverallReviewDto
 	if entity.OverallReview != nil {
 		overallReviewDto = entity.OverallReview.ToDto()
@@ -84,6 +86,7 @@ func (entity *SpdxFileBase) ToDto() *SpdxFileDto {
 		IsLocked:            entity.IsLocked,
 		LastRetentionReason: entity.LastRetentionReason,
 		LockedBy:            entity.LockedBy,
+		IsApprovableSpdx:    isApprovable,
 	}
 }
 

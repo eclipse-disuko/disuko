@@ -428,7 +428,8 @@ const getActionButtons = (item: VersionSbomsFlat): TableActionButtonsProps['butt
       hint: t('TT_delete_spdx'),
       event: 'delete',
       show: isOwnerOrDomainAdmin.value,
-      disabled: item.isInUse || item.isLocked || item.isToRetain || projectModel.value.isDeprecated,
+      disabled:
+        item.isApprovableSpdx || item.isInUse || item.isLocked || item.isToRetain || projectModel.value.isDeprecated,
     },
   ];
 };

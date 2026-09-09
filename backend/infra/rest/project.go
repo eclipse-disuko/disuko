@@ -2596,7 +2596,7 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 
 		unusedSpdxCount := 0
 		for _, sbomEntity := range sbomList.SpdxFileHistory {
-			spdxFileDto := sbomEntity.ToDto()
+			spdxFileDto := sbomEntity.ToDto(sbomEntity.Key == currentProject.ApprovableSPDX.SpdxKey)
 
 			if sbomLockRetained.IsSpdxToRetain(sbomEntity, version) {
 				spdxFileDto.IsToRetain = true

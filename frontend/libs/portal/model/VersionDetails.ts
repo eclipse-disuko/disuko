@@ -224,6 +224,7 @@ export class SpdxFile {
   public isToRetain = false;
   public isRecent = false;
   public overallReview?: OverallReview;
+  public isApprovableSpdx = false;
 }
 
 export enum OverallReviewState {
