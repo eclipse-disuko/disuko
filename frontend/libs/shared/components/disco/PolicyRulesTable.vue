@@ -3,8 +3,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {IDefaultSelectItem} from '@disclosure-portal/model/IObligation';
-import {PolicyRules, PolicyRulesAssignmentsDto, PolicyState} from '@disclosure-portal/model/PolicyRule';
+import {IDefaultSelectItem} from '@shared/model/IObligation';
+import {PolicyRules, PolicyRulesAssignmentsDto, PolicyState} from '@shared/model/PolicyRule';
 import useViewTools, {
   getIconColorForPolicyType,
   getIconForPolicyType,

@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
+import {VersionSlim} from '@shared/model/VersionDetails';
 import {
   formatDateAndTime,
   getIconColor,

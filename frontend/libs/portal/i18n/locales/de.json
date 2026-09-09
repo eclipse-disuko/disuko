@@ -97,6 +97,7 @@
   "POLICY_RULE": "Policy-Regel",
   "CALCULATED_POLICY_RULE_TAB": "Berechnete Regel",
   "CALCULATED_POLICY_RULE_ENABLED": "Berechnete Regel",
+  "DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION": "Wollen Sie die Daten wirklich ändern?",
   "MANUAL_RULES": "Manuelle Regeln",
   "CALCULATED_BUCKETS_TITLE": "Bucket-Definition",
   "CALCULATED_SCOPE_FILTERS_TITLE": "Lizenzumfang",

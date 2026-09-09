@@ -79,6 +79,7 @@
   "POLICY_RULE": "Policy Rule",
   "CALCULATED_POLICY_RULE_TAB": "Calculated Rule",
   "CALCULATED_POLICY_RULE_ENABLED": "Calculated rule",
+  "DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION": "Do you really want to change the data?",
   "MANUAL_RULES": "Manual rules",
   "CALCULATED_BUCKETS_TITLE": "Bucket Definition",
   "CALCULATED_SCOPE_FILTERS_TITLE": "License Scope",

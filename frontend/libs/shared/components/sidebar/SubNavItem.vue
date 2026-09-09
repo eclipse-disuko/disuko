@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import INavItem from '@disclosure-portal/model/INavItem';
+import INavItem from '@shared/model/INavItem';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {defineComponent, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

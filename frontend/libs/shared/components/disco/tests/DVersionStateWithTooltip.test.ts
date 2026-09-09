@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {VersionSlim, VersionSlimDto} from '@disclosure-portal/model/VersionDetails';
+import {VersionSlim, VersionSlimDto} from '@shared/model/VersionDetails';
 import {config, mount} from '@vue/test-utils';
 import dayjs from 'dayjs';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';

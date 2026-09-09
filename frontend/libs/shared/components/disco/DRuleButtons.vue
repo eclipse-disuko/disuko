@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import Icons from '@disclosure-portal/constants/icons';
-import {PolicyState} from '@disclosure-portal/model/PolicyRule';
+import {PolicyState} from '@shared/model/PolicyRule';
 import {
   getIconColorForPolicyType,
   getIconColorForPolicyTypeHighlighted,

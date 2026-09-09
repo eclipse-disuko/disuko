@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import PolicyLicensesDialog from '@cli/components/dialogs/PolicyLicensesDialog.vue';
-import type {PolicyRule} from '@cli/models/PolicyRule';
+import {PolicyRule} from '@shared/model/PolicyRule';
 import {projectService} from '@cli/services/projectService';
 import {useAppStore} from '@cli/stores/app';
 import {formatDateTime} from '@disclosure-portal/utils/View';

@@ -16,6 +16,7 @@ import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import {PolicyRuleStatusColumn} from '@disclosure-portal/model/CalculatedPolicyRules';
 import useRules from '@disclosure-portal/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
+import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import {computed, nextTick, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
@@ -27,12 +28,15 @@ const emit = defineEmits(['reload']);
 
 const isVisible = ref(false);
 const saving = ref(false);
+const saveConfirmationVisible = ref(false);
 const dialog = ref<DiscoForm | null>(null);
 const obligations = ref<IObligation[]>([]);
 
 const name = ref('');
 const rules = ref<Record<string, RuleStatus>>({});
 const originalItem = ref<PolicyRule | null>(null);
+const originalName = ref('');
+const originalRules = ref<Record<string, RuleStatus>>({});
 
 const buildDto = (base: PolicyRule): Partial<PolicyRule> => ({
   _key: base._key,
@@ -74,10 +78,20 @@ const dialogConfig = computed(() => ({
   },
 }));
 
+const saveConfirmationConfig = computed(
+  (): DialogLayoutConfig => ({
+    title: t('DLG_CONFIRMATION_TITLE'),
+    primaryButton: {text: t('BTN_YES')},
+    secondaryButton: {text: t('BTN_NO')},
+  }),
+);
+
 const open = (existing: PolicyRule & {rules?: Record<string, RuleStatus>}) => {
-  name.value = existing.name;
-  rules.value = existing.rules ? {...existing.rules} : toRuleStatusMap(existing);
   originalItem.value = existing;
+  originalName.value = existing.name;
+  originalRules.value = existing.rules ? {...existing.rules} : toRuleStatusMap(existing);
+  name.value = originalName.value;
+  rules.value = {...originalRules.value};
   dialog.value?.reset();
   isVisible.value = true;
 };
@@ -92,8 +106,13 @@ const setRule = (obligationKey: string, status: RuleStatus | undefined) => {
 
 const doDialogAction = async () => {
   await nextTick();
-  const info = await dialog.value?.validate();
-  if (!info?.valid) return;
+  const validation = await dialog.value?.validate();
+  if (!validation?.valid || !originalItem.value) return;
+
+  saveConfirmationVisible.value = true;
+};
+
+const saveChanges = async () => {
   if (!originalItem.value) return;
 
   saving.value = true;
@@ -109,7 +128,19 @@ const doDialogAction = async () => {
   }
 };
 
+const confirmSaveChanges = async () => {
+  saveConfirmationVisible.value = false;
+  await saveChanges();
+};
+
+const discardChanges = () => {
+  name.value = originalName.value;
+  rules.value = {...originalRules.value};
+  saveConfirmationVisible.value = false;
+};
+
 const close = () => {
+  saveConfirmationVisible.value = false;
   isVisible.value = false;
 };
 
@@ -164,6 +195,25 @@ defineExpose({open});
           </v-table>
         </Stack>
       </v-form>
+    </DialogLayout>
+  </v-dialog>
+  <v-dialog v-model="saveConfirmationVisible" persistent content-class="small" width="800" max-width="500">
+    <DialogLayout
+      :config="saveConfirmationConfig"
+      @primary-action="confirmSaveChanges"
+      @secondary-action="discardChanges"
+      @close="discardChanges">
+      <v-card-text class="pa-0">
+        <Stack class="gap-0">
+          <div>{{ t('DLG_CALCULATED_POLICY_RULE_SAVE_CONFIRMATION') }}</div>
+          <div class="f-modal-alert">
+            <div class="f-modal-icon f-modal-warning scaleWarning">
+              <span class="f-modal-body pulseWarningIns"></span>
+              <span class="f-modal-dot pulseWarningIns"></span>
+            </div>
+          </div>
+        </Stack>
+      </v-card-text>
     </DialogLayout>
   </v-dialog>
 </template>

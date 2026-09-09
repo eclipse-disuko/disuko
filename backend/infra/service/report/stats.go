@@ -34,6 +34,9 @@ func (g *generation) countSourceRefsForApprovals(approvals approval.Approval) in
 			continue
 		}
 		for _, version := range pr.Versions {
+			if version.Deleted {
+				continue
+			}
 			sourceCodeReference += countSourceRefs(version)
 		}
 	}

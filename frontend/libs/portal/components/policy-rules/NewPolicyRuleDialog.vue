@@ -4,16 +4,18 @@
 
 <script setup lang="ts">
 import icons from '@disclosure-portal/constants/icons';
+import Label from '@disclosure-portal/model/Label';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import AdminService from '@disclosure-portal/services/admin';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import useSnackbar from '@shared/composables/useSnackbar';
+import {sortByAttribute} from '@shared/utils/sort';
 import {nextTick, Ref, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 interface Props {
   policyRule?: PolicyRule;
-  policyLabels?: any[];
+  policyLabels?: Label[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,11 +69,20 @@ const addLabelSet = () => {
     item.value.labelSets.push([]);
   }
 };
+const sortLabelSet = (labelSet: string[]) =>
+  sortByAttribute(
+    labelSet.map((key) => ({key, name: props.policyLabels.find((label) => label._key === key)?.name ?? key})),
+    'name',
+  ).map((label) => label.key);
+const updateLabelSet = (index: number) => {
+  item.value.labelSets[index] = sortLabelSet(item.value.labelSets[index]);
+  removeLabelSetIfEmpty(index);
+};
 const showDialog = () => {
   title.value = props.policyRule ? 'AL_DIALOG_TITLE_EDIT' : 'AL_DIALOG_TITLE';
   if (props.policyRule) {
     const cloned = new PolicyRule(Object.assign({}, props.policyRule));
-    cloned.labelSets = (props.policyRule.labelSets || []).map((set) => [...set]);
+    cloned.labelSets = (props.policyRule.labelSets || []).map(sortLabelSet);
     item.value = cloned;
   } else {
     item.value = new PolicyRule();
@@ -134,7 +145,7 @@ defineExpose({
                 multiple
                 :items="policyLabels"
                 :label="t('AL_DIALOG_SB_LABELS')"
-                @update:modelValue="() => removeLabelSetIfEmpty(index)"
+                @update:modelValue="() => updateLabelSet(index)"
                 v-bind:menu-props="{location: 'bottom'}"
                 v-for="(_, index) in item.labelSets"
                 :key="index">

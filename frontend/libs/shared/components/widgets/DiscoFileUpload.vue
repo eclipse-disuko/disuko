@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import {useUpload} from '@disclosure-portal/composables/useUpload';
-import SchemaPostRequest from '@disclosure-portal/model/SchemaPostRequest';
+import SchemaPostRequest from '@shared/model/SchemaPostRequest';
 import {defineComponent, nextTick} from 'vue';
 
 const {uploadFormDataFile} = useUpload();
