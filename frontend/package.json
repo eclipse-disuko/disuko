@@ -78,7 +78,7 @@
     "@vitest/ui": "^4.1.9",
     "@vue/compiler-sfc": "~3.5.13",
     "@vue/language-server": "~3.3.11",
-    "@vue/test-utils": "^2.4.6",
+    "@vue/test-utils": "^2.5.0",
     "@vue/tsconfig": "~0.7.0",
     "jsdom": "^27.2.0",
     "oxfmt": "^0.55.0",
@@ -94,7 +94,7 @@
     "vite-plugin-vuetify": "~2.1.1",
     "vitest": "^4.1.9",
     "vue-auto-import-checker": "^1.1.0",
-    "vue-tsc": "~2.2.6"
+    "vue-tsc": "~3.3.11"
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.59.0",
