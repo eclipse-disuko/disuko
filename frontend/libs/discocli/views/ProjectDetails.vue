@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import GridReviewRemarksPublic from '@cli/components/grids/GridReviewRemarksPublic.vue';
-import type {Project} from '@cli/models/Project';
+import type {Project} from '@shared/model/Project';
 import {useAppStore} from '@cli/stores/app';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';

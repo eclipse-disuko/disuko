@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {PolicyState} from '@disclosure-portal/model/PolicyRule';
+import {PolicyState} from '@shared/model/PolicyRule';
 
 export interface IRuleBtnCallbacks {
   getUrlToComponents(policy: PolicyState): string | null;

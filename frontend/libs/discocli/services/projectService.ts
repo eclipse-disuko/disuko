@@ -1,6 +1,6 @@
 import type {ExternalSourceCodeReference} from '@cli/models/ExternalSourceCode';
-import type {PolicyRule} from '@cli/models/PolicyRule';
-import type {Project} from '@cli/models/Project';
+import type {PolicyRule} from '@shared/model/PolicyRule';
+import type {Project} from '@shared/model/Project';
 import type {Remark, RRCommentExternDTO} from '@cli/models/ReviewRemark';
 import type {
   SBOM,

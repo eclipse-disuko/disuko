@@ -8,6 +8,9 @@ import type {
   CalculatedPolicyConfig,
   CalculatedPolicyScope,
 } from '@disclosure-portal/model/CalculatedPolicyRules';
+import {PolicyRulesAssignmentsDto} from '@shared/model/PolicyRule';
+
+export {PolicyRules, PolicyRulesAssignmentsDto, PolicyState, PolicyStates} from '@shared/model/PolicyRule';
 
 export default class PolicyRule extends BaseDto {
   public status = '';
@@ -97,33 +100,6 @@ export class PolicyRuleDto {
     this.created = new Date().getTime();
     this.updated = new Date().getTime();
   }
-}
-
-export enum PolicyState {
-  ALLOW = 'allow',
-  DENY = 'deny',
-  WARN = 'warn',
-  NOT_SET = 'NOT_SET',
-  NOASSERTION = 'noassertion',
-  QUESTIONED = 'questioned',
-}
-
-export const PolicyRules: PolicyState[] = [PolicyState.ALLOW, PolicyState.WARN, PolicyState.DENY];
-export const PolicyStates: PolicyState[] = [
-  PolicyState.NOT_SET,
-  PolicyState.DENY,
-  PolicyState.NOASSERTION,
-  PolicyState.WARN,
-  PolicyState.QUESTIONED,
-  PolicyState.ALLOW,
-];
-
-export class PolicyRulesAssignmentsDto {
-  public status = '';
-  public key = '';
-  public name = '';
-  public description = '';
-  public type = '';
 }
 
 export class PolicyRulesForLicenseDto {

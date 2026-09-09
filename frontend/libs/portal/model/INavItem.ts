@@ -2,19 +2,5 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export default interface INavItem {
-  title: string;
-  path: string;
-  iconName: string;
-  condition: boolean;
-  active: boolean;
-  tooltip?: string;
-  subItems: INavItem[];
-  externalPath?: string;
-  // eslint-disable-next-line semi
-}
-
-export interface INavItemGroup {
-  items: INavItem[];
-  adminItem: INavItem;
-}
+export * from '@shared/model/INavItem';
+export {default} from '@shared/model/INavItem';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Project, Version} from '@cli/models/Project';
+import {Project, Version} from '@shared/model/Project';
 import {useAppStore} from '@cli/stores/app';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import DVersionStateWithTooltip from '@shared/components/disco/DVersionStateWithTooltip.vue';
