@@ -1745,6 +1745,7 @@
   "SBOM_ABOUT_DELETION_NOTE": " Marked for deletion",
   "SBOM_MARKED_FOR_RETENTION": " Marked for retention",
   "REVIEW_REMARK_EXISTS_FOR_SBOM": "Review remark",
+  "OVERALL_REVIEW_EXISTS_FOR_SBOM": "Status review",
   "POLICY_DECISION_EXISTS_FOR_SBOM": "Policy rule decision",
   "LICENSE_DECISION_EXISTS_FOR_SBOM": "License decision",
   "EXTERNAL_APPROVAL_EXISTS_FOR_SBOM": "External approval",

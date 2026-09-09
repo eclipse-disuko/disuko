@@ -411,6 +411,7 @@ const (
 	ErrorUserTokenAlreadyExpired              = "ERROR_USER_TOKEN_ALREADY_EXPIRED"
 	ReviewRemarkExists                        = "REVIEW_REMARK_EXISTS"
 	ReviewRemarkExistsForSbom                 = "REVIEW_REMARK_EXISTS_FOR_SBOM"
+	OverallReviewExistsForSbom                = "OVERALL_REVIEW_EXISTS_FOR_SBOM"
 	PolicyDecisionExistsForSbom               = "POLICY_DECISION_EXISTS_FOR_SBOM"
 	LicenseDecisionExistsForSbom              = "LICENSE_DECISION_EXISTS_FOR_SBOM"
 	ExternalApprovalExistsForSbom             = "EXTERNAL_APPROVAL_EXISTS_FOR_SBOM"
