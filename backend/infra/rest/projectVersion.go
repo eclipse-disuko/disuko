@@ -2474,7 +2474,7 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 
 	if createData.SBOMId != "" {
 		sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, createData.SBOMId, message.ReviewRemarkExistsForSbom)
-		projectHandler.markProjectSbomRetainFlag(requestSession, currentProject)
+		sbom_helper.EnsureProjectHasSbomToRetain(requestSession, projectHandler.ProjectRepository, currentProject)
 	}
 
 	responseData := SuccessResponse{

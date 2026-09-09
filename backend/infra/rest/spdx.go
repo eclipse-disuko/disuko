@@ -12,6 +12,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/service/patauth"
@@ -510,18 +511,11 @@ func (spdxHandler *SPDXHandler) PublicSpdxLockHandler(w http.ResponseWriter, r *
 		spdx.LockedBy = jwt.TrimPortFromRemoteAddress(r.RemoteAddr)
 		spdxHandler.SbomListRepository.Update(rs, l)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(rs, version.Key, project.OriginApi, message.SpdxFileLocked, spdx)
-		spdxHandler.markProjectSbomRetainFlag(rs, currentProject)
+		sbom_helper.EnsureProjectHasSbomToRetain(rs, spdxHandler.ProjectRepository, currentProject)
 		render.JSON(w, r, SuccessResponse{
 			Success: true,
 			Message: "Spdx locked",
 		})
-	}
-}
-
-func (spdxHandler *SPDXHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
-	if !prj.HasSBOMToRetain {
-		prj.HasSBOMToRetain = true
-		spdxHandler.ProjectRepository.Update(requestSession, prj)
 	}
 }
 
@@ -605,7 +599,7 @@ func (spdxHandler *SPDXHandler) SpdxToggleLockHandler(w http.ResponseWriter, r *
 		spdx.LockedBy = user
 
 		spdxHandler.SbomListRepository.Update(requestSession, l)
-		spdxHandler.markProjectSbomRetainFlag(requestSession, currentProject)
+		sbom_helper.EnsureProjectHasSbomToRetain(requestSession, spdxHandler.ProjectRepository, currentProject)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(requestSession, versionKey, user, message.SpdxFileLocked, spdx)
 		render.JSON(w, r, SuccessResponse{
 			Success: true,

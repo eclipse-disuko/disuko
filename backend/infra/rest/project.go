@@ -1545,8 +1545,7 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 		var projectsToUpdate []*project.Project
 
 		for _, pr := range projects {
-			if !pr.HasSBOMToRetain {
-				pr.HasSBOMToRetain = true
+			if pr.EnsureSbomToRetain() {
 				projectsToUpdate = append(projectsToUpdate, pr)
 			}
 		}
@@ -1559,7 +1558,7 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 	if approvalType != approvable.APPROVAL_TYPE_PLAUSI {
 		currentProject.HasApproval = true
 	}
-	currentProject.HasSBOMToRetain = true
+	currentProject.EnsureSbomToRetain()
 
 	projectHandler.ProjectRepository.Update(requestSession, currentProject)
 
@@ -2676,7 +2675,7 @@ func (p *ProjectHandler) ProjectUpdateTaskApprovableSPDX(w http.ResponseWriter, 
 		currentProject.ApprovableSPDX.VersionName = version.Name
 	}
 
-	currentProject.HasSBOMToRetain = true
+	currentProject.EnsureSbomToRetain()
 	p.ProjectRepository.Update(requestSession, currentProject)
 
 	w.WriteHeader(200)
@@ -3369,14 +3368,7 @@ func (projectHandler *ProjectHandler) markSbomUsageFlags(
 	if !sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, sbomUuid, retentionReason) {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-	projectHandler.markProjectSbomRetainFlag(requestSession, prj)
-}
-
-func (projectHandler *ProjectHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
-	if !prj.HasSBOMToRetain {
-		prj.HasSBOMToRetain = true
-		projectHandler.ProjectRepository.Update(requestSession, prj)
-	}
+	sbom_helper.EnsureProjectHasSbomToRetain(requestSession, projectHandler.ProjectRepository, prj)
 }
 
 func hasActiveDeniedDecision(policyDecisions *policydecisions2.PolicyDecisions) bool {

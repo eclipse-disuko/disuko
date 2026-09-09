@@ -1,12 +1,14 @@
 package sbom_helper
 
 import (
+	"github.com/eclipse-disuko/disuko/domain/project"
+	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
-func EnsureSbomIsInUse(requestSession *logy.RequestSession, repository sbomlist.ISbomListRepository, versionKey string, sbomKey string, retentionReason string) bool {
-	sbomList := repository.FindByKey(requestSession, versionKey, false)
+func EnsureSbomIsInUse(requestSession *logy.RequestSession, sbomlistRepo sbomlist.ISbomListRepository, versionKey string, sbomKey string, retentionReason string) bool {
+	sbomList := sbomlistRepo.FindByKey(requestSession, versionKey, false)
 	if sbomList == nil {
 		return false
 	}
@@ -16,9 +18,15 @@ func EnsureSbomIsInUse(requestSession *logy.RequestSession, repository sbomlist.
 			continue
 		}
 		if sbom.EnsureIsInUse(retentionReason) {
-			repository.Update(requestSession, sbomList)
+			sbomlistRepo.Update(requestSession, sbomList)
 		}
 		return true
 	}
 	return false
+}
+
+func EnsureProjectHasSbomToRetain(requestSession *logy.RequestSession, projectRepo projectRepo.IProjectRepository, prj *project.Project) {
+	if prj.EnsureSbomToRetain() {
+		projectRepo.Update(requestSession, prj)
+	}
 }
