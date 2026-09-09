@@ -206,6 +206,8 @@
   "SBOM_VALIDATION_FAILED": "SBOM Validierung fehlgeschlagen",
   "SBOM_VALIDATION_DETAILS": "Validierungsprobleme gefunden: {count}",
   "upload_error_title": "Fehler beim Upload",
+  "sbom_auto_approved_title": "Automatisch genehmigt",
+  "sbom_auto_approved_message": "Ihre SBOM wurde automatisch genehmigt.",
   "SBOM_VALIDATION_TABLE_PATH": "Pfad",
   "SBOM_VALIDATION_TABLE_ISSUE": "Problem",
   "FILTER_ALL": "Alle",

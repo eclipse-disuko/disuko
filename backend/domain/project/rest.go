@@ -339,6 +339,7 @@ type SPDXUploadResponse struct {
 	FileUploaded            bool   `json:"fileUploaded"`
 	Id                      string `json:"id" example:"SPDXRef-DOCUMENT"`
 	SbomGuid                string `json:"sbomguid" example:"dummy-id-----6b9c-44a7-8e01-14e67ef4404a"`
+	TransferredAudit        bool   `json:"transferredAudit"`
 } //	@name	SpdxUploadResponse
 
 type SPDXSetTagRequestDto struct {

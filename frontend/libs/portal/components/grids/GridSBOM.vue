@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
+import DialogLayout from '@shared/layouts/DialogLayout.vue';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {NameKeyIdentifier, VersionSbomsFlat} from '@disclosure-portal/model/ProjectsResponse';
 import {Group} from '@shared/user/models/Rights';
@@ -78,6 +79,7 @@ const branches = computed(() => sbomStore.allVersions);
 const reviewRemarkDialog = ref();
 const dlgSbomValidationErrors = ref();
 const helpText = ref('');
+const showAutoApprovedDialog = ref(false);
 const upload = ref();
 
 const sortByName = (a: SpdxFile, b: SpdxFile): number => {
@@ -295,6 +297,9 @@ const fileUploaded = (_file: File, response: any) => {
   if (response.docIsValid) {
     snack(t('upload_spdx_description'));
     reloadSboms();
+    if (response.transferredAudit) {
+      showAutoApprovedDialog.value = true;
+    }
   } else {
     if (response.validationFailedMessage === '') {
       const d = new ErrorDialogConfig();
@@ -614,4 +619,15 @@ onMounted(async () => {
   <ReviewRemarkDialog ref="reviewRemarkDialog" />
   <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="doDelete" />
   <SbomValidationErrorsDialog ref="dlgSbomValidationErrors" />
+  <v-dialog v-model="showAutoApprovedDialog" width="480">
+    <DialogLayout
+      :config="{
+        title: t('sbom_auto_approved_title'),
+        showCloseButton: false,
+        primaryButton: {text: t('BTN_OK')},
+      }"
+      @primary-action="showAutoApprovedDialog = false">
+      {{ t('sbom_auto_approved_message') }}
+    </DialogLayout>
+  </v-dialog>
 </template>

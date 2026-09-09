@@ -419,6 +419,8 @@
   "COMPONENTS": "Komponenten",
   "upload_spdx_description": "SBOM erfolgreich hochgeladen",
   "upload_spdx_selection": "aktuelle SBOM hochgeladen und ausgewählt",
+  "sbom_auto_approved_title": "Automatisch genehmigt",
+  "sbom_auto_approved_message": "Ihre SBOM wurde automatisch genehmigt.",
   "PVD_DIALOG_CCS_FILE": "Dateiname",
   "PVD_DIALOG_CCS_SIZE": "Größe",
   "upload_error_message": "Ein nicht näher spezifizierter Fehler ist aufgetreten",

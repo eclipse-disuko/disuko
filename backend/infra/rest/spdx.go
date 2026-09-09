@@ -209,6 +209,7 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 		render.JSON(w, r, project.SPDXUploadResponse{
 			DocIsValid:              true,
 			ValidationFailedMessage: "", Hash: spdxFile.Hash, FileUploaded: true, Id: spdxFile.MetaInfo.SpdxId, SbomGuid: spdxFile.Key,
+			TransferredAudit: spdxFile.OverallReview != nil,
 		})
 	}
 }

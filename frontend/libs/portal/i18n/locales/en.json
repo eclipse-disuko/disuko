@@ -406,6 +406,8 @@
   "COMPONENTS": "Components",
   "upload_spdx_description": "SBOM uploaded successfully",
   "upload_spdx_selection": "latest SBOM uploaded and selected",
+  "sbom_auto_approved_title": "Automatically approved",
+  "sbom_auto_approved_message": "Your sbom was automatically approved.",
   "PVD_DIALOG_CCS_FILE": "File Name",
   "PVD_DIALOG_CCS_SIZE": "Size",
   "TT_DOWNLOAD_REVIEW_REMARKS": "download review remarks",

@@ -221,6 +221,8 @@
   "SBOM_VALIDATION_FAILED": "SBOM Validation Failed",
   "SBOM_VALIDATION_DETAILS": "Validation issues found: {count}",
   "upload_error_title": "Upload Error",
+  "sbom_auto_approved_title": "Automatically approved",
+  "sbom_auto_approved_message": "Your sbom was automatically approved.",
   "SBOM_VALIDATION_TABLE_PATH": "Path",
   "SBOM_VALIDATION_TABLE_ISSUE": "Issue",
   "DESC_ERROR": "This error is registered by ID",
