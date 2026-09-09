@@ -29,8 +29,8 @@ func NewService(
 	}
 }
 
-// CheckVersionHasNonDeletableSboms checks if a specific version has retained SBOMs
-func (s *Service) CheckVersionHasNonDeletableSboms(requestSession *logy.RequestSession, version *project.ProjectVersion) bool {
+// checkVersionHasNonDeletableSboms checks if a specific version has retained SBOMs
+func (s *Service) checkVersionHasNonDeletableSboms(requestSession *logy.RequestSession, version *project.ProjectVersion) bool {
 	sbomList := s.sbomListRepository.FindByKey(requestSession, version.Key, false)
 	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
 		return false
@@ -54,7 +54,7 @@ func (s *Service) HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSess
 			}
 			versions := childProj.GetVersions()
 			for i := 0; i < len(versions); i++ {
-				if s.CheckVersionHasNonDeletableSboms(requestSession, &versions[i]) {
+				if s.checkVersionHasNonDeletableSboms(requestSession, &versions[i]) {
 					return true
 				}
 			}
@@ -63,7 +63,7 @@ func (s *Service) HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSess
 		// Iterate over the project's own versions.
 		versions := currentProject.GetVersions()
 		for i := 0; i < len(versions); i++ {
-			if s.CheckVersionHasNonDeletableSboms(requestSession, &versions[i]) {
+			if s.checkVersionHasNonDeletableSboms(requestSession, &versions[i]) {
 				return true
 			}
 		}
@@ -75,7 +75,7 @@ func (s *Service) HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSess
 func (s *Service) CheckIfRetainedSbom(requestSession *logy.RequestSession, version *project.ProjectVersion, currentProject *project.Project) bool {
 	// 2. If a specific version is provided, check only its retained SBOM status.
 	if version != nil {
-		return s.CheckVersionHasNonDeletableSboms(requestSession, version)
+		return s.checkVersionHasNonDeletableSboms(requestSession, version)
 	}
 
 	// 3. For a project- (or group-) level deletion (version is nil), check each version (or each child project's version) for a retained SBOM.
@@ -86,7 +86,7 @@ func (s *Service) CheckIfRetainedSbom(requestSession *logy.RequestSession, versi
 }
 
 // Backward compatibility functions - keeping the original function signatures
-func CheckVersionHasNonDeletableSboms(requestSession *logy.RequestSession, sbomListRepository sbomlist.ISbomListRepository, version *project.ProjectVersion) bool {
+func checkVersionHasNonDeletableSboms(requestSession *logy.RequestSession, sbomListRepository sbomlist.ISbomListRepository, version *project.ProjectVersion) bool {
 	sbomList := sbomListRepository.FindByKey(requestSession, version.Key, false)
 	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
 		return false
@@ -109,7 +109,7 @@ func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectR
 			}
 			versions := childProj.GetVersions()
 			for i := 0; i < len(versions); i++ {
-				if CheckVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
+				if checkVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
 					return true
 				}
 			}
@@ -118,7 +118,7 @@ func HasAnyVersionWithRetainedSbom(requestSession *logy.RequestSession, ProjectR
 		// Iterate over the project's own versions.
 		versions := currentProject.GetVersions()
 		for i := 0; i < len(versions); i++ {
-			if CheckVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
+			if checkVersionHasNonDeletableSboms(requestSession, sbomListRepository, &versions[i]) {
 				return true
 			}
 		}
