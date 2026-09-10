@@ -120,6 +120,8 @@ const errorDialogIssues = ref<ValidationIssue[]>([]); // detailed validation iss
 const errorDialogReqID = ref<string>('');
 const errorDialogCode = ref<string>('');
 
+const showAutoApprovedDialog = ref(false);
+
 const uploadSPDXFile = async () => {
   const versionName = urlVersion.value || selectedVersion.value?.name;
   if (!versionName) {
@@ -144,6 +146,9 @@ const uploadSPDXFile = async () => {
       snackbar(t('SBOM uploaded successfully'));
       await appStore.refetchCurrentProject(projectUuid.value);
       clearFileSelection();
+      if (result.transferredAudit) {
+        showAutoApprovedDialog.value = true;
+      }
     } else if (result) {
       errorDialogReqID.value = result.reqID || '';
       errorDialogCode.value = result.code || '';
@@ -497,6 +502,17 @@ const getActionButtons = (item: SBOM): TableActionButtonsProps['buttons'] => {
             </tbody>
           </table>
         </div>
+      </DialogLayout>
+    </v-dialog>
+    <v-dialog v-model="showAutoApprovedDialog" width="480">
+      <DialogLayout
+        :config="{
+          title: t('sbom_auto_approved_title'),
+          showCloseButton: false,
+          primaryButton: {text: t('BTN_OK')},
+        }"
+        @primary-action="showAutoApprovedDialog = false">
+        {{ t('sbom_auto_approved_message') }}
       </DialogLayout>
     </v-dialog>
   </div>
