@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/eclipse-disuko/disuko/infra/rest"
-	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 
@@ -544,11 +543,6 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 			} else {
 				writer.WriteHeader(http.StatusOK)
 			}
-		})
-		r.Get("/shutdown", func(writer http.ResponseWriter, request *http.Request) {
-			logy.Infof(logy.GetRequestSession(request), "Received shutdown signal, stop serving requests")
-			isShuttingDown.Store(true)
-			writer.WriteHeader(http.StatusOK)
 		})
 	})
 
