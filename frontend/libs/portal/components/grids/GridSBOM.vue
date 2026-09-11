@@ -562,7 +562,7 @@ onMounted(async () => {
               class="font-weight-bold text-[rgb(var(--v-theme-warning))]"
               >{{
                 `${t('SBOM_MARKED_FOR_RETENTION')}${
-                  item.lastRetentionReason || item.lockedBy ? ': ' : ''
+                  item.lastRetentionReason || item.lockedBy ? ': ' : `: ${t('LOCKED')}`
                 }${item.lastRetentionReason ? t(item.lastRetentionReason) : ''}${
                   item.lastRetentionReason && item.lockedBy ? ' ' : ''
                 }${item.lockedBy ? t(item.lockedBy) : ''}`
