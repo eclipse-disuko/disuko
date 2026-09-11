@@ -73,7 +73,7 @@ func (s *ApprovalService) CreatePlausibilityCheck(pr *project.Project, req appro
 		s.ApprovalListRepo.Update(s.RequestSession, approvalList)
 	}
 
-	s.markSbomIsInUse(info.Projects)
+	s.markSbomIsInUse(info.Projects, message.PlausibilityCheckExistsForSbom)
 	return appr.Key
 }
 

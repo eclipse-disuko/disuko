@@ -15,6 +15,8 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/project/components"
 	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
 	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	checklistRepo "github.com/eclipse-disuko/disuko/infra/repository/checklist"
 	licRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
@@ -162,14 +164,10 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
-	if !spdxBase.IsInUse {
-		spdxBase.IsInUse = true
+	if spdxBase.EnsureIsInUse(message.ReviewRemarkExistsForSbom) {
 		s.SbomListRepo.Update(rs, sbomList)
 	}
-	if !pr.HasSBOMToRetain {
-		pr.HasSBOMToRetain = true
-		s.ProjectRepo.Update(rs, pr)
-	}
+	sbom_helper.EnsureProjectHasSbomToRetain(rs, s.ProjectRepo, pr)
 
 	if rr == nil {
 		rr = &reviewremarks.ReviewRemarks{

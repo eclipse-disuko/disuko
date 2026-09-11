@@ -805,3 +805,15 @@ func (entity ApplicationMeta) ToDto() ApplicationMetaDto {
 		ExternalLink: entity.ExternalLink,
 	}
 }
+
+func (entity *Project) EnsureSbomToRetain() bool {
+	if entity.HasSBOMToRetain {
+		return false
+	}
+	entity.HasSBOMToRetain = true
+	return true
+}
+
+func (entity *Project) ReleaseSbomRetention() {
+	entity.HasSBOMToRetain = false
+}

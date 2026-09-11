@@ -19,6 +19,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/decisions"
 	"github.com/eclipse-disuko/disuko/domain/department"
 	policydecisions2 "github.com/eclipse-disuko/disuko/domain/policydecisions"
+	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"go.uber.org/zap/zapcore"
 
@@ -1544,8 +1545,7 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 		var projectsToUpdate []*project.Project
 
 		for _, pr := range projects {
-			if !pr.HasSBOMToRetain {
-				pr.HasSBOMToRetain = true
+			if pr.EnsureSbomToRetain() {
 				projectsToUpdate = append(projectsToUpdate, pr)
 			}
 		}
@@ -1558,7 +1558,7 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 	if approvalType != approvable.APPROVAL_TYPE_PLAUSI {
 		currentProject.HasApproval = true
 	}
-	currentProject.HasSBOMToRetain = true
+	currentProject.EnsureSbomToRetain()
 
 	projectHandler.ProjectRepository.Update(requestSession, currentProject)
 
@@ -2596,19 +2596,17 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 
 		unusedSpdxCount := 0
 		for _, sbomEntity := range sbomList.SpdxFileHistory {
-			spdxFileDto := sbomEntity.ToDto()
+			spdxFileDto := sbomEntity.ToDto(sbomEntity.Key == currentProject.ApprovableSPDX.SpdxKey)
 
 			if sbomLockRetained.IsSpdxToRetain(sbomEntity, version) {
 				spdxFileDto.IsToRetain = true
 			}
-			if !IsSpdxInUse(sbomEntity, currentProject, version) {
+			if !sbomLockRetained.IsSpdxProtectedFromDeletion(sbomEntity, currentProject, version) {
 				if unusedSpdxCount < 5 {
 					unusedSpdxCount++
 				} else {
 					spdxFileDto.IsToDelete = true
 				}
-			} else {
-				spdxFileDto.IsInUse = true
 			}
 
 			newResult.Items = append(newResult.Items, project.ResponseFlatSbomItem{
@@ -2677,10 +2675,15 @@ func (p *ProjectHandler) ProjectUpdateTaskApprovableSPDX(w http.ResponseWriter, 
 		currentProject.ApprovableSPDX.VersionName = version.Name
 	}
 
-	currentProject.HasSBOMToRetain = true
+	if reqData.SpdxKey != "" {
+		currentProject.EnsureSbomToRetain()
+	} else if !p.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
+		currentProject.ReleaseSbomRetention()
+	}
+
 	p.ProjectRepository.Update(requestSession, currentProject)
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (p *ProjectHandler) getApproverFullNames(requestSession *logy.RequestSession, app approval2.Approval, cache map[string]string) [4]string {
@@ -2893,7 +2896,7 @@ func (projectHandler *ProjectHandler) CreateBulkPolicyDecisions(w http.ResponseW
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntriesByKey(requestSession, currentProject.Key, auditEntries)
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, sbomId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, sbomId, message.PolicyDecisionExistsForSbom)
 
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
@@ -3026,7 +3029,7 @@ func (projectHandler *ProjectHandler) CreatePolicyDecision(w http.ResponseWriter
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.PolicyDecisionCreated, cmp.Diff, newPolicyDecision, policydecisions2.PolicyDecision{})
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, policyDecisionData.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, policyDecisionData.SBOMId, message.PolicyDecisionExistsForSbom)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "policy decision created",
@@ -3180,7 +3183,7 @@ func (projectHandler *ProjectHandler) CreateLicenseRule(w http.ResponseWriter, r
 	}
 
 	projectHandler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, currentProject.Key, username, message.LicenseRuleCreated, cmp.Diff, licenseRule, licenserules2.LicenseRule{})
-	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, licenseRule.SBOMId)
+	projectHandler.markSbomUsageFlags(requestSession, currentProject, currentVersion, licenseRule.SBOMId, message.LicenseDecisionExistsForSbom)
 	render.JSON(w, r, SuccessResponse{
 		Success: true,
 		Message: "license rule created",
@@ -3360,38 +3363,17 @@ func (projectHandler *ProjectHandler) CheckProjectDeletionEligibility(
 	return ""
 }
 
-func (projectHandler *ProjectHandler) markSbomUsageFlags(requestSession *logy.RequestSession, prj *project.Project, version *project.ProjectVersion, sbomUuid string) {
-	projectHandler.markSbomIsInUse(requestSession, version, sbomUuid)
-	projectHandler.markProjectSbomRetainFlag(requestSession, prj)
-}
-
-func (projectHandler *ProjectHandler) markSbomIsInUse(requestSession *logy.RequestSession, version *project.ProjectVersion, sbomUuid string) {
-	sbomList := projectHandler.SbomListRepository.FindByKey(requestSession, version.Key, false)
-	if sbomList == nil || len(sbomList.SpdxFileHistory) == 0 {
+func (projectHandler *ProjectHandler) markSbomUsageFlags(
+	requestSession *logy.RequestSession,
+	prj *project.Project,
+	version *project.ProjectVersion,
+	sbomUuid string,
+	retentionReason string,
+) {
+	if !sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, sbomUuid, retentionReason) {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-
-	for _, spdx := range sbomList.SpdxFileHistory {
-		if spdx.Key != sbomUuid {
-			continue
-		}
-		if spdx.IsInUse {
-			return
-		}
-
-		spdx.IsInUse = true
-		projectHandler.SbomListRepository.Update(requestSession, sbomList)
-		return
-	}
-
-	exception.ThrowExceptionBadRequestResponse()
-}
-
-func (projectHandler *ProjectHandler) markProjectSbomRetainFlag(requestSession *logy.RequestSession, prj *project.Project) {
-	if !prj.HasSBOMToRetain {
-		prj.HasSBOMToRetain = true
-		projectHandler.ProjectRepository.Update(requestSession, prj)
-	}
+	sbom_helper.EnsureProjectHasSbomToRetain(requestSession, projectHandler.ProjectRepository, prj)
 }
 
 func hasActiveDeniedDecision(policyDecisions *policydecisions2.PolicyDecisions) bool {
