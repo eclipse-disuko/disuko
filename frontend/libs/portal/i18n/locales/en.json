@@ -1755,6 +1755,7 @@
   "PLAUSIBILITY_CHECK_EXISTS_FOR_SBOM": "Review request",
   "LOCKED_BY_USER": "Locked by",
   "LOCKED_BY_PUBLIC_API_CALL": "Locked by API call",
+  "LOCKED": "Locked",
   "DLG_CONFIRMATION_UNRECOVERABLE_SPDX_DELETION": "Are you sure, you want to delete the SBOM \"{name}\"? This is an unrecoverable action.",
   "TT_lock_spdx": "lock sbom",
   "TT_unlock_spdx": "unlock sbom",

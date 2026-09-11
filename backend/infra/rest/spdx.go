@@ -12,7 +12,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/service/patauth"
@@ -23,7 +22,6 @@ import (
 
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/service/cache"
-	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 
@@ -51,9 +49,9 @@ import (
 	license2 "github.com/eclipse-disuko/disuko/infra/repository/license"
 	project2 "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/service"
-	sbomlockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	"github.com/eclipse-disuko/disuko/infra/service/compare"
 	projectService "github.com/eclipse-disuko/disuko/infra/service/project"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -71,7 +69,7 @@ type SPDXHandler struct {
 	AuditLogListRepository    auditloglist.IAuditLogListRepository
 	LicenseRulesRepository    licenserules.ILicenseRulesRepository
 	SpdxService               *spdx.Service
-	SbomRetainedService       *sbomLockRetained.Service
+	SbomRetentionService      *sbomretention.Service
 	ProjectLabelService       *projectLabelService.ProjectLabelService
 	PolicyDecisionsRepository policydecisions.IPolicyDecisionsRepository
 	PATAuthService            *patauth.Service
@@ -169,7 +167,7 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 			spdxKeysForDeletion := make([]string, 0)
 			spdxDeleted := make([]*project.SpdxFileBase, 0)
 			for _, currentSpdx := range spdxFileHistory {
-				if sbomLockRetained.IsSpdxProtectedFromDeletion(currentSpdx, currentProject, version) {
+				if sbomretention.IsSpdxProtectedFromDeletion(currentSpdx, currentProject, version) {
 					spdxRemaining = append(spdxRemaining, currentSpdx)
 				} else {
 					if unusedSpdxCount < 5 {
@@ -283,7 +281,7 @@ func (spdxHandler *SPDXHandler) SpdxDeleteFileHandler(w http.ResponseWriter, r *
 	l, spdxToDelete := spdxHandler.resolveSbomListAndSpdx(requestSession, version.Key, spdxFileKey)
 	isLatest := l.SpdxFileHistory.GetLatest() == spdxToDelete
 
-	if sbomLockRetained.IsSpdxProtectedFromDeletion(spdxToDelete, currentProject, version) {
+	if sbomretention.IsSpdxProtectedFromDeletion(spdxToDelete, currentProject, version) {
 		exception.ThrowExceptionClientWithHttpCode(message.ErrorSpdxInUse, message.GetI18N(message.ErrorSpdxInUse).Text, "", exception.HTTP_CODE_SHOW_NO_REQUEST_ID)
 	}
 
@@ -512,7 +510,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxLockHandler(w http.ResponseWriter, r *
 		spdx.LockedBy = jwt.TrimPortFromRemoteAddress(r.RemoteAddr)
 		spdxHandler.SbomListRepository.Update(rs, l)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(rs, version.Key, project.OriginApi, message.SpdxFileLocked, spdx)
-		sbom_helper.EnsureProjectHasSbomToRetain(rs, spdxHandler.ProjectRepository, currentProject)
+		spdxHandler.SbomRetentionService.EnsureProjectHasSbomToRetain(rs, currentProject)
 		render.JSON(w, r, SuccessResponse{
 			Success: true,
 			Message: "Spdx locked",
@@ -546,7 +544,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxUnlockHandler(w http.ResponseWriter, r
 
 	if !spdx.IsLocked {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.SpdxNotLocked))
-	} else if sbomlockRetained.IsSpdxToRetain(spdx, version) {
+	} else if sbomretention.IsSpdxToRetain(spdx, version) {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.SpdxRetainedForApprovalOrReview))
 	} else {
 		spdx.IsLocked = false
@@ -555,7 +553,7 @@ func (spdxHandler *SPDXHandler) PublicSpdxUnlockHandler(w http.ResponseWriter, r
 		spdxHandler.SbomListRepository.Update(rs, l)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(rs, version.Key, project.OriginApi, message.SpdxFileUnlocked, spdx)
 		// Check if there are still any retained SBOMs(due to review or higher priority ), if not set HasSBOMToRetain to false
-		if !spdxHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(rs, currentProject) {
+		if !spdxHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(rs, currentProject) {
 			currentProject.ReleaseSbomRetention()
 			spdxHandler.ProjectRepository.Update(rs, currentProject)
 		}
@@ -600,7 +598,7 @@ func (spdxHandler *SPDXHandler) SpdxToggleLockHandler(w http.ResponseWriter, r *
 		spdx.LockedBy = user
 
 		spdxHandler.SbomListRepository.Update(requestSession, l)
-		sbom_helper.EnsureProjectHasSbomToRetain(requestSession, spdxHandler.ProjectRepository, currentProject)
+		spdxHandler.SbomRetentionService.EnsureProjectHasSbomToRetain(requestSession, currentProject)
 		spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(requestSession, versionKey, user, message.SpdxFileLocked, spdx)
 		render.JSON(w, r, SuccessResponse{
 			Success: true,
@@ -618,7 +616,7 @@ func (spdxHandler *SPDXHandler) SpdxToggleLockHandler(w http.ResponseWriter, r *
 
 	spdxHandler.SbomListRepository.Update(requestSession, l)
 	spdxHandler.AuditLogListRepository.AddStaticAuditEntryByKey(requestSession, versionKey, user, message.SpdxFileUnlocked, spdx)
-	if !spdxHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
+	if !spdxHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
 		currentProject.ReleaseSbomRetention()
 		spdxHandler.ProjectRepository.Update(requestSession, currentProject)
 	}

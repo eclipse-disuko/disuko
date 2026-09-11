@@ -1767,6 +1767,7 @@
   "PLAUSIBILITY_CHECK_EXISTS_FOR_SBOM": "Überprüfungsanfrage",
   "LOCKED_BY_USER": "Gesperrt von",
   "LOCKED_BY_PUBLIC_API_CALL": "Gesperrt durch API-Aufruf",
+  "LOCKED": "Gesperrt",
   "DLG_CONFIRMATION_UNRECOVERABLE_SPDX_DELETION": "Sind Sie sicher, dass Sie diese SBOM \"{name}\" löschen möchten? Dieses Löschvorgang ist nicht wiederherstellbar.",
   "TT_lock_spdx": "SBOM sperren",
   "TT_unlock_spdx": "SBOM entsperren",

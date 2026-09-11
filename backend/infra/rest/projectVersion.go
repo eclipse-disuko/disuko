@@ -24,7 +24,6 @@ import (
 
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/checklist"
-	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/eclipse-disuko/disuko/domain/department"
@@ -72,7 +71,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/schema"
 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
-	sbomlockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -567,11 +566,11 @@ func (projectHandler *ProjectHandler) isProjectOrVersionInApprovalOrContainsSbom
 
 	// 2. If a specific version is provided, check only its retained SBOM status.
 	if version != nil {
-		return projectHandler.SbomRetainedService.CheckIfRetainedSbom(requestSession, version, currentProject)
+		return projectHandler.SbomRetentionService.CheckIfRetainedSbom(requestSession, version, currentProject)
 	}
 
 	// 3. For a project- (or group-) level deletion (version is nil), check each version (or each child project’s version) for a retained SBOM.
-	if projectHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
+	if projectHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
 		return true
 	}
 
@@ -1517,7 +1516,7 @@ func (projectHandler *ProjectHandler) ProjectVersionSPDXMetaByIDExtern(w http.Re
 		Created:  spdxFile.Updated,
 		Uploaded: spdxFile.Updated,
 		Status:   true,
-		IsRetain: sbomlockRetained.IsSpdxToRetain(spdxFile, version),
+		IsRetain: sbomretention.IsSpdxToRetain(spdxFile, version),
 		IsLocked: spdxFile.IsLocked,
 		Tag:      spdxFile.Tag,
 	}
@@ -2473,8 +2472,8 @@ func (projectHandler *ProjectHandler) CreateReviewRemark(w http.ResponseWriter, 
 	}
 
 	if createData.SBOMId != "" {
-		sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, createData.SBOMId, message.ReviewRemarkExistsForSbom)
-		sbom_helper.EnsureProjectHasSbomToRetain(requestSession, projectHandler.ProjectRepository, currentProject)
+		projectHandler.SbomRetentionService.EnsureSbomIsInUse(requestSession, version.Key, createData.SBOMId, message.ReviewRemarkExistsForSbom)
+		projectHandler.SbomRetentionService.EnsureProjectHasSbomToRetain(requestSession, currentProject)
 	}
 
 	responseData := SuccessResponse{

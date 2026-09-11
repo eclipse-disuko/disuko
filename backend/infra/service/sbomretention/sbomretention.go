@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sbomLockRetained
+package sbomretention
 
 import (
 	"github.com/eclipse-disuko/disuko/domain/overallreview"
@@ -110,4 +110,28 @@ func anyOverallReviewMatches(spdxKey string, overallReviews []overallreview.Over
 		}
 	}
 	return false
+}
+
+func (s *Service) EnsureSbomIsInUse(requestSession *logy.RequestSession, versionKey string, sbomKey string, retentionReason string) bool {
+	sbomList := s.sbomListRepository.FindByKey(requestSession, versionKey, false)
+	if sbomList == nil {
+		return false
+	}
+
+	for _, sbom := range sbomList.SpdxFileHistory {
+		if sbom.Key != sbomKey {
+			continue
+		}
+		if sbom.EnsureIsInUse(retentionReason) {
+			s.sbomListRepository.Update(requestSession, sbomList)
+		}
+		return true
+	}
+	return false
+}
+
+func (s *Service) EnsureProjectHasSbomToRetain(requestSession *logy.RequestSession, prj *project.Project) {
+	if prj.EnsureSbomToRetain() {
+		s.projectRepository.Update(requestSession, prj)
+	}
 }
