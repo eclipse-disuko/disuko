@@ -22,7 +22,6 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/hash"
 	"github.com/eclipse-disuko/disuko/helper/message"
-	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
 	"github.com/eclipse-disuko/disuko/infra/repository/labels"
@@ -36,6 +35,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
 	projectService "github.com/eclipse-disuko/disuko/infra/service/project"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
 )
@@ -65,6 +65,7 @@ type ApprovalService struct {
 	FOSSddService        *fossdd.Service
 	SpdxService          *spdx.Service
 	OverallReviewService *projectService.OverallReviewService
+	SbomRetentionService *sbomretention.Service
 }
 
 func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId, username string, req approval.UpdateApprovalDto) *approval.Approval {
@@ -342,6 +343,6 @@ func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable,
 		if spdxKey == "" || versionKey == "" {
 			continue
 		}
-		sbom_helper.EnsureSbomIsInUse(s.RequestSession, s.SBOMListRepo, versionKey, spdxKey, retentionReason)
+		s.SbomRetentionService.EnsureSbomIsInUse(s.RequestSession, versionKey, spdxKey, retentionReason)
 	}
 }

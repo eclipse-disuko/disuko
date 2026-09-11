@@ -26,7 +26,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/rest"
-	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 
 	"github.com/eclipse-disuko/disuko/connector/application"
 	"github.com/eclipse-disuko/disuko/domain/approval"
@@ -61,7 +61,7 @@ type StartUpHandler struct {
 	LabelRepository               labels.ILabelRepository
 	JobRepository                 jobs.IJobsRepository
 	ProjectHandler                *rest.ProjectHandler
-	SbomRetainedService           *sbomLockRetained.Service
+	SbomRetentionService          *sbomretention.Service
 	LicenseRepository             licenseRepo.ILicensesRepository
 	LicenseRulesRepo              licenserules.ILicenseRulesRepository
 	PolicyDecisionsRepo           policydecisions.IPolicyDecisionsRepository
@@ -373,7 +373,7 @@ func (startUpHandler *StartUpHandler) migrateProjectFlags(requestSession *logy.R
 
 				project.HasChildren = startUpHandler.ProjectHandler.CountChildren(requestSession, project, project.Children) > 0
 				project.HasApproval = startUpHandler.ProjectHandler.IsReferencedInApprovalLists(requestSession, project, nil)
-				project.HasSBOMToRetain = startUpHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, project)
+				project.HasSBOMToRetain = startUpHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, project)
 
 				startUpHandler.ProjectRepository.UpdateWithoutTimestamp(requestSession, project)
 				successCount++
@@ -679,7 +679,7 @@ func (startUpHandler *StartUpHandler) migrateSyncProjectAndSbomRetentionFlags(re
 
 				processedCount++
 
-				prj.HasSBOMToRetain = startUpHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, prj)
+				prj.HasSBOMToRetain = startUpHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, prj)
 
 				startUpHandler.ProjectRepository.UpdateWithoutTimestamp(requestSession, prj)
 				successCount++

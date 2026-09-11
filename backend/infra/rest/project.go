@@ -19,7 +19,6 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/decisions"
 	"github.com/eclipse-disuko/disuko/domain/department"
 	policydecisions2 "github.com/eclipse-disuko/disuko/domain/policydecisions"
-	"github.com/eclipse-disuko/disuko/helper/sbom_helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"go.uber.org/zap/zapcore"
 
@@ -30,9 +29,9 @@ import (
 	"github.com/eclipse-disuko/disuko/helper/s3Helper"
 	"github.com/eclipse-disuko/disuko/infra/repository/base"
 	"github.com/eclipse-disuko/disuko/infra/service/cache"
-	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	checklistService "github.com/eclipse-disuko/disuko/infra/service/checklist"
 	"github.com/eclipse-disuko/disuko/infra/service/patauth"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"golang.org/x/text/language"
 
 	"github.com/eclipse-disuko/disuko/domain/job"
@@ -142,7 +141,7 @@ type ProjectHandler struct {
 	JobRepository                 jobs.IJobsRepository
 	SpdxService                   *spdx.Service
 	CustomIdRepo                  customid.ICustomIdRepository
-	SbomRetainedService           *sbomLockRetained.Service
+	SbomRetentionService          *sbomretention.Service
 	ChecklistService              *checklistService.Service
 	WizardService                 *projectService.WizardService
 	ProjectLabelService           *projectLabelService.ProjectLabelService
@@ -450,16 +449,17 @@ func (projectHandler *ProjectHandler) ProjectGetApprovableInfo(w http.ResponseWr
 	}
 
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		LicenseRepo:         projectHandler.LicenseRepository,
-		SBOMListRepo:        projectHandler.SbomListRepository,
-		PolicyRulesRepo:     projectHandler.PolicyRuleRepository,
-		SpdxRetriever:       projectHandler,
-		LicenseRulesRepo:    projectHandler.LicenseRulesRepository,
-		SpdxService:         projectHandler.SpdxService,
-		ProjectLabelService: projectHandler.ProjectLabelService,
-		PolicyDecisionsRepo: projectHandler.PolicyDecisionsRepository,
+		RequestSession:       requestSession,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		LicenseRepo:          projectHandler.LicenseRepository,
+		SBOMListRepo:         projectHandler.SbomListRepository,
+		PolicyRulesRepo:      projectHandler.PolicyRuleRepository,
+		SpdxRetriever:        projectHandler,
+		LicenseRulesRepo:     projectHandler.LicenseRulesRepository,
+		SpdxService:          projectHandler.SpdxService,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		PolicyDecisionsRepo:  projectHandler.PolicyDecisionsRepository,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	takeLatestSbom := len(r.URL.Query().Get("latestSbom")) > 0
@@ -1154,17 +1154,18 @@ func (projectHandler *ProjectHandler) ProjectFillCustomer(w http.ResponseWriter,
 	fillCustomerBody := extractFillCustomerBody(r)
 
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		LicenseRepo:         projectHandler.LicenseRepository,
-		SBOMListRepo:        projectHandler.SbomListRepository,
-		PolicyRulesRepo:     projectHandler.PolicyRuleRepository,
-		SpdxRetriever:       projectHandler,
-		ApprovalListRepo:    projectHandler.ApprovalListRepository,
-		AuditLogListRepo:    projectHandler.AuditLogListRepository,
-		SpdxService:         projectHandler.SpdxService,
-		ProjectLabelService: projectHandler.ProjectLabelService,
-		UserRepo:            projectHandler.UserRepository,
+		RequestSession:       requestSession,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		LicenseRepo:          projectHandler.LicenseRepository,
+		SBOMListRepo:         projectHandler.SbomListRepository,
+		PolicyRulesRepo:      projectHandler.PolicyRuleRepository,
+		SpdxRetriever:        projectHandler,
+		ApprovalListRepo:     projectHandler.ApprovalListRepository,
+		AuditLogListRepo:     projectHandler.AuditLogListRepository,
+		SpdxService:          projectHandler.SpdxService,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		UserRepo:             projectHandler.UserRepository,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 	as.FillRemainingCustomer(pr, appId, username, &fillCustomerBody)
 	response := approval.ResponseApprovalDto{
@@ -1182,17 +1183,18 @@ func (projectHandler *ProjectHandler) GetApproverUser(w http.ResponseWriter, r *
 	pr, _ := projectHandler.retrieveProject2(r, true)
 
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		LicenseRepo:         projectHandler.LicenseRepository,
-		SBOMListRepo:        projectHandler.SbomListRepository,
-		PolicyRulesRepo:     projectHandler.PolicyRuleRepository,
-		SpdxRetriever:       projectHandler,
-		ApprovalListRepo:    projectHandler.ApprovalListRepository,
-		AuditLogListRepo:    projectHandler.AuditLogListRepository,
-		SpdxService:         projectHandler.SpdxService,
-		UserRepo:            projectHandler.UserRepository,
-		ProjectLabelService: projectHandler.ProjectLabelService,
+		RequestSession:       requestSession,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		LicenseRepo:          projectHandler.LicenseRepository,
+		SBOMListRepo:         projectHandler.SbomListRepository,
+		PolicyRulesRepo:      projectHandler.PolicyRuleRepository,
+		SpdxRetriever:        projectHandler,
+		ApprovalListRepo:     projectHandler.ApprovalListRepository,
+		AuditLogListRepo:     projectHandler.AuditLogListRepository,
+		SpdxService:          projectHandler.SpdxService,
+		UserRepo:             projectHandler.UserRepository,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	approver := chi.URLParam(r, "approver")
@@ -1242,6 +1244,7 @@ func (projectHandler *ProjectHandler) ProjectUpdateApproval(w http.ResponseWrite
 		ProjectLabelService:  projectHandler.ProjectLabelService,
 		FOSSddService:        projectHandler.FOSSddService,
 		OverallReviewService: projectHandler.OverallReviewService,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	updatedApproval := as.ProcessRandomApprovalUpdate(pr, appId, username, updateApprovalBody)
@@ -1366,10 +1369,11 @@ func (projectHandler *ProjectHandler) ProjectCheckVehicleChildren(w http.Respons
 	}
 
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		LabelRepo:           projectHandler.LabelRepository,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		ProjectLabelService: projectHandler.ProjectLabelService,
+		RequestSession:       requestSession,
+		LabelRepo:            projectHandler.LabelRepository,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	render.JSON(w, r, FoundResponse{
@@ -1390,10 +1394,11 @@ func (projectHandler *ProjectHandler) GroupOnlyVehicleChildren(w http.ResponseWr
 	}
 
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		LabelRepo:           projectHandler.LabelRepository,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		ProjectLabelService: projectHandler.ProjectLabelService,
+		RequestSession:       requestSession,
+		LabelRepo:            projectHandler.LabelRepository,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	render.JSON(w, r, FoundResponse{
@@ -1429,21 +1434,22 @@ func (projectHandler *ProjectHandler) ProjectCreateApproval(w http.ResponseWrite
 	currentProject, _ = projectHandler.retrieveProject2(r, true)
 	username, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
 	as := approvalService.ApprovalService{
-		RequestSession:      requestSession,
-		ProjectRepo:         projectHandler.ProjectRepository,
-		LicenseRepo:         projectHandler.LicenseRepository,
-		SBOMListRepo:        projectHandler.SbomListRepository,
-		PolicyRulesRepo:     projectHandler.PolicyRuleRepository,
-		SpdxRetriever:       projectHandler,
-		ApprovalListRepo:    projectHandler.ApprovalListRepository,
-		AuditLogListRepo:    projectHandler.AuditLogListRepository,
-		UserRepo:            projectHandler.UserRepository,
-		LabelRepo:           projectHandler.LabelRepository,
-		SpdxService:         projectHandler.SpdxService,
-		LicenseRulesRepo:    projectHandler.LicenseRulesRepository,
-		WizardService:       projectHandler.WizardService,
-		ProjectLabelService: projectHandler.ProjectLabelService,
-		PolicyDecisionsRepo: projectHandler.PolicyDecisionsRepository,
+		RequestSession:       requestSession,
+		ProjectRepo:          projectHandler.ProjectRepository,
+		LicenseRepo:          projectHandler.LicenseRepository,
+		SBOMListRepo:         projectHandler.SbomListRepository,
+		PolicyRulesRepo:      projectHandler.PolicyRuleRepository,
+		SpdxRetriever:        projectHandler,
+		ApprovalListRepo:     projectHandler.ApprovalListRepository,
+		AuditLogListRepo:     projectHandler.AuditLogListRepository,
+		UserRepo:             projectHandler.UserRepository,
+		LabelRepo:            projectHandler.LabelRepository,
+		SpdxService:          projectHandler.SpdxService,
+		LicenseRulesRepo:     projectHandler.LicenseRulesRepository,
+		WizardService:        projectHandler.WizardService,
+		ProjectLabelService:  projectHandler.ProjectLabelService,
+		PolicyDecisionsRepo:  projectHandler.PolicyDecisionsRepository,
+		SbomRetentionService: projectHandler.SbomRetentionService,
 	}
 
 	_, docMissing, _, custMissing := projectHandler.getDeps(requestSession, currentProject)
@@ -2598,10 +2604,10 @@ func (p *ProjectHandler) ProjectGetAllSbom(w http.ResponseWriter, r *http.Reques
 		for _, sbomEntity := range sbomList.SpdxFileHistory {
 			spdxFileDto := sbomEntity.ToDto(sbomEntity.Key == currentProject.ApprovableSPDX.SpdxKey)
 
-			if sbomLockRetained.IsSpdxToRetain(sbomEntity, version) {
+			if sbomretention.IsSpdxToRetain(sbomEntity, version) {
 				spdxFileDto.IsToRetain = true
 			}
-			if !sbomLockRetained.IsSpdxProtectedFromDeletion(sbomEntity, currentProject, version) {
+			if !sbomretention.IsSpdxProtectedFromDeletion(sbomEntity, currentProject, version) {
 				if unusedSpdxCount < 5 {
 					unusedSpdxCount++
 				} else {
@@ -2677,7 +2683,7 @@ func (p *ProjectHandler) ProjectUpdateTaskApprovableSPDX(w http.ResponseWriter, 
 
 	if reqData.SpdxKey != "" {
 		currentProject.EnsureSbomToRetain()
-	} else if !p.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
+	} else if !p.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, currentProject) {
 		currentProject.ReleaseSbomRetention()
 	}
 
@@ -3370,10 +3376,10 @@ func (projectHandler *ProjectHandler) markSbomUsageFlags(
 	sbomUuid string,
 	retentionReason string,
 ) {
-	if !sbom_helper.EnsureSbomIsInUse(requestSession, projectHandler.SbomListRepository, version.Key, sbomUuid, retentionReason) {
+	if !projectHandler.SbomRetentionService.EnsureSbomIsInUse(requestSession, version.Key, sbomUuid, retentionReason) {
 		exception.ThrowExceptionBadRequestResponse()
 	}
-	sbom_helper.EnsureProjectHasSbomToRetain(requestSession, projectHandler.ProjectRepository, prj)
+	projectHandler.SbomRetentionService.EnsureProjectHasSbomToRetain(requestSession, prj)
 }
 
 func hasActiveDeniedDecision(policyDecisions *policydecisions2.PolicyDecisions) bool {
