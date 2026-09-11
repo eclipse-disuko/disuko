@@ -203,6 +203,7 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 		before := *existingUser
 		existingUser.Lastname = claims.Lastname
 		existingUser.Forename = claims.Forename
+		existingUser.Email = userInfo.Email
 		existingUser.Roles = userInfoClaims.EntitlementGroup
 		existingUser.MetaData = metaData
 		existingUser.IsInternal = isInternalEmployee
@@ -212,6 +213,7 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 		}
 		if before.Lastname != existingUser.Lastname ||
 			before.Forename != existingUser.Forename ||
+			before.Email != existingUser.Email ||
 			!helper.EqualsStringSlicesIgnoreOrder(before.Roles, existingUser.Roles) ||
 			!before.MetaData.Equal(existingUser.MetaData) ||
 			before.IsInternal != existingUser.IsInternal {
