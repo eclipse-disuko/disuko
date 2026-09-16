@@ -483,7 +483,10 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 			r.Get("/info", s.handlers.publicAuth.Info)
 		})
 		r.Route("/api/public/v1", func(r chi.Router) {
-			r.Get("/groups/{uuid}/children", s.handlers.project.ProjectGetChildrenExternHandler)
+			r.Route("/groups/{uuid}", func(r chi.Router) {
+				r.Get("/", s.handlers.project.ProjectGetGroupExternHandler)
+				r.Get("/children", s.handlers.project.ProjectGetChildrenExternHandler)
+			})
 			r.Route("/projects/{uuid}", func(r chi.Router) {
 				r.Get("/", s.handlers.project.ProjectGetExternHandler)
 				r.Get("/status", s.handlers.project.ProjectStatusExternHandler)
