@@ -487,6 +487,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 			r.Route("/groups/{uuid}", func(r chi.Router) {
 				r.Get("/", s.handlers.project.ProjectGetGroupExternHandler)
 				r.Get("/children", s.handlers.project.ProjectGetChildrenExternHandler)
+				r.Get("/status", s.handlers.project.GroupStatusExternHandler)
 			})
 			r.Route("/projects/{uuid}", func(r chi.Router) {
 				r.Get("/", s.handlers.project.ProjectGetExternHandler)
