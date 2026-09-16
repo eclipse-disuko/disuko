@@ -2404,14 +2404,11 @@ func (projectHandler *ProjectHandler) HandleProjectGetForPublicResponse(requestS
 		IsGroup:     currentProject.IsGroup,
 	}
 
-	if !currentProject.IsGroup {
-
-		currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
-		if currentActiveSchema != nil {
-			currentProject.CorrespondingSchema = currentActiveSchema
-			currentProject.CorrespondingSchema.Content = ""
-			responseData.Schema = currentProject.CorrespondingSchema.Name
-		}
+	currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
+	if currentActiveSchema != nil {
+		currentProject.CorrespondingSchema = currentActiveSchema
+		currentProject.CorrespondingSchema.Content = ""
+		responseData.Schema = currentProject.CorrespondingSchema.Name
 	}
 
 	render.JSON(w, r, responseData)
