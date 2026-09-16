@@ -2244,6 +2244,23 @@ func (projectHandler *ProjectHandler) ProjectGetExternHandler(w http.ResponseWri
 	projectHandler.HandleProjectGetForPublicResponse(requestSession, currentProject, w, r)
 }
 
+// ProjectGetGroupExternHandler godoc
+//
+//	@Summary	Get group project details
+//	@Id			getGroupDetails
+//	@Produce	json
+//	@Param		uuid	path		string							true	"Group UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+//	@Success	200		{object}	project.ProjectPublicResponse	"Project"
+//	@Failure	404		{object}	exception.HttpError404			"NotFound Error"
+//	@Failure	401		{object}	exception.HttpError				"Unauthorized Error"
+//	@Router		/v1/groups/{uuid} [get]
+//	@security	Bearer
+func (projectHandler *ProjectHandler) ProjectGetGroupExternHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	currentProject, _ := projectHandler.retrieveGroupFromPublicRequest(requestSession, r, false)
+	projectHandler.HandleProjectGetForPublicResponse(requestSession, currentProject, w, r)
+}
+
 // ProjectGetChildrenExternHandler godoc
 //
 //	@Summary	Get children of a group project
@@ -2364,11 +2381,14 @@ func (projectHandler *ProjectHandler) HandleProjectGetForPublicResponse(requestS
 		IsGroup:     currentProject.IsGroup,
 	}
 
-	currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
-	if currentActiveSchema != nil {
-		currentProject.CorrespondingSchema = currentActiveSchema
-		currentProject.CorrespondingSchema.Content = ""
-		responseData.Schema = currentProject.CorrespondingSchema.Name
+	if !currentProject.IsGroup {
+
+		currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
+		if currentActiveSchema != nil {
+			currentProject.CorrespondingSchema = currentActiveSchema
+			currentProject.CorrespondingSchema.Content = ""
+			responseData.Schema = currentProject.CorrespondingSchema.Name
+		}
 	}
 
 	render.JSON(w, r, responseData)
