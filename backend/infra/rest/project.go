@@ -2327,6 +2327,23 @@ func (projectHandler *ProjectHandler) ProjectStatusExternHandler(w http.Response
 	projectHandler.HandleProjectStatus(requestSession, currentProject, w, r)
 }
 
+// GroupStatusExternHandler godoc
+//
+//	@Summary	Get group status
+//	@Id			getGroupStatus
+//	@Produce	json
+//	@Param		uuid	path		string								true	"Group UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+//	@Success	200		{object}	project.ProjectStatusPublicResponse	"Group Status"
+//	@Failure	404		{object}	exception.HttpError404				"NotFound Error"
+//	@Failure	401		{object}	exception.HttpError					"Unauthorized Error"
+//	@Router		/v1/groups/{uuid}/status [get]
+//	@security	Bearer
+func (projectHandler *ProjectHandler) GroupStatusExternHandler(w http.ResponseWriter, r *http.Request) {
+	requestSession := logy.GetRequestSession(r)
+	currentGroup, _ := projectHandler.retrieveGroupFromPublicRequest(requestSession, r, false)
+	projectHandler.HandleProjectStatus(requestSession, currentGroup, w, r)
+}
+
 func (projectHandler *ProjectHandler) HandleProjectGet(currentProject *project.Project, rights *oauth.AccessAndRolesRights, username string, w http.ResponseWriter, r *http.Request) {
 	requestSession := logy.GetRequestSession(r)
 
@@ -2387,14 +2404,11 @@ func (projectHandler *ProjectHandler) HandleProjectGetForPublicResponse(requestS
 		IsGroup:     currentProject.IsGroup,
 	}
 
-	if !currentProject.IsGroup {
-
-		currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
-		if currentActiveSchema != nil {
-			currentProject.CorrespondingSchema = currentActiveSchema
-			currentProject.CorrespondingSchema.Content = ""
-			responseData.Schema = currentProject.CorrespondingSchema.Name
-		}
+	currentActiveSchema := currentProject.FindCorrespondingSchema(activeSchemas)
+	if currentActiveSchema != nil {
+		currentProject.CorrespondingSchema = currentActiveSchema
+		currentProject.CorrespondingSchema.Content = ""
+		responseData.Schema = currentProject.CorrespondingSchema.Name
 	}
 
 	render.JSON(w, r, responseData)
