@@ -39,8 +39,10 @@ type SpdxFileBase struct {
 
 	OverallReview *overallreview.OverallReview
 
-	IsInUse  bool // store in DB
-	IsLocked bool // store in DB
+	IsInUse             bool // store in DB
+	IsLocked            bool // store in DB
+	LastRetentionReason string
+	LockedBy            string
 
 	Stats          components.ComponentStats
 	TotalStatsHash *string
@@ -118,6 +120,24 @@ type ExtractedLicense struct {
 type IdentifiedLicense struct {
 	License       ExtractedLicense
 	AliasTargetId string
+}
+
+func (entity *SpdxFileBase) EnsureIsInUse(retentionReason string) bool {
+	changed := entity.IsInUse != true ||
+		entity.IsLocked != true ||
+		entity.LastRetentionReason != retentionReason ||
+		entity.LockedBy != ""
+
+	if !changed {
+		return false
+	}
+
+	entity.IsInUse = true
+	entity.IsLocked = true
+	entity.LastRetentionReason = retentionReason
+	entity.LockedBy = ""
+
+	return true
 }
 
 func (entity *SpdxFileBase) ValidateSpdxContent(requestSession *logy.RequestSession, spdxString string, spdxSchema *schema.SpdxSchema) (bool, error) {

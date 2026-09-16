@@ -14,5 +14,5 @@
   - License has received status "License Chart"
   - License has lost status "License Chart"
   - License has received the evaluation state "forbidden"
-  - License which is in status "License Chart" has change on license familiy
+  - License which is in status "License Chart" has change on license family
   - License which is in status "License Chart" has change on license type

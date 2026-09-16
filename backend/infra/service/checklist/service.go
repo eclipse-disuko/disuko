@@ -15,6 +15,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/project/components"
 	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
 	"github.com/eclipse-disuko/disuko/helper/exception"
+	"github.com/eclipse-disuko/disuko/helper/message"
 	checklistRepo "github.com/eclipse-disuko/disuko/infra/repository/checklist"
 	licRepo "github.com/eclipse-disuko/disuko/infra/repository/license"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
@@ -24,23 +25,25 @@ import (
 	templateRepo "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 	sbomlistRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/infra/service/scanremarks"
 	spdxService "github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
 )
 
 type Service struct {
-	ChecklistRepo       checklistRepo.IChecklistRepository
-	TemplateRepo        templateRepo.IReviewTemplateRepository
-	SbomListRepo        sbomlistRepo.ISbomListRepository
-	PolicyRuleRepo      policyrulesRepo.IPolicyRulesRepository
-	LicenseRepo         licRepo.ILicensesRepository
-	ReviewRemarkRepo    reviewRemarksRepo.IReviewRemarksRepository
-	SpdxService         *spdxService.Service
-	ScanRemarksService  *scanremarks.Service
-	ProjectLabelService *projectLabelService.ProjectLabelService
-	PolicyDecisionsRepo policydecisions.IPolicyDecisionsRepository
-	ProjectRepo         project2.IProjectRepository
+	ChecklistRepo        checklistRepo.IChecklistRepository
+	TemplateRepo         templateRepo.IReviewTemplateRepository
+	SbomListRepo         sbomlistRepo.ISbomListRepository
+	PolicyRuleRepo       policyrulesRepo.IPolicyRulesRepository
+	LicenseRepo          licRepo.ILicensesRepository
+	ReviewRemarkRepo     reviewRemarksRepo.IReviewRemarksRepository
+	SpdxService          *spdxService.Service
+	ScanRemarksService   *scanremarks.Service
+	ProjectLabelService  *projectLabelService.ProjectLabelService
+	PolicyDecisionsRepo  policydecisions.IPolicyDecisionsRepository
+	ProjectRepo          project2.IProjectRepository
+	SbomRetentionService *sbomretention.Service
 }
 
 type execution struct {
@@ -162,14 +165,10 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		return
 	}
 
-	if !spdxBase.IsInUse {
-		spdxBase.IsInUse = true
+	if spdxBase.EnsureIsInUse(message.ReviewRemarkExistsForSbom) {
 		s.SbomListRepo.Update(rs, sbomList)
 	}
-	if !pr.HasSBOMToRetain {
-		pr.HasSBOMToRetain = true
-		s.ProjectRepo.Update(rs, pr)
-	}
+	s.SbomRetentionService.EnsureProjectHasSbomToRetain(rs, pr)
 
 	if rr == nil {
 		rr = &reviewremarks.ReviewRemarks{

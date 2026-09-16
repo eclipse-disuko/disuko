@@ -26,7 +26,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/licenserules"
 	"github.com/eclipse-disuko/disuko/infra/repository/policydecisions"
 	"github.com/eclipse-disuko/disuko/infra/rest"
-	sbomLockRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 
 	"github.com/eclipse-disuko/disuko/connector/application"
 	"github.com/eclipse-disuko/disuko/domain/approval"
@@ -61,7 +61,7 @@ type StartUpHandler struct {
 	LabelRepository               labels.ILabelRepository
 	JobRepository                 jobs.IJobsRepository
 	ProjectHandler                *rest.ProjectHandler
-	SbomRetainedService           *sbomLockRetained.Service
+	SbomRetentionService          *sbomretention.Service
 	LicenseRepository             licenseRepo.ILicensesRepository
 	LicenseRulesRepo              licenserules.ILicenseRulesRepository
 	PolicyDecisionsRepo           policydecisions.IPolicyDecisionsRepository
@@ -130,6 +130,8 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_SBOM_FROMIS_TO_RETAIN_TO_IS_IN_USE_FLAG", Do: startUpHandler.migrateSbomFromIsToRetainToIsInUseFlag},
 		{Name: "MIGRATE_SYNC_PROJECT_AND_SBOM_RETENTION_FLAGS", Do: startUpHandler.migrateSyncProjectAndSbomRetentionFlags},
 		{Name: "MIGRATE_REMOVE_ORPHANED_SBOM_FILES", Do: startUpHandler.migrateRemoveOrphanedSbomFiles},
+		{Name: "MIGRATE_SBOM_SYNC_OVERALL_REVIEW_WITH_IS_IN_USE_AND_IS_LOCKED", Do: startUpHandler.migrateSbomSyncOverallReviewWithIsInUseAndIsLocked},
+		{Name: "MIGRATE_SYNC_OVERALL_REVIEW_WITH_PROJECT_SBOM_RETENTION", Do: startUpHandler.migrateSyncOverallReviewWithProjectSbomRetention},
 	}
 
 	steps = append(steps, ext...)
@@ -371,7 +373,7 @@ func (startUpHandler *StartUpHandler) migrateProjectFlags(requestSession *logy.R
 
 				project.HasChildren = startUpHandler.ProjectHandler.CountChildren(requestSession, project, project.Children) > 0
 				project.HasApproval = startUpHandler.ProjectHandler.IsReferencedInApprovalLists(requestSession, project, nil)
-				project.HasSBOMToRetain = startUpHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, project)
+				project.HasSBOMToRetain = startUpHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, project)
 
 				startUpHandler.ProjectRepository.UpdateWithoutTimestamp(requestSession, project)
 				successCount++
@@ -677,7 +679,7 @@ func (startUpHandler *StartUpHandler) migrateSyncProjectAndSbomRetentionFlags(re
 
 				processedCount++
 
-				prj.HasSBOMToRetain = startUpHandler.SbomRetainedService.HasAnyVersionWithRetainedSbom(requestSession, prj)
+				prj.HasSBOMToRetain = startUpHandler.SbomRetentionService.HasAnyVersionWithRetainedSbom(requestSession, prj)
 
 				startUpHandler.ProjectRepository.UpdateWithoutTimestamp(requestSession, prj)
 				successCount++
@@ -844,4 +846,67 @@ func extractVersionAndSbomFromS3Path(path string) (versionUUID string, sbomUUID 
 	}
 
 	return versionUUID, sbomUUID, true
+}
+
+func (startUpHandler *StartUpHandler) migrateSbomSyncOverallReviewWithIsInUseAndIsLocked(rs *logy.RequestSession) {
+	logy.Infof(rs, "migrateSbomSyncOverallReviewWithIsInUseAndIsLocked - START")
+	sbomLists := startUpHandler.SbomListRepository.FindAll(rs, false)
+	for _, sbomList := range sbomLists {
+		changed := false
+		for _, spdx := range sbomList.SpdxFileHistory {
+			if spdx.OverallReview != nil && !spdx.IsInUse {
+				spdx.IsInUse = true
+				changed = true
+				logy.Infof(rs, "migrateSbomSyncOverallReviewWithIsInUseAndIsLocked - flag 'IsInUse' set to 'true' for channel/sbom: %s/%s", sbomList.Key, spdx.Key)
+			}
+			if spdx.IsInUse && !spdx.IsLocked {
+				spdx.IsLocked = true
+				changed = true
+				logy.Infof(rs, "migrateSbomSyncOverallReviewWithIsInUseAndIsLocked - flag 'IsLocked' set to 'true' for channel/sbom: %s/%s", sbomList.Key, spdx.Key)
+			}
+		}
+		if changed {
+			startUpHandler.SbomListRepository.UpdateWithoutTimestamp(rs, sbomList)
+		}
+	}
+	logy.Infof(rs, "migrateSbomSyncOverallReviewWithIsInUseAndIsLocked - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateSyncOverallReviewWithProjectSbomRetention(rs *logy.RequestSession) {
+	logy.Infof(rs, "migrateSyncOverallReviewWithProjectSbomRetention - START")
+	exception.TryCatchAndLog(rs, func() {
+		projectKeys := startUpHandler.ProjectRepository.FindAllKeys(rs)
+		logy.Infof(rs, "migrateSyncOverallReviewWithProjectSbomRetention - Found %d projects to process", len(projectKeys))
+
+		for _, projectKey := range projectKeys {
+			exception.TryCatch(func() {
+				prj := startUpHandler.ProjectRepository.FindByKey(rs, projectKey, false)
+				if prj == nil {
+					logy.Warnf(rs, "migrateSyncOverallReviewWithProjectSbomRetention - Project not found: %s", projectKey)
+					return
+				}
+
+				if prj.HasSBOMToRetain {
+					return
+				}
+
+				for _, v := range prj.Versions {
+					if len(v.OverallReviews) == 0 {
+						continue
+					}
+
+					prj.HasSBOMToRetain = true
+					logy.Infof(rs, "migrateSyncOverallReviewWithProjectSbomRetention - HasSBOMToRetain set for project %s", projectKey)
+
+					startUpHandler.ProjectRepository.UpdateWithoutTimestamp(rs, prj)
+					break
+				}
+			}, func(e exception.Exception) {
+				exception.LogException(rs, e)
+				logy.Errorf(rs, "migrateSyncOverallReviewWithProjectSbomRetention - Failed to update project: %s", projectKey)
+			})
+		}
+	})
+
+	logy.Infof(rs, "migrateSyncOverallReviewWithProjectSbomRetention - END")
 }

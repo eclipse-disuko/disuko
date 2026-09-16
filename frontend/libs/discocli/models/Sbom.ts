@@ -96,6 +96,7 @@ export interface SpdxUploadResponse {
   fileUploaded?: boolean;
   id?: string;
   sbomguid?: string;
+  transferredAudit?: boolean;
   code?: string; // backend error code
   message?: string; // backend message
   reqID?: string; // backend request id

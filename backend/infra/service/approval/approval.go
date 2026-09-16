@@ -35,6 +35,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
 	projectService "github.com/eclipse-disuko/disuko/infra/service/project"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	"github.com/eclipse-disuko/disuko/logy"
 )
@@ -64,6 +65,7 @@ type ApprovalService struct {
 	FOSSddService        *fossdd.Service
 	SpdxService          *spdx.Service
 	OverallReviewService *projectService.OverallReviewService
+	SbomRetentionService *sbomretention.Service
 }
 
 func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId, username string, req approval.UpdateApprovalDto) *approval.Approval {
@@ -334,30 +336,13 @@ func (s *ApprovalService) deletePending(app *approval.Approval) {
 	}
 }
 
-func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable) {
+func (s *ApprovalService) markSbomIsInUse(projects []approval.ProjectApprovable, retentionReason string) {
 	for _, projectApprovable := range projects {
 		spdxKey := projectApprovable.ApprovableSPDX.SpdxKey
 		versionKey := projectApprovable.ApprovableSPDX.VersionKey
 		if spdxKey == "" || versionKey == "" {
 			continue
 		}
-
-		sbomList := s.SBOMListRepo.FindByKey(s.RequestSession, versionKey, false)
-		if sbomList == nil {
-			continue
-		}
-
-		for _, sbom := range sbomList.SpdxFileHistory {
-			if sbom.Key != spdxKey {
-				continue
-			}
-			if sbom.IsInUse {
-				break
-			}
-
-			sbom.IsInUse = true
-			s.SBOMListRepo.Update(s.RequestSession, sbomList)
-			break
-		}
+		s.SbomRetentionService.EnsureSbomIsInUse(s.RequestSession, versionKey, spdxKey, retentionReason)
 	}
 }

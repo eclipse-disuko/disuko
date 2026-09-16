@@ -6,7 +6,6 @@ package server
 
 import (
 	"github.com/eclipse-disuko/disuko/infra/service/analytics"
-	sbomRetained "github.com/eclipse-disuko/disuko/infra/service/check-sbom-retained"
 	"github.com/eclipse-disuko/disuko/infra/service/checklist"
 	"github.com/eclipse-disuko/disuko/infra/service/export"
 	"github.com/eclipse-disuko/disuko/infra/service/fossdd"
@@ -17,6 +16,7 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/service/project"
 	projectLabelService "github.com/eclipse-disuko/disuko/infra/service/project-label"
 	"github.com/eclipse-disuko/disuko/infra/service/report"
+	"github.com/eclipse-disuko/disuko/infra/service/sbomretention"
 	"github.com/eclipse-disuko/disuko/infra/service/scanremarks"
 	"github.com/eclipse-disuko/disuko/infra/service/spdx"
 	userService "github.com/eclipse-disuko/disuko/infra/service/user"
@@ -30,7 +30,7 @@ type services struct {
 	policyRules         policy.Service
 	export              *export.Service
 	checklist           checklist.Service
-	sbomRetained        *sbomRetained.Service
+	sbomRetention       *sbomretention.Service
 	scanRemarks         scanremarks.Service
 	wizard              project.WizardService
 	projectLabelService projectLabelService.ProjectLabelService
@@ -54,7 +54,7 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 		PolicyRulesRepository: s.repos.policyRules,
 		LicenseRepository:     s.repos.licenses,
 	}
-	sbomRetainedS := sbomRetained.NewService(
+	sbomRetentionS := sbomretention.NewService(
 		s.repos.project,
 		s.repos.sbomList,
 	)
@@ -98,11 +98,11 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 	userServ := userService.Init(rs, s.repos.user, s.repos.approvalList, s.repos.project, s.repos.label)
 
 	s.services = services{
-		lock:         lockS,
-		spdx:         spdxS,
-		policyRules:  psS,
-		sbomRetained: sbomRetainedS,
-		scanRemarks:  srS,
+		lock:          lockS,
+		spdx:          spdxS,
+		policyRules:   psS,
+		sbomRetention: sbomRetentionS,
+		scanRemarks:   srS,
 		analytics: analytics.Analytics{
 			ProjectRepository:    s.repos.project,
 			LicenseRepository:    s.repos.licenses,
@@ -130,17 +130,18 @@ func (s *Server) setupServices(rs *logy.RequestSession) {
 			SchemaRepository:      s.repos.schema,
 		},
 		checklist: checklist.Service{
-			ChecklistRepo:       s.repos.checklist,
-			TemplateRepo:        s.repos.reviewTemplate,
-			SbomListRepo:        s.repos.sbomList,
-			PolicyRuleRepo:      s.repos.policyRules,
-			LicenseRepo:         s.repos.licenses,
-			ReviewRemarkRepo:    s.repos.reviewRemarks,
-			SpdxService:         spdxS,
-			ScanRemarksService:  &srS,
-			ProjectLabelService: &plS,
-			PolicyDecisionsRepo: s.repos.policyDecisions,
-			ProjectRepo:         s.repos.project,
+			ChecklistRepo:        s.repos.checklist,
+			TemplateRepo:         s.repos.reviewTemplate,
+			SbomListRepo:         s.repos.sbomList,
+			PolicyRuleRepo:       s.repos.policyRules,
+			LicenseRepo:          s.repos.licenses,
+			ReviewRemarkRepo:     s.repos.reviewRemarks,
+			SpdxService:          spdxS,
+			ScanRemarksService:   &srS,
+			ProjectLabelService:  &plS,
+			PolicyDecisionsRepo:  s.repos.policyDecisions,
+			ProjectRepo:          s.repos.project,
+			SbomRetentionService: sbomRetentionS,
 		},
 		wizard: project.WizardService{
 			LabelRepository:        s.repos.label,

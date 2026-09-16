@@ -75,11 +75,11 @@ func (s *OverallReviewService) AddToProject(
 	}
 
 	version.OverallReviews = append(version.OverallReviews, review)
-
+	pr.EnsureSbomToRetain()
 	s.ProjectRepo.Update(rs, pr)
 
 	spdx.OverallReview = &review
-
+	spdx.EnsureIsInUse(message.OverallReviewExistsForSbom)
 	s.SbomListRepo.Update(rs, sbomList)
 
 	observermngmt.FireEvent(observermngmt.OverallReviewCreated, observermngmt.OverallReviewData{
