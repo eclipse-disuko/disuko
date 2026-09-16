@@ -57,8 +57,9 @@ class ProjectService {
   /**
    * Fetch basic project information
    */
-  private async fetchProjectInfo(projectUuid: string): Promise<Project> {
-    const response = await axios.get<Project>(`/v1/projects/${projectUuid}`);
+  private async fetchProjectInfo(projectUuid: string, isGroup: boolean): Promise<Project> {
+    const resource = isGroup ? 'groups' : 'projects';
+    const response = await axios.get<Project>(`/v1/${resource}/${projectUuid}`);
 
     // Check if response exists and has data
     if (!response || !response.data) {
@@ -77,12 +78,16 @@ class ProjectService {
   /**
    * Fetch project status and version statuses
    */
-  private async fetchProjectStatus(projectUuid: string): Promise<{
+  private async fetchProjectStatus(
+    projectUuid: string,
+    isGroup = false,
+  ): Promise<{
     status: string;
     versionStatus: VersionStatusPublicResponse[];
   }> {
+    const resource = isGroup ? 'groups' : 'projects';
     const response = await axios.get<{status: string; versionStatus: VersionStatusPublicResponse[]}>(
-      `/v1/projects/${projectUuid}/status`,
+      `/v1/${resource}/${projectUuid}/status`,
     );
     return response.data || {status: 'inactive', versionStatus: []};
   }
@@ -141,22 +146,23 @@ class ProjectService {
     try {
       const authInfo = await this.fetchAuthInfo();
 
+      const isChildProject = Boolean(options?.parentProjectUuid && options.parentProjectUuid !== projectUuid);
+      const authProjectMismatch = Boolean(authInfo?.projectUuid && authInfo.projectUuid !== projectUuid);
+      const isGroup = !isChildProject && !authProjectMismatch && (authInfo?.isGroup ?? false);
+
       let project: Project;
       try {
-        project = await this.fetchProjectInfo(projectUuid);
+        project = await this.fetchProjectInfo(projectUuid, isGroup);
       } catch (error) {
         this.logError('getProject - fetchProjectInfo', error);
         throw error;
       }
 
-      const projectStatus = await this.fetchProjectStatus(projectUuid);
-      const isDeprecatedProject = (projectStatus.status || '').toLowerCase() === 'deprecated';
-      const isChildProject = Boolean(options?.parentProjectUuid && options.parentProjectUuid !== projectUuid);
-      const authProjectMismatch = Boolean(authInfo?.projectUuid && authInfo.projectUuid !== projectUuid);
-      const isGroup = isChildProject || authProjectMismatch ? false : (authInfo?.isGroup ?? project.isGroup);
+      const projectStatus = await this.fetchProjectStatus(projectUuid, isGroup);
+      const isDeprecatedProject = (projectStatus?.status || '').toLowerCase() === 'deprecated';
 
-      if (!project || !projectStatus) {
-        this.logError('getProject', 'Missing project or status data');
+      if (!project || (!isGroup && !projectStatus)) {
+        this.logError('getProject', 'Missing project data or status data');
         return null;
       }
 
@@ -169,7 +175,7 @@ class ProjectService {
         if (versionNames.length === 0) {
           project.sboms = allProjectSboms;
         } else {
-          versions = await this.fetchAndPrepareVersions(projectUuid, versionNames, projectStatus.versionStatus);
+          versions = await this.fetchAndPrepareVersions(projectUuid, versionNames, projectStatus?.versionStatus || []);
 
           // Fetch SBOM list for each version
           const versionsWithSboms = await Promise.all(
@@ -242,7 +248,7 @@ class ProjectService {
 
       const projectResult = {
         ...project,
-        status: projectStatus.status,
+        status: projectStatus?.status,
         versions,
         ...(isGroup ? {isGroup: true} : {}),
         ...(children ? {children: children.map((child) => ({...child}))} : {}),
