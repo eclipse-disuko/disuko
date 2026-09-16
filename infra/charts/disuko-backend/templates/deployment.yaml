@@ -28,13 +28,6 @@ spec:
         fsGroup: 1
       containers:
         - name: {{ .Release.Name }}
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - wget -qO- http://localhost:{{ .Values.app.SERVER_PORT }}/shutdown || true; sleep 30
           readinessProbe:
             httpGet:
               path: /healthz
