@@ -229,6 +229,9 @@ func (spdxHandler *SPDXHandler) HandleSPDXUploadFile(requestSession *logy.Reques
 //	@Router		/v1/projects/{uuid}/versions/{version}/sboms [post]
 //	@security	Bearer
 func (spdxHandler *SPDXHandler) SPDXUploadFileExternHandler(w http.ResponseWriter, r *http.Request) {
+	err := assertFileSize(w, r)
+	exception.HandleErrorClientMessage(err, message.GetI18N(message.MaxFilesize))
+
 	requestSession := logy.GetRequestSession(r)
 	currentProject, version, origin := spdxHandler.retrieveProjectAndVersionFromPublicRequest(requestSession, r)
 	if currentProject.IsDeprecated() {
