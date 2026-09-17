@@ -114,11 +114,6 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 	requestSession := logy.GetRequestSession(request)
 	logy.Infof(requestSession, "oauthHandler::HandleRequestTokenFromCode")
 
-	defer func() {
-		expiredStateCookie := expireStateCookie()
-		http.SetCookie(writer, &expiredStateCookie)
-	}()
-
 	errorParam := request.URL.Query().Get("error")
 	errorDescription := request.URL.Query().Get("error_description")
 	if errorParam != "" {
@@ -268,6 +263,8 @@ func logErrorAndRedirectToErrorPage(requestSession *logy.RequestSession, writer 
 	exception.LogWithLevel(requestSession, level, errMsgCode, errMsgText, err.Error())
 	cookieRefreshToken := expireRefreshCookie()
 	cookieAccessToken := expireAccessCookie()
+	expiredStateCookie := expireStateCookie()
+	http.SetCookie(writer, &expiredStateCookie)
 	http.SetCookie(writer, &cookieRefreshToken)
 	http.SetCookie(writer, &cookieAccessToken)
 	u := conf.Config.Server.ClientRedirectURL + "/#/loginError"
