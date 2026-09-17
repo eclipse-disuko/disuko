@@ -29,7 +29,6 @@ func (handler *AccessRightsHandler) ProjectAccessRightsGetAllHandler(w http.Resp
 
 	defaultInitialAccessRights := oauth.AccessAndRolesRights{}
 	defaultInitialAccessRights.SetDefault()
-	// defaultInitialAccessRights.SetForDomainAdmin()
 
 	roles := []string{string(project.PROJECT_RESPONSIBLE), string(project.OWNER), string(project.SUPPLIER), string(project.VIEWER), PublicApi}
 	response := make(map[string]*oauth.ProjectAccessRightsDto)

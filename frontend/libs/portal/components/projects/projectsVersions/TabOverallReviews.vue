@@ -153,6 +153,6 @@ const showOverallAuditDialog = async () => {
       </v-data-table>
     </template>
   </TableLayout>
-  <OverallReviewDialog ref="overallReviewDialog" visible></OverallReviewDialog>
-  <OverallAuditDialog ref="overallAuditDialog" visible></OverallAuditDialog>
+  <OverallReviewDialog ref="overallReviewDialog" mode="review" visible></OverallReviewDialog>
+  <OverallReviewDialog ref="overallAuditDialog" mode="audit" visible></OverallReviewDialog>
 </template>
