@@ -114,6 +114,11 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 	requestSession := logy.GetRequestSession(request)
 	logy.Infof(requestSession, "oauthHandler::HandleRequestTokenFromCode")
 
+	defer func() {
+		expiredStateCookie := expireStateCookie()
+		http.SetCookie(writer, &expiredStateCookie)
+	}()
+
 	errorParam := request.URL.Query().Get("error")
 	errorDescription := request.URL.Query().Get("error_description")
 	if errorParam != "" {
@@ -419,7 +424,6 @@ func expireAccessCookie() http.Cookie {
 
 func createStateCookie(state string) http.Cookie {
 	cookie := createCookie("oauth.state", state, time.Time{})
-	cookie.SameSite = http.SameSiteLaxMode
 	return cookie
 }
 
