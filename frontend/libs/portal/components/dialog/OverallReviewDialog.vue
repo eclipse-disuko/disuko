@@ -14,6 +14,12 @@ import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 
+type OverallReviewDialogMode = 'review' | 'audit';
+
+const props = defineProps<{
+  mode: OverallReviewDialogMode;
+}>();
+
 const emit = defineEmits(['reload']);
 
 const {minMax} = useRules();
@@ -22,12 +28,20 @@ const {info: snack} = useSnackbar();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 
-const possibleStates = [
-  OverallReviewState.UNREVIEWED,
-  OverallReviewState.ACCEPTABLE,
-  OverallReviewState.ACCEPTABLE_AFTER_CHANGES,
-  OverallReviewState.NOT_ACCEPTABLE,
-];
+const isAudit = computed(() => props.mode === 'audit');
+
+const title = computed(() => t(isAudit.value ? 'HEADLINE_OVERALL_AUDIT' : 'HEADLINE_OVERALL_REVIEW'));
+
+const possibleStates = computed(() =>
+  isAudit.value
+    ? [OverallReviewState.AUDITED]
+    : [
+        OverallReviewState.UNREVIEWED,
+        OverallReviewState.ACCEPTABLE,
+        OverallReviewState.ACCEPTABLE_AFTER_CHANGES,
+        OverallReviewState.NOT_ACCEPTABLE,
+      ],
+);
 
 const form = ref<VForm | null>(null);
 const isVisible = ref(false);
@@ -43,6 +57,13 @@ const rules = {
 
 const open = () => {
   selectedSBOM.value = sbomStore.getSelectedSBOM;
+  if (isAudit.value) {
+    selectedState.value = OverallReviewState.AUDITED;
+    comment.value = t('AUDIT_ATTR_COMMENT');
+  } else {
+    selectedState.value = OverallReviewState.UNREVIEWED;
+    comment.value = '';
+  }
   isVisible.value = true;
 };
 
@@ -92,7 +113,7 @@ defineExpose({open});
   <v-dialog v-model="isVisible" width="500">
     <DialogLayout
       :config="{
-        title: t('HEADLINE_OVERALL_REVIEW'),
+        title,
         secondaryButton: {text: t('BTN_CANCEL')},
         primaryButton: {text: t('Btn_submit')},
       }"

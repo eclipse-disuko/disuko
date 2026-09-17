@@ -472,7 +472,7 @@ onUnmounted(() => {
     <VersionDialogForm ref="editDlg"></VersionDialogForm>
     <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="doDeleteVersion">
     </ConfirmationDialog>
-    <OverallReviewDialog ref="reviewDia" @reload="reload"></OverallReviewDialog>
+    <OverallReviewDialog ref="reviewDia" mode="review" @reload="reload"></OverallReviewDialog>
   </div>
 </template>
 
