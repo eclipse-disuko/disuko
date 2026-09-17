@@ -358,6 +358,7 @@ const (
 	ConnectorReqFailed                        = "CONNECTOR_REQUEST_FAILED"
 	InvalidExchangeCode                       = "INVALID_EXCHANGE_CODE"
 	AuthErrorCode                             = "IAM_AUTH_ERROR"
+	InvalidState                              = "INVALID_STATE"
 	StatusReviewUnreviewed                    = "SR_UNREVIEWED"
 	StatusReviewUnreviewedDE                  = "SR_UNREVIEWED_DE"
 	StatusReviewAudited                       = "SR_AUDITED"
@@ -710,6 +711,7 @@ func InitI18N() {
 	addI18NKeyValue(ConnectorReqFailed, "Connector request failure")
 	addI18NKeyValue(InvalidExchangeCode, "Invalid auth exchange code")
 	addI18NKeyValue(AuthErrorCode, "IAM auth error during login process")
+	addI18NKeyValue(InvalidState, "Invalid or missing OAuth state parameter")
 	addI18NKeyValue(StatusReviewUnreviewed, "Open")
 	addI18NKeyValue(StatusReviewUnreviewedDE, "Offen")
 	addI18NKeyValue(StatusReviewAudited, "Management Approved")

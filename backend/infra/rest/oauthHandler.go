@@ -6,6 +6,7 @@ package rest
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -86,6 +87,8 @@ func (handler *OAuthHandler) HandleRedirectToIAM(w http.ResponseWriter, r *http.
 	requestSession := logy.GetRequestSession(r)
 	logy.Infof(requestSession, "oauthHandler::HandleRedirectToIAM")
 
+	state := oauth2.GenerateVerifier()
+
 	authEndpoint := handler.Config.Endpoint.AuthURL
 	if conf.Config.OAuth2.AuthorizationEndpoint != "" {
 		authEndpoint = conf.Config.OAuth2.AuthorizationEndpoint
@@ -96,7 +99,12 @@ func (handler *OAuthHandler) HandleRedirectToIAM(w http.ResponseWriter, r *http.
 	newUrl = newUrl + "&client_id=" + conf.Config.OAuth2.ClientId
 	newUrl = newUrl + "&scope=" + strings.Join(handler.Config.Scopes, "%20")
 	newUrl = newUrl + "&redirect_uri=" + url.QueryEscape(conf.Config.Server.DisukoHost+"/api/v1/login")
+	newUrl = newUrl + "&state=" + url.QueryEscape(state)
 	logy.Infof(requestSession, "oauthHandler::HandleRedirectToIAM %s", newUrl)
+
+	stateCookie := createStateCookie(state)
+	http.SetCookie(w, &stateCookie)
+
 	http.Redirect(w, r, newUrl, http.StatusMovedPermanently)
 }
 
@@ -116,6 +124,14 @@ func (handler *OAuthHandler) HandleRequestTokenFromCode(writer http.ResponseWrit
 
 	code := html.EscapeString(request.URL.Query().Get("code"))
 	logy.Infof(requestSession, "oauthHandler::HandleRequestTokenFromCode %v", code)
+
+	stateErr := validateState(request)
+	if stateErr != nil {
+		logErrorAndRedirectToErrorPage(requestSession, writer, request, zapcore.WarnLevel, message.InvalidState, message.GetI18N(message.InvalidState).Text, stateErr)
+		return
+	}
+	expiredStateCookie := expireStateCookie()
+	http.SetCookie(writer, &expiredStateCookie)
 
 	codeErr := validateCode(code)
 	if codeErr != nil {
@@ -249,11 +265,33 @@ func logErrorAndRedirectToErrorPage(requestSession *logy.RequestSession, writer 
 	exception.LogWithLevel(requestSession, level, errMsgCode, errMsgText, err.Error())
 	cookieRefreshToken := expireRefreshCookie()
 	cookieAccessToken := expireAccessCookie()
+	expiredStateCookie := expireStateCookie()
+	http.SetCookie(writer, &expiredStateCookie)
 	http.SetCookie(writer, &cookieRefreshToken)
 	http.SetCookie(writer, &cookieAccessToken)
 	u := conf.Config.Server.ClientRedirectURL + "/#/loginError"
 	http.Redirect(writer, request, u, http.StatusMovedPermanently)
 	return
+}
+
+func validateState(request *http.Request) error {
+	stateParam := request.URL.Query().Get("state")
+	if stateParam == "" {
+		return errors.New("invalid state: missing state parameter")
+	}
+
+	stateCookie, err := request.Cookie("oauth.state")
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return errors.New("invalid state: missing state cookie")
+		}
+		return err
+	}
+
+	if stateCookie.Value == "" || subtle.ConstantTimeCompare([]byte(stateParam), []byte(stateCookie.Value)) != 1 {
+		return errors.New("invalid state: state parameter does not match state cookie")
+	}
+	return nil
 }
 
 func validateCode(code string) error {
@@ -381,6 +419,16 @@ func expireAccessCookie() http.Cookie {
 	expiredTime := time.Unix(0, 0)
 	cookieAccessToken := createCookie("oauth.a", "", expiredTime)
 	return cookieAccessToken
+}
+
+func createStateCookie(state string) http.Cookie {
+	cookie := createCookie("oauth.state", state, time.Time{})
+	return cookie
+}
+
+func expireStateCookie() http.Cookie {
+	expiredTime := time.Unix(0, 0)
+	return createCookie("oauth.state", "", expiredTime)
 }
 
 func createCookie(name, value string, expires time.Time) http.Cookie {
