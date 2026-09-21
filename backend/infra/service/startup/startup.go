@@ -32,7 +32,7 @@ import (
 	"github.com/eclipse-disuko/disuko/domain/approval"
 	migrationDomain "github.com/eclipse-disuko/disuko/domain/migration"
 	"github.com/eclipse-disuko/disuko/domain/project"
-	reviewremarks2 "github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	reviewremarksDomain "github.com/eclipse-disuko/disuko/domain/reviewremarks"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/infra/repository/analyticscomponents"
@@ -116,6 +116,7 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_ACTIVATE_PRS", Do: startUpHandler.migrateActivatePRs},
 		{Name: "MIGRAGE_APP_SEC_ID_2", Do: startUpHandler.migrateAppSecId},
 		{Name: "MIGRATE_REVIEW_REMARK", Do: startUpHandler.migrateReviewRemarks},
+		{Name: "MIGRATE_CANCELLED_REVIEW_REMARK_LEVEL", Do: startUpHandler.migrateCancelledReviewRemarkLevels},
 		{Name: "MIGRATE_SBOM_UPLOAD_DATES", Do: startUpHandler.migrateSBOMUploadDates},
 		{Name: "MIGRATE_ADD_PROJECT_LABEL_DUMMY", Do: startUpHandler.migrateAddProjectLabelDummy},
 		{Name: "MIGRATE_NEW_JOB_DELETE_DUMMY_PROJECTS", Do: startUpHandler.migrateDeleteDummyProjects},
@@ -274,7 +275,7 @@ func (startUpHandler *StartUpHandler) migrateReviewRemarks(requestSession *logy.
 				continue
 			}
 
-			r.Components = append(r.Components, reviewremarks2.ComponentMeta{
+			r.Components = append(r.Components, reviewremarksDomain.ComponentMeta{
 				ComponentId:      r.ComponentId,
 				ComponentName:    r.ComponentName,
 				ComponentVersion: r.ComponentVersion,
@@ -289,7 +290,7 @@ func (startUpHandler *StartUpHandler) migrateReviewRemarks(requestSession *logy.
 				continue
 			}
 
-			r.Licenses = append(r.Licenses, reviewremarks2.LicenseMeta{
+			r.Licenses = append(r.Licenses, reviewremarksDomain.LicenseMeta{
 				LicenseId:   r.LicenseId,
 				LicenseName: r.LicenseName,
 			})
@@ -304,6 +305,26 @@ func (startUpHandler *StartUpHandler) migrateReviewRemarks(requestSession *logy.
 	}
 
 	logy.Infof(requestSession, "migrateReviewRemarks - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateCancelledReviewRemarkLevels(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateCancelledReviewRemarkLevels - START")
+
+	reviewRemarks := startUpHandler.ReviewRemarkRepository.FindAll(requestSession, false)
+	for _, rr := range reviewRemarks {
+		changed := false
+		for _, remark := range rr.Remarks {
+			if remark.Status == reviewremarksDomain.Cancelled && remark.Level != reviewremarksDomain.Gray {
+				remark.Level = reviewremarksDomain.Gray
+				changed = true
+			}
+		}
+		if changed {
+			startUpHandler.ReviewRemarkRepository.UpdateWithoutTimestamp(requestSession, rr)
+		}
+	}
+
+	logy.Infof(requestSession, "migrateCancelledReviewRemarkLevels - END")
 }
 
 func (startUpHandler *StartUpHandler) migrateAddProjectLabelDummy(requestSession *logy.RequestSession) {
