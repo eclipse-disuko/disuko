@@ -143,7 +143,7 @@ const chartOptionsPolicyStates = createChartOptions('bar', openFilteredComponent
 
 const chartDataReviewRemarks = computed(() => {
   return createChartData(
-    ['notAcceptable', 'acceptableAfterChanges', 'acceptable'] as (keyof ReviewRemarkStats)[],
+    ['notAcceptable', 'acceptableAfterChanges', 'acceptable', 'cancelled'] as (keyof ReviewRemarkStats)[],
     'RR_CHART',
     reviewRemarksStats.value,
     (label) => getColorForLabel('reviewRemark', label),
@@ -357,6 +357,7 @@ function getColorForLabel(type: string, label: string, transparent = true) {
       acceptable: '--v-theme-chartGreen',
       acceptableAfterChanges: '--v-theme-chartYellow',
       notAcceptable: '--v-theme-chartRed',
+      gray: '--v-theme-chartGrey',
     },
     scanRemark: {
       information: '--v-theme-chartGrey',
@@ -474,6 +475,7 @@ function openFilteredReviewRemarks(event: ChartEvent, elements: ArcElement[]) {
     [t('RR_CHART_ACCEPTABLE')]: ReviewRemarkLevel.GREEN,
     [t('RR_CHART_ACCEPTABLEAFTERCHANGES')]: ReviewRemarkLevel.YELLOW,
     [t('RR_CHART_NOTACCEPTABLE')]: ReviewRemarkLevel.RED,
+    [t('RR_CHART_GRAY')]: ReviewRemarkLevel.GRAY,
   };
 
   const mapped = resolveBarLabel<ReviewRemarkLevel>(elements, chartDataReviewRemarks.value, labelMapping);

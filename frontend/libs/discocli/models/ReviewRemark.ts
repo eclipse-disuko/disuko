@@ -32,6 +32,7 @@ export enum ReviewRemarkLevel {
   GREEN = 'GREEN',
   YELLOW = 'YELLOW',
   RED = 'RED',
+  GRAY = 'GRAY',
   NOT_SET = 'NOT_SET',
 }
 
@@ -42,6 +43,7 @@ export enum ReviewRemarkLevel {
  */
 export function compareRRLevel(a: string, b: string): number {
   const levelWeight: Record<string, number> = {
+    gray: -1,
     green: 0,
     yellow: 1,
     red: 2,

@@ -109,6 +109,7 @@ export enum ReviewRemarkLevel {
   GREEN = 'GREEN',
   YELLOW = 'YELLOW',
   RED = 'RED',
+  GRAY = 'GRAY',
 }
 
 export enum ReviewRemarkStatus {
@@ -178,6 +179,7 @@ export function compareLevel(a: string, b: string): number {
 
 export function compareRRLevel(a: ReviewRemarkLevel, b: ReviewRemarkLevel): number {
   const levelWeight: Map<ReviewRemarkLevel, number> = new Map<ReviewRemarkLevel, number>([
+    [ReviewRemarkLevel.GRAY, -1],
     [ReviewRemarkLevel.GREEN, 0],
     [ReviewRemarkLevel.YELLOW, 1],
     [ReviewRemarkLevel.RED, 2],

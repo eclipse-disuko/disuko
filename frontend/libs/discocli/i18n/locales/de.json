@@ -191,6 +191,7 @@
   "REMARK_LEVEL_GREEN": "Akzeptabel",
   "REMARK_LEVEL_YELLOW": "Akzeptabel nach Änderungen",
   "REMARK_LEVEL_RED": "Nicht akzeptabel",
+  "REMARK_LEVEL_GRAY": "Abgebrochen",
   "TITLE_REVIEW_REMARK": "Details zur Review-Bemerkung",
   "TAB_TITLE_DETAILS": "Details",
   "COL_REFERENCES": "Bezieht sich auf",

@@ -27,6 +27,8 @@ export function getIconColorScanRemarkLevel(level: ScanRemarkLevel) {
 export function getIconColorReviewRemarkLevel(level: ReviewRemarkLevel) {
   if (level.toLowerCase() === 'yellow') {
     return 'brand'; // more subtle color
+  } else if (level === ReviewRemarkLevel.GRAY) {
+    return 'grey';
   }
   return level.toLowerCase();
 }
@@ -40,6 +42,9 @@ export function getIconReviewRemarkLevel(level: ReviewRemarkLevel) {
       return 'mdi-comment-alert';
     }
     case ReviewRemarkLevel.RED: {
+      return 'mdi-comment-remove';
+    }
+    case ReviewRemarkLevel.GRAY: {
       return 'mdi-comment-remove';
     }
   }

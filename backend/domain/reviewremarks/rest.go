@@ -401,6 +401,8 @@ func ParseLevel(level string) (valid bool, res Level) {
 		valid, res = true, Yellow
 	case string(Red):
 		valid, res = true, Red
+	case string(Gray):
+		valid, res = true, Gray
 	default:
 		valid, res = false, UnsetLevel
 	}
