@@ -357,7 +357,7 @@ function getColorForLabel(type: string, label: string, transparent = true) {
       acceptable: '--v-theme-chartGreen',
       acceptableAfterChanges: '--v-theme-chartYellow',
       notAcceptable: '--v-theme-chartRed',
-      gray: '--v-theme-chartGrey',
+      cancelled: '--v-theme-chartGrey',
     },
     scanRemark: {
       information: '--v-theme-chartGrey',
@@ -475,7 +475,7 @@ function openFilteredReviewRemarks(event: ChartEvent, elements: ArcElement[]) {
     [t('RR_CHART_ACCEPTABLE')]: ReviewRemarkLevel.GREEN,
     [t('RR_CHART_ACCEPTABLEAFTERCHANGES')]: ReviewRemarkLevel.YELLOW,
     [t('RR_CHART_NOTACCEPTABLE')]: ReviewRemarkLevel.RED,
-    [t('RR_CHART_GRAY')]: ReviewRemarkLevel.GRAY,
+    [t('RR_CHART_CANCELLED')]: ReviewRemarkLevel.GRAY,
   };
 
   const mapped = resolveBarLabel<ReviewRemarkLevel>(elements, chartDataReviewRemarks.value, labelMapping);

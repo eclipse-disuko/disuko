@@ -1813,7 +1813,7 @@
   "RR_CHART_ACCEPTABLE": "Information",
   "RR_CHART_ACCEPTABLEAFTERCHANGES": "Investigation",
   "RR_CHART_NOTACCEPTABLE": "Problem",
-  "RR_CHART_GRAY": "Cancelled",
+  "RR_CHART_CANCELLED": "Abgebrochen",
   "SR_CHART_INFORMATION": "information",
   "SR_CHART_WARNING": "warning",
   "SR_CHART_PROBLEM": "problem",

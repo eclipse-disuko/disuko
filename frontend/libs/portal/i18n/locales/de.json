@@ -1827,7 +1827,7 @@
   "RR_CHART_ACCEPTABLE": "Information",
   "RR_CHART_ACCEPTABLEAFTERCHANGES": "Untersuchung",
   "RR_CHART_NOTACCEPTABLE": "Problem",
-  "RR_CHART_GRAY": "Abgebrochen",
+  "RR_CHART_CANCELLED": "Abgebrochen",
   "SR_CHART_INFORMATION": "information",
   "SR_CHART_WARNING": "warnung",
   "SR_CHART_PROBLEM": "problem",

@@ -264,6 +264,10 @@ const filterOnReviewRemarkLevel = () => {
   if (reviewRemarkLevel) {
     selectedFilterLevel.value = [reviewRemarkLevel];
     selectedFilterStatus.value = [];
+    if (reviewRemarkLevel === ReviewRemarkLevel.GRAY) {
+      selectedFilterStatus.value.push(ReviewRemarkStatus.CANCELLED);
+      return;
+    }
     if (possibleStatus.value.some((status) => status.value === ReviewRemarkStatus.OPEN)) {
       selectedFilterStatus.value.push(ReviewRemarkStatus.OPEN as string);
     }
