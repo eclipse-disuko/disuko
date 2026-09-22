@@ -592,6 +592,7 @@
   "TT_COMPONENTS_OVERVIEW_NOASSERTION": "Etwas fehlt und muss behoben werden",
   "TT_COMPONENTS_OVERVIEW_WARNED": "Erfordert Untersuchung und Entscheidung",
   "TT_COMPONENTS_OVERVIEW_QUESTIONED": "Status der Policy-Regeln prüfen",
+  "TT_COMPONENTS_SCAN_REMARK": "Komponenten mit Prüfbemerkungen anzeigen",
   "TT_COMPONENTS_POLICY_DECISION": "Entscheiden und dokumentieren",
   "TT_COMPONENTS_LICENSE_DECISION": "Entscheiden und dokumentieren",
   "TT_COPY_HASH_VALUE": "SHA-256 kopieren:\n",
