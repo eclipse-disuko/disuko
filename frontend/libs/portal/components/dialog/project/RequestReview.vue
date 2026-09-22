@@ -88,6 +88,7 @@ const open = async (payload?: {comment: string; reviewer: string}) => {
     }
   }
   await approvableInfoStore.fetchApprovableInfo();
+  await sbomStore.fetchAllSBOMsFlat();
 
   await autoSelect();
   idle.showIdle = false;
