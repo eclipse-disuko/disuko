@@ -20,7 +20,7 @@ import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems} from '@shared/types/table';
 import {useClipboard} from '@shared/utils/clipboard';
-import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
+import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {chain} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -52,7 +52,6 @@ const {
 } = useReviewRemarkActions();
 
 const items = ref<ReviewRemark[]>([]);
-const on = ref(false);
 const search = ref('');
 const loading = ref(false);
 const selectedFilterLevel = ref<string[]>([]);
@@ -282,6 +281,11 @@ const reload = async (): Promise<void> => {
   items.value = (await versionService.getReviewRemarks(projectModel.value._key, version.value._key)).data;
   selected.value = items.value.filter((item) => uniqueSelectedKeys.has(item.key));
   loading.value = false;
+};
+
+const reloadWithSboms = async (): Promise<void> => {
+  await sbomStore.fetchAllSBOMsFlat(true);
+  await reload();
 };
 
 onMounted(async () => {
@@ -696,7 +700,7 @@ onMounted(() => {
       </v-data-table>
     </div>
   </div>
-  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reload"></ReviewRemarkDialog>
+  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadWithSboms"></ReviewRemarkDialog>
   <ConfirmationDialog v-model:showDialog="closeVisible" :config="confirmCloseConfig" @confirm="doCloseRemark">
   </ConfirmationDialog>
   <ConfirmationDialog v-model:showDialog="cancelVisible" :config="confirmCancelConfig" @confirm="doCancelRemark">

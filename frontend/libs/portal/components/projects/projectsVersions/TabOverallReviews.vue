@@ -18,6 +18,8 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {DEFAULT_ITEMS_PER_PAGE_OPTIONS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 
+const emit = defineEmits(['reloadParent']);
+
 const {t} = useI18n();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
@@ -96,6 +98,10 @@ const showOverallReviewDialog = async () => {
 const showOverallAuditDialog = async () => {
   overallAuditDialog.value.open();
 };
+
+const reload = () => {
+  emit('reloadParent');
+};
 </script>
 
 <template>
@@ -153,6 +159,6 @@ const showOverallAuditDialog = async () => {
       </v-data-table>
     </template>
   </TableLayout>
-  <OverallReviewDialog ref="overallReviewDialog" mode="review" visible></OverallReviewDialog>
-  <OverallReviewDialog ref="overallAuditDialog" mode="audit" visible></OverallReviewDialog>
+  <OverallReviewDialog ref="overallReviewDialog" mode="review" visible @reload="reload"></OverallReviewDialog>
+  <OverallReviewDialog ref="overallAuditDialog" mode="audit" visible @reload="reload"></OverallReviewDialog>
 </template>
