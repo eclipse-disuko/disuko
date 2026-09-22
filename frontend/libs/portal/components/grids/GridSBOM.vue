@@ -631,7 +631,7 @@ onMounted(async () => {
     </template>
   </TableLayout>
 
-  <ReviewRemarkDialog ref="reviewRemarkDialog" />
+  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadSboms" />
   <ConfirmationDialog v-model:showDialog="confirmVisible" :config="confirmConfig" @confirm="doDelete" />
   <SbomValidationErrorsDialog ref="dlgSbomValidationErrors" />
   <v-dialog v-model="showAutoApprovedDialog" width="480">

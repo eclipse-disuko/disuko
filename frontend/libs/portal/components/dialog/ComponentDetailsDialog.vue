@@ -187,6 +187,11 @@ const open = async (
   }
 };
 
+const reloadReviewRemarksAndSboms = async () => {
+  await sbomStore.fetchAllSBOMsFlat(true);
+  await reloadReviewRemarks();
+};
+
 const reloadReviewRemarks = async () => {
   const spdxId = details.value.Attributes?.find((a) => a.Key === 'SPDXID')?.Value ?? '';
   if (spdxId && project.value._key && projectVersionId.value && sbomId.value) {
@@ -884,7 +889,7 @@ defineExpose({
     </DialogLayout>
   </v-dialog>
 
-  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadReviewRemarks"></ReviewRemarkDialog>
+  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadReviewRemarksAndSboms"></ReviewRemarkDialog>
   <LicenseRuleDialog ref="licenseRuleDialog" @reload="closeAndReload"></LicenseRuleDialog>
   <PolicyDecisionDialog
     ref="policyDecisionDialog"
