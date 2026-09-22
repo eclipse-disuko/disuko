@@ -418,6 +418,11 @@ const reload = async () => {
   computeFamilyFilter();
 };
 
+const reloadWithSboms = async () => {
+  await sbomStore.fetchAllSBOMsFlat(true);
+  await reload();
+};
+
 const computeLicensesFilter = () => {
   allLicenses.value = [
     ...new Set(
@@ -873,9 +878,15 @@ onUnmounted(async () => {
 
   <ComponentDetailsDialog
     ref="newComponentDetailsDlg"
-    @reloadAfterCreation="reload"
+    @reloadAfterCreation="reloadWithSboms"
     @triggerBulk="openBulkPolicyDecisionsDialog" />
-  <LicenseRuleDialog ref="licenseRuleDialog" @reload="reload" @triggerComponentDetails="findComponentAndShowDetails" />
-  <PolicyDecisionDialog ref="policyDecisionDialog" @reload="reload" @triggerBulk="openBulkPolicyDecisionsDialog" />
-  <BulkPolicyDecisionsDialog ref="bulkPolicyDecisionsDialog" @reload="reload" />
+  <LicenseRuleDialog
+    ref="licenseRuleDialog"
+    @reload="reloadWithSboms"
+    @triggerComponentDetails="findComponentAndShowDetails" />
+  <PolicyDecisionDialog
+    ref="policyDecisionDialog"
+    @reload="reloadWithSboms"
+    @triggerBulk="openBulkPolicyDecisionsDialog" />
+  <BulkPolicyDecisionsDialog ref="bulkPolicyDecisionsDialog" @reload="reloadWithSboms" />
 </template>
