@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Upload Backend SBOM to Dependency Track
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_version:
+        description: >
+          Version label to create in Dependency Track.
+          Leave empty to use the current commit SHA.
+        required: false
+        type: string
+      staging:
+        description: >
+          Whether to upload the SBOM to the staging environment.
+        required: false
+        type: boolean
+        default: true
+      upload:
+        description: >
+          Whether to upload the SBOM to Dependency Track.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write
+
+jobs:
+  sbom-upload:
+    name: Generate and Upload SBOM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: 1.27.1
+          cache: true
+
+      - name: Determine project version
+        id: version
+        # Use the explicit input when provided, fall back to the full commit SHA.
+        run: |
+          if [ -n "${{ inputs.project_version }}" ]; then
+            echo "value=${{ inputs.project_version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install cyclonedx-gomod
+        # Pin to the same tool version used to generate the committed SBOMs.
+        run: go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.12.0
+
+      - name: Generate CycloneDX SBOM
+        run: |
+          cyclonedx-gomod app \
+            -main backend \
+            -json \
+            -output backend/sbom.cyclonedx.json
+
+      - uses: eclipse-csi/workflows/upload-sbom@d83da6f2897e985d9d2b9541174c7ee5ee6d88ad # releases do not exist
+        if: ${{ inputs.upload }}
+        with:
+          sbom-file: 'backend/sbom.cyclonedx.json'
+          product-name: 'disuko-backend'
+          product-version: ${{ steps.version.outputs.value }}
+          staging: ${{ inputs.staging }}
+
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom-${{ steps.version.outputs.value }}
+          path: sbom.cyclonedx.json
+          if-no-files-found: error
+          retention-days: 90
+
