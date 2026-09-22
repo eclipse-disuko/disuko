@@ -105,7 +105,7 @@ func (handler *OAuthHandler) HandleRedirectToIAM(w http.ResponseWriter, r *http.
 	stateCookie := createStateCookie(state)
 	http.SetCookie(w, &stateCookie)
 
-	http.Redirect(w, r, newUrl, http.StatusMovedPermanently)
+	http.Redirect(w, r, newUrl, http.StatusFound)
 }
 
 // HandleRequestTokenFromCode
