@@ -74,7 +74,7 @@ const allTypes = ref<DataTableHeaderFilterItems[]>([]);
 const allFamilies = ref<DataTableHeaderFilterItems[]>([]);
 const forceReload = ref(true);
 const tableHeight = ref(0);
-const decisionFilter = reactive({policy: false, license: false});
+const quickFilter = reactive({scanRemark: false, policy: false, license: false});
 const {calculateHeight} = useDimensions();
 const tableComponents = ref<HTMLElement | null>(null);
 const newComponentDetailsDlg = ref();
@@ -184,6 +184,7 @@ const {filteredHeaders} = headerSettingsStore;
 
 const policyDecisionCount = computed(() => componentList.value.filter((c) => c.showPolicyDecision).length);
 const licenseDecisionCount = computed(() => componentList.value.filter((c) => c.showLicenseDecision).length);
+const scanRemarkCount = computed(() => componentList.value.filter((c) => c.scanRemarks?.length).length);
 
 const decisionFilterButtons = computed(() => [
   {
@@ -202,6 +203,14 @@ const decisionFilterButtons = computed(() => [
     icon: 'mdi-text-box-edit-outline',
     activeIconColor: 'primary',
   },
+  {
+    key: 'scanRemark' as const,
+    label: t('COL_SCAN_REMARK'),
+    tooltip: t('TT_COMPONENTS_SCAN_REMARK'),
+    count: scanRemarkCount.value,
+    icon: 'mdi-circle',
+    activeIconColor: 'orange',
+  },
 ]);
 
 const filteredList = computed(() => {
@@ -211,6 +220,7 @@ const filteredList = computed(() => {
       filterOnPolicyType(info) &&
       filterOnType(info) &&
       filterOnFamily(info) &&
+      filterOnScanRemark(info) &&
       filterOnPolicyDecision(info) &&
       filterOnLicenseDecision(info)
     );
@@ -235,18 +245,21 @@ const filterOnPolicyType = (info: TabelItem): boolean => {
   return !!info.prStatus && selectedFilterPolicyTypes.value.some((filterType) => info.prStatus.includes(filterType));
 };
 
-const filterOnPolicyDecision = (info: TabelItem): boolean => !decisionFilter.policy || info.showPolicyDecision;
+const filterOnScanRemark = (info: TabelItem): boolean => !quickFilter.scanRemark || Boolean(info.scanRemarks?.length);
 
-const filterOnLicenseDecision = (info: TabelItem): boolean => !decisionFilter.license || info.showLicenseDecision;
+const filterOnPolicyDecision = (info: TabelItem): boolean => !quickFilter.policy || info.showPolicyDecision;
+
+const filterOnLicenseDecision = (info: TabelItem): boolean => !quickFilter.license || info.showLicenseDecision;
 
 const resetPolicyStateSelection = () => {
   selectedFilterPolicyTypes.value = [];
 };
 
-const toggleDecisionFilter = (key: 'policy' | 'license') => {
-  const activate = !decisionFilter[key];
-  decisionFilter.policy = key === 'policy' && activate;
-  decisionFilter.license = key === 'license' && activate;
+const toggleQuickFilter = (key: 'scanRemark' | 'policy' | 'license') => {
+  const activate = !quickFilter[key];
+  quickFilter.scanRemark = key === 'scanRemark' && activate;
+  quickFilter.policy = key === 'policy' && activate;
+  quickFilter.license = key === 'license' && activate;
   if (activate) {
     resetPolicyStateSelection();
   }
@@ -256,7 +269,7 @@ const getDecisionFilterBtnIconColor = (btn: (typeof decisionFilterButtons.value)
   if (btn.count === 0) {
     return 'disabledColor';
   }
-  return decisionFilter[btn.key] ? 'white' : btn.activeIconColor;
+  return quickFilter[btn.key] ? 'white' : btn.activeIconColor;
 };
 
 const getDecisionFilterBtnStyle = (btn: (typeof decisionFilterButtons.value)[number]) =>
@@ -549,8 +562,9 @@ const ruleCallback: IRuleBtnCallbacks = {
   },
   handlePolicySelect: (filter: PolicyState) => {
     forceReload.value = false;
-    decisionFilter.policy = false;
-    decisionFilter.license = false;
+    quickFilter.scanRemark = false;
+    quickFilter.policy = false;
+    quickFilter.license = false;
     if (filter.length < 1) {
       selectedFilterPolicyTypes.value = [];
       return;
@@ -633,13 +647,13 @@ onUnmounted(async () => {
       <span v-for="btn in decisionFilterButtons" :key="btn.key">
         <Tooltip>{{ btn.tooltip }}</Tooltip>
         <v-btn
-          :variant="decisionFilter[btn.key] ? 'flat' : 'tonal'"
+          :variant="quickFilter[btn.key] ? 'flat' : 'tonal'"
           color="primary"
           size="small"
           class="text-none my-2"
           :style="getDecisionFilterBtnStyle(btn)"
           :disabled="btn.count === 0"
-          @click.stop="toggleDecisionFilter(btn.key)">
+          @click.stop="toggleQuickFilter(btn.key)">
           <v-icon
             :color="getDecisionFilterBtnIconColor(btn)"
             :style="getDecisionFilterBtnStyle(btn)"
