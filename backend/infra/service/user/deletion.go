@@ -7,6 +7,7 @@ package user
 import (
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/domain/user"
 	"github.com/eclipse-disuko/disuko/helper/exception"
@@ -101,6 +102,9 @@ func (d *deletion) abortApproval(appUuid, prKey string) {
 	a := list.GetApproval(appUuid)
 	if a == nil {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
+	}
+	if a.Type == approval.TypeExternal {
+		return
 	}
 	s := approvalService.ApprovalService{
 		RequestSession:   d.rs,
