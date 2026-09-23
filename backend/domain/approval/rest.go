@@ -132,19 +132,19 @@ type InternalApprovalDto struct {
 	Aborted           bool               `json:"aborted"`
 }
 
-func (ia *InternalApproval) ToDto(approverFullNames [4]string) InternalApprovalDto {
+func (a *InternalApproval) ToDto(approverFullNames [4]string) InternalApprovalDto {
 	var s [4]ApproveStateDto
 	for i := 0; i < 4; i++ {
-		s[i] = ia.ApproveStates[i].ToDto()
+		s[i] = a.ApproveStates[i].ToDto()
 	}
 
 	return InternalApprovalDto{
 		ApproveStates:     s,
-		Approver:          ia.Approver,
+		Approver:          a.Approver,
 		ApproverFullNames: approverFullNames,
-		Comments:          ia.ApproveComments,
-		DocVersion:        ia.DocVersion,
-		Aborted:           ia.Aborted,
+		Comments:          a.ApproveComments,
+		DocVersion:        a.DocVersion,
+		Aborted:           a.Aborted,
 	}
 }
 
@@ -242,7 +242,7 @@ func (a *Approval) ToApprovalDtoStatus() StateInfo {
 		if a.Internal.Generating {
 			return GeneratingDocs
 		}
-		if a.Internal.IsDeclined() {
+		if a.Internal.Declined() {
 			return Declined
 		}
 		if a.Internal.CustomerDone() {

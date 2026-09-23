@@ -92,7 +92,7 @@ func (s *ApprovalService) CreateInternalApproval(pr *project.Project, req approv
 }
 
 func (s *ApprovalService) processInternalApprovalUpdate(pr *project.Project, targetApproval *approval.Approval, username string, req approval.UpdateApprovalDto) {
-	if !targetApproval.Internal.IsActive() {
+	if targetApproval.Internal.Finalized() {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 
@@ -111,9 +111,6 @@ func (s *ApprovalService) processInternalApprovalUpdate(pr *project.Project, tar
 
 	before := targetApproval.ToAudit()
 	if stateInfo == approval.Aborted {
-		if !targetApproval.Internal.IsActive() {
-			exception.ThrowExceptionBadRequestResponse()
-		}
 		if targetApproval.Creator != username {
 			exception.ThrowExceptionSendDeniedResponse()
 		}
@@ -353,7 +350,7 @@ func (s *ApprovalService) setApprovalSpdxStatus(targetApproval *approval.Approva
 }
 
 func (s *ApprovalService) adminAbortInternal(pr *project.Project, targetApproval *approval.Approval) {
-	if !targetApproval.Internal.IsActive() {
+	if !targetApproval.Internal.Pending() {
 		return
 	}
 	before := targetApproval.ToAudit()
@@ -378,10 +375,7 @@ func (s *ApprovalService) FillRemainingCustomer(pr *project.Project, appId, user
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 
-	if targetApproval.Type != approval.TypeInternal || !targetApproval.Internal.IsActive() {
-		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
-	}
-	if targetApproval.Internal.Generating {
+	if targetApproval.Type != approval.TypeInternal || targetApproval.Internal.Finalized() {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
 	if targetApproval.Creator != username {

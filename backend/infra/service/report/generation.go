@@ -510,7 +510,7 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		res.LatestApprovalNoFoss = strconv.Itoa(stats.noFossCount)
 		if latest.Internal.Aborted {
 			res.LatestApprovalStatus = "aborted"
-		} else if latest.Internal.IsDeclined() {
+		} else if latest.Internal.Declined() {
 			res.LatestApprovalStatus = "declined"
 		} else if latest.Internal.SupplierDone() {
 			res.LatestApprovalStatus = "pending"
