@@ -47,6 +47,9 @@ func (j *InactiveMail) Execute(rs *logy.RequestSession, info job.Job) scheduler.
 	approvalLists := j.approvalListRepo.FindAll(rs, false)
 	for _, list := range approvalLists {
 		for _, appr := range list.Approvals {
+			if appr.Type == approval.TypeExternal {
+				continue
+			}
 			if !isOngoing(&appr) {
 				continue
 			}
@@ -115,11 +118,9 @@ func (j *InactiveMail) notifyRecipients(rs *logy.RequestSession, appr *approval.
 func isOngoing(a *approval.Approval) bool {
 	switch a.Type {
 	case approval.TypeInternal:
-		return a.Internal.IsActive()
+		return a.Internal.Pending()
 	case approval.TypePlausibility:
 		return a.Plausibility.IsActive()
-	case approval.TypeExternal:
-		return a.External.State == approval.Pending
 	}
 	return false
 }

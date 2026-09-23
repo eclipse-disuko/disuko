@@ -5,7 +5,7 @@
 package approval
 
 func (a *InternalApproval) FirstPendingApproverRole(username string) Approver {
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		if a.Approver[i] == username && a.ApproveStates[i].State == Pending {
 			return Approver(i)
 		}
@@ -13,38 +13,25 @@ func (a *InternalApproval) FirstPendingApproverRole(username string) Approver {
 	return None
 }
 
-func (a *InternalApproval) IsActive() bool {
-	if a.Aborted || a.Generating || a.GenerationFailed {
-		return false
-	}
-
-	acceptedCount := 0
-	for i := 0; i < 4; i++ {
-		if a.ApproveStates[i].State == Declined {
-			return false
-		}
-		if a.ApproveStates[i].State == Approved {
-			acceptedCount++
-		}
-	}
-	return (acceptedCount != 4)
+func (a *InternalApproval) Finalized() bool {
+	return a.Aborted || a.Declined() || (a.CustomerDone() && a.SupplierDone())
 }
 
-func (a *InternalApproval) IsActiveForDeprecation() bool {
-	if a.Aborted || a.Generating || a.GenerationFailed {
+func (a *InternalApproval) Pending() bool {
+	if a.Generating || a.GenerationFailed {
 		return false
 	}
-
-	for i := 0; i < 4; i++ {
-		if a.ApproveStates[i].State == Declined {
-			return false
-		}
+	if a.Finalized() {
+		return false
 	}
-	return !a.SupplierDone()
+	if a.SupplierDone() && len(a.Approver) == 2 {
+		return false
+	}
+	return true
 }
 
-func (a *InternalApproval) IsDeclined() bool {
-	for i := 0; i < 4; i++ {
+func (a *InternalApproval) Declined() bool {
+	for i := range 4 {
 		if a.ApproveStates[i].State == Declined {
 			return true
 		}
@@ -53,7 +40,7 @@ func (a *InternalApproval) IsDeclined() bool {
 }
 
 func (a *InternalApproval) IsApprover(username string) Approver {
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		if a.Approver[i] == username {
 			return Approver(i)
 		}

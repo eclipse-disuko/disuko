@@ -7,6 +7,7 @@ package approvals
 import (
 	"time"
 
+	"github.com/eclipse-disuko/disuko/domain/approval"
 	"github.com/eclipse-disuko/disuko/domain/job"
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/auditloglist"
@@ -56,6 +57,9 @@ func (j *AbortInactive) Execute(rs *logy.RequestSession, info job.Job) scheduler
 		changed := false
 		for i := range list.Approvals {
 			appr := &list.Approvals[i]
+			if appr.Type == approval.TypeExternal {
+				continue
+			}
 			if !isOngoing(appr) {
 				continue
 			}
