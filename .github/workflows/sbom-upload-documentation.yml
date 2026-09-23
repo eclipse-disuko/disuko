@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2025 Mercedes-Benz Group AG and Mercedes-Benz AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Upload Documentation SBOM to Dependency Track
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_version:
+        description: >
+          Version label to create in Dependency Track.
+          Leave empty to use the current commit SHA.
+        required: false
+        type: string
+      staging:
+        description: >
+          Whether to upload the SBOM to the staging environment.
+        required: false
+        type: boolean
+        default: true
+      upload:
+        description: >
+          Whether to upload the SBOM to Dependency Track.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write
+
+jobs:
+  sbom-upload:
+    name: Generate and Upload SBOM
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docs/app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: "docs/app/package.json"
+
+      - name: Determine project version
+        id: version
+        # Use the explicit input when provided, fall back to the full commit SHA.
+        run: |
+          if [ -n "${{ inputs.project_version }}" ]; then
+            echo "value=${{ inputs.project_version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate CycloneDX SBOM
+        run: |
+          npx @cyclonedx/cyclonedx-npm \
+            --output-format JSON \
+            --output-file sbom.cyclonedx.json
+
+      - uses: eclipse-csi/workflows/upload-sbom@d83da6f2897e985d9d2b9541174c7ee5ee6d88ad # releases do not exist
+        if: ${{ inputs.upload }}
+        with:
+          sbom-file: 'docs/app/sbom.cyclonedx.json'
+          product-name: 'disuko-documentation'
+          product-version: ${{ steps.version.outputs.value }}
+          staging: ${{ inputs.staging }}
+
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom-documentation-${{ steps.version.outputs.value }}
+          path: docs/app/sbom.cyclonedx.json
+          if-no-files-found: error
+          retention-days: 90
