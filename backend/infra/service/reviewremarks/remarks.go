@@ -71,6 +71,9 @@ func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionI
 func reviewRemarkExists(existingRemarks []*reviewremarks.Remark, newRemark *reviewremarks.Remark) bool {
 	newKey := newRemark.MakeRrKey()
 	for _, existingRemark := range existingRemarks {
+		if !existingRemark.PreventsDuplicate() {
+			continue
+		}
 		if existingRemark.MakeRrKey() == newKey {
 			return true
 		}

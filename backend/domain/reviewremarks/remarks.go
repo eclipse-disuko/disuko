@@ -313,3 +313,7 @@ func (r *Remark) MakeRrKey() RrKey {
 		licenses:   strings.Join(licenseKeys, itemSeparator),
 	}
 }
+
+func (r *Remark) PreventsDuplicate() bool {
+	return r.Status != Cancelled
+}
