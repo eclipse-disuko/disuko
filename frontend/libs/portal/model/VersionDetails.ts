@@ -112,6 +112,7 @@ export class ReviewRemarkStats {
   public acceptable = 0;
   public acceptableAfterChanges = 0;
   public notAcceptable = 0;
+  public cancelled = 0;
 }
 
 export class ScanRemarkStats {

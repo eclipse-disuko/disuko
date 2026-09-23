@@ -70,6 +70,7 @@ type ReviewRemarkStats struct {
 	Acceptable             int `json:"acceptable"`
 	AcceptableAfterChanges int `json:"acceptableAfterChanges"`
 	NotAcceptable          int `json:"notAcceptable"`
+	Cancelled              int `json:"cancelled"`
 }
 
 type ScanRemarkStats struct {

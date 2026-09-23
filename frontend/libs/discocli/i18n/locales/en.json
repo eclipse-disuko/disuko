@@ -192,6 +192,7 @@
   "REMARK_LEVEL_GREEN": "Acceptable",
   "REMARK_LEVEL_YELLOW": "Acceptable after changes",
   "REMARK_LEVEL_RED": "Not Acceptable",
+  "REMARK_LEVEL_GRAY": "Cancelled",
   "TITLE_REVIEW_REMARK": "Review Remark Details",
   "TAB_TITLE_DETAILS": "Details",
   "COL_REFERENCES": "References",

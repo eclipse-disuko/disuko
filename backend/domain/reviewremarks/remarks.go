@@ -46,6 +46,7 @@ const (
 	Green      Level = "GREEN"
 	Yellow     Level = "YELLOW"
 	Red        Level = "RED"
+	Gray       Level = "GRAY"
 	UnsetLevel Level = ""
 )
 
@@ -249,6 +250,7 @@ func (r *Remark) Cancel(author, fullName string) {
 		Author:         author,
 		AuthorFullName: fullName,
 	})
+	r.Level = Gray
 	r.Status = Cancelled
 }
 

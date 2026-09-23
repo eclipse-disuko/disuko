@@ -1687,10 +1687,11 @@ func (projectHandler *ProjectHandler) calculateReviewRemarkStats(requestSession 
 		Acceptable:             0,
 		AcceptableAfterChanges: 0,
 		NotAcceptable:          0,
+		Cancelled:              0,
 	}
 
 	for _, remark := range remarksList.Remarks {
-		if remark.Status == reviewremarks.Open || remark.Status == reviewremarks.Closed {
+		if remark.Status == reviewremarks.Open || remark.Status == reviewremarks.Closed || remark.Status == reviewremarks.Cancelled {
 			switch remark.Level {
 			case reviewremarks.Green:
 				reviewRemarkStats.Acceptable++
@@ -1698,6 +1699,8 @@ func (projectHandler *ProjectHandler) calculateReviewRemarkStats(requestSession 
 				reviewRemarkStats.AcceptableAfterChanges++
 			case reviewremarks.Red:
 				reviewRemarkStats.NotAcceptable++
+			case reviewremarks.Gray:
+				reviewRemarkStats.Cancelled++
 			}
 			reviewRemarkStats.Total++
 		}
