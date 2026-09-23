@@ -13,18 +13,12 @@ on:
           Leave empty to use the current commit SHA.
         required: false
         type: string
-      staging:
-        description: >
-          Whether to upload the SBOM to the staging environment.
-        required: false
-        type: boolean
-        default: true
       upload:
         description: >
           Whether to upload the SBOM to Dependency Track.
         required: false
         type: boolean
-        default: false
+        default: true
 
 permissions:
   id-token: write
