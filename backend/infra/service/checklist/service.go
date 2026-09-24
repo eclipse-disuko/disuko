@@ -143,8 +143,10 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	if rr != nil {
 		existingKeys := make(map[reviewremarks.RrKey]struct{}, len(rr.Remarks))
 		for _, existingRemark := range rr.Remarks {
-			k := existingRemark.MakeRrKey()
-			existingKeys[k] = struct{}{}
+			if !existingRemark.PreventsDuplicate() {
+				continue
+			}
+			existingKeys[existingRemark.MakeRrKey()] = struct{}{}
 		}
 
 		newRemarksToSave := make([]*reviewremarks.Remark, 0, len(newRemarks))
