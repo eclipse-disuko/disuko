@@ -345,7 +345,7 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 		if existingRemark.SBOMUploaded == nil {
 			continue
 		}
-		if !existingRemark.SBOMUploaded.Before(*newRemark.SBOMUploaded) {
+		if existingRemark.SBOMUploaded.After(*newRemark.SBOMUploaded) {
 			continue
 		}
 		if existingRemark.MakeCombinationKey() != newKey {
