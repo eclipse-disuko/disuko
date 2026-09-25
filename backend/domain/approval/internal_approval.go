@@ -17,6 +17,10 @@ func (a *InternalApproval) Finalized() bool {
 	return a.Aborted || a.Declined() || (a.CustomerDone() && a.SupplierDone())
 }
 
+func (a *InternalApproval) ApprovedBySuppliersOnly() bool {
+	return a.SupplierDone() && len(a.Approver) == 2
+}
+
 func (a *InternalApproval) Pending() bool {
 	if a.Generating || a.GenerationFailed {
 		return false
@@ -24,7 +28,7 @@ func (a *InternalApproval) Pending() bool {
 	if a.Finalized() {
 		return false
 	}
-	if a.SupplierDone() && len(a.Approver) == 2 {
+	if a.ApprovedBySuppliersOnly() {
 		return false
 	}
 	return true

@@ -483,7 +483,7 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 	for _, a := range approvals.Approvals {
 		switch a.Type {
 		case approval.TypeInternal:
-			if a.Internal.CustomerDone() {
+			if a.Internal.CustomerDone() || a.Internal.ApprovedBySuppliersOnly() {
 				approvedFound = true
 				latestApproved = a
 			}
