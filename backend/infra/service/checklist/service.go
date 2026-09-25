@@ -157,6 +157,11 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 				continue
 			}
 
+			previous := reviewremarks.FindLatestMatchingRemark(rr.Remarks, newRemark)
+			if previous != nil {
+				newRemark.CarryOverStateFrom(previous)
+			}
+
 			existingKeys[k] = struct{}{}
 			newRemarksToSave = append(newRemarksToSave, newRemark)
 		}
@@ -175,12 +180,12 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	if rr == nil {
 		rr = &reviewremarks.ReviewRemarks{
 			RootEntity: domain.NewRootEntityWithKey(version.Key),
-			Remarks:    remarks,
+			Remarks:    newRemarks,
 		}
 		s.ReviewRemarkRepo.Save(rs, rr)
 		return
 	}
-	rr.Remarks = append(rr.Remarks, remarks...)
+	rr.Remarks = append(rr.Remarks, newRemarks...)
 	s.ReviewRemarkRepo.Update(rs, rr)
 }
 

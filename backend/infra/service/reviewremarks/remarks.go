@@ -62,6 +62,11 @@ func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionI
 		return false, new(message.ReviewRemarkExists)
 	}
 
+	previous := reviewremarks.FindLatestMatchingRemark(remarks.Remarks, &r)
+	if previous != nil {
+		r.CarryOverStateFrom(previous)
+	}
+
 	remarks.Remarks = append(remarks.Remarks, &r)
 	s.ReviewRemarksRepository.Update(s.RequestSession, remarks)
 	s.AuditLogListRepository.CreateAuditEntryByKey(s.RequestSession, versionId, author, message.ReviewRemarkCreated, audit.DiffWithReporter, r, reviewremarks.Remark{})
