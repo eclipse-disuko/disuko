@@ -15,7 +15,6 @@ import {computed, nextTick, onUnmounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useProjectUtils} from '@disclosure-portal/utils/projects';
-import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 
 const route = useRoute();
 const router = useRouter();
@@ -27,7 +26,6 @@ const appStore = useAppStore();
 const projectStore = useProjectStore();
 const idleStore = useIdleStore();
 const projectsUtils = useProjectUtils();
-const sbomStore = useSbomStore();
 
 const {currentProject} = storeToRefs(projectStore);
 
@@ -98,10 +96,6 @@ const initBreadcrumbs = () => {
 
 const reload = async () => {
   await projectStore.fetchProjectByKey(projectId.value);
-};
-
-const reloadSboms = async () => {
-  await sbomStore.fetchAllSBOMsFlat(true);
 };
 
 const initPage = async () => {
@@ -181,7 +175,7 @@ onUnmounted(() => {
           data-testid="projects-edit-button"
           @click.stop="showDialog"></DCActionButton>
       </ProjectSettings>
-      <ProjectMenu @reloadSboms="reloadSboms"></ProjectMenu>
+      <ProjectMenu></ProjectMenu>
     </div>
     <v-row class="expand" v-if="!itemVersion">
       <v-col cols="12">

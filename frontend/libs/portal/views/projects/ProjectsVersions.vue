@@ -107,10 +107,6 @@ const resetUrl = async () => {
   );
 };
 
-const reloadSboms = async () => {
-  await sbomStore.fetchAllSBOMsFlat(true);
-};
-
 const reload = async () => {
   if (currentProject.value?._key !== projectId.value) {
     await projectStore.fetchProjectByKey(projectId.value);
@@ -382,7 +378,7 @@ onUnmounted(() => {
         :text="t('BTN_EDIT')"
         data-testid="edit"
         @click="editVersion"></DCActionButton>
-      <ProjectMenu v-if="currentProject" @reloadSboms="reloadSboms">
+      <ProjectMenu v-if="currentProject">
         <v-divider></v-divider>
         <MenuItem
           v-if="

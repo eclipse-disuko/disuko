@@ -22,8 +22,6 @@ import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
 import {useApprovableInfoStore} from '@disclosure-portal/stores/approvableInfo.store';
 
-const emit = defineEmits(['reloadSboms']);
-
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
 const {longText} = useRules();
@@ -191,7 +189,7 @@ const doDialogAction = async () => {
   idle.hide();
 
   if (response) {
-    emit('reloadSboms');
+    await Promise.allSettled([sbomStore.fetchAllSBOMsFlat(true)]);
     isVisible.value = false;
     snackbar.info(t('DIALOG_request_review_success'));
   }
