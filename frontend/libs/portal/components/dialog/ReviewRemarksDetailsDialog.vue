@@ -6,7 +6,7 @@
   <v-dialog v-model="show" content-class="large" scrollable width="1200" @after-leave="onAfterLeave">
     <DialogLayout
       :config="{
-        title: item?.title,
+        title: item?.title ?? '',
         secondaryButton: {text: t('BTN_CLOSE')},
       }"
       @secondary-action="close"
@@ -117,13 +117,8 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  CommentReviewRemarkRequest,
-  ReviewRemark,
-  ReviewRemarkStatus,
-  SetReviewRemarkStatusRequest,
-} from '@disclosure-portal/model/Quality';
-import versionService from '@disclosure-portal/services/version';
+import {CommentReviewRemarkRequest, ReviewRemark, ReviewRemarkStatus} from '@disclosure-portal/model/Quality';
+import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -134,15 +129,20 @@ const props = defineProps<{
   projectUuid: string;
   versionUuid: string;
 }>();
-const emit = defineEmits(['reload', 'closeRemark']);
+const emit = defineEmits(['closeRemark']);
 
 const {t} = useI18n();
 const route = useRoute();
 const user = useUserStore();
+const reviewRemarksStore = useReviewRemarksStore();
 
 const show = ref(false);
 const currentTab = ref(0);
-const item = ref<ReviewRemark>();
+const openedItem = ref<ReviewRemark>();
+const itemKey = ref('');
+const item = computed(
+  () => reviewRemarksStore.getRemark(props.projectUuid, props.versionUuid, itemKey.value) ?? openedItem.value,
+);
 const isSubmittingComment = ref(false);
 const {info: snack} = useSnackbar();
 
@@ -213,7 +213,9 @@ const descriptionParts = computed(() => {
 
 const open = (reviewRemark: ReviewRemark): void => {
   show.value = true;
-  item.value = reviewRemark;
+  openedItem.value = reviewRemark;
+  itemKey.value = reviewRemark.key;
+  reviewRemarksStore.fetchRemarks(props.projectUuid, props.versionUuid);
 };
 
 const close = (): void => {
@@ -223,12 +225,12 @@ const onAfterLeave = (): void => {
   currentTab.value = 0;
 };
 
-const isOpen = (item: ReviewRemark): boolean => {
-  return item.status === ReviewRemarkStatus.OPEN;
+const isOpen = (remark?: ReviewRemark): boolean => {
+  return remark?.status === ReviewRemarkStatus.OPEN;
 };
 
-const isInProgress = (item: ReviewRemark): boolean => {
-  return item.status === ReviewRemarkStatus.IN_PROGRESS;
+const isInProgress = (remark?: ReviewRemark): boolean => {
+  return remark?.status === ReviewRemarkStatus.IN_PROGRESS;
 };
 
 const comment = async (content: string) => {
@@ -241,16 +243,7 @@ const comment = async (content: string) => {
     const req: CommentReviewRemarkRequest = {
       content: content,
     };
-    await versionService.commentReviewRemark(props.projectUuid, props.versionUuid, item.value!.key, req);
-
-    // Fetch updated review remarks
-    const response = await versionService.getReviewRemarks(props.projectUuid, props.versionUuid);
-    const updatedRemark = response.data.find((remark) => remark.key === item.value!.key);
-    if (updatedRemark) {
-      item.value = updatedRemark;
-    }
-
-    emit('reload');
+    await reviewRemarksStore.commentOnRemark(props.projectUuid, props.versionUuid, item.value!.key, req);
   } finally {
     isSubmittingComment.value = false;
   }
@@ -259,21 +252,11 @@ const comment = async (content: string) => {
 const markInProgress = async () => {
   if (!item.value) return;
 
-  const req: SetReviewRemarkStatusRequest = {
-    status: ReviewRemarkStatus.IN_PROGRESS,
-  };
-
   try {
-    await versionService.setReviewRemarkStatus(props.projectUuid, props.versionUuid, item.value.key, req);
-
-    // Fetch updated review remarks
-    const response = await versionService.getReviewRemarks(props.projectUuid, props.versionUuid);
-    const updatedRemark = response.data.find((remark) => remark.key === item.value!.key);
-    if (updatedRemark) {
-      item.value = updatedRemark;
-    }
+    await reviewRemarksStore.setRemarkStatus(props.projectUuid, props.versionUuid, item.value.key, {
+      status: ReviewRemarkStatus.IN_PROGRESS,
+    });
     snack(t('DIALOG_remark_in_progress'));
-    emit('reload');
   } catch (error) {
     console.error('Failed to mark remark as in progress:', error);
   }

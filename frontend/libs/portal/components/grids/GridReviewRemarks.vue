@@ -10,8 +10,8 @@ import type {Project} from '@disclosure-portal/model/Project';
 import {ReviewRemark, ReviewRemarkLevel, ReviewRemarkStatus, compareRRLevel} from '@disclosure-portal/model/Quality';
 import type {BulkSetReviewRemarkStatusRequest} from '@disclosure-portal/model/ReviewRemarkBulkOperations';
 import {default as ProjectService} from '@disclosure-portal/services/projects';
-import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
@@ -30,6 +30,7 @@ import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 
 const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
+const reviewRemarksStore = useReviewRemarksStore();
 const route = useRoute();
 const {t} = useI18n();
 const {info: snack} = useSnackbar();
@@ -51,9 +52,8 @@ const {
   doReopenRemark: doReopenRemarkAction,
 } = useReviewRemarkActions();
 
-const items = ref<ReviewRemark[]>([]);
 const search = ref('');
-const loading = ref(false);
+const bulkLoading = ref(false);
 const selectedFilterLevel = ref<string[]>([]);
 const selectedFilterStatus = ref<string[]>([]);
 const selectedFilterSbom = ref<string[]>([]);
@@ -69,6 +69,10 @@ const lists = ref<Checklist[]>([]);
 
 const projectModel = computed((): Project => projectStore.currentProject!);
 const version = computed(() => sbomStore.getCurrentVersion);
+const items = computed(() => reviewRemarksStore.getRemarks(projectModel.value._key, version.value._key));
+const loading = computed(
+  () => bulkLoading.value || reviewRemarksStore.isLoading(projectModel.value._key, version.value._key),
+);
 const checklistAvailable = computed(() => lists.value.length > 0);
 
 const possibleLevel = computed((): DataTableHeaderFilterItems[] => {
@@ -280,16 +284,9 @@ const filterOnReviewRemarkLevel = () => {
 };
 
 const reload = async (): Promise<void> => {
-  loading.value = true;
   const uniqueSelectedKeys = new Set(selected.value.map(({key}) => key));
-  items.value = (await versionService.getReviewRemarks(projectModel.value._key, version.value._key)).data;
+  await reviewRemarksStore.fetchRemarks(projectModel.value._key, version.value._key, true);
   selected.value = items.value.filter((item) => uniqueSelectedKeys.has(item.key));
-  loading.value = false;
-};
-
-const reloadWithSboms = async (): Promise<void> => {
-  await sbomStore.fetchAllSBOMsFlat(true);
-  await reload();
 };
 
 onMounted(async () => {
@@ -348,15 +345,15 @@ const filterOnSbom = (item: ReviewRemark): boolean => {
 };
 
 const doCloseRemark = async (config: IConfirmationDialogConfig) => {
-  await doCloseRemarkAction(config, projectModel.value._key, version.value._key, reload);
+  await doCloseRemarkAction(config, projectModel.value._key, version.value._key);
 };
 
 const doCancelRemark = async (config: IConfirmationDialogConfig) => {
-  await doCancelRemarkAction(config, projectModel.value._key, version.value._key, reload);
+  await doCancelRemarkAction(config, projectModel.value._key, version.value._key);
 };
 
 const doReopenRemark = async (config: IConfirmationDialogConfig) => {
-  await doReopenRemarkAction(config, projectModel.value._key, version.value._key, reload);
+  await doReopenRemarkAction(config, projectModel.value._key, version.value._key);
 };
 
 const openReviewRemarkDialog = (toEdit?: ReviewRemark) => {
@@ -423,7 +420,7 @@ const openBulkCancelDialog = () => {
 };
 
 const doBulkCloseRemarks = async () => {
-  loading.value = true;
+  bulkLoading.value = true;
   const openRemarks = selected.value.filter(
     (remark) => remark.status === ReviewRemarkStatus.OPEN || remark.status === ReviewRemarkStatus.IN_PROGRESS,
   );
@@ -434,21 +431,18 @@ const doBulkCloseRemarks = async () => {
       status: ReviewRemarkStatus.CLOSED,
     };
 
-    await versionService.bulkSetReviewRemarkStatus(projectModel.value._key, version.value._key, req).catch((error) => {
-      console.error('Failed to process bulk close operation:', error);
-    });
+    await reviewRemarksStore.setBulkRemarkStatus(projectModel.value._key, version.value._key, req);
   } catch (error) {
     console.error('Error in bulk close operation:', error);
   } finally {
     snack(t('DIALOG_remark_closed'));
     selected.value = [];
-    await reload();
-    loading.value = false;
+    bulkLoading.value = false;
   }
 };
 
 const doBulkCancelRemarks = async () => {
-  loading.value = true;
+  bulkLoading.value = true;
   const openRemarks = selected.value.filter(
     (remark) => remark.status === ReviewRemarkStatus.OPEN || remark.status === ReviewRemarkStatus.IN_PROGRESS,
   );
@@ -459,18 +453,13 @@ const doBulkCancelRemarks = async () => {
       status: ReviewRemarkStatus.CANCELLED,
     };
 
-    await versionService
-      .bulkSetReviewRemarkStatus(projectModel.value._key, version.value._key, req)
-      .catch((error: Error) => {
-        console.error('Failed to process bulk cancel operation:', error);
-      });
+    await reviewRemarksStore.setBulkRemarkStatus(projectModel.value._key, version.value._key, req);
   } catch (error) {
     console.error('Error in bulk cancel operation:', error);
   } finally {
     snack(t('DIALOG_remark_cancelled'));
     selected.value = [];
-    await reload();
-    loading.value = false;
+    bulkLoading.value = false;
   }
 };
 
@@ -704,7 +693,7 @@ onMounted(() => {
       </v-data-table>
     </div>
   </div>
-  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadWithSboms"></ReviewRemarkDialog>
+  <ReviewRemarkDialog ref="reviewRemarkDialog"></ReviewRemarkDialog>
   <ConfirmationDialog v-model:showDialog="closeVisible" :config="confirmCloseConfig" @confirm="doCloseRemark">
   </ConfirmationDialog>
   <ConfirmationDialog v-model:showDialog="cancelVisible" :config="confirmCancelConfig" @confirm="doCancelRemark">
@@ -723,7 +712,6 @@ onMounted(() => {
     ref="viewRemarkDialog"
     :project-uuid="projectModel._key"
     :version-uuid="version._key"
-    @reload="reload"
     @close-remark="openBulkCloseDialog"></ReviewRemarksDetailsDialog>
   <ChecklistExecuteDialog ref="executeDialog" @reload="reload"></ChecklistExecuteDialog>
 </template>

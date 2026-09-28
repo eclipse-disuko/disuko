@@ -4,7 +4,7 @@
 
 import {ConfirmationType, IConfirmationDialogConfig} from '@disclosure-portal/components/dialog/ConfirmationDialog';
 import {ReviewRemark, ReviewRemarkStatus, SetReviewRemarkStatusRequest} from '@disclosure-portal/model/Quality';
-import versionService from '@disclosure-portal/services/version';
+import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -12,6 +12,7 @@ import {useI18n} from 'vue-i18n';
 export const useReviewRemarkActions = () => {
   const {t} = useI18n();
   const {info: snack} = useSnackbar();
+  const reviewRemarksStore = useReviewRemarksStore();
 
   const confirmCloseConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
   const confirmCancelConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
@@ -83,68 +84,36 @@ export const useReviewRemarkActions = () => {
     inProgressVisible.value = true;
   };
 
-  const doCloseRemark = async (
-    config: IConfirmationDialogConfig,
-    projectKey: string,
-    versionKey: string,
-    onSuccess?: () => Promise<void> | void,
-  ) => {
+  const doCloseRemark = async (config: IConfirmationDialogConfig, projectKey: string, versionKey: string) => {
     const req: SetReviewRemarkStatusRequest = {
       status: ReviewRemarkStatus.CLOSED,
     };
-    await versionService.setReviewRemarkStatus(projectKey, versionKey, config.key, req);
+    await reviewRemarksStore.setRemarkStatus(projectKey, versionKey, config.key, req);
     snack(t('DIALOG_remark_closed'));
-    if (onSuccess) {
-      await onSuccess();
-    }
   };
 
-  const doCancelRemark = async (
-    config: IConfirmationDialogConfig,
-    projectKey: string,
-    versionKey: string,
-    onSuccess?: () => Promise<void> | void,
-  ) => {
+  const doCancelRemark = async (config: IConfirmationDialogConfig, projectKey: string, versionKey: string) => {
     const req: SetReviewRemarkStatusRequest = {
       status: ReviewRemarkStatus.CANCELLED,
     };
-    await versionService.setReviewRemarkStatus(projectKey, versionKey, config.key, req);
+    await reviewRemarksStore.setRemarkStatus(projectKey, versionKey, config.key, req);
     snack(t('DIALOG_remark_cancelled'));
-    if (onSuccess) {
-      await onSuccess();
-    }
   };
 
-  const doReopenRemark = async (
-    config: IConfirmationDialogConfig,
-    projectKey: string,
-    versionKey: string,
-    onSuccess?: () => Promise<void> | void,
-  ) => {
+  const doReopenRemark = async (config: IConfirmationDialogConfig, projectKey: string, versionKey: string) => {
     const req: SetReviewRemarkStatusRequest = {
       status: ReviewRemarkStatus.OPEN,
     };
-    await versionService.setReviewRemarkStatus(projectKey, versionKey, config.key, req);
+    await reviewRemarksStore.setRemarkStatus(projectKey, versionKey, config.key, req);
     snack(t('DIALOG_remark_reopened'));
-    if (onSuccess) {
-      await onSuccess();
-    }
   };
 
-  const doMarkInProgress = async (
-    config: IConfirmationDialogConfig,
-    projectKey: string,
-    versionKey: string,
-    onSuccess?: () => Promise<void> | void,
-  ) => {
+  const doMarkInProgress = async (config: IConfirmationDialogConfig, projectKey: string, versionKey: string) => {
     const req: SetReviewRemarkStatusRequest = {
       status: ReviewRemarkStatus.IN_PROGRESS,
     };
-    await versionService.setReviewRemarkStatus(projectKey, versionKey, config.key, req);
+    await reviewRemarksStore.setRemarkStatus(projectKey, versionKey, config.key, req);
     snack(t('DIALOG_remark_in_progress'));
-    if (onSuccess) {
-      await onSuccess();
-    }
   };
 
   return {
