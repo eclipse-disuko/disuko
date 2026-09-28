@@ -18,7 +18,7 @@ func (a *InternalApproval) Finalized() bool {
 }
 
 func (a *InternalApproval) ApprovedBySuppliersOnly() bool {
-	return a.SupplierDone() && len(a.Approver) == 2
+	return a.SupplierDone() && a.countSetApprovers() == 2
 }
 
 func (a *InternalApproval) Pending() bool {
@@ -32,6 +32,16 @@ func (a *InternalApproval) Pending() bool {
 		return false
 	}
 	return true
+}
+
+func (a *InternalApproval) countSetApprovers() int {
+	var res int
+	for _, app := range a.Approver {
+		if app != "" {
+			res++
+		}
+	}
+	return res
 }
 
 func (a *InternalApproval) Declined() bool {
