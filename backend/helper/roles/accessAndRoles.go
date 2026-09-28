@@ -11,6 +11,7 @@ import (
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/helper"
 
+	"github.com/eclipse-disuko/disuko/domain/label"
 	"github.com/eclipse-disuko/disuko/domain/oauth"
 	"github.com/eclipse-disuko/disuko/domain/project"
 	"github.com/eclipse-disuko/disuko/helper/exception"
@@ -192,10 +193,19 @@ func CanAccessVehicleProjectOperations(rights *oauth.AccessAndRolesRights, hasVe
 func CheckProjectTypeAccess(requestSession *logy.RequestSession, rights *oauth.AccessAndRolesRights, pr *project.Project, labelRepo labels.ILabelRepository, oauthAccessLevel oauth.AccessLevel) bool {
 	for _, policyLabelKey := range pr.PolicyLabels {
 		labelObj := labelRepo.FindByKey(requestSession, policyLabelKey, true)
-		if labelObj == nil {
+		if labelObj == nil || !isPlatformLabel(labelObj.Name) {
 			continue
 		}
 		return !rights.HasProjectTypeAccess(labelObj.Name, oauthAccessLevel)
 	}
 	return false
+}
+
+func isPlatformLabel(name string) bool {
+	switch name {
+	case label.VEHICLE_PLATFORM, label.ENTERPRISE_PLATFORM, label.MOBILE_PLATFORM, label.OTHER_PLATFORM:
+		return true
+	default:
+		return false
+	}
 }
