@@ -19,8 +19,6 @@ import {computed, nextTick, type Ref, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
 
-const emit = defineEmits(['reloadSboms']);
-
 const reviewPresetRD = {
   comment: 'PRESET_RD_COMM',
   reviewer: 'CUSTOMER1',
@@ -199,9 +197,6 @@ watch(
   {immediate: true},
 );
 
-const reloadSboms = () => {
-  emit('reloadSboms');
-};
 </script>
 
 <template>
@@ -298,7 +293,7 @@ const reloadSboms = () => {
       <RequestFOSSDD ref="reqfoss"></RequestFOSSDD>
       <RequestApproval ref="reqapproval"></RequestApproval>
     </template>
-    <RequestReview ref="reqreview" @reloadSboms="reloadSboms"></RequestReview>
+    <RequestReview ref="reqreview"></RequestReview>
     <ConfirmationDialog
       v-model:showDialog="confirmDialogVisible"
       :config="confirmConfig"
