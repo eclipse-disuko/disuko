@@ -11,6 +11,7 @@ import {ComponentInfoSlim, SpdxFile} from '@disclosure-portal/model/VersionDetai
 import projectService from '@disclosure-portal/services/projects';
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {formatDateAndTime} from '@disclosure-portal/utils/Table';
@@ -29,9 +30,9 @@ const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.Y
 const {t} = useI18n();
 const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
+const reviewRemarksStore = useReviewRemarksStore();
 const {minMax} = useRules();
 const {info: snack} = useSnackbar();
-const emit = defineEmits(['reload']);
 
 const rules = {
   name: minMax(t('NPV_DIALOG_TF_TITLE'), 5, 80, false),
@@ -158,8 +159,8 @@ const setupAfterSbomsLoaded = () => {
 
 const getSbomsForVersion = (targetVersionId: string): SpdxFile[] =>
   sbomStore.allSBOMSFlat
-    .filter((item) => item.versionKey === targetVersionId)
-    .map((item, index) => ({...item, isRecent: index === 0}));
+    .filter((sbom) => sbom.versionKey === targetVersionId)
+    .map((sbom, index) => ({...sbom, isRecent: index === 0}));
 
 const loadSboms = async () => {
   sbomsLoading.value = true;
@@ -267,7 +268,7 @@ const doDialogAction = async () => {
     );
 
     if (config.value.presetItem) {
-      await versionService.editReviewRemark(
+      await reviewRemarksStore.editRemark(
         projectModel.value._key,
         versionID.value,
         config.value.presetItem.key,
@@ -276,7 +277,7 @@ const doDialogAction = async () => {
       snack(t('DIALOG_remark_edit_success'));
     } else {
       let response = (
-        await versionService.createReviewRemark(projectModel.value._key, versionID.value, reviewRemarkRequest)
+        await reviewRemarksStore.createRemark(projectModel.value._key, versionID.value, reviewRemarkRequest)
       ).data;
       if (!response.success) {
         const dialog = new ErrorDialogConfig();
@@ -287,7 +288,6 @@ const doDialogAction = async () => {
       }
       snack(t('DIALOG_remark_create_success'));
     }
-    emit('reload');
     form.value?.reset();
     isVisible.value = false;
   } finally {

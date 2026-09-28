@@ -12,8 +12,8 @@ import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';
 import {ComponentDetails, Details, ProjectModel, UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {LicenseMeta, ReviewRemark, ReviewRemarkStatus, compareRRLevel} from '@disclosure-portal/model/Quality';
 import {ComponentInfoSlim, PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
-import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
+import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {
@@ -44,6 +44,7 @@ const emit = defineEmits(['reloadAfterCreation', 'triggerBulk']);
 const userStore = useUserStore();
 const projectStore = useProjectStore();
 const sbomStore = useSbomStore();
+const reviewRemarksStore = useReviewRemarksStore();
 const snack = useSnackbar();
 const {t} = useI18n();
 
@@ -105,25 +106,20 @@ const reviewRemarkDialog = ref();
 const licenseRuleDialog = ref();
 const policyDecisionDialog = ref();
 const viewRemarkDialog = ref();
-const reviewRemarks = ref<ReviewRemark[]>([]);
-const loadingRemarks = ref(false);
 const licenseRecommended = ref('');
 const licenseRecommendedMsg = ref('');
 
 const isDeprecated = computed(() => projectStore.currentProject!.isDeprecated);
-
-const fetchReviewRemarks = async (projectKey: string, versionKey: string, sbomUuid: string, spdxId: string) => {
-  loadingRemarks.value = true;
-  try {
-    const response = await versionService.getReviewRemarksForComponent(projectKey, versionKey, sbomUuid, spdxId);
-    reviewRemarks.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch review remarks:', error);
-    reviewRemarks.value = [];
-  } finally {
-    loadingRemarks.value = false;
-  }
-};
+const currentComponentSpdxId = computed(() => details.value.Attributes?.find((a) => a.Key === 'SPDXID')?.Value ?? '');
+const reviewRemarks = computed(() =>
+  reviewRemarksStore.getRemarksForComponent(
+    project.value._key,
+    projectVersionId.value,
+    sbomId.value,
+    currentComponentSpdxId.value,
+  ),
+);
+const loadingRemarks = computed(() => reviewRemarksStore.isLoading(project.value._key, projectVersionId.value));
 
 const open = async (
   data: ComponentDetails,
@@ -166,7 +162,7 @@ const open = async (
 
   project.value = projectData;
   projectVersionId.value = versionKey;
-  sbomId.value = sbomIdData;
+  sbomId.value = sbomIdData ?? '';
 
   noLicenses.value = data.UnknownLicenses?.length === 0 && data.KnownLicenses?.length === 0;
   noSbomLicenses.value = data.ExtractedLicenses?.length === 0 && data.IdentifiedViaAlias?.length === 0;
@@ -181,37 +177,24 @@ const open = async (
   showTooltipUnmatched.value = [];
 
   // Fetch review remarks for this component
-  const spdxId = details.value.Attributes?.find((a) => a.Key === 'SPDXID')?.Value ?? '';
-  if (spdxId) {
-    await fetchReviewRemarks(projectData._key, versionKey, sbomIdData, spdxId);
-  }
-};
-
-const reloadReviewRemarksAndSboms = async () => {
-  await sbomStore.fetchAllSBOMsFlat(true);
-  await reloadReviewRemarks();
-};
-
-const reloadReviewRemarks = async () => {
-  const spdxId = details.value.Attributes?.find((a) => a.Key === 'SPDXID')?.Value ?? '';
-  if (spdxId && project.value._key && projectVersionId.value && sbomId.value) {
-    await fetchReviewRemarks(project.value._key, projectVersionId.value, sbomId.value, spdxId);
+  if (currentComponentSpdxId.value) {
+    await reviewRemarksStore.fetchRemarks(projectData._key, versionKey);
   }
 };
 
 const doCloseRemark = async (config: IConfirmationDialogConfig) => {
   if (!project.value._key || !projectVersionId.value) return;
-  await doCloseRemarkAction(config, project.value._key, projectVersionId.value, reloadReviewRemarks);
+  await doCloseRemarkAction(config, project.value._key, projectVersionId.value);
 };
 
 const doCancelRemark = async (config: IConfirmationDialogConfig) => {
   if (!project.value._key || !projectVersionId.value) return;
-  await doCancelRemarkAction(config, project.value._key, projectVersionId.value, reloadReviewRemarks);
+  await doCancelRemarkAction(config, project.value._key, projectVersionId.value);
 };
 
 const doMarkInProgress = async (config: IConfirmationDialogConfig) => {
   if (!project.value._key || !projectVersionId.value) return;
-  await doMarkInProgressAction(config, project.value._key, projectVersionId.value, reloadReviewRemarks);
+  await doMarkInProgressAction(config, project.value._key, projectVersionId.value);
 };
 
 const close = () => {
@@ -889,7 +872,7 @@ defineExpose({
     </DialogLayout>
   </v-dialog>
 
-  <ReviewRemarkDialog ref="reviewRemarkDialog" @reload="reloadReviewRemarksAndSboms"></ReviewRemarkDialog>
+  <ReviewRemarkDialog ref="reviewRemarkDialog"></ReviewRemarkDialog>
   <LicenseRuleDialog ref="licenseRuleDialog" @reload="closeAndReload"></LicenseRuleDialog>
   <PolicyDecisionDialog
     ref="policyDecisionDialog"
@@ -899,7 +882,6 @@ defineExpose({
     ref="viewRemarkDialog"
     :project-uuid="project?._key || ''"
     :version-uuid="projectVersionId"
-    @reload="reloadReviewRemarks"
     @close-remark="openCloseRemarkDialog"></ReviewRemarksDetailsDialog>
   <ConfirmationDialog v-model:showDialog="closeVisible" :config="confirmCloseConfig" @confirm="doCloseRemark">
   </ConfirmationDialog>
