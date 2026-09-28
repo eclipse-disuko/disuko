@@ -282,7 +282,22 @@ type RrKey struct {
 	licenses   string
 }
 
+type RrCombinationKey struct {
+	components string
+	licenses   string
+}
+
 func (r *Remark) MakeRrKey() RrKey {
+	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+	combinationKey := r.MakeCombinationKey()
+	return RrKey{
+		sbomId:     norm(r.SBOMId),
+		components: combinationKey.components,
+		licenses:   combinationKey.licenses,
+	}
+}
+
+func (r *Remark) MakeCombinationKey() RrCombinationKey {
 	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 	const (
 		fieldSeparator = "\x1f"
@@ -306,9 +321,7 @@ func (r *Remark) MakeRrKey() RrKey {
 		}, fieldSeparator))
 	}
 	sort.Strings(licenseKeys)
-
-	return RrKey{
-		sbomId:     norm(r.SBOMId),
+	return RrCombinationKey{
 		components: strings.Join(componentKeys, itemSeparator),
 		licenses:   strings.Join(licenseKeys, itemSeparator),
 	}
@@ -316,4 +329,47 @@ func (r *Remark) MakeRrKey() RrKey {
 
 func (r *Remark) PreventsDuplicate() bool {
 	return r.Status != Cancelled
+}
+
+func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Remark {
+	if newRemark.SBOMUploaded == nil {
+		return nil
+	}
+
+	newKey := newRemark.MakeCombinationKey()
+	var latest *Remark
+	for _, existingRemark := range existingRemarks {
+		if existingRemark.SBOMId == newRemark.SBOMId {
+			continue
+		}
+		if existingRemark.SBOMUploaded == nil {
+			continue
+		}
+		if existingRemark.SBOMUploaded.After(*newRemark.SBOMUploaded) {
+			continue
+		}
+		if existingRemark.MakeCombinationKey() != newKey {
+			continue
+		}
+		if latest == nil || existingRemark.SBOMUploaded.After(*latest.SBOMUploaded) {
+			latest = existingRemark
+		}
+	}
+
+	return latest
+}
+
+func (r *Remark) CarryOverStateFrom(previous *Remark) {
+	// r.Author = previous.Author // todo: Initial Author or a new one???
+	r.Level = previous.Level
+	r.Status = previous.Status
+
+	if previous.Closed != nil {
+		closed := *previous.Closed
+		r.Closed = &closed
+	} else {
+		r.Closed = nil
+	}
+
+	r.Events = append([]Event(nil), previous.Events...)
 }
