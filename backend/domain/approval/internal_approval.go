@@ -24,10 +24,20 @@ func (a *InternalApproval) Pending() bool {
 	if a.Finalized() {
 		return false
 	}
-	if a.SupplierDone() && len(a.Approver) == 2 {
+	if a.SupplierDone() && a.countSetApprovers() == 2 {
 		return false
 	}
 	return true
+}
+
+func (a *InternalApproval) countSetApprovers() int {
+	var res int
+	for _, app := range a.Approver {
+		if app != "" {
+			res++
+		}
+	}
+	return res
 }
 
 func (a *InternalApproval) Declined() bool {
