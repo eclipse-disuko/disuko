@@ -5,6 +5,7 @@
 <script lang="ts" setup>
 import {CustomerMetaDTO, NoticeContactMetaDTO} from '@disclosure-portal/model/Project';
 import {Group, Rights} from '@shared/user/models/Rights';
+import {useUserStore} from '@shared/user/stores/user.store';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {useI18n} from 'vue-i18n';
 
@@ -21,6 +22,7 @@ withDefaults(defineProps<Props>(), {
 });
 
 const {t} = useI18n();
+const userStore = useUserStore();
 
 const customerMeta = defineModel<CustomerMetaDTO>('customerMeta', {required: true});
 const noticeMeta = defineModel<NoticeContactMetaDTO>('noticeMeta', {required: true});
@@ -40,6 +42,7 @@ const noticeMeta = defineModel<NoticeContactMetaDTO>('noticeMeta', {required: tr
       :readonly="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"
       :disabled="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"
       :label="t('COMPANY')"
+      :matching-department="userStore.getProfile.metaData"
       required
       ref="deptAutoComplete"
       aria="owner company"></DAutocompleteCompany>

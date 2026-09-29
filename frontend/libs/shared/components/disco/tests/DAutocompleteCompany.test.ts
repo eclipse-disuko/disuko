@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Department} from '@shared/model/Department';
+import {Department, DepartmentDto} from '@shared/model/Department';
 import {config, mount} from '@vue/test-utils';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {nextTick} from 'vue';
@@ -14,8 +14,9 @@ vi.mock('@disclosure-portal/services/companies', () => ({
   default: {find: companyFindMock},
 }));
 
-const buildDept = (overrides: Partial<Department> = {}): Department =>
-  new Department({
+const buildDept = (overrides: Partial<DepartmentDto> = {}): Department => {
+  const department = new Department();
+  const defaults: DepartmentDto = {
     deptId: 'D1',
     parentDeptId: '',
     validFrom: '',
@@ -25,8 +26,10 @@ const buildDept = (overrides: Partial<Department> = {}): Department =>
     companyCode: 'C1',
     companyName: 'Acme',
     level: 0,
-    ...overrides,
-  });
+  };
+  Object.assign(department, defaults);
+  return Object.assign(department, overrides);
+};
 
 // Mirrors just the pieces DAutocompleteCompany drives: v-model, search updates and the
 // no-data-text prop, via plain DOM elements the tests can interact with directly.
@@ -39,9 +42,10 @@ const vAutocompleteStub = {
       <div class="no-data-text">{{ noDataText }}</div>
       <ul class="items">
         <li v-for="item in items" :key="item.deptId" class="item" @click="$emit('update:modelValue', item)">
-          {{ item.companyName }}
+          <slot name="item" :item="{raw: item}" :props="{}">{{ item.companyName }}</slot>
         </li>
       </ul>
+      <slot name="append-item" />
       <slot name="append-inner" />
     </div>`,
 };
@@ -78,7 +82,15 @@ describe('DAutocompleteCompany', () => {
     return mount(DAutocompleteCompany, {
       props: {modelValue, ...props},
       global: {
-        stubs: {'v-autocomplete': vAutocompleteStub, Tooltip: TooltipStub},
+        stubs: {
+          'v-autocomplete': vAutocompleteStub,
+          'v-list-item': {template: '<div v-bind="$attrs"><slot /></div>'},
+          'v-list-item-title': {template: '<div><slot /></div>'},
+          'v-list-item-subtitle': {template: '<div><slot /></div>'},
+          'v-chip': {template: '<span v-bind="$attrs"><slot /></span>'},
+          'v-icon': true,
+          Tooltip: TooltipStub,
+        },
       },
     });
   };
@@ -122,6 +134,113 @@ describe('DAutocompleteCompany', () => {
 
     const items = wrapper.findComponent(vAutocompleteStub).props('items') as Department[];
     expect(items.map((i) => i.deptId)).toEqual(['root', 'child']);
+  });
+
+  it('looks up the company and suggests only the department matching the profile', async () => {
+    const other = buildDept({deptId: 'other', companyCode: 'TEST-CO', orgAbbreviation: 'OTHER'});
+    const otherCompany = buildDept({
+      deptId: 'other-company',
+      companyCode: 'TEST-CO-OTHER',
+      descriptionEnglish: 'Platform Engineering',
+    });
+    const matching = buildDept({
+      deptId: 'preferred',
+      companyCode: 'TEST-CO',
+      orgAbbreviation: 'ENG',
+      descriptionEnglish: 'Platform Engineering',
+      level: 1,
+    });
+    companyFindMock.mockResolvedValue([otherCompany, other, matching]);
+
+    const wrapper = createWrapper({
+      matchingDepartment: {
+        companyIdentifier: 'TEST-CO',
+        department: '',
+        departmentDescription: 'Platform Engineering',
+      },
+    });
+    await nextTick();
+    await nextTick();
+
+    expect(companyFindMock).toHaveBeenCalledWith('test-co');
+    const items = wrapper.findComponent(vAutocompleteStub).props('items') as Department[];
+    expect(items.map((item) => item.deptId)).toEqual(['preferred']);
+    expect(wrapper.get('[data-testid="matching-department"]').text()).toBe('Matches your profile');
+    expect(wrapper.get('[data-testid="matching-department"]').element.closest('.dep-level-1')).toBeNull();
+    expect(wrapper.get('[data-testid="search-other-department-hint"]').text()).toBe(
+      'Looking for another department? Type at least 3 letters to search.',
+    );
+    expect(wrapper.findComponent(vAutocompleteStub).props('modelValue')).toBeNull();
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+  });
+
+  it('skips the lookup when the profile has no department description', async () => {
+    const wrapper = createWrapper({
+      matchingDepartment: {
+        companyIdentifier: 'TEST-CO',
+        department: 'ORG/ENG',
+        departmentDescription: '',
+      },
+    });
+    await nextTick();
+
+    expect(companyFindMock).not.toHaveBeenCalled();
+    expect(wrapper.findComponent(vAutocompleteStub).props('items')).toEqual([]);
+  });
+
+  it('does not overwrite typed search results when the match lookup resolves later', async () => {
+    vi.useFakeTimers();
+    let resolveLookup: (value: Department[]) => void = () => {};
+    companyFindMock.mockReturnValueOnce(new Promise((resolve) => (resolveLookup = resolve)));
+    companyFindMock.mockResolvedValueOnce([buildDept({deptId: 'typed'})]);
+
+    const wrapper = createWrapper({
+      matchingDepartment: {
+        companyIdentifier: 'TEST-CO',
+        department: '',
+        departmentDescription: 'Engineering',
+      },
+    });
+    await wrapper.find('.search-input').setValue('acme');
+    vi.advanceTimersByTime(300);
+    await nextTick();
+    resolveLookup([buildDept({deptId: 'preferred', companyCode: 'TEST-CO'})]);
+    await nextTick();
+    await nextTick();
+
+    const items = wrapper.findComponent(vAutocompleteStub).props('items') as Department[];
+    expect(items.map((item) => item.deptId)).toEqual(['typed']);
+    expect(wrapper.find('[data-testid="search-other-department-hint"]').exists()).toBe(false);
+  });
+
+  it('keeps the matching result visible when Vuetify clears the search text', async () => {
+    vi.useFakeTimers();
+    const matching = buildDept({
+      deptId: 'preferred',
+      companyCode: 'TEST-CO',
+      orgAbbreviation: 'ENG',
+      descriptionEnglish: 'Platform Engineering',
+      level: 2,
+    });
+    companyFindMock.mockResolvedValue([matching]);
+
+    const wrapper = createWrapper({
+      matchingDepartment: {
+        companyIdentifier: 'TEST-CO',
+        department: 'ORG/ENG',
+        departmentDescription: 'Platform Engineering',
+      },
+    });
+    await nextTick();
+    await nextTick();
+
+    await wrapper.find('.search-input').setValue('');
+    vi.advanceTimersByTime(300);
+    await nextTick();
+
+    const items = wrapper.findComponent(vAutocompleteStub).props('items') as Department[];
+    expect(items.map((item) => item.deptId)).toEqual(['preferred']);
+    expect(wrapper.find('[data-testid="matching-department"]').exists()).toBe(true);
   });
 
   it('shows the no-results message once a search of 3+ chars returns nothing', async () => {
