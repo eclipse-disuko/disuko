@@ -43,10 +43,18 @@ jobs:
             git fetch origin --prune
           fi
           
-          git fetch --all && git pull
-          git switch -c $BRANCH_NAME
-          git reset --hard $ORIGIN_BRANCH
-          git push -u origin $BRANCH_NAME
+          # Fetch latest state of both repositories
+          git fetch origin
+          git fetch other
+          
+          # Create merge branch from current downstream main
+          git switch -c "$BRANCH_NAME" origin/main
+          
+          # Merge upstream main into downstream branch
+          git merge "$ORIGIN_BRANCH"
+          
+          # Push merge branch to downstream repository
+          git push -u origin "$BRANCH_NAME"          
           
           # Auth to GH CLI
           echo "${{ secrets.USER_TOKEN }}" > token.txt
