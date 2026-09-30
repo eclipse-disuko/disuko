@@ -1,0 +1,111 @@
+# SPDX-FileCopyrightText: 2026 Mercedes-Benz Group AG and Mercedes-Benz AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Eclipse IP Due Diligence (Dash License Check)
+
+on:
+  workflow_dispatch:
+    inputs:
+      create-issues:
+        description: >
+          Automatically create Eclipse IP Team review requests (GitLab issues)
+          for dependencies that need further review. When false, the tool only
+          runs a local, read-only license check.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  # Pinned version of the Eclipse Dash License Tool jar.
+  DASH_VERSION: ${{ vars.DASH_VERSION }}
+  # Eclipse Foundation project id (see https://projects.eclipse.org/projects/technology.disuko).
+  ECLIPSE_PROJECT_ID: technology.disuko
+
+jobs:
+  dash-license-check:
+    name: Dash license check (${{ matrix.component.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - name: backend
+            working-directory: backend
+            dependency-file: go.sum
+          - name: frontend
+            working-directory: frontend
+            dependency-file: package-lock.json
+          - name: docs
+            working-directory: docs/app
+            dependency-file: package-lock.json
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download Eclipse Dash License Tool
+        # Documented download method (see
+        # https://github.com/eclipse-dash/dash-licenses#get-it): the jar is
+        # published to repo.eclipse.org's Maven repo and fetched here via the
+        # Nexus 3 search/assets/download endpoint, pinned to DASH_VERSION.
+        run: |
+          curl -fsSL -o dash-licenses.jar \
+            "https://repo.eclipse.org/service/rest/v1/search/assets/download?sort=version&repository=dash-maven2-releases&maven.groupId=org.eclipse.dash&maven.artifactId=org.eclipse.dash.licenses&maven.extension=jar&maven.baseVersion=${DASH_VERSION}"
+          # A jar is a zip archive. `unzip -t` catches a bad/HTML-error download
+          # here with a clear message, instead of a confusing "invalid or
+          # corrupt jarfile" failure later from `java -jar`.
+          unzip -t dash-licenses.jar > /dev/null
+
+      - name: Run Dash license check
+        working-directory: ${{ matrix.component.working-directory }}
+        env:
+          CREATE_ISSUES: ${{ inputs.create-issues }}
+          REVIEW_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+        run: |
+          args=(-summary "dash-summary-${{ matrix.component.name }}.txt" -batch 100)
+
+          if [ "$CREATE_ISSUES" = 'true' ]; then
+            if [ -z "$REVIEW_TOKEN" ]; then
+              echo '::error::create-issues was requested but the ECLIPSE_GITLAB_API_TOKEN secret is not set'
+              exit 1
+            fi
+            args+=(-review -project "$ECLIPSE_PROJECT_ID" -repo "$REPOSITORY_URL" -token "$REVIEW_TOKEN")
+            echo "Running Dash license check with automatic IP Team review request creation."
+          else
+            echo "Running Dash license check locally (no review requests will be created)."
+          fi
+
+          set +e
+          java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "${{ matrix.component.dependency-file }}" "${args[@]}"
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$status" -eq 127 ]; then
+            echo '::error::the Eclipse license service could not be reached, so dependencies were not verified - rerun this job'
+            exit 1
+          fi
+          echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
+          exit 1
+
+      - name: Upload license summary
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dash-summary-${{ matrix.component.name }}
+          path: ${{ matrix.component.working-directory }}/dash-summary-${{ matrix.component.name }}.txt
+          if-no-files-found: warn
+          retention-days: 90
