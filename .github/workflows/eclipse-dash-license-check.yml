@@ -101,6 +101,39 @@ jobs:
           echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
           exit 1
 
+      - name: Report dependencies needing review
+        if: always()
+        working-directory: ${{ matrix.component.working-directory }}
+        run: |
+          summary_file="dash-summary-${{ matrix.component.name }}.txt"
+
+          {
+            echo "### Dash license check: ${{ matrix.component.name }}"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ ! -f "$summary_file" ]; then
+            echo "_No summary file was produced (the tool likely failed before it could run)._" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # The summary CSV has one line per dependency: id, license, status, source.
+          # Only list entries whose status isn't "approved" - those are the ones
+          # that need Eclipse IP Team review.
+          needs_review=$(awk -F', *' '$3 != "approved"' "$summary_file")
+
+          if [ -z "$needs_review" ]; then
+            echo "All dependencies are approved. No review needed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          {
+            echo "| Dependency | License | Status | Source |"
+            echo "| --- | --- | --- | --- |"
+            echo "$needs_review" | awk -F', *' '{ printf "| %s | %s | %s | %s |\n", $1, $2, $3, $4 }'
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload license summary
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
