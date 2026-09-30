@@ -86,17 +86,55 @@ jobs:
             echo "Running Dash license check locally (no review requests will be created)."
           fi
 
-          set +e
-          java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "${{ matrix.component.dependency-file }}" "${args[@]}"
-          status=$?
-          set -e
+          # Exit code 127 means an internal error (e.g. the Eclipse license
+          # service or ClearlyDefined was unreachable/timed out), orthogonal to
+          # the actual license results - a transient condition worth retrying.
+          # Any other non-zero code is the number of dependencies that need
+          # review (capped at 126): a real result, not retried.
+          #
+          # NOTE: with -review, a retry after a 127 could in theory re-file a
+          # review request for content the tool had already reported on in a
+          # partially-completed prior attempt. The Dash tool's IP Lab endpoint
+          # de-dupes review requests per content id, so this is safe in
+          # practice, but keep it in mind if that ever changes.
+          max_attempts=5
+          base_delay=10
+          max_delay=120
+
+          attempt=1
+          while :; do
+            echo "::group::Dash license check attempt ${attempt}/${max_attempts}"
+            set +e
+            java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "${{ matrix.component.dependency-file }}" "${args[@]}"
+            status=$?
+            set -e
+            echo "::endgroup::"
+
+            if [ "$status" -ne 127 ]; then
+              break
+            fi
+
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::the Eclipse license service could not be reached after ${max_attempts} attempts, so dependencies were not verified - rerun this job later"
+              exit 1
+            fi
+
+            # Exponential backoff with jitter, capped at max_delay, so repeated
+            # runs don't hammer the Eclipse Foundation's services in lockstep.
+            delay=$(( base_delay * (2 ** (attempt - 1)) ))
+            if [ "$delay" -gt "$max_delay" ]; then
+              delay=$max_delay
+            fi
+            jitter=$(( RANDOM % (delay / 2 + 1) ))
+            delay=$(( delay + jitter ))
+
+            echo "::warning::attempt ${attempt}/${max_attempts} hit an internal error (exit 127, likely a transient service outage) - retrying in ${delay}s"
+            sleep "$delay"
+            attempt=$(( attempt + 1 ))
+          done
 
           if [ "$status" -eq 0 ]; then
             exit 0
-          fi
-          if [ "$status" -eq 127 ]; then
-            echo '::error::the Eclipse license service could not be reached, so dependencies were not verified - rerun this job'
-            exit 1
           fi
           echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
           exit 1
