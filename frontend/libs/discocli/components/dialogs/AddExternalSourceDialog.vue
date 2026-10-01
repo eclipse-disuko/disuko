@@ -5,7 +5,7 @@
         <v-text-field
           v-model="formData.url"
           label="URL"
-          :placeholder="t('PH_EXTERNAL_SOURCE_URL_TEST')"
+          :placeholder="t('PH_EXTERNAL_SOURCE_URL')"
           variant="outlined"
           density="compact"
           :rules="[rules.required, rules.validURL, rules.maxLength]"
