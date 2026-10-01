@@ -5,18 +5,19 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <!-- TOC -->
-* [Server](#server)
-  * [About](#about)
-    * [Prerequisites](#prerequisites)
-    * [Compilation](#compilation)
-    * [Start](#start)
-  * [Coding rules](#coding-rules)
-  * [Coding guidelines](#coding-guidelines)
-    * [Adding a new route with its own handler](#adding-a-new-route-with-its-own-handler)
-    * [Database entity model & repository pattern](#database-entity-model--repository-pattern)
-    * [Adding a database migration step](#adding-a-database-migration-step)
-    * [Adding a database seed file](#adding-a-database-seed-file)
-<!-- TOC -->
+
+- [Server](#server)
+  - [About](#about)
+    - [Prerequisites](#prerequisites)
+    - [Compilation](#compilation)
+    - [Start](#start)
+  - [Coding rules](#coding-rules)
+  - [Coding guidelines](#coding-guidelines)
+  _ [Adding a new route with its own handler](#adding-a-new-route-with-its-own-handler)
+  _ [Database entity model & repository pattern](#database-entity-model--repository-pattern)
+  _ [Adding a database migration step](#adding-a-database-migration-step)
+  _ [Adding a database seed file](#adding-a-database-seed-file)
+  <!-- TOC -->
 
 # Server
 
@@ -72,6 +73,7 @@ cd backend && /tmp/dps
 ### Adding a new route with its own handler
 
 Note the two distinct `rest.go` files involved — do not confuse them:
+
 - `domain/<domain>/rest.go` — the **DTOs** and their `ToDto()`/`ToEntity()` mappers.
 - `infra/rest/<name>.go` — the **HTTP handler** (package `rest`) that calls the repository
   and renders DTOs. The filename does not have to be `rest.go` here; any name is fine
@@ -110,6 +112,7 @@ Note the two distinct `rest.go` files involved — do not confuse them:
 ### Database entity model & repository pattern
 
 **Folder placement** (`domain/`)
+
 - Every entity gets its **own subfolder** under `domain/<domain>/`, named after the business
   concept (e.g. `domain/department/`, `domain/customid/`, `domain/checklist/`). Never add a
   new entity as a loose file directly under `domain/`; only the shared base types
@@ -124,6 +127,7 @@ Note the two distinct `rest.go` files involved — do not confuse them:
   child models needing a unique id implement `domain.ChildEntity`.
 
 **Root vs. child entity** (`domain/base.go`)
+
 - `domain.RootEntity` (`ChildEntity` + `Rev`) — for entities that live in their own top-level
   collection and have a dedicated repository. Embed with `` `bson:",inline"` ``, e.g.
   `project.Project`, `sbomlist.SbomList`.
@@ -135,6 +139,7 @@ Note the two distinct `rest.go` files involved — do not confuse them:
 
 **Soft delete vs. hard delete** (`infra/repository/base/base_repository_softdelete.go`,
 `base_repository_harddelete.go`)
+
 - **Soft delete is the default.** Embed `domain.SoftDelete` (`Deleted bool`, implements
   `domain.ISoftDelete`) next to `domain.RootEntity` in the entity struct, e.g.
   `project.Project` embeds both `domain.RootEntity` and `domain.SoftDelete`. The repository
@@ -155,6 +160,7 @@ Note the two distinct `rest.go` files involved — do not confuse them:
   from a collection whose regular repository (`IApprovalListRepository`) stays soft-delete.
 
 **Creating a new `I<Domain>Repository`**
+
 1. Pick `RootEntity`/`ChildEntity` and soft-/hard-delete per the rules above.
 2. `infra/repository/<domain>/layer.go`: declare `I<Domain>Repository` embedding
    `base.IBaseRepositoryWithSoftDelete[*Entity]` (default) or
@@ -192,6 +198,7 @@ server startup via `MigrateDatabase()`.
    is constructed (same place all its other repositories are injected).
 3. **Method signature and logging** — every migration method has this exact shape and must
    log a `START` and an `END` line with `logy.Infof`, using the method name as prefix:
+
    ```go
    func (startUpHandler *StartUpHandler) migrateRemoveOrphanedSbomFiles(requestSession *logy.RequestSession) {
        logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - START")
@@ -201,10 +208,12 @@ server startup via `MigrateDatabase()`.
        logy.Infof(requestSession, "migrateRemoveOrphanedSbomFiles - END")
    }
    ```
+
 4. **Make it crash-proof** — the `END` log line must always be reached, and one failing item
    must not abort the whole step. Wrap the body in `exception.TryCatchAndLog` (or
    `exception.TryCatch` with a custom catch) so a panic is recovered and logged instead of
    propagating:
+
    ```go
    func (startUpHandler *StartUpHandler) migrateXxx(requestSession *logy.RequestSession) {
        logy.Infof(requestSession, "migrateXxx - START")
@@ -224,9 +233,11 @@ server startup via `MigrateDatabase()`.
        logy.Infof(requestSession, "migrateXxx - END")
    }
    ```
+
    See `migrateSyncProjectAndSbomRetentionFlags` and `migrateRemoveOrphanedSbomFiles` in
    `infra/service/startup/startup.go` for full reference implementations of this pattern,
    including counting processed/succeeded/failed items in the logs.
+
 5. **Soft-delete vs. hard-delete repositories when reading "all" data** — know which kind of
    repository you're querying (see the entity model section above):
    - **Soft-delete repositories** (`IBaseRepositoryWithSoftDelete`) hide entities with
@@ -249,6 +260,7 @@ Seeding runs once at startup via `(dbRepos).seedDb()` in `server/seeding.go`, ca
 `setupDatabase()` in `server/database.go`. There are two independent mechanisms.
 
 **Regular entity seeds (`.jsonl`)**
+
 1. **Register the collection** — add an entry to `entityCreatorMap` in `server/seeding.go`:
    ```go
    "myCollection": func() interface{} {
@@ -274,10 +286,9 @@ Seeding runs once at startup via `(dbRepos).seedDb()` in `server/seeding.go`, ca
    `processSeedFile`) if your entity needs a non-key existence check.
 
 **i18n seeds (`.json`, separate mechanism)**
+
 - File under `conf/dbseeds/i18n/<name>.<localeCode>.json` (e.g. `strings.en.json`), format
   `{"KEY": "value", ...}`.
-- Loaded by `seedI18n()`, guarded by `db.i18nLocale.GetLocaleCount(...) > 0` — i.e. it only
-  runs while the `i18n` collection is **completely empty**; unlike the `.jsonl` seeds this is
-  a one-time bootstrap, not idempotent per key. Adding entries to an existing locale later on
-  should go through the `/dashboard/admin/i18n` admin UI (see the frontend i18n docs) or the
-  `/api/v1/i18n` endpoints instead of new seed files.
+- Loaded by `seedI18n()` on every startup. Missing locales and keys are inserted, while existing
+  database metadata and translation values remain unchanged. This makes seeds additive and
+  preserves translations edited through `/dashboard/admin/i18n` or the `/api/v1/i18n` endpoints.
