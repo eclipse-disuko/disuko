@@ -5,6 +5,7 @@
 package rest
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -96,8 +97,11 @@ func (handler *I18nHandler) ExportLocaleJSON(w http.ResponseWriter, r *http.Requ
 		entries[key] = entry.Value
 	}
 
-	body, err := json.Marshal(entries)
-	if err != nil {
+	var body bytes.Buffer
+	encoder := json.NewEncoder(&body)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(entries); err != nil {
 		exception.ThrowExceptionServerMessageWithError(message.GetI18N(message.ErrorUnexpectError), err)
 	}
 
@@ -105,7 +109,7 @@ func (handler *I18nHandler) ExportLocaleJSON(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(body)
+	_, _ = w.Write(body.Bytes())
 }
 
 func (handler *I18nHandler) ImportLocaleJSON(w http.ResponseWriter, r *http.Request) {

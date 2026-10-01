@@ -91,10 +91,6 @@ func (db *dbRepos) seedDb(requestSession *logy.RequestSession) error {
 }
 
 func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) error {
-	if db.i18nLocale.GetLocaleCount(requestSession) > 0 {
-		return nil
-	}
-
 	const i18nSeedPath = "./conf/dbseeds/i18n/"
 	matches, err := filepath.Glob(i18nSeedPath + "*.json")
 	if err != nil {
@@ -114,6 +110,7 @@ func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) error {
 		fileName := filepath.Base(filePath)
 		parts := strings.Split(strings.TrimSuffix(fileName, ".json"), ".")
 		localeCode := parts[len(parts)-1]
+		existingLocale := db.i18nLocale.FindByLocaleCode(requestSession, localeCode, false)
 
 		raw, err := os.ReadFile(filePath)
 		if err != nil {
@@ -128,12 +125,19 @@ func (db *dbRepos) seedI18n(requestSession *logy.RequestSession) error {
 		if names, ok := localeDisplayNames[localeCode]; ok {
 			displayName, nativeName = names[0], names[1]
 		}
-		isDefault := strings.EqualFold(localeCode, "en")
-		db.i18nLocale.UpsertLocaleMetadata(requestSession, localeCode, displayName, nativeName, isDefault, "portal")
-		for k, v := range entries {
-			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "Seeded from JSON", "SYSTEM")
+		if existingLocale == nil {
+			isDefault := strings.EqualFold(localeCode, "en")
+			db.i18nLocale.UpsertLocaleMetadata(requestSession, localeCode, displayName, nativeName, isDefault, "portal")
 		}
-		logy.Debugf(requestSession, "i18n seed: loaded %d keys for locale %s from %s", len(entries), localeCode, fileName)
+		seededEntries := 0
+		for k, v := range entries {
+			if existingLocale != nil && existingLocale.GetEntry(k) != nil {
+				continue
+			}
+			db.i18nLocale.SetTranslation(requestSession, localeCode, k, v, "Seeded from JSON", "SYSTEM")
+			seededEntries++
+		}
+		logy.Debugf(requestSession, "i18n seed: loaded %d missing keys for locale %s from %s", seededEntries, localeCode, fileName)
 	}
 
 	return nil
