@@ -2,24 +2,52 @@ import {execFileSync} from 'node:child_process';
 
 const locales = ['en', 'de'];
 const seedDirectory = 'backend/conf/dbseeds/i18n';
-const sourcePathPattern = /^frontend\/(?:apps\/portal|libs\/(?:portal|shared))\/.*\.(?:[cm]?[jt]sx?|vue)$/;
+const sourceRoots = ['frontend/apps/portal', 'frontend/libs/portal', 'frontend/libs/shared'];
+const sourcePathPattern = /\.(?:[cm]?[jt]sx?|vue)$/;
 const testPathPattern = /(?:^|\/)(?:tests?|__tests__)\/|\.(?:test|spec)\.[^.]+$/;
 const translationCallPattern = /(?:\b(?:t|i18n\.t)|\$t)\(\s*(['"])([^'"\r\n]+)\1(?=\s*[),])/g;
 
-function git(args) {
-  return execFileSync('git', args, {encoding: 'utf8', maxBuffer: 10 * 1024 * 1024}).trim();
+function git(args, options = {}) {
+  return execFileSync('git', args, {encoding: 'utf8', maxBuffer: 512 * 1024 * 1024, ...options});
 }
 
-function readFile(revision, path) {
-  return git(['show', `${revision}:${path}`]);
+function listSourceBlobs(args, oidIndex) {
+  const blobs = new Map();
+  for (const entry of git(args).split('\0')) {
+    const tab = entry.indexOf('\t');
+    if (tab < 0) continue;
+    const path = entry.slice(tab + 1);
+    const meta = entry.slice(0, tab).split(' ');
+    if (meta[0] === '160000' || !sourcePathPattern.test(path) || testPathPattern.test(path)) continue;
+    blobs.set(path, meta[oidIndex]);
+  }
+  return blobs;
 }
 
-function readCatalog(revision, path, trackedPaths) {
+function collectTranslationKeys(oids) {
+  const keys = new Set();
+  if (!oids.length) return keys;
+
+  const output = git(['cat-file', '--batch'], {encoding: null, input: `${oids.join('\n')}\n`});
+  let offset = 0;
+  while (offset < output.length) {
+    const headerEnd = output.indexOf(10, offset);
+    const size = Number(output.toString('utf8', offset, headerEnd).split(' ')[2]);
+    const start = headerEnd + 1;
+    for (const match of output.toString('utf8', start, start + size).matchAll(translationCallPattern)) {
+      keys.add(match[2]);
+    }
+    offset = start + size + 1;
+  }
+  return keys;
+}
+
+function readCatalog(path, trackedPaths) {
   if (!trackedPaths.has(path)) {
-    throw new Error(`Missing translation catalog: ${path} (${revision || 'staged'})`);
+    throw new Error(`Missing translation catalog: ${path} (staged)`);
   }
 
-  const catalog = JSON.parse(readFile(revision, path));
+  const catalog = JSON.parse(git(['show', `:${path}`]));
   if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog)) {
     throw new Error(`Expected a flat translation dictionary: ${path}`);
   }
@@ -31,30 +59,24 @@ function readCatalog(revision, path, trackedPaths) {
   return catalog;
 }
 
-function collectTranslationKeys(revision, paths) {
-  const keys = new Set();
-  for (const path of paths) {
-    if (!sourcePathPattern.test(path) || testPathPattern.test(path)) continue;
-    for (const match of readFile(revision, path).matchAll(translationCallPattern)) {
-      keys.add(match[2]);
-    }
-  }
-  return keys;
-}
-
 function checkSeeds() {
-  const stagedPaths = new Set(git(['ls-files', '-z']).split('\0'));
-  const hasHead = git(['rev-parse', '--revs-only', 'HEAD']);
-  const headPaths = new Set(hasHead ? git(['ls-tree', '-r', '--name-only', '-z', 'HEAD']).split('\0') : []);
-  const stagedKeys = collectTranslationKeys('', stagedPaths);
-  const headKeys = collectTranslationKeys('HEAD', headPaths);
-  const addedKeys = new Set([...stagedKeys].filter((key) => !headKeys.has(key)));
+  const seedPaths = new Set(git(['ls-files', '-z', '--', seedDirectory]).split('\0'));
+  const seedCatalogs = locales.map((locale) => {
+    const path = `${seedDirectory}/portal.${locale}.json`;
+    return [path, readCatalog(path, seedPaths)];
+  });
+
+  const hasHead = git(['rev-parse', '--revs-only', 'HEAD']).trim();
+  const stagedBlobs = listSourceBlobs(['ls-files', '-s', '-z', '--', ...sourceRoots], 1);
+  const headBlobs = hasHead ? listSourceBlobs(['ls-tree', '-r', '-z', 'HEAD', '--', ...sourceRoots], 2) : new Map();
+  const changedOids = [...stagedBlobs].filter(([path, oid]) => headBlobs.get(path) !== oid).map(([, oid]) => oid);
+  const candidateKeys = collectTranslationKeys(changedOids);
+  const headKeys = candidateKeys.size ? collectTranslationKeys([...new Set(headBlobs.values())]) : new Set();
+  const addedKeys = [...candidateKeys].filter((key) => !headKeys.has(key)).sort();
 
   const missing = [];
-  for (const locale of locales) {
-    const path = `${seedDirectory}/portal.${locale}.json`;
-    const seedCatalog = readCatalog('', path, stagedPaths);
-    for (const key of [...addedKeys].sort()) {
+  for (const [path, seedCatalog] of seedCatalogs) {
+    for (const key of addedKeys) {
       if (!Object.hasOwn(seedCatalog, key)) missing.push(`${path}: ${key}`);
     }
   }
@@ -65,7 +87,7 @@ function checkSeeds() {
     process.exitCode = 1;
     return;
   }
-  console.log(`Translation seed check passed (${addedKeys.size} new keys).`);
+  console.log(`Translation seed check passed (${addedKeys.length} new keys).`);
 }
 
 try {
