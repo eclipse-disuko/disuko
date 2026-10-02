@@ -29,6 +29,12 @@ cd disuko
 docker-compose up --build -d
 ```
 
+> :information_source: If the `mongodb:8` `db` service cannot be started and the container log states kernel incompatibilities, as a workaround
+> ```
+> MONGO_VERSION=7 docker-compose up --build -d
+> ```
+> can be used. For more information, see [this issue](https://github.com/eclipse-disuko/disuko/issues/402).
+
 Check if all containers are running:
 
 ```bash
