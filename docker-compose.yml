@@ -47,7 +47,7 @@ services:
       timeout: 5s
       retries: 5
   db:
-    image: mongo:8
+    image: mongo:${MONGO_VERSION:-8}
     ports:
       - 27017:27017
     environment:
