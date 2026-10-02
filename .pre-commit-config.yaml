@@ -1,5 +1,13 @@
 repos:
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0  # Specify the desired version of Gitleaks
+    rev: v8.30.0 # Specify the desired version of Gitleaks
     hooks:
       - id: gitleaks
+  - repo: local
+    hooks:
+      - id: check-i18n-seeds
+        name: Check new translation keys have seed entries
+        entry: node frontend/scripts/check-i18n-seeds.mjs
+        language: system
+        files: ^(frontend/(apps/portal|libs/(portal|shared))/.*\.(vue|[cm]?[jt]sx?)|backend/conf/dbseeds/i18n/portal\.(en|de)\.json)$
+        pass_filenames: false

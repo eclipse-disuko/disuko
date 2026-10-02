@@ -6,6 +6,7 @@ import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {mountView} from '@disclosure-portal/test-utils/view-test-utils';
 import {flushPromises} from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
+import type {VueI18n} from 'vue-i18n';
 import LocaleDetails from '../LocaleDetails.vue';
 
 const {
@@ -167,6 +168,7 @@ describe('LocaleDetails', () => {
 
     const {wrapper} = createWrapper();
     await flushPromises();
+    (wrapper.vm.$i18n as VueI18n).mergeLocaleMessage('en', {GREETING: 'Bundled greeting'});
 
     const vm = wrapper.vm as unknown as {
       editRowKey: string | null;
@@ -182,6 +184,7 @@ describe('LocaleDetails', () => {
     expect(upsertTranslationMock).toHaveBeenCalledWith('en', 'GREETING', 'Hi there');
     expect(snackbarInfoMock).toHaveBeenCalledWith('Entry saved successfully.');
     expect(vm.entries.find((entry) => entry.key === 'GREETING')?.translation).toBe('Hi there');
+    expect(wrapper.vm.$t('GREETING')).toBe('Hi there');
   });
 
   it('shows an error snackbar when saving an edited translation fails', async () => {
@@ -190,6 +193,7 @@ describe('LocaleDetails', () => {
 
     const {wrapper} = createWrapper();
     await flushPromises();
+    (wrapper.vm.$i18n as VueI18n).mergeLocaleMessage('en', {GREETING: 'Original greeting'});
 
     const vm = wrapper.vm as unknown as {
       editRowKey: string | null;
@@ -202,6 +206,7 @@ describe('LocaleDetails', () => {
     await flushPromises();
 
     expect(snackbarErrorMock).toHaveBeenCalledWith('ERROR_500_TITLE');
+    expect(wrapper.vm.$t('GREETING')).toBe('Original greeting');
   });
 
   it('deletes an entry and shows a success snackbar', async () => {
@@ -283,6 +288,24 @@ describe('LocaleDetails', () => {
     await flushPromises();
 
     expect(snackbarErrorMock).toHaveBeenCalledWith('ERROR_500_TITLE');
+  });
+
+  it('imports the selected locale file using the backend multipart field', async () => {
+    getLocaleMock.mockResolvedValue({data: localeResponse});
+    importLocaleMock.mockResolvedValue({data: {success: true, locale: 'en', errors: []}});
+
+    const {wrapper} = createWrapper();
+    await flushPromises();
+
+    const file = new File(['{"GREETING":"Hello"}'], 'locale.en.json', {type: 'application/json'});
+    const vm = wrapper.vm as unknown as {onImportFilesSelected: (event: Event) => Promise<void>};
+    await vm.onImportFilesSelected({target: {files: [file], value: 'locale.en.json'}} as unknown as Event);
+    await flushPromises();
+
+    const formData = importLocaleMock.mock.calls[0][1] as FormData;
+    expect(importLocaleMock).toHaveBeenCalledWith('en', expect.any(FormData));
+    expect(formData.get('file')).toBe(file);
+    expect(formData.has('files')).toBe(false);
   });
 
   it('redirects to the locale list instead of fetching when there is no locale code in the route', async () => {

@@ -20,7 +20,7 @@ interface LocaleEntry {
   translation: string;
 }
 
-const {t} = useI18n();
+const {t, mergeLocaleMessage} = useI18n({useScope: 'global'});
 const snackbar = useSnackbar();
 const route = useRoute();
 const router = useRouter();
@@ -176,6 +176,7 @@ const upsertTranslation = async (key: string, value: string): Promise<boolean> =
   actionError.value = '';
   try {
     await i18nService.upsertTranslation(localeCode.value, key, value);
+    mergeLocaleMessage(localeCode.value, {[key]: value});
     return true;
   } catch {
     actionError.value = t('ERROR_500_TITLE');
@@ -247,9 +248,7 @@ const onImportFilesSelected = async (event: Event) => {
     // Import files to each target locale
     const importPromises = targetLocales.map(async (targetLocale) => {
       const formData = new FormData();
-      Array.from(selectedFiles).forEach((file) => {
-        formData.append('files', file);
-      });
+      formData.append('file', selectedFiles[0]);
 
       return i18nService.importLocale(targetLocale, formData);
     });
@@ -541,7 +540,6 @@ watch(
         ref="importInputRef"
         type="file"
         accept="application/json,.json"
-        multiple
         class="d-none"
         @change="onImportFilesSelected" />
     </template>

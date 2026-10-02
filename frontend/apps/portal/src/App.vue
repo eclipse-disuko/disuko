@@ -143,7 +143,7 @@ const loadI18nLocale = async (code: string) => {
   const res = await i18nService.getLocale(code);
   if (res.data?.entries) {
     const existing = i18n.global.getLocaleMessage(code);
-    i18n.global.setLocaleMessage(code, {...res.data.entries, ...existing});
+    i18n.global.setLocaleMessage(code, {...existing, ...res.data.entries});
   }
 };
 
