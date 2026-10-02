@@ -59,7 +59,7 @@ func (c *ConfirmTransfer) OnSpdxAdded(_ observermngmt.EventId, arg interface{}) 
 	}
 	rs := data.RequestSession
 
-	if !c.ProjectLabelService.HasLabelInGroupOrProject(rs, data.Project, label.OFFBOARD, label.POLICY) {
+	if !c.ProjectLabelService.HasLabelInGroupOrProject(rs, data.Project, label.OFFBOARD, label.POLICY) && !c.ProjectLabelService.HasLabelInGroupOrProject(rs, data.Project, label.ONBOARD, label.POLICY) {
 		return
 	}
 
