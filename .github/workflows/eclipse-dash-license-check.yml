@@ -5,6 +5,9 @@
 name: Eclipse IP Due Diligence (Dash License Check)
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       create-issues:
@@ -78,8 +81,11 @@ jobs:
       - name: Run Dash license check
         working-directory: ${{ matrix.component.working-directory }}
         env:
-          CREATE_ISSUES: ${{ inputs.create-issues }}
-          FAIL_ON_RESTRICTED: ${{ inputs.fail-on-restricted }}
+          # On push to main, always create IP Team review requests and only
+          # fail the job when the Eclipse license service is unreachable
+          # (status 127) - restricted dependencies are reported, not blocking.
+          CREATE_ISSUES: ${{ github.event_name == 'push' && 'true' || inputs.create-issues }}
+          FAIL_ON_RESTRICTED: ${{ github.event_name == 'push' && 'false' || inputs.fail-on-restricted }}
           REVIEW_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
           REPOSITORY_URL: https://github.com/${{ github.repository }}
         run: |
