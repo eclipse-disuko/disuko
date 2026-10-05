@@ -99,7 +99,18 @@ const licenseIdRules = [
           class="striped-table"
           fixed-header
           item-key="_key"
-          :hide-default-footer="true">
+          :hide-default-footer="true"
+          items-per-page="-1">
+          <template v-slot:bottom>
+            <v-row>
+              <v-col class="d-flex paddingRightItems fontColorItems mr-7 mb-4 justify-end">
+                <span class="fontColorItems font-weight-light">
+                  {{ t('TABLE_ITEMS') }}
+                  <span class="font-weight-light fontColorItems"> {{ props.license?.aliases.length }}</span>
+                </span>
+              </v-col>
+            </v-row>
+          </template>
           <template v-slot:item.licenseId="{item}">
             <v-text-field
               autocomplete="off"
