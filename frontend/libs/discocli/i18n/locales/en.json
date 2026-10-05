@@ -93,7 +93,7 @@
   "ADD_PROJECT": "Add Project",
   "TOKEN": "Token",
   "LOGIN": "Login",
-  "PROJECT_UUID": "Project UUID",
+  "GROUP_PROJECT_UUID": "Group or Project UUID",
   "GROUP_UUID": "Group UUID",
   "TYPE": "Type",
   "BTN_CANCEL": "Cancel",

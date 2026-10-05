@@ -16,7 +16,7 @@
         <v-text-field
           class="required"
           v-model="credentials.projectUuid"
-          :label="`${t('PROJECT_UUID') || 'Project UUID'}`"
+          :label="`${t('GROUP_PROJECT_UUID') || 'Group or Project UUID'}`"
           :rules="projectUuidRules"
           :error-messages="projectUuidError"
           :disabled="loading"
