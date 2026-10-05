@@ -15,6 +15,15 @@ on:
         required: false
         type: boolean
         default: false
+      fail-on-restricted:
+        description: >
+          Fail the workflow when restricted dependencies are found. When
+          false, restricted dependencies are only reported as a warning in
+          the workflow output (the job still fails if the Eclipse license
+          service could not be reached).
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -70,6 +79,7 @@ jobs:
         working-directory: ${{ matrix.component.working-directory }}
         env:
           CREATE_ISSUES: ${{ inputs.create-issues }}
+          FAIL_ON_RESTRICTED: ${{ inputs.fail-on-restricted }}
           REVIEW_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
           REPOSITORY_URL: https://github.com/${{ github.repository }}
         run: |
@@ -98,8 +108,12 @@ jobs:
             echo '::error::the Eclipse license service could not be reached, so dependencies were not verified - rerun this job'
             exit 1
           fi
-          echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
-          exit 1
+          if [ "$FAIL_ON_RESTRICTED" = 'true' ]; then
+            echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
+            exit 1
+          fi
+          echo "::warning::${status} ${{ matrix.component.name }} dependencies require license review (fail-on-restricted is disabled, continuing)"
+          exit 0
 
       - name: Report dependencies needing review
         if: always()
