@@ -5,6 +5,7 @@
 package pdf
 
 import (
+	"context"
 	"fmt"
 	"image"
 	"image/color"
@@ -27,26 +28,27 @@ import (
 )
 
 func StampPageNumbers(rs *logy.RequestSession, path string) error {
-	pageCount, err := api.PageCountFile(path)
+	ctx := context.Background()
+	pageCount, err := api.PageCountFile(ctx, path)
 	if err != nil {
 		return fmt.Errorf("getting page count: %w", err)
 	}
 
 	fontFile := conf.Config.Server.GetDocumentResourceFilePath(conf.Config.Fonts.Stamp)
-	if err = api.InstallFonts([]string{fontFile}); err != nil {
+	if err = api.InstallFonts(ctx, []string{fontFile}); err != nil {
 		return fmt.Errorf("installing font: %w", err)
 	}
 
 	watermarks := make(map[int]*model.Watermark)
 	for i := range pageCount {
 		indicator := fmt.Sprintf("%d/%d", i+1, pageCount)
-		w, err := api.TextWatermark(indicator, "pos: bl, rot:0, points: 8, scale: 0.02 rel, offset: 30 30, color: 0 0 0, fontname: Roboto-Regular", false, false, types.POINTS)
+		w, err := api.TextWatermark(ctx, indicator, "pos: bl, rot:0, points: 8, scale: 0.02 rel, offset: 30 30, color: 0 0 0, fontname: Roboto-Regular", false, false, types.POINTS, nil)
 		if err != nil {
 			return fmt.Errorf("creating watermarks: %w", err)
 		}
 		watermarks[i+1] = w
 	}
-	err = api.AddWatermarksMapFile(path, "", watermarks, nil)
+	err = api.AddWatermarksMapFile(ctx, path, "", watermarks, nil)
 	if err != nil {
 		return fmt.Errorf("adding pagenumbers: %w", err)
 	}
@@ -58,7 +60,7 @@ func AddStampToPdf(tp temp.TempHelper, sourcePDF string, targetPDF string, text 
 	annotationFileName := tp.GetCompleteFileName("pdf-annotation.png")
 	createWaterMarkFile(annotationFileName, text, nil)
 	desc := fmt.Sprintf("scale:0.75 rel, %s, rot:0", offset)
-	err := api.AddImageWatermarksFile(tp.GetCompleteFileName(sourcePDF), tp.GetCompleteFileName(targetPDF), []string{"l"}, false, annotationFileName, desc, nil)
+	err := api.AddImageWatermarksFile(context.Background(), tp.GetCompleteFileName(sourcePDF), tp.GetCompleteFileName(targetPDF), []string{"l"}, false, annotationFileName, desc, nil)
 	if err != nil {
 		exception.HandleErrorServerMessage(err, message.GetI18N(message.ImageOperationError))
 	}
