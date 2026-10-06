@@ -33,9 +33,9 @@ func CreateOrGetMinioClient(requestSession *logy.RequestSession) *MinioS3Client 
 		return minioS3Client
 	}
 	endpoint := strings.ToLower(conf.Config.S3.AwsEndPoint)
-	endpointSplitted := strings.Split(endpoint, "://")
-	endpoint = endpointSplitted[1]
-	useSSL := endpointSplitted[0] == "https"
+	endpointSplit := strings.Split(endpoint, "://")
+	endpoint = endpointSplit[1]
+	useSSL := endpointSplit[0] == "https"
 	accessKeyID := conf.Config.S3.AwsAccessKeyId
 	secretAccessKey := conf.Config.S3.AwsSecretAccessKey
 
