@@ -722,6 +722,10 @@ func (projectHandler *ProjectHandler) ProjectDeleteHandler(w http.ResponseWriter
 			// Log as an error for the first time to be notified in Grafana Dashboard
 			logy.Errorf(requestSession, "Found %d still remaining files for dummy project %s(%s) after deletion, deleting them now. Enhance deletion process to avoid possible data inconsistency", filesCount, currentProject.Name, currentProject.Key)
 			for file := range projectFiles {
+				if file.Err != nil {
+					logy.Errorf(requestSession, "Found file error! %s", file.Err)
+					continue
+				}
 				if len(file.Key) < 1 {
 					// ignore ghost files, sometime happens on S3 Mock
 					logy.Errorf(requestSession, "Found file ghost! ")

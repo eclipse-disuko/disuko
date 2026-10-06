@@ -85,6 +85,10 @@ func CountFiles(requestSession *logy.RequestSession, folder string) CountMeta {
 	folder = strings.Trim(folder, "/")
 	files := ListObjects(requestSession, folder)
 	for file := range files {
+		if file.Err != nil {
+			logy.Errorf(requestSession, "Found file error! %s", file.Err)
+			continue
+		}
 		if len(file.Key) < 1 {
 			// ignore ghost files, sometime happens on S3 Mock
 			logy.Errorf(requestSession, "Found file ghost! ")

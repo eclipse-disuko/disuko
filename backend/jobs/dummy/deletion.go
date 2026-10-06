@@ -187,6 +187,10 @@ func (j *DeletionJob) Execute(rs *logy.RequestSession, info job.Job) scheduler.E
 			logy.Errorf(rs, msgFmt, filesCount, prj.Name, prj.Key)
 			log.AddEntry(job.Error, msgFmt, filesCount, prj.Name, prj.Key)
 			for file := range projectFiles {
+				if file.Err != nil {
+					logy.Errorf(rs, "Found file error! %s", file.Err)
+					continue
+				}
 				if len(file.Key) < 1 {
 					// ignore ghost files, sometime happens on S3 Mock
 					logy.Errorf(rs, "Found file ghost! ")
