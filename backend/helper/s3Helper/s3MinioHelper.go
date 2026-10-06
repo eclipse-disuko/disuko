@@ -39,13 +39,13 @@ func CreateOrGetMinioClient(requestSession *logy.RequestSession) *MinioS3Client 
 	accessKeyID := conf.Config.S3.AwsAccessKeyId
 	secretAccessKey := conf.Config.S3.AwsSecretAccessKey
 
-	opt := &minio.Options{
+	opts := &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: useSSL,
 	}
 
 	// Initialize minio client object.
-	minioClient, err := minio.New(endpoint, opt)
+	minioClient, err := minio.New(endpoint, opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ClientInit))
 
 	minioS3Client = &MinioS3Client{minioClient: minioClient}
