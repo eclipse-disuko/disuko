@@ -53,7 +53,6 @@ const {sliderWidth} = useTableActionSlider();
 
 const page = ref(1);
 const sortItems = ref<SortItem[]>([{key: 'name', order: 'asc'}]);
-const dataGridLicenses = ref<HTMLElement | null>(null);
 const confirmVisible = ref(false);
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const items = ref<LicenseSlim[]>([]);
@@ -75,7 +74,6 @@ const dlgFilterSets = ref();
 const dlgCompareLicense = ref();
 
 const classificationsDialogRef = ref();
-const configurePoliciesForLicenseDialogRef = ref();
 const licenseDialogRef = ref();
 const currentLicenseForAction = ref<License | null>(null);
 const licenseDialogMode = ref<'edit' | 'duplicate'>('edit');
@@ -259,11 +257,6 @@ const showDeletionConfirmationDialog = async (license: LicenseSlim) => {
   confirmVisible.value = true;
 };
 
-const configurePoliciesForLicense = async (license: LicenseSlim) => {
-  const fullModel: License = (await licenseService.get(license.licenseId)).data;
-  configurePoliciesForLicenseDialogRef.value?.open(fullModel.licenseId, fullModel.name);
-};
-
 const doDeleteLicense = async (license: string) => {
   await licenseService.delete(license);
   snackbar.info(t('DIALOG_license_delete_success'));
@@ -305,12 +298,6 @@ const getActionButtons = (item: LicenseSlim): TableActionButtonsProps['buttons']
   const canEdit = rights.value?.allowLicense?.delete;
   const canCreate = rights.value?.allowLicense?.create;
   const canDelete = rights.value?.allowLicense?.delete && item.source !== 'spdx';
-  const canConfigurePolicies =
-    rights.value?.allowLicense?.read &&
-    rights.value?.allowPolicy?.create &&
-    rights.value?.allowPolicy?.read &&
-    rights.value?.allowPolicy?.update &&
-    rights.value?.allowPolicy?.delete;
 
   return [
     {
@@ -324,12 +311,6 @@ const getActionButtons = (item: LicenseSlim): TableActionButtonsProps['buttons']
       hint: t('LICENSE_COPY_BTN_TOOLTIP'),
       event: 'duplicate',
       show: canCreate,
-    },
-    {
-      icon: 'mdi-bank-outline',
-      hint: t('CONFIGURE_POLICIES_FOR_LICENSE_TOOLTIP'),
-      event: 'configure',
-      show: canConfigurePolicies,
     },
     {
       icon: 'mdi-delete',
@@ -868,7 +849,6 @@ onMounted(async () => {
               @edit="editLicense(item)"
               @duplicate="duplicateLicense(item)"
               @delete="showDeletionConfirmationDialog(item)"
-              @configure="configurePoliciesForLicense(item)"
               @slideToggle="headerExpands" />
           </template>
           <template #[`item.aliases`]="{item}">
@@ -886,7 +866,6 @@ onMounted(async () => {
     :config="confirmConfig"
     @confirm="onConfirm"></ConfirmationDialog>
   <ClassificationsPerLicenseDialog ref="classificationsDialogRef"></ClassificationsPerLicenseDialog>
-  <ConfigurePoliciesForLicenseDialog ref="configurePoliciesForLicenseDialogRef"></ConfigurePoliciesForLicenseDialog>
   <NewOrEditLicenseDialog
     v-if="currentLicenseForAction"
     ref="licenseDialogRef"
