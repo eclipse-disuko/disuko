@@ -6,7 +6,6 @@ import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {mountView} from '@disclosure-portal/test-utils/view-test-utils';
 import {flushPromises} from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import type {VueI18n} from 'vue-i18n';
 import LocaleDetails from '../LocaleDetails.vue';
 
 const {
@@ -168,7 +167,6 @@ describe('LocaleDetails', () => {
 
     const {wrapper} = createWrapper();
     await flushPromises();
-    (wrapper.vm.$i18n as VueI18n).mergeLocaleMessage('en', {GREETING: 'Bundled greeting'});
 
     const vm = wrapper.vm as unknown as {
       editRowKey: string | null;
@@ -193,7 +191,7 @@ describe('LocaleDetails', () => {
 
     const {wrapper} = createWrapper();
     await flushPromises();
-    (wrapper.vm.$i18n as VueI18n).mergeLocaleMessage('en', {GREETING: 'Original greeting'});
+    const originalTranslation = wrapper.vm.$t('GREETING');
 
     const vm = wrapper.vm as unknown as {
       editRowKey: string | null;
@@ -206,7 +204,7 @@ describe('LocaleDetails', () => {
     await flushPromises();
 
     expect(snackbarErrorMock).toHaveBeenCalledWith('ERROR_500_TITLE');
-    expect(wrapper.vm.$t('GREETING')).toBe('Original greeting');
+    expect(wrapper.vm.$t('GREETING')).toBe(originalTranslation);
   });
 
   it('deletes an entry and shows a success snackbar', async () => {
