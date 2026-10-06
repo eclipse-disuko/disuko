@@ -407,6 +407,9 @@ func (project *Project) UpdateProjectMember(userId string, userData ProjectMembe
 		exception.ThrowExceptionClientMessage(message.GetI18N(message.ErrorProjectLastOwnerCanNotChanged, userData.TargetUser), "")
 	}
 
+	if targetUser.UserId != userData.TargetUser {
+		project.ClearApproverPresets(targetUser.UserId)
+	}
 	targetUser.UserId = userData.TargetUser
 	targetUser.UserType = userData.UserType
 	targetUser.Comment = userData.Comment
@@ -443,7 +446,24 @@ func (project *Project) DeleteUser(userId string) {
 	}
 
 	project.UserManagement.Users = cleanedUsers
+	project.ClearApproverPresets(userId)
 	project.Updated = time.Now()
+}
+
+func (project *Project) ClearApproverPresets(userId string) {
+	if userId == "" {
+		return
+	}
+	for _, preset := range []*string{
+		&project.CustomerMeta.FRI,
+		&project.CustomerMeta.SRI,
+		&project.SupplierExtraData.FRI,
+		&project.SupplierExtraData.SRI,
+	} {
+		if *preset == userId {
+			*preset = ""
+		}
+	}
 }
 
 func (project *Project) UpdateProjectData(newData ProjectRequestDto, connectorSet bool) {
@@ -692,6 +712,7 @@ func (project *Project) RemoveMember(userId string) {
 	for i, value := range project.UserManagement.Users {
 		if value.UserId == userId {
 			project.UserManagement.Users = append(project.UserManagement.Users[:i], project.UserManagement.Users[i+1:]...)
+			project.ClearApproverPresets(userId)
 			return
 		}
 	}
