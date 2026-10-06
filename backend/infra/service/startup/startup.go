@@ -733,7 +733,7 @@ func (startUpHandler *StartUpHandler) migrateRemoveOrphanedSbomFiles(requestSess
 	sbomsOnS3Count := 0
 	for file := range filesOnS3 {
 		if file.Err != nil {
-			logy.Errorf(requestSession, "Found file error! %s", file.Err)
+			logy.Errorf(requestSession, "Found file error for %q: %s", file.Key, file.Err)
 			continue
 		}
 		filePath := file.Key

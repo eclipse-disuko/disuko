@@ -195,7 +195,7 @@ func (s *Service) cleanupOldMonthlyReports(rs *logy.RequestSession, log *job.Log
 	folder := GetReportStorageFileNameOf("")
 	for obj := range s3Helper.ListObjects(rs, folder) {
 		if obj.Err != nil {
-			logy.Errorf(rs, "Found file error! %s", obj.Err)
+			logy.Errorf(rs, "Found file error for %q: %s", obj.Key, obj.Err)
 			continue
 		}
 		fileName := path.Base(obj.Key)
@@ -316,7 +316,7 @@ func ListAvailableMonthlyReports(rs *logy.RequestSession) []time.Time {
 	var months []time.Time
 	for obj := range s3Helper.ListObjects(rs, folder) {
 		if obj.Err != nil {
-			logy.Errorf(rs, "Found file error! %s", obj.Err)
+			logy.Errorf(rs, "Found file error for %q: %s", obj.Key, obj.Err)
 			continue
 		}
 		fileName := path.Base(obj.Key)

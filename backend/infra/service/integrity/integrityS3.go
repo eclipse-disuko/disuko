@@ -36,7 +36,7 @@ func checkIfAllFilesFromS3ExistInTheDb(requestSession *logy.RequestSession, proj
 	filesOnS3 := s3Helper.ListObjects(requestSession, conf.Config.Server.GetUploadPath())
 	for file := range filesOnS3 {
 		if file.Err != nil {
-			logy.Errorf(requestSession, "Found file error! %s", file.Err)
+			logy.Errorf(requestSession, "Found file error for %q: %s", file.Key, file.Err)
 			continue
 		}
 		if len(file.Key) < 1 {
