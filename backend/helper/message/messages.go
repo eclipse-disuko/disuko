@@ -420,6 +420,7 @@ const (
 	PlausibilityCheckExistsForSbom            = "PLAUSIBILITY_CHECK_EXISTS_FOR_SBOM"
 	LockedByUser                              = "LOCKED_BY_USER"
 	LockedByPublicApiCall                     = "LOCKED_BY_PUBLIC_API_CALL"
+	ErrorS3ConnectionCheck                    = "ERROR_S3_CONNECTION_CHECK"
 )
 
 func InitI18N() {
@@ -751,6 +752,7 @@ func InitI18N() {
 	addI18NKeyValue(ErrorUserTokenSigningKeyMissing, "User token signing key is not configured.")
 	addI18NKeyValue(ErrorUserTokenNotFound, "Token not found.")
 	addI18NKeyValue(ErrorUserTokenAlreadyExpired, "Token is already expired.")
+	addI18NKeyValue(ErrorS3ConnectionCheck, "S3 connection check failed while reading probe object: %q")
 }
 
 func GetI18N(key string, a ...any) I18N {
