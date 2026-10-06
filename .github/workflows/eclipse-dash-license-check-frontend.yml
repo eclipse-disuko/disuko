@@ -1,0 +1,153 @@
+# SPDX-FileCopyrightText: 2026 Mercedes-Benz Group AG and Mercedes-Benz AG
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Eclipse IP Due Diligence (Dash License Check) — Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/package-lock.json'
+  workflow_dispatch:
+    inputs:
+      create-issues:
+        description: >
+          Automatically create Eclipse IP Team review requests (GitLab issues)
+          for dependencies that need further review. When false, the tool only
+          runs a local, read-only license check.
+        required: false
+        type: boolean
+        default: false
+      fail-on-restricted:
+        description: >
+          Fail the workflow when restricted dependencies are found. When
+          false, restricted dependencies are only reported as a warning in
+          the workflow output (the job still fails if the Eclipse license
+          service could not be reached).
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  # Pinned version of the Eclipse Dash License Tool jar.
+  DASH_VERSION: ${{ vars.DASH_VERSION }}
+  # Eclipse Foundation project id (see https://projects.eclipse.org/projects/technology.disuko).
+  ECLIPSE_PROJECT_ID: technology.disuko
+
+jobs:
+  dash-license-check:
+    name: Dash license check (frontend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download Eclipse Dash License Tool
+        # Documented download method (see
+        # https://github.com/eclipse-dash/dash-licenses#get-it): the jar is
+        # published to repo.eclipse.org's Maven repo and fetched here via the
+        # Nexus 3 search/assets/download endpoint, pinned to DASH_VERSION.
+        run: |
+          curl -fsSL -o dash-licenses.jar \
+            "https://repo.eclipse.org/service/rest/v1/search/assets/download?sort=version&repository=dash-maven2-releases&maven.groupId=org.eclipse.dash&maven.artifactId=org.eclipse.dash.licenses&maven.extension=jar&maven.baseVersion=${DASH_VERSION}"
+          # A jar is a zip archive. `unzip -t` catches a bad/HTML-error download
+          # here with a clear message, instead of a confusing "invalid or
+          # corrupt jarfile" failure later from `java -jar`.
+          unzip -t dash-licenses.jar > /dev/null
+
+      - name: Run Dash license check
+        working-directory: frontend
+        env:
+          # On push to main, always create IP Team review requests and only
+          # fail the job when the Eclipse license service is unreachable
+          # (status 127) - restricted dependencies are reported, not blocking.
+          CREATE_ISSUES: ${{ github.event_name == 'push' && 'true' || inputs.create-issues }}
+          FAIL_ON_RESTRICTED: ${{ github.event_name == 'push' && 'false' || inputs.fail-on-restricted }}
+          REVIEW_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+        run: |
+          args=(-summary "dash-summary-frontend.txt" -batch 100)
+
+          if [ "$CREATE_ISSUES" = 'true' ]; then
+            if [ -z "$REVIEW_TOKEN" ]; then
+              echo '::error::create-issues was requested but the ECLIPSE_GITLAB_API_TOKEN secret is not set'
+              exit 1
+            fi
+            args+=(-review -project "$ECLIPSE_PROJECT_ID" -repo "$REPOSITORY_URL" -token "$REVIEW_TOKEN")
+            echo "Running Dash license check with automatic IP Team review request creation."
+          else
+            echo "Running Dash license check locally (no review requests will be created)."
+          fi
+
+          set +e
+          java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "package-lock.json" "${args[@]}"
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$status" -eq 127 ]; then
+            echo '::error::the Eclipse license service could not be reached, so dependencies were not verified - rerun this job'
+            exit 1
+          fi
+          if [ "$FAIL_ON_RESTRICTED" = 'true' ]; then
+            echo "::error::${status} frontend dependencies require license review"
+            exit 1
+          fi
+          echo "::warning::${status} frontend dependencies require license review (fail-on-restricted is disabled, continuing)"
+          exit 0
+
+      - name: Report dependencies needing review
+        if: always()
+        working-directory: frontend
+        run: |
+          summary_file="dash-summary-frontend.txt"
+
+          {
+            echo "### Dash license check: frontend"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ ! -f "$summary_file" ]; then
+            echo "_No summary file was produced (the tool likely failed before it could run)._" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # The summary CSV has one line per dependency: id, license, status, source.
+          # Only list entries whose status isn't "approved" - those are the ones
+          # that need Eclipse IP Team review.
+          needs_review=$(awk -F', *' '$3 != "approved"' "$summary_file")
+
+          if [ -z "$needs_review" ]; then
+            echo "All dependencies are approved. No review needed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          {
+            echo "| Dependency | License | Status | Source |"
+            echo "| --- | --- | --- | --- |"
+            echo "$needs_review" | awk -F', *' '{ printf "| %s | %s | %s | %s |\n", $1, $2, $3, $4 }'
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload license summary
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dash-summary-frontend
+          path: frontend/dash-summary-frontend.txt
+          if-no-files-found: warn
+          retention-days: 90
