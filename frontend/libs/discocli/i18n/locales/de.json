@@ -91,7 +91,7 @@
   "TOKEN": "Token",
   "LOGIN": "Anmelden",
   "BTN_LOGOUT": "Abmelden",
-  "PROJECT_UUID": "Projekt UUID",
+  "GROUP_PROJECT_UUID": "Gruppen oder Projekt UUID",
   "GROUP_UUID": "Gruppen UUID",
   "TYPE": "Typ",
   "BTN_CANCEL": "Abbrechen",
