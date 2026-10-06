@@ -2,12 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: Eclipse IP Due Diligence (Dash License Check)
+name: Eclipse IP Due Diligence (Dash License Check) — Docs
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/app/package-lock.json'
   workflow_dispatch:
     inputs:
       create-issues:
@@ -39,21 +41,8 @@ env:
 
 jobs:
   dash-license-check:
-    name: Dash license check (${{ matrix.component.name }})
+    name: Dash license check (docs)
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        component:
-          - name: backend
-            working-directory: backend
-            dependency-file: go.sum
-          - name: frontend
-            working-directory: frontend
-            dependency-file: package-lock.json
-          - name: docs
-            working-directory: docs/app
-            dependency-file: package-lock.json
 
     steps:
       - name: Checkout repository
@@ -79,7 +68,7 @@ jobs:
           unzip -t dash-licenses.jar > /dev/null
 
       - name: Run Dash license check
-        working-directory: ${{ matrix.component.working-directory }}
+        working-directory: docs/app
         env:
           # On push to main, always create IP Team review requests and only
           # fail the job when the Eclipse license service is unreachable
@@ -89,7 +78,7 @@ jobs:
           REVIEW_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
           REPOSITORY_URL: https://github.com/${{ github.repository }}
         run: |
-          args=(-summary "dash-summary-${{ matrix.component.name }}.txt" -batch 100)
+          args=(-summary "dash-summary-docs.txt" -batch 100)
 
           if [ "$CREATE_ISSUES" = 'true' ]; then
             if [ -z "$REVIEW_TOKEN" ]; then
@@ -103,7 +92,7 @@ jobs:
           fi
 
           set +e
-          java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "${{ matrix.component.dependency-file }}" "${args[@]}"
+          java -jar "${GITHUB_WORKSPACE}/dash-licenses.jar" "package-lock.json" "${args[@]}"
           status=$?
           set -e
 
@@ -115,20 +104,20 @@ jobs:
             exit 1
           fi
           if [ "$FAIL_ON_RESTRICTED" = 'true' ]; then
-            echo "::error::${status} ${{ matrix.component.name }} dependencies require license review"
+            echo "::error::${status} docs dependencies require license review"
             exit 1
           fi
-          echo "::warning::${status} ${{ matrix.component.name }} dependencies require license review (fail-on-restricted is disabled, continuing)"
+          echo "::warning::${status} docs dependencies require license review (fail-on-restricted is disabled, continuing)"
           exit 0
 
       - name: Report dependencies needing review
         if: always()
-        working-directory: ${{ matrix.component.working-directory }}
+        working-directory: docs/app
         run: |
-          summary_file="dash-summary-${{ matrix.component.name }}.txt"
+          summary_file="dash-summary-docs.txt"
 
           {
-            echo "### Dash license check: ${{ matrix.component.name }}"
+            echo "### Dash license check: docs"
             echo
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -158,7 +147,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: dash-summary-${{ matrix.component.name }}
-          path: ${{ matrix.component.working-directory }}/dash-summary-${{ matrix.component.name }}.txt
+          name: dash-summary-docs
+          path: docs/app/dash-summary-docs.txt
           if-no-files-found: warn
           retention-days: 90
