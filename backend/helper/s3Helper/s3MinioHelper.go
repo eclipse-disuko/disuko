@@ -49,13 +49,13 @@ func CreateOrGetMinioClient(requestSession *logy.RequestSession) *MinioS3Client 
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ClientInit))
 
 	minioS3Client = &MinioS3Client{minioClient: minioClient}
-	minioS3Client.EnsureReadWriteAccess(requestSession)
+	minioS3Client.ensureReadWriteAccess(requestSession)
 
 	logS3(requestSession, "Create Minio S3 Client")
 	return minioS3Client
 }
 
-func (client *MinioS3Client) EnsureReadWriteAccess(requestSession *logy.RequestSession) {
+func (client *MinioS3Client) ensureReadWriteAccess(requestSession *logy.RequestSession) {
 	probeValue := time.Now().UTC().Format(time.RFC3339Nano)
 	probeFileName := fmt.Sprintf(".healthcheck/s3-probe-%s.txt", uuid.NewString())
 
