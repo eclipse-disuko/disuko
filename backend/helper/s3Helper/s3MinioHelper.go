@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -34,14 +35,26 @@ func CreateOrGetMinioClient(requestSession *logy.RequestSession) *MinioS3Client 
 	}
 	endpoint := strings.ToLower(conf.Config.S3.AwsEndPoint)
 	endpointSplit := strings.Split(endpoint, "://")
-	endpoint = endpointSplit[1]
-	useSSL := endpointSplit[0] == "https"
-	accessKeyID := conf.Config.S3.AwsAccessKeyId
-	secretAccessKey := conf.Config.S3.AwsSecretAccessKey
+	if len(endpointSplit) > 1 {
+		endpoint = endpointSplit[1]
+	}
+	var opts *minio.Options
+	if _, found := os.LookupEnv("AWS_ROLE_ARN"); found && conf.Config.S3.UseARN {
+		logS3(requestSession, "Using S3 ARN")
+		opts = &minio.Options{
+			Creds:  credentials.NewIAM(""),
+			Secure: true,
+		}
+	} else {
+		logS3(requestSession, "Using S3 access- and secret-key")
+		useSSL := endpointSplit[0] == "https"
+		accessKeyID := conf.Config.S3.AwsAccessKeyId
+		secretAccessKey := conf.Config.S3.AwsSecretAccessKey
 
-	opts := &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
+		opts = &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: useSSL,
+		}
 	}
 
 	// Initialize minio client object.
