@@ -9,11 +9,13 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
 	"github.com/eclipse-disuko/disuko/logy"
+	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -31,24 +33,52 @@ func CreateOrGetMinioClient(requestSession *logy.RequestSession) *MinioS3Client 
 		return minioS3Client
 	}
 	endpoint := strings.ToLower(conf.Config.S3.AwsEndPoint)
-	endpointSplitted := strings.Split(endpoint, "://")
-	endpoint = endpointSplitted[1]
-	useSSL := endpointSplitted[0] == "https"
+	endpointSplit := strings.Split(endpoint, "://")
+	endpoint = endpointSplit[1]
+	useSSL := endpointSplit[0] == "https"
 	accessKeyID := conf.Config.S3.AwsAccessKeyId
 	secretAccessKey := conf.Config.S3.AwsSecretAccessKey
 
-	opt := &minio.Options{
+	opts := &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: useSSL,
 	}
 
 	// Initialize minio client object.
-	minioClient, err := minio.New(endpoint, opt)
+	minioClient, err := minio.New(endpoint, opts)
 	exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ClientInit))
 
-	logS3(requestSession, "Create Minio S3 Client")
 	minioS3Client = &MinioS3Client{minioClient: minioClient}
+	minioS3Client.ensureReadWriteAccess(requestSession)
+
+	logS3(requestSession, "Create Minio S3 Client")
 	return minioS3Client
+}
+
+func (client *MinioS3Client) ensureReadWriteAccess(requestSession *logy.RequestSession) {
+	probeValue := time.Now().UTC().Format(time.RFC3339Nano)
+	probeFileName := fmt.Sprintf(".healthcheck/s3-probe-%s.txt", uuid.NewString())
+
+	client.UploadObject(requestSession, probeFileName, strings.NewReader(probeValue), nil)
+
+	defer func() {
+		err := client.minioClient.RemoveObject(context.Background(), conf.Config.S3.BucketName, probeFileName, minio.RemoveObjectOptions{})
+		if err != nil {
+			logy.Errorf(requestSession, "[S3] Failed to delete probe object %s: %v", probeFileName, err)
+		}
+	}()
+	reader := client.ReadFile(requestSession, probeFileName)
+	defer reader.Close()
+
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ConnectionCheck, probeFileName))
+	}
+	if string(content) != probeValue {
+		err := fmt.Errorf("S3 connection check failed: written and read probe content differ for %q", probeFileName)
+		exception.HandleErrorServerMessage(err, message.GetI18N(message.ErrorS3ConnectionCheck, probeFileName))
+	}
+	logS3(requestSession, "S3 read/write check successful")
 }
 
 func checkIfS3IsEnabledOrThrowException() {

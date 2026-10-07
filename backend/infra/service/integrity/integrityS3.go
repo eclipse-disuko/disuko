@@ -35,6 +35,10 @@ func checkIfAllFilesFromS3ExistInTheDb(requestSession *logy.RequestSession, proj
 	logy.Infof(requestSession, "Start analyse files on S3")
 	filesOnS3 := s3Helper.ListObjects(requestSession, conf.Config.Server.GetUploadPath())
 	for file := range filesOnS3 {
+		if file.Err != nil {
+			logy.Errorf(requestSession, "Found file error for %q: %s", file.Key, file.Err)
+			continue
+		}
 		if len(file.Key) < 1 {
 			//ignore ghost files, sometime happens on S3 Mock
 			logy.Errorf(requestSession, "Found file ghost! ")
