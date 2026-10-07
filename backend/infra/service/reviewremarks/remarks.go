@@ -5,6 +5,7 @@
 package reviewremarks
 
 import (
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/eclipse-disuko/disuko/domain/license"
@@ -62,9 +63,11 @@ func (s *ReviewRemarksService) CreateReviewRemark(prj *project.Project, versionI
 		return false, new(message.ReviewRemarkExists)
 	}
 
-	previous := reviewremarks.FindLatestMatchingRemark(remarks.Remarks, &r)
-	if previous != nil {
-		r.CarryOverStateFrom(previous)
+	if !conf.IsProdEnv() {
+		previous := reviewremarks.FindLatestMatchingRemark(remarks.Remarks, &r)
+		if previous != nil {
+			r.CarryOverStateFrom(previous)
+		}
 	}
 
 	remarks.Remarks = append(remarks.Remarks, &r)

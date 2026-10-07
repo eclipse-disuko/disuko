@@ -289,7 +289,7 @@ type RrCombinationKey struct {
 
 func (r *Remark) MakeRrKey() RrKey {
 	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
-	combinationKey := r.MakeCombinationKey()
+	combinationKey := r.makeCombinationKey()
 	return RrKey{
 		sbomId:     norm(r.SBOMId),
 		components: combinationKey.components,
@@ -297,7 +297,7 @@ func (r *Remark) MakeRrKey() RrKey {
 	}
 }
 
-func (r *Remark) MakeCombinationKey() RrCombinationKey {
+func (r *Remark) makeCombinationKey() RrCombinationKey {
 	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 	const (
 		fieldSeparator = "\x1f"
@@ -336,7 +336,7 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 		return nil
 	}
 
-	newKey := newRemark.MakeCombinationKey()
+	newKey := newRemark.makeCombinationKey()
 	var latest *Remark
 	for _, existingRemark := range existingRemarks {
 		if existingRemark.SBOMId == newRemark.SBOMId {
@@ -348,7 +348,7 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 		if existingRemark.SBOMUploaded.After(*newRemark.SBOMUploaded) {
 			continue
 		}
-		if existingRemark.MakeCombinationKey() != newKey {
+		if existingRemark.makeCombinationKey() != newKey {
 			continue
 		}
 		if latest == nil || existingRemark.SBOMUploaded.After(*latest.SBOMUploaded) {

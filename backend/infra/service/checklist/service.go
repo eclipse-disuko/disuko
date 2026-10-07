@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain"
 	"github.com/eclipse-disuko/disuko/domain/checklist"
 	"github.com/eclipse-disuko/disuko/domain/license"
@@ -176,9 +177,11 @@ func (s *Service) prepareNewRemarks(remarks []*reviewremarks.Remark, existing *r
 			continue
 		}
 
-		previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
-		if previous != nil {
-			newRemark.CarryOverStateFrom(previous)
+		if !conf.IsProdEnv() {
+			previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
+			if previous != nil {
+				newRemark.CarryOverStateFrom(previous)
+			}
 		}
 
 		existingKeys[k] = struct{}{}
