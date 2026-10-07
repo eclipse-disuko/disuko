@@ -195,6 +195,7 @@ var Config = struct {
 	S3 struct {
 		IsEnabled          bool `default:"false"`
 		IsRestApiEnabled   bool `default:"false"`
+		UseARN             bool `default:"false"`
 		AwsAccessKeyId     string
 		AwsSecretAccessKey string
 		AwsRegion          string `default:""`
@@ -325,6 +326,7 @@ func checkEnvironmentVariables() {
 	Config.S3.AwsAccessKeyId = getEnvVariable("AWS_ACCESS_KEY_ID", Config.S3.AwsAccessKeyId)
 	Config.S3.AwsSecretAccessKey = getEnvVariable("AWS_SECRET_ACCESS_KEY", Config.S3.AwsSecretAccessKey)
 	Config.S3.BucketName = getEnvVariable("S3_BUCKET_NAME", Config.S3.BucketName)
+	Config.S3.UseARN = getEnvVariableBoolean("AWS_USE_ARN", Config.S3.UseARN)
 
 	Config.Server.MaxUploadPerHourPerProject = getEnvVariableInt("MAX_UPLOAD_PER_HOUR_PER_PROJECT", Config.Server.MaxUploadPerHourPerProject)
 	Config.Server.Env = getEnvVariable("ENV", Config.Server.Env)
