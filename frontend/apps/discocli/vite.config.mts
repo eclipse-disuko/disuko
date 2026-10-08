@@ -83,7 +83,7 @@ export default defineConfig(({mode}) => {
       }),
       tailwindcss(),
     ].filter(Boolean),
-    base: '/supplierportal/',
+    base: '/disclosureportal-supplierui/',
     resolve: {
       alias: {
         '@disclosure-portal': `${path.resolve(__dirname, './../../libs/portal')}/`, // Alias für Hauptprojekt

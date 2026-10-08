@@ -2,7 +2,7 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router';
 import {authService} from '@cli/services/authService';
 import {useAppStore} from '@cli/stores/app';
 
-const baseUrl = import.meta.env.BASE_URL || '/supplierportal/';
+const baseUrl = import.meta.env.BASE_URL || '/disclosureportal-supplierui/';
 
 const routes: RouteRecordRaw[] = [
   {
