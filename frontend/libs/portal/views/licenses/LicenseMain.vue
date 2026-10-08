@@ -74,7 +74,7 @@
             :disabled="true"></GridPolicyRulesAssignments>
         </v-tabs-window-item>
         <v-tabs-window-item value="aliases">
-          <GridAliases :license="item" mode="readonly"></GridAliases>
+          <LicenseAliases :license="item"></LicenseAliases>
         </v-tabs-window-item>
         <v-tabs-window-item value="evaluation">
           <LicenseEvaluation :license="item"></LicenseEvaluation>

@@ -135,6 +135,7 @@ declare module 'vue' {
     Jobs: typeof import('./../../libs/portal/views/admin/tools/Jobs.vue')['default']
     Labels: typeof import('./../../libs/portal/views/admin/Labels.vue')['default']
     LegacyApprovalSection: typeof import('./../../libs/portal/components/approval/LegacyApprovalSection.vue')['default']
+    LicenseAliases: typeof import('./../../libs/portal/components/licenses/LicenseAliases.vue')['default']
     LicenseCompareDialog: typeof import('./../../libs/portal/components/dialog/LicenseCompareDialog.vue')['default']
     LicenseDetails: typeof import('./../../libs/portal/components/licenses/LicenseDetails.vue')['default']
     LicenseEvaluation: typeof import('./../../libs/portal/components/licenses/LicenseEvaluation.vue')['default']

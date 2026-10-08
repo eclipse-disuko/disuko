@@ -10,7 +10,6 @@
     <template #table>
       <v-data-table
         v-if="obligations?.length > 0"
-        ref="gridOb"
         :headers="headers"
         fixed-header
         density="compact"
@@ -60,7 +59,6 @@ import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-por
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
-import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 const props = defineProps<{
@@ -73,7 +71,6 @@ const search = ref('');
 const viewTools = useViewTools();
 const {getTextOfLevel, getTextOfType} = useView();
 const obligations = reactive<IObligation[]>(props.license.meta.obligationsList);
-const gridOb = ref<HTMLElement | null>(null);
 
 const userStore = useUserStore();
 rights.value = userStore.getRights;
