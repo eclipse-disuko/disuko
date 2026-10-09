@@ -76,7 +76,7 @@
 import {Application} from '@disclosure-portal/model/Application';
 import ApplicationService from '@disclosure-portal/services/application';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import {RuleFunction} from '@disclosure-portal/types/rules';
+import {RuleFunction} from '@shared/types/rules';
 import _ from 'lodash';
 import {defineComponent, onMounted, PropType, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

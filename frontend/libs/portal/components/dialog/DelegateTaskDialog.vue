@@ -3,6 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
+import {fetchProfileUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';
@@ -59,7 +60,7 @@ const confirm = async () => {
               <DAutocompleteUser
                 ref="delegateUserRef"
                 v-model="delegateUser"
-                :project-key="projectKey"
+                :fetch-options="fetchProfileUserOptions"
                 :label="t('DELEGATE_TO_LABEL')"
                 only-internal-users
                 required />

@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import {getProjectUserTypes, ProjectKeyName, ProjectUser, UserType} from '@disclosure-portal/model/Project';
+import {fetchProjectUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {UserDto} from '@shared/types/Users';
 import useRules from '@disclosure-portal/utils/Rules';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
@@ -24,6 +25,7 @@ const props = withDefaults(
   }>(),
   {},
 );
+const fetchUsers = computed(() => fetchProjectUserOptions(props.projectKey));
 const emit = defineEmits<{
   (e: 'createUser', user: ProjectUser): void;
   (e: 'editUser', user: ProjectUser, oldUserId: string, targetProjectKey?: string): void;
@@ -213,7 +215,7 @@ defineExpose({close});
             <v-col cols="12" xs="12" class="errorBorder px-2">
               <DAutocompleteUser
                 v-model="item.userId"
-                :project-key="projectKey"
+                :fetch-options="fetchUsers"
                 :preselect="item.userProfile"
                 ref="autocompleteUserRef"
                 @userChanged="userChanged"

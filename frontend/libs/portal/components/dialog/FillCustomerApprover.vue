@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import {ApproverRoles} from '@disclosure-portal/model/Approval';
+import {fetchProjectUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import DHTTPError from '@shared/types/DHTTPError';
 import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {UserDto} from '@shared/types/Users';
@@ -26,6 +27,8 @@ const emit = defineEmits<{
 }>();
 
 const {t} = useI18n();
+
+const fetchUsers = computed(() => fetchProjectUserOptions(props.projectKey));
 
 const formRef = ref<VForm | null>(null);
 const customer1Ref = ref();
@@ -110,7 +113,7 @@ const dialogConfig = computed(() => ({
         <DAutocompleteUser
           ref="customer1Ref"
           v-model="customer1"
-          :project-key="projectKey"
+          :fetch-options="fetchUsers"
           :label="t('FIRST_REPORTER_LABEL')"
           :required="true"
           :preselect="customer1User"
@@ -118,7 +121,7 @@ const dialogConfig = computed(() => ({
         <DAutocompleteUser
           ref="customer2Ref"
           v-model="customer2"
-          :project-key="projectKey"
+          :fetch-options="fetchUsers"
           :label="t('SECOND_REPORTER_LABEL')"
           :required="true"
           :preselect="customer2User"

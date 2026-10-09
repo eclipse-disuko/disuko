@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import {Department} from '@shared/model/Department';
-import companyService from '@disclosure-portal/services/companies';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {UserMetaData} from '@shared/types/Users';
 import _ from 'lodash';
@@ -15,6 +14,7 @@ defineOptions({inheritAttrs: false});
 
 const props = withDefaults(
   defineProps<{
+    fetchOptions: (query: string) => Promise<Department[]>;
     required?: boolean;
     label?: string;
     readonly?: boolean;
@@ -55,7 +55,7 @@ const loadMatchingDepartment = async () => {
   const companyCode = normalize(props.matchingDepartment?.companyIdentifier);
   const description = normalize(props.matchingDepartment?.departmentDescription);
   if (companyCode && description) {
-    const departments = await companyService.find(companyCode);
+    const departments = await props.fetchOptions(companyCode);
     matchingSuggestion.value = departments.find(
       (d) => normalize(d.companyCode) === companyCode && normalize(d.descriptionEnglish) === description,
     );
@@ -94,7 +94,7 @@ const searchChanged = (query: string) => {
     suggestions.value = defaultSuggestions();
     return;
   }
-  companyService.find(query.toLowerCase().trim()).then((res) => {
+  props.fetchOptions(query.toLowerCase().trim()).then((res) => {
     suggestions.value = sortSuggestions(res);
   });
 };

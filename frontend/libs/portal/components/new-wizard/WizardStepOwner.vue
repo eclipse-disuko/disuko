@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import {useNewWizard} from '@disclosure-portal/composables/useNewWizard';
+import {fetchCompanyOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {onMounted, ref} from 'vue';
@@ -38,6 +39,7 @@ onMounted(async () => {
 
       <DAutocompleteCompany
         id="owner-company"
+        :fetch-options="fetchCompanyOptions"
         v-if="RightsUtils.rights().isInternal"
         v-model="wizardStore.project.projectSettings.customerMeta.dept"
         :label="t('COMPANY')"

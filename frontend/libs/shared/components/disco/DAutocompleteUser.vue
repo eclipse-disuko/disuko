@@ -3,11 +3,9 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
+import {RuleFunction} from '@shared/types/rules';
 import {UserDto} from '@shared/types/Users';
-import profileService from '@shared/user/services/profile.service';
-import projectService from '@disclosure-portal/services/projects';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {RuleFunction} from '@disclosure-portal/types/rules';
 import config from '@shared/utils/config';
 import {debounce} from 'lodash';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';
@@ -16,8 +14,8 @@ import {VForm} from 'vuetify/components';
 
 const props = withDefaults(
   defineProps<{
+    fetchOptions: (query: string, active?: boolean) => Promise<UserDto[]>;
     preselect?: UserDto;
-    projectKey?: string;
     onlyAlphanumeric?: boolean;
     required?: boolean;
     label?: string;
@@ -170,14 +168,9 @@ const searchForUser = async () => {
 
   const hasSpecialChars = searchFieldInput.value && !searchValidatorRegex.test(searchFieldInput.value);
   if (!hasSpecialChars) {
-    let response;
     const activeFilter = props.active === null ? undefined : props.active;
-    if (props.projectKey) {
-      response = await projectService.getUsersBySearchFragment(props.projectKey, searchFieldInput.value, activeFilter);
-    } else {
-      response = await profileService.getUsersBySearchFragment(searchFieldInput.value, activeFilter);
-    }
-    items.value = response.data.filter((user: UserDto) => (props.onlyInternalUsers ? user.isInternal === true : true));
+    const response = await props.fetchOptions(searchFieldInput.value, activeFilter);
+    items.value = response.filter((user: UserDto) => (props.onlyInternalUsers ? user.isInternal === true : true));
     if (items.value.length === 0) {
       searchedAndNotFound.value = true;
     }

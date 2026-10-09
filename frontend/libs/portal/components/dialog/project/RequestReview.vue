@@ -9,6 +9,7 @@ import {UserDto} from '@shared/types/Users';
 import {ComponentStats, SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import profileService from '@shared/user/services/profile.service';
 import projectService from '@disclosure-portal/services/projects';
+import {fetchProjectUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -44,6 +45,7 @@ const selectUserField = ref();
 const form = ref<VForm | null>(null);
 
 const projectModel = computed(() => projectStore.currentProject!);
+const fetchUsers = computed(() => fetchProjectUserOptions(projectModel.value._key));
 const channels = computed(() => {
   const res = Object.values(projectModel.value.versions);
   res.sort((a, b) => (dayjs(a.updated).isBefore(b.updated) ? 1 : -1));
@@ -215,9 +217,9 @@ defineExpose({open});
               class="w-1/2"
               ref="selectUserField"
               v-model="approver"
+              :fetch-options="fetchUsers"
               :preselect="approverPreselect"
               :readonly="!!approverPreselect"
-              :project-key="projectModel._key"
               :label="t('APPROVER_LABEL')"
               only-internal-users
               required />

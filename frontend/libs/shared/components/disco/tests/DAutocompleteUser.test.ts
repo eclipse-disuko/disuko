@@ -9,18 +9,7 @@ import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} fr
 import {nextTick} from 'vue';
 import DAutocompleteUser from '../DAutocompleteUser.vue';
 
-const {profileSearchMock, projectSearchMock} = vi.hoisted(() => ({
-  profileSearchMock: vi.fn(),
-  projectSearchMock: vi.fn(),
-}));
-
-vi.mock('@shared/user/services/profile.service', () => ({
-  default: {getUsersBySearchFragment: profileSearchMock},
-}));
-
-vi.mock('@disclosure-portal/services/projects', () => ({
-  default: {getUsersBySearchFragment: projectSearchMock},
-}));
+const fetchOptionsMock = vi.fn();
 
 // DAutocompleteUser imports VForm from 'vuetify/components' purely for its TS type, but that's a
 // value import at runtime, and Vue's SFC compiler binds the <v-form> tag directly to that local
@@ -109,7 +98,7 @@ describe('DAutocompleteUser', () => {
 
   const createWrapper = (props: Record<string, unknown> = {}) => {
     return mount(DAutocompleteUser, {
-      props,
+      props: {fetchOptions: fetchOptionsMock, ...props},
       global: {
         plugins: [createTestingPinia({createSpy: vi.fn, stubActions: false})],
         stubs: {
@@ -128,12 +117,12 @@ describe('DAutocompleteUser', () => {
     vi.advanceTimersByTime(500);
     await nextTick();
 
-    expect(profileSearchMock).not.toHaveBeenCalled();
+    expect(fetchOptionsMock).not.toHaveBeenCalled();
   });
 
-  it('debounces the search and calls profileService once the query settles', async () => {
+  it('debounces the options fetch once the query settles', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({data: [buildUser()]});
+    fetchOptionsMock.mockResolvedValue([buildUser()]);
     const wrapper = createWrapper();
 
     await wrapper.find('.search-input').setValue('jd');
@@ -141,27 +130,16 @@ describe('DAutocompleteUser', () => {
     await wrapper.find('.search-input').setValue('jdo');
     await vi.advanceTimersByTimeAsync(300);
 
-    expect(profileSearchMock).toHaveBeenCalledTimes(1);
-    expect(profileSearchMock).toHaveBeenCalledWith('jdo', true);
-  });
-
-  it('routes the search through projectService when projectKey is set', async () => {
-    vi.useFakeTimers();
-    projectSearchMock.mockResolvedValue({data: [buildUser()]});
-    const wrapper = createWrapper({projectKey: 'proj-1'});
-
-    await wrapper.find('.search-input').setValue('jdo');
-    await vi.advanceTimersByTimeAsync(300);
-
-    expect(projectSearchMock).toHaveBeenCalledWith('proj-1', 'jdo', true);
-    expect(profileSearchMock).not.toHaveBeenCalled();
+    expect(fetchOptionsMock).toHaveBeenCalledTimes(1);
+    expect(fetchOptionsMock).toHaveBeenCalledWith('jdo', true);
   });
 
   it('filters results to internal users only when onlyInternalUsers is set', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({
-      data: [buildUser({user: 'internal', isInternal: true}), buildUser({user: 'external', isInternal: false})],
-    });
+    fetchOptionsMock.mockResolvedValue([
+      buildUser({user: 'internal', isInternal: true}),
+      buildUser({user: 'external', isInternal: false}),
+    ]);
     const wrapper = createWrapper({onlyInternalUsers: true});
 
     await wrapper.find('.search-input').setValue('jdo');
@@ -173,7 +151,7 @@ describe('DAutocompleteUser', () => {
 
   it('emits userChanged and updates the v-model when a user is selected', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({data: [buildUser()]});
+    fetchOptionsMock.mockResolvedValue([buildUser()]);
     const wrapper = createWrapper();
 
     await wrapper.find('.search-input').setValue('jdo');
@@ -197,7 +175,7 @@ describe('DAutocompleteUser', () => {
 
   it('shows a "not found" no-data slot with a mailto action once a search returns nothing', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({data: []});
+    fetchOptionsMock.mockResolvedValue([]);
     const wrapper = createWrapper();
 
     await wrapper.find('.search-input').setValue('jdo');
@@ -232,7 +210,7 @@ describe('DAutocompleteUser', () => {
 
   it('resetForm clears the search input and items', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({data: [buildUser()]});
+    fetchOptionsMock.mockResolvedValue([buildUser()]);
     const wrapper = createWrapper();
 
     await wrapper.find('.search-input').setValue('jdo');
@@ -247,7 +225,7 @@ describe('DAutocompleteUser', () => {
 
   it('clears the search state when the clear button is clicked', async () => {
     vi.useFakeTimers();
-    profileSearchMock.mockResolvedValue({data: [buildUser()]});
+    fetchOptionsMock.mockResolvedValue([buildUser()]);
     const wrapper = createWrapper();
 
     await wrapper.find('.search-input').setValue('jdo');

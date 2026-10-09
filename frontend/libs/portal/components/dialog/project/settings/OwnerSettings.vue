@@ -4,6 +4,7 @@
 
 <script lang="ts" setup>
 import {CustomerMetaDTO, NoticeContactMetaDTO} from '@disclosure-portal/model/Project';
+import {fetchCompanyOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {Group, Rights} from '@shared/user/models/Rights';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
@@ -37,6 +38,7 @@ const noticeMeta = defineModel<NoticeContactMetaDTO>('noticeMeta', {required: tr
 
     <DAutocompleteCompany
       id="owner-company"
+      :fetch-options="fetchCompanyOptions"
       v-if="RightsUtils.rights().isInternal"
       v-model="customerMeta.dept"
       :readonly="hasParent || (rights && !rights.groups?.includes(Group.ProjectOwner))"

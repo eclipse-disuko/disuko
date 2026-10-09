@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useNotificationStore} from '@shared/stores/notification.store';
 import {UseWindowSize} from '@vueuse/components';
 import {useWindowSize} from '@vueuse/core';
 import {ref, watch} from 'vue';
@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const route = useRoute();
 const windowSize = useWindowSize();
-const appStore = useAppStore();
+const notificationStore = useNotificationStore();
 
 const desc = ref<HTMLElement | null>(null);
 const buttons = ref<HTMLElement | null>(null);
@@ -31,7 +31,7 @@ const table = ref<HTMLElement | null>(null);
 const layout = ref<HTMLElement | null>(null);
 
 const calculateTotalContentHeight = (height: number, hasTab = props.hasTab, hasTitle = props.hasTitle) => {
-  const notificationHeight = appStore.notificationClosed || !appStore.notificationMessage ? 0 : 32;
+  const notificationHeight = notificationStore.visible ? 32 : 0;
   const headerHeight = 56;
   const footerHeight = 40;
   const tabHeight = hasTab ? 48 + 32 : 0;

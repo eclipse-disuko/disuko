@@ -4,12 +4,12 @@
 
 <script setup lang="ts">
 import adminService from '@disclosure-portal/services/admin';
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useNotificationStore} from '@shared/stores/notification.store';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
-const appStore = useAppStore();
+const notificationStore = useNotificationStore();
 
 const loading = ref(false);
 const enabled = ref(false);
@@ -26,19 +26,19 @@ const open = async () => {
 };
 
 const previewNotification = () => {
-  appStore.dismissedNotificationText = '';
-  appStore.notificationMessage = notificationText.value;
-  appStore.notificationClosed = false;
+  notificationStore.dismissedText = '';
+  notificationStore.message = notificationText.value;
+  notificationStore.closed = false;
 };
 const postNotification = async () => {
   loading.value = true;
   try {
     enabled.value = !enabled.value;
     await adminService.setNotification({enabled: enabled.value, text: notificationText.value});
-    appStore.notificationMessage = notificationText.value;
-    appStore.notificationClosed = !enabled.value;
+    notificationStore.message = notificationText.value;
+    notificationStore.closed = !enabled.value;
     if (enabled.value) {
-      appStore.dismissedNotificationText = '';
+      notificationStore.dismissedText = '';
     }
   } finally {
     loading.value = false;
