@@ -33,12 +33,9 @@
         "libs/shared/components/disco/PolicyRulesTable.vue",
         "libs/shared/components/disco/DRuleButtons.vue",
         "libs/shared/components/disco/DVersionStateWithTooltip.vue",
-        "libs/shared/components/disco/DAutocompleteCompany.vue",
-        "libs/shared/components/disco/DAutocompleteUser.vue",
         "libs/shared/components/disco/DDateCellWithTooltip.vue",
         "libs/shared/components/disco/interfaces.ts",
         "libs/shared/components/widgets/DiscoFileUpload.vue",
-        "libs/shared/layouts/TableLayout.vue",
         "libs/shared/components/widgets/FilterSets.vue"
       ],
       "rules": {

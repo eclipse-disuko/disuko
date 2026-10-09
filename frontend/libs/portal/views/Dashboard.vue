@@ -8,6 +8,7 @@ import releaseNotes from '@disclosure-portal/assets/documents/release_notes/Rele
 import {INotificationMeta} from '@shared/types/IdleInfo';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup} from '@disclosure-portal/stores/navigation';
+import {useNotificationStore} from '@shared/stores/notification.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import eventBus from '@shared/utils/eventbus';
 import {logout} from '@disclosure-portal/utils/logout';
@@ -24,13 +25,15 @@ import {useLanguageStore} from '@shared/stores/language.store';
 const route = useRoute();
 const router = useRouter();
 const appStore = useAppStore();
+const notificationStore = useNotificationStore();
 const userStore = useUserStore();
 const theme = useThemeStore();
 const {t} = useI18n();
 const languageStore = useLanguageStore();
 const {appLanguage} = storeToRefs(languageStore);
 
-const {notificationClosed, notificationMessage, dummyDesignMode, dismissedNotificationText} = storeToRefs(appStore);
+const {dummyDesignMode} = storeToRefs(appStore);
+const {closed: notificationClosed, message: notificationMessage, dismissedText} = storeToRefs(notificationStore);
 
 const username = ref('');
 const navIsCollapsed = ref(true);
@@ -76,19 +79,19 @@ const openHelp = () => {
 };
 
 const disableNotification = () => {
-  dismissedNotificationText.value = notificationMessage.value;
+  dismissedText.value = notificationMessage.value;
   notificationClosed.value = true;
 };
 
-const onSetNotification = ({config}: {config: INotificationMeta}) => {
-  if (config.enabled && config.text && config.text !== dismissedNotificationText.value) {
+const onSetNotification = ({config: notificationConfig}: {config: INotificationMeta}) => {
+  if (notificationConfig.enabled && notificationConfig.text && notificationConfig.text !== dismissedText.value) {
     notificationClosed.value = false;
   }
   if (notificationClosed.value) {
     return;
   }
-  notificationClosed.value = !config.enabled;
-  notificationMessage.value = config.text;
+  notificationClosed.value = !notificationConfig.enabled;
+  notificationMessage.value = notificationConfig.text;
 };
 
 const escapeListener = (event: KeyboardEvent) => {
@@ -153,13 +156,8 @@ watch(
 </script>
 
 <template>
-  <v-system-bar
-    class="pa-2 notification-bar"
-    height="32"
-    fixed
-    app
-    v-if="!appStore.notificationClosed && appStore.notificationMessage">
-    <span class="font-bold" v-html="escapeHtml(appStore.notificationMessage)"></span>
+  <v-system-bar class="pa-2 notification-bar" height="32" fixed app v-if="notificationStore.visible">
+    <span class="font-bold" v-html="escapeHtml(notificationStore.message)"></span>
     <v-spacer></v-spacer>
     <DCloseButton @click="disableNotification()"></DCloseButton>
   </v-system-bar>

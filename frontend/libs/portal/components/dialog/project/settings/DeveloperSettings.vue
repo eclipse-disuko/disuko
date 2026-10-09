@@ -41,6 +41,7 @@
 
     <DAutocompleteCompany
       id="developer-company"
+      :fetch-options="fetchCompanyOptions"
       v-if="!projectSettings.supplierExtraData.external && RightsUtils.rights().isInternal"
       v-model="projectSettings.documentMeta.supplierDept"
       :readonly="hasParent || isNotProjectOwner"
@@ -75,6 +76,7 @@
 
 <script lang="ts" setup>
 import {ProjectLabels} from '@disclosure-portal/constants/policyLabels';
+import {fetchCompanyOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {ProjectModel, ProjectSettingsModel} from '@disclosure-portal/model/Project';
 import {Group, Rights} from '@shared/user/models/Rights';
 import {WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';

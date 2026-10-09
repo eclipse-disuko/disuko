@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useAppStore} from '@disclosure-portal/stores/app';
+import {useNotificationStore} from '@shared/stores/notification.store';
 import {mountView} from '@disclosure-portal/test-utils/view-test-utils';
 import {nextTick} from 'vue';
 import {describe, expect, it, vi} from 'vitest';
@@ -39,7 +39,7 @@ describe('NotificationBarManagement', () => {
     expect(wrapper.find('textarea').element.value).toBe('Existing notice');
   });
 
-  it('toggles the notification and updates the app store when posted', async () => {
+  it('toggles the notification and updates the notification store when posted', async () => {
     getNotificationMock.mockResolvedValue({data: {enabled: false, text: ''}});
     setNotificationMock.mockResolvedValue({data: {}});
 
@@ -57,7 +57,7 @@ describe('NotificationBarManagement', () => {
 
     expect(setNotificationMock).toHaveBeenCalledWith({enabled: true, text: 'New notice'});
 
-    const appStore = useAppStore(pinia);
-    expect(appStore.notificationMessage).toBe('New notice');
+    const notificationStore = useNotificationStore(pinia);
+    expect(notificationStore.message).toBe('New notice');
   });
 });
