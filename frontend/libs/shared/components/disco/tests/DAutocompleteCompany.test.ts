@@ -10,10 +10,6 @@ import DAutocompleteCompany from '../DAutocompleteCompany.vue';
 
 const {companyFindMock} = vi.hoisted(() => ({companyFindMock: vi.fn()}));
 
-vi.mock('@disclosure-portal/services/companies', () => ({
-  default: {find: companyFindMock},
-}));
-
 const buildDept = (overrides: Partial<DepartmentDto> = {}): Department => {
   const department = new Department();
   const defaults: DepartmentDto = {
@@ -80,7 +76,7 @@ describe('DAutocompleteCompany', () => {
 
   const createWrapper = (props: Record<string, unknown> = {}, modelValue: Department | null = null) => {
     return mount(DAutocompleteCompany, {
-      props: {modelValue, ...props},
+      props: {modelValue, fetchOptions: companyFindMock, ...props},
       global: {
         stubs: {
           'v-autocomplete': vAutocompleteStub,

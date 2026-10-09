@@ -52,9 +52,6 @@ export const useAppStore = defineStore('app', () => {
       } as INavItem,
     } as INavItemGroup,
     tokenRefresherIsRunning: false,
-    notificationMessage: '',
-    dismissedNotificationText: '',
-    notificationClosed: false,
     dummyDesignMode: false,
     shouldReloadApprovals: false,
   });
@@ -75,10 +72,6 @@ export const useAppStore = defineStore('app', () => {
       console.error(error);
     }
     setTimeout(() => checkIfTokenMustRefresh(), 1000 * 60 * 2);
-  };
-
-  const setNotification = (msg: string) => {
-    state.notificationMessage = msg;
   };
 
   const setNavItemGroup = (items: INavItem[], adminItems: INavItem[]) => {
@@ -223,7 +216,6 @@ export const useAppStore = defineStore('app', () => {
     updateTileCounts,
     fetchLabelsTools,
     checkIfTokenMustRefresh,
-    setNotification,
     setNavItemGroup,
     setTiles,
     startTokenRefresher,

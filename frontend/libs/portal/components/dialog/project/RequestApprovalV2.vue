@@ -9,6 +9,7 @@ import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ApprovableSPDXDto} from '@disclosure-portal/model/Project';
 import {UserDto} from '@shared/types/Users';
 import projectService from '@disclosure-portal/services/projects';
+import {fetchProjectUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
@@ -93,6 +94,8 @@ const {
   },
   fetchFlat: false,
 });
+
+const fetchUsers = computed(() => fetchProjectUserOptions(projectModel.value._key));
 
 const commentRule = longText(t('TAD_COMMENT'));
 
@@ -256,8 +259,8 @@ defineExpose({open});
                 <DAutocompleteUser
                   ref="developerApproverIn1"
                   v-model="developerApprover1"
+                  :fetch-options="fetchUsers"
                   :preselect="developerApproverPre1"
-                  :project-key="projectModel._key"
                   :label="t('FIRST_REPORTER_LABEL')"
                   data-testid="developerApprover1"
                   only-internal-users
@@ -265,8 +268,8 @@ defineExpose({open});
                 <DAutocompleteUser
                   ref="developerApproverIn2"
                   v-model="developerApprover2"
+                  :fetch-options="fetchUsers"
                   :preselect="developerApproverPre2"
-                  :project-key="projectModel._key"
                   :label="t('SECOND_REPORTER_LABEL')"
                   data-testid="developerApprover2"
                   only-internal-users
@@ -282,16 +285,16 @@ defineExpose({open});
                 <DAutocompleteUser
                   ref="ownerApproverIn1"
                   v-model="ownerApprover1"
+                  :fetch-options="fetchUsers"
                   :preselect="ownerApproverPre1"
-                  :project-key="projectModel._key"
                   :label="t('FIRST_REPORTER_LABEL')"
                   data-testid="ownerApprover1"
                   only-internal-users />
                 <DAutocompleteUser
                   ref="ownerApproverIn2"
                   v-model="ownerApprover2"
+                  :fetch-options="fetchUsers"
                   :preselect="ownerApproverPre2"
-                  :project-key="projectModel._key"
                   :label="t('SECOND_REPORTER_LABEL')"
                   data-testid="ownerApprover2"
                   only-internal-users />
