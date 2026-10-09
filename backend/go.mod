@@ -23,16 +23,16 @@ require (
 	github.com/leesper/couchdb-golang v1.2.1
 	github.com/minio/minio-go/v7 v7.3.0
 	github.com/oapi-codegen/runtime v1.7.0
-	github.com/pdfcpu/pdfcpu v0.16.0
+	github.com/pdfcpu/pdfcpu v0.16.1
 	github.com/stretchr/testify v1.12.1
-	github.com/tidwall/gjson v1.19.0
+	github.com/tidwall/gjson v1.20.0
 	github.com/valkey-io/valkey-go v1.0.78
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xuri/excelize/v2 v2.11.0
-	go.mongodb.org/mongo-driver/v2 v2.9.1
+	go.mongodb.org/mongo-driver/v2 v2.9.2
 	go.uber.org/zap v1.28.0
 	golang.org/x/image v0.46.0
-	golang.org/x/net v0.59.0
+	golang.org/x/net v0.60.0
 	golang.org/x/oauth2 v0.37.0
 	golang.org/x/text v0.42.0
 )
@@ -55,7 +55,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/goccy/go-json v0.11.2 // indirect
-	github.com/hhrutter/tiff v1.0.6 // indirect
+	github.com/hhrutter/tiff v1.0.7 // indirect
 	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
