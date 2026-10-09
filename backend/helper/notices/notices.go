@@ -170,12 +170,12 @@ type componentsGroup struct {
 
 func groupComponentsByFOSSLicense(requestSession *logy.RequestSession, licenseRepository license2.ILicensesRepository, componentList components.ComponentInfos) componentsGrouped {
 	res := make(componentsGrouped, 0)
-	blacklist := make(map[string]bool, 0)
+	exclusionList := make(map[string]bool, 0)
 	alreadyAdded := make(map[string]int, 0)
 
 	for compI := range componentList {
 		for _, compLicense := range componentList[compI].GetLicensesEffective().List {
-			if !compLicense.Known || blacklist[compLicense.ReferencedLicense] {
+			if !compLicense.Known || exclusionList[compLicense.ReferencedLicense] {
 				continue
 			} else if i, ok := alreadyAdded[compLicense.ReferencedLicense]; ok {
 				res[i].components = append(res[i].components, &componentList[compI])
@@ -188,7 +188,7 @@ func groupComponentsByFOSSLicense(requestSession *logy.RequestSession, licenseRe
 					})
 					alreadyAdded[compLicense.ReferencedLicense] = len(res) - 1
 				} else {
-					blacklist[lic.LicenseId] = true
+					exclusionList[lic.LicenseId] = true
 				}
 			}
 		}
