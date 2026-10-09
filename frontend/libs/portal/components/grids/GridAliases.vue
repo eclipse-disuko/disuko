@@ -100,7 +100,8 @@ const licenseIdRules = [
           fixed-header
           item-key="_key"
           :hide-default-footer="true"
-          items-per-page="-1">
+          items-per-page="-1"
+          height="445">
           <template v-slot:bottom>
             <v-row>
               <v-col class="d-flex paddingRightItems fontColorItems mr-7 mb-4 justify-end">
