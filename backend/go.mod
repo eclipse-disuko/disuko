@@ -32,7 +32,7 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.9.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/image v0.46.0
-	golang.org/x/net v0.59.0
+	golang.org/x/net v0.60.0
 	golang.org/x/oauth2 v0.37.0
 	golang.org/x/text v0.42.0
 )
