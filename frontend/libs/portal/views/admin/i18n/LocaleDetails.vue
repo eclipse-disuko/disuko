@@ -77,33 +77,25 @@ const pageTitle = computed(() => {
 const pageDescription = computed(() => t('ADMIN_I18N_DETAIL_PAGE_DESCRIPTION'));
 const importResultHasErrors = computed(() => (importResult.value?.errors?.length || 0) > 0);
 
-const addEntryDialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}`,
-    primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
-    secondaryButton: {text: t('BTN_CANCEL')},
-  }),
-);
+const addEntryDialogConfig = computed((): DialogLayoutConfig => ({
+  title: `${t('NP_DIALOG_BTN_CREATE')} ${t('KEY')}`,
+  primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
+  secondaryButton: {text: t('BTN_CANCEL')},
+}));
 
-const deleteDialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('DLG_CONFIRMATION_TITLE'),
-  }),
-);
+const deleteDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('DLG_CONFIRMATION_TITLE'),
+}));
 
-const importDialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('BTN_UPLOAD_JSON'),
-    primaryButton: {text: t('BTN_UPLOAD_JSON'), disabled: isImporting.value},
-    secondaryButton: {text: t('BTN_CANCEL')},
-  }),
-);
+const importDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('BTN_UPLOAD_JSON'),
+  primaryButton: {text: t('BTN_UPLOAD_JSON'), disabled: isImporting.value},
+  secondaryButton: {text: t('BTN_CANCEL')},
+}));
 
-const importResultDialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('ADMIN_I18N_IMPORT_RESULT_TITLE'),
-  }),
-);
+const importResultDialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('ADMIN_I18N_IMPORT_RESULT_TITLE'),
+}));
 
 const normalizeValue = (value: unknown): string => {
   if (value === null || value === undefined) {

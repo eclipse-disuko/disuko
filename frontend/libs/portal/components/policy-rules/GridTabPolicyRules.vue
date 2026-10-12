@@ -526,13 +526,11 @@ const saveChanges = async () => {
   hasChanges.value = false;
 };
 
-const saveConfirmationConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('DLG_CONFIRMATION_TITLE'),
-    primaryButton: {text: t('BTN_YES')},
-    secondaryButton: {text: t('BTN_NO')},
-  }),
-);
+const saveConfirmationConfig = computed((): DialogLayoutConfig => ({
+  title: t('DLG_CONFIRMATION_TITLE'),
+  primaryButton: {text: t('BTN_YES')},
+  secondaryButton: {text: t('BTN_NO')},
+}));
 
 const showSaveConfirmation = () => {
   saveConfirmationVisible.value = true;

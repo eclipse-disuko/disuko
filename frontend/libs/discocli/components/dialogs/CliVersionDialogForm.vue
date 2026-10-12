@@ -72,13 +72,11 @@ const doDialogAction = async () => {
 
 defineExpose({open});
 
-const dialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t(title.value),
-    secondaryButton: {text: t('BTN_CANCEL')},
-    primaryButton: {text: t(confirmText.value)},
-  }),
-);
+const dialogConfig = computed((): DialogLayoutConfig => ({
+  title: t(title.value),
+  secondaryButton: {text: t('BTN_CANCEL')},
+  primaryButton: {text: t(confirmText.value)},
+}));
 </script>
 
 <template>
