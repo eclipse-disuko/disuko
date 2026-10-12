@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
- /**
+/**
  * Dumb stepper component, act as layout only for Step component
  * */
 </script>

@@ -78,13 +78,11 @@ const dialogConfig = computed(() => ({
   },
 }));
 
-const saveConfirmationConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('DLG_CONFIRMATION_TITLE'),
-    primaryButton: {text: t('BTN_YES')},
-    secondaryButton: {text: t('BTN_NO')},
-  }),
-);
+const saveConfirmationConfig = computed((): DialogLayoutConfig => ({
+  title: t('DLG_CONFIRMATION_TITLE'),
+  primaryButton: {text: t('BTN_YES')},
+  secondaryButton: {text: t('BTN_NO')},
+}));
 
 const open = (existing: PolicyRule & {rules?: Record<string, RuleStatus>}) => {
   originalItem.value = existing;

@@ -299,11 +299,9 @@ const possibleUserTypes = computed((): DataTableHeaderFilterItems[] => {
     ...new Set(projectChildrenMembers.value?.list?.map((item) => item?.projectMember?.userType)),
   ];
 
-  return uniqueUserTypes.map(
-    (value): DataTableHeaderFilterItems => ({
-      value,
-    }),
-  );
+  return uniqueUserTypes.map((value): DataTableHeaderFilterItems => ({
+    value,
+  }));
 });
 
 const customFilterTable = (value: any, search: string, internalItem: any) => {

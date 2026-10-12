@@ -33,19 +33,17 @@ const sortBy = ref<SortItem[]>([{key: 'updated', order: 'desc'}]);
 const itemsPerPage = ref(100);
 const page = ref(1);
 
-const options = computed(
-  (): SearchOptions => ({
-    page: page.value,
-    itemsPerPage: itemsPerPage.value,
-    sortBy: sortBy.value,
-    groupBy: [],
-    search: debouncedSearch.value,
-    filterString: debouncedSearch.value,
-    filterBy: {
-      status: selectedFilterStatus.value,
-    },
-  }),
-);
+const options = computed((): SearchOptions => ({
+  page: page.value,
+  itemsPerPage: itemsPerPage.value,
+  sortBy: sortBy.value,
+  groupBy: [],
+  search: debouncedSearch.value,
+  filterString: debouncedSearch.value,
+  filterBy: {
+    status: selectedFilterStatus.value,
+  },
+}));
 
 const headers = computed((): DataTableHeader[] => [
   {title: t('COL_ACTIONS'), align: 'start', width: sliderWidth.value, value: 'actions', sortable: false},

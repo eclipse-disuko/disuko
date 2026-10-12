@@ -122,15 +122,13 @@ function closeDialog() {
   isDialogVisible.value = false;
 }
 
-const dialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('UM_DIALOG_TITLE_NEW_TOKEN'),
-    loading: loading.value,
-    showIdle: true,
-    secondaryButton: {text: t('BTN_CANCEL')},
-    primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
-  }),
-);
+const dialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('UM_DIALOG_TITLE_NEW_TOKEN'),
+  loading: loading.value,
+  showIdle: true,
+  secondaryButton: {text: t('BTN_CANCEL')},
+  primaryButton: {text: t('NP_DIALOG_BTN_CREATE')},
+}));
 </script>
 
 <template>
