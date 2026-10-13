@@ -24,5 +24,5 @@ export function getDeleteTooltip(project: ProjectSlim | Project): string {
   if (project.hasSBOMToRetain) {
     return 'TT_not_delete_project_has_SBOM_retained';
   }
-  return 'TT_delete_project';
+  return project.isGroup ? 'TT_delete_group' : 'TT_delete_project';
 }

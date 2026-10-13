@@ -428,6 +428,7 @@
   "TT_edit_project": "edit project",
   "TT_edit_project_group": "edit project group",
   "TT_archive_project": "archive project",
+  "TT_delete_group": "Delete Group",
   "TT_delete_project": "Delete Project",
   "TT_settings_project": "edit settings",
   "TT_view_settings_project": "view settings",
