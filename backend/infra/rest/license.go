@@ -14,8 +14,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
+	fastlevenshteinv2 "github.com/yukiteruamano/fast-levenshtein/v2"
 	"go.uber.org/zap/zapcore"
 
 	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
@@ -25,8 +27,6 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 
-	"github.com/adrg/strutil"
-	"github.com/adrg/strutil/metrics"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/text/unicode/norm"
 
@@ -1023,37 +1023,48 @@ func (licensesHandler *LicensesHandler) LicenseCompareHandler(w http.ResponseWri
 		return
 	}
 	licenseText := simplifyText(string(bodyBytes))
+	lenA := utf8.RuneCountInString(licenseText)
 
-	type licenseWithSimilarityHolder struct {
-		License    license.License
-		Similarity float64
-	}
 	// Find all licenses in DB
 	allLicenses := licensesHandler.LicenseRepository.FindAll(requestSession, false)
-	licenseWithSimilarities := make([]licenseWithSimilarityHolder, 0)
 
-	// Calc similarity with Levenshtein and add to list
+	const licenseCompareTopN = 10
+	topItems := make([]license.LicenseWithSimilarityHolder, 0, licenseCompareTopN)
+
 	for _, l := range allLicenses {
 		simplifiedCompareText := simplifyText(l.Text)
+		lenB := utf8.RuneCountInString(simplifiedCompareText)
+		maxLen := max(lenA, lenB)
 
-		similarity := strutil.Similarity(licenseText, simplifiedCompareText, metrics.NewLevenshtein())
+		// Handle two empty normalized texts.
+		if maxLen == 0 {
+			emptyItem := license.LicenseWithSimilarityHolder{License: *l, Similarity: 1}
+			topItems = insertTopLicense(topItems, emptyItem, licenseCompareTopN)
+			continue
+		}
 
-		licenseWithSimilarities = append(licenseWithSimilarities, licenseWithSimilarityHolder{License: *l, Similarity: similarity})
+		// Mathematical upper bound of similarity:
+		// distance >= abs(lenA - lenB) => similarity <= min(lenA, lenB) / max(lenA, lenB)
+		maxPossibleSimilarity := float64(min(lenA, lenB)) / float64(maxLen)
+
+		// PRUNING:
+		// Once Top 10 is filled, skip candidates that cannot possibly beat the current 10th-best similarity.
+		if len(topItems) == licenseCompareTopN && maxPossibleSimilarity < topItems[len(topItems)-1].Similarity {
+			continue
+		}
+
+		// Exact Levenshtein distance.
+		distance := fastlevenshteinv2.Distance(licenseText, simplifiedCompareText)
+		similarity := 1 - float64(distance)/float64(maxLen)
+
+		// Keep only the Top 10.
+		item := license.LicenseWithSimilarityHolder{License: *l, Similarity: similarity}
+		topItems = insertTopLicense(topItems, item, licenseCompareTopN)
 	}
+	// topItems is already sorted DESC.
+	// No additional sorting needed.
 
-	// sort DESC by similarity
-	sort.SliceStable(licenseWithSimilarities, func(i, j int) bool {
-		return licenseWithSimilarities[i].Similarity > licenseWithSimilarities[j].Similarity
-	})
-
-	// New list with top 10 items
-	topNo := 10
-	if len(licenseWithSimilarities) < topNo {
-		topNo = len(licenseWithSimilarities)
-	}
-	topItems := licenseWithSimilarities[:topNo]
-
-	dtoList := make([]license.LicenseWithSimilarityDto, 0)
+	dtoList := make([]license.LicenseWithSimilarityDto, 0, len(topItems))
 	for _, item := range topItems {
 		dto := item.License.ToDto(requestSession, nil)
 		dtoList = append(dtoList, license.LicenseWithSimilarityDto{License: *dto, Similarity: item.Similarity})
@@ -1180,9 +1191,41 @@ func (licensesHandler *LicensesHandler) LookupHandler(w http.ResponseWriter, r *
 	render.JSON(w, r, res)
 }
 
+// insertTopLicense inserts a candidate into a descending similarity ranking, keeping at most 'limit' entries.
+//
+// Equal similarities preserve their original insertion order, matching the behavior of sort.SliceStable.
+func insertTopLicense(items []license.LicenseWithSimilarityHolder, item license.LicenseWithSimilarityHolder, limit int) []license.LicenseWithSimilarityHolder {
+	if limit <= 0 {
+		return items
+	}
+
+	// Find insertion position (descending similarity).
+	pos := 0
+	for pos < len(items) && items[pos].Similarity >= item.Similarity {
+		pos++
+	}
+
+	// Candidate cannot enter the Top N.
+	if pos >= limit {
+		return items
+	}
+	if len(items) < limit {
+		items = append(items, license.LicenseWithSimilarityHolder{})
+	}
+
+	// Shift existing entries to the right.
+	if pos < len(items)-1 {
+		copy(items[pos+1:], items[pos:len(items)-1])
+	}
+
+	items[pos] = item
+	return items
+}
+
+var punctuationRegex = regexp.MustCompile(`[[:punct:]]`)
+
 func simplifyText(input string) string {
-	re := regexp.MustCompile(`[[:punct:]]`)
-	withoutPunctuation := re.ReplaceAllString(input, "")
+	withoutPunctuation := punctuationRegex.ReplaceAllString(input, "")
 	withoutLineBreaks := strings.ReplaceAll(withoutPunctuation, "\n", "")
 	withoutSpaces := strings.ReplaceAll(withoutLineBreaks, " ", "")
 	lowerCaseText := strings.ToLower(withoutSpaces)

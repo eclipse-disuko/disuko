@@ -4,7 +4,6 @@ go 1.27.2
 
 require (
 	github.com/adhocore/gronx v1.20.5
-	github.com/adrg/strutil v0.3.1
 	github.com/chromedp/cdproto v0.0.0-20260922220944-a19bff23514f
 	github.com/chromedp/chromedp v0.16.0
 	github.com/coreos/go-oidc/v3 v3.21.0
@@ -29,6 +28,7 @@ require (
 	github.com/valkey-io/valkey-go v1.0.78
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xuri/excelize/v2 v2.11.0
+	github.com/yukiteruamano/fast-levenshtein/v2 v2.20260824.0
 	go.mongodb.org/mongo-driver/v2 v2.9.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/image v0.46.0
