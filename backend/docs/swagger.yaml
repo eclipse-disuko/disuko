@@ -19,6 +19,33 @@ securityDefinitions:
     name: Authorization
     type: apiKey
 paths:
+  /v1/groups/{uuid}:
+    get:
+      operationId: getGroupDetails
+      parameters:
+      - description: "Group UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project
+          schema:
+            $ref: "#/definitions/Project"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get group project details
   /v1/groups/{uuid}/children:
     get:
       operationId: getChildrenProjects
@@ -48,6 +75,33 @@ paths:
       security:
       - Bearer: []
       summary: Get children of a group project
+  /v1/groups/{uuid}/status:
+    get:
+      operationId: getGroupStatus
+      parameters:
+      - description: "Group UUID e.g.: dummy-id---xxx-4413-yyy-24f060311111"
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Group Status
+          schema:
+            $ref: "#/definitions/ProjectStatus"
+        "401":
+          description: Unauthorized Error
+          schema:
+            $ref: "#/definitions/HttpError"
+        "404":
+          description: NotFound Error
+          schema:
+            $ref: "#/definitions/HttpError404"
+      security:
+      - Bearer: []
+      summary: Get group status
   /v1/projects/{uuid}:
     get:
       operationId: getProjectDetails
@@ -1523,6 +1577,8 @@ definitions:
       sbomguid:
         example: dummy-id-----6b9c-44a7-8e01-14e67ef4404a
         type: string
+      transferredAudit:
+        type: boolean
       validationFailedMessage:
         example: ""
         type: string
