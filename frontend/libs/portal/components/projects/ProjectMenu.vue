@@ -273,7 +273,7 @@ watch(
       <MenuItem
         v-if="currentProject.accessRights.allowProject.delete"
         icon="mdi-delete"
-        :text="t('TT_delete_project')"
+        :text="t(currentProject.isGroup ? 'TT_delete_group' : 'TT_delete_project')"
         :tooltip="t(getDeleteTooltip(currentProject))"
         :disabled="!canDeleteProject(currentProject)"
         @click="showDeletionConfirmationDialog"></MenuItem>

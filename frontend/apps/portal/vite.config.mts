@@ -54,9 +54,7 @@ export default defineConfig(({mode}) => {
         template: {transformAssetUrls},
         include: [/\.vue$/, /\.md$/],
       }),
-      Markdown({
-        /* options */
-      }),
+      Markdown({/* options */}),
       Vuetify(),
       Components({
         dts: true,

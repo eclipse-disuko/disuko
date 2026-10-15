@@ -50,11 +50,9 @@ const syncHeaderSettings = () => {
   });
 };
 
-const dialogConfig = computed(
-  (): DialogLayoutConfig => ({
-    title: t('CLASSIFICATION_MATRIX'),
-  }),
-);
+const dialogConfig = computed((): DialogLayoutConfig => ({
+  title: t('CLASSIFICATION_MATRIX'),
+}));
 
 const tableHeight = computed(() => 'calc(100dvh - 400px)');
 
