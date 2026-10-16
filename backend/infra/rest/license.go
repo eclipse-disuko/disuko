@@ -17,7 +17,7 @@ import (
 	"unicode/utf8"
 
 	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
-	fastlevenshteinv2 "github.com/yukiteruamano/fast-levenshtein/v2"
+	fastlevenshtein "github.com/ka-weihe/fast-levenshtein"
 	"go.uber.org/zap/zapcore"
 
 	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
@@ -1054,7 +1054,7 @@ func (licensesHandler *LicensesHandler) LicenseCompareHandler(w http.ResponseWri
 		}
 
 		// Exact Levenshtein distance.
-		distance := fastlevenshteinv2.Distance(licenseText, simplifiedCompareText)
+		distance := fastlevenshtein.Distance(licenseText, simplifiedCompareText)
 		similarity := 1 - float64(distance)/float64(maxLen)
 
 		// Keep only the Top 10.
