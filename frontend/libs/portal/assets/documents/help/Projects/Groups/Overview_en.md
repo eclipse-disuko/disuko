@@ -4,6 +4,10 @@
 
 - <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-card-multiple-outline" style="font-size: 16px;"></i> A **Project Group** summarizes a list of projects (children)
 - <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-account-supervisor-circle" style="font-size: 16px;"></i> A **Project Child** has a parent relation to the group
+- <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-layers" style="font-size: 16px;"></i> A **Project SBOM** lists a child project's software components. The table shows:
+  - **Policy Status:** Component counts: total, denied, unasserted, warned, questioned, and allowed.
+  - **Supplier:** The child's supplier user ID.
+  - **Has Approval:** Blue check: child project has an approval. Gray check: none.
 - The user needs to be owner of the group **and** owner of the child to create a child relation
 - A project can only be child of one single group
 - Deleted projects can not be added as child to a group

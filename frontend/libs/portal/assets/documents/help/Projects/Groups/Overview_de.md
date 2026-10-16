@@ -4,6 +4,10 @@
 
 - <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-card-multiple-outline" style="font-size: 16px;" ></i> Eine **Projektgruppe** fasst eine Liste von Projekten (untergeordnete Projekte) zusammen
 - <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-account-supervisor-circle" style="font-size: 16px;" ></i> Ein **Teilprojekt** hat eine übergeordnete Beziehung zur Gruppe
+- <i aria-hidden="true" class="v-icon notranslate pr-1 material-icons labelIconColor--text mdi mdi-layers" style="font-size: 16px;"></i> Eine **Projekt-SBOM** listet die Softwarekomponenten eines Teilprojekts auf. Die Tabelle zeigt:
+  - **Policy-Regel-Status:** Komponentenanzahl: Gesamt, Verweigert, Nicht zugeordnet, Verwarnt, Unentschieden und Zulässig.
+  - **Lieferant:** Benutzer-ID des Lieferanten des Teilprojekts.
+  - **Genehmigungsanfrage:** Blaues Häkchen: Teilprojekt hat eine Freigabe. Graues Häkchen: keine.
 - Der Benutzer muss Eigentümer der Gruppe **und** Eigentümer des untergeordneten Elements sein, um eine untergeordnete Beziehung zu erstellen
 - Ein Projekt kann nur einer einzelnen Gruppe untergeordnet sein
 - Gelöschte Projekte können nicht als untergeordnetes Projekt zu einer Gruppe hinzugefügt werden
