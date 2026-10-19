@@ -4,7 +4,6 @@ go 1.27.2
 
 require (
 	github.com/adhocore/gronx v1.20.5
-	github.com/adrg/strutil v0.3.1
 	github.com/chromedp/cdproto v0.0.0-20260922220944-a19bff23514f
 	github.com/chromedp/chromedp v0.16.0
 	github.com/coreos/go-oidc/v3 v3.21.0
@@ -20,6 +19,7 @@ require (
 	github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75
 	github.com/jinzhu/configor v1.2.2
 	github.com/jinzhu/copier v0.4.0
+	github.com/ka-weihe/fast-levenshtein v0.0.0-20201227151214-4c99ee36a1ba
 	github.com/leesper/couchdb-golang v1.2.1
 	github.com/minio/minio-go/v7 v7.3.0
 	github.com/oapi-codegen/runtime v1.7.0

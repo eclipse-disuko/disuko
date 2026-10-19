@@ -14,8 +14,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	sorthelper "github.com/eclipse-disuko/disuko/helper/sort"
+	fastlevenshtein "github.com/ka-weihe/fast-levenshtein"
 	"go.uber.org/zap/zapcore"
 
 	obligation2 "github.com/eclipse-disuko/disuko/domain/obligation"
@@ -25,8 +27,6 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/observermngmt"
 
-	"github.com/adrg/strutil"
-	"github.com/adrg/strutil/metrics"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/text/unicode/norm"
 
@@ -417,7 +417,8 @@ func (licensesHandler *LicensesHandler) UpdateAllPolicyRulesAssignmentsForThisLi
 
 	var keyAttributes []database.MatchGroup
 	for _, key := range keys {
-		keyAttributes = append(keyAttributes,
+		keyAttributes = append(
+			keyAttributes,
 			database.AttributeMatcher(
 				licensesHandler.JobRepository.DatabaseConn().GetKeyAttribute(),
 				database.EQ,
@@ -1023,37 +1024,60 @@ func (licensesHandler *LicensesHandler) LicenseCompareHandler(w http.ResponseWri
 		return
 	}
 	licenseText := simplifyText(string(bodyBytes))
+	lenA := utf8.RuneCountInString(licenseText)
 
-	type licenseWithSimilarityHolder struct {
-		License    license.License
-		Similarity float64
-	}
-	// Find all licenses in DB
 	allLicenses := licensesHandler.LicenseRepository.FindAll(requestSession, false)
-	licenseWithSimilarities := make([]licenseWithSimilarityHolder, 0)
 
-	// Calc similarity with Levenshtein and add to list
-	for _, l := range allLicenses {
-		simplifiedCompareText := simplifyText(l.Text)
-
-		similarity := strutil.Similarity(licenseText, simplifiedCompareText, metrics.NewLevenshtein())
-
-		licenseWithSimilarities = append(licenseWithSimilarities, licenseWithSimilarityHolder{License: *l, Similarity: similarity})
+	const topN = 10
+	type candidate struct {
+		l     *license.License
+		text  string
+		bound float64
+		i     int
+	}
+	candidates := make([]candidate, 0, len(allLicenses))
+	for i, l := range allLicenses {
+		text := simplifyText(l.Text)
+		lenB := utf8.RuneCountInString(text)
+		bound := 1.0
+		if m := max(lenA, lenB); m > 0 {
+			bound = float64(min(lenA, lenB)) / float64(m)
+		}
+		candidates = append(candidates, candidate{l, text, bound, i})
 	}
 
-	// sort DESC by similarity
-	sort.SliceStable(licenseWithSimilarities, func(i, j int) bool {
-		return licenseWithSimilarities[i].Similarity > licenseWithSimilarities[j].Similarity
-	})
+	sort.SliceStable(candidates, func(i, j int) bool { return candidates[i].bound > candidates[j].bound })
 
-	// New list with top 10 items
-	topNo := 10
-	if len(licenseWithSimilarities) < topNo {
-		topNo = len(licenseWithSimilarities)
+	type ranked struct {
+		item license.LicenseWithSimilarityHolder
+		idx  int
 	}
-	topItems := licenseWithSimilarities[:topNo]
+	top := make([]ranked, 0, topN+1)
+	for _, c := range candidates {
+		if len(top) == topN && c.bound < top[topN-1].item.Similarity {
+			break
+		}
+		similarity := 1.0
+		if m := max(lenA, utf8.RuneCountInString(c.text)); m > 0 {
+			similarity = 1 - float64(fastlevenshtein.Distance(licenseText, c.text))/float64(m)
+		}
+		top = append(top, ranked{license.LicenseWithSimilarityHolder{License: *c.l, Similarity: similarity}, c.i})
+		sort.Slice(top, func(i, j int) bool {
+			if top[i].item.Similarity != top[j].item.Similarity {
+				return top[i].item.Similarity > top[j].item.Similarity
+			}
+			return top[i].idx < top[j].idx
+		})
+		if len(top) > topN {
+			top = top[:topN]
+		}
+	}
+	topItems := make([]license.LicenseWithSimilarityHolder, 0, len(top))
+	for _, r := range top {
+		topItems = append(topItems, r.item)
+	}
 
-	dtoList := make([]license.LicenseWithSimilarityDto, 0)
+	dtoList := make([]license.LicenseWithSimilarityDto, 0, len(topItems))
 	for _, item := range topItems {
 		dto := item.License.ToDto(requestSession, nil)
 		dtoList = append(dtoList, license.LicenseWithSimilarityDto{License: *dto, Similarity: item.Similarity})
@@ -1180,9 +1204,10 @@ func (licensesHandler *LicensesHandler) LookupHandler(w http.ResponseWriter, r *
 	render.JSON(w, r, res)
 }
 
+var punctuationRegex = regexp.MustCompile(`[[:punct:]]`)
+
 func simplifyText(input string) string {
-	re := regexp.MustCompile(`[[:punct:]]`)
-	withoutPunctuation := re.ReplaceAllString(input, "")
+	withoutPunctuation := punctuationRegex.ReplaceAllString(input, "")
 	withoutLineBreaks := strings.ReplaceAll(withoutPunctuation, "\n", "")
 	withoutSpaces := strings.ReplaceAll(withoutLineBreaks, " ", "")
 	lowerCaseText := strings.ToLower(withoutSpaces)
