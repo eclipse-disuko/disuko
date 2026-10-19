@@ -175,7 +175,7 @@ var Config = struct {
 		Host               string       `default:""`
 		Port               int          `default:""`
 		Scheme             string       `default:"http"`
-		InsecureSkipVerify bool         `default:"true"`
+		InsecureSkipVerify bool         `default:"false"`
 		CAFile             string       `default:""`
 		User               string       `default:""`
 		Password           string
