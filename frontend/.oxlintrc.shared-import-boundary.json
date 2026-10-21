@@ -35,8 +35,7 @@
         "libs/shared/components/disco/DVersionStateWithTooltip.vue",
         "libs/shared/components/disco/DDateCellWithTooltip.vue",
         "libs/shared/components/disco/interfaces.ts",
-        "libs/shared/components/widgets/DiscoFileUpload.vue",
-        "libs/shared/components/widgets/FilterSets.vue"
+        "libs/shared/components/widgets/DiscoFileUpload.vue"
       ],
       "rules": {
         "no-restricted-imports": "off"

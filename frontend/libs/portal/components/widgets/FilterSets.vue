@@ -25,6 +25,16 @@ import {defineComponent, nextTick, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 
+const createDefaultFilterMap = () => {
+  return {
+    isLicenseChart: [],
+    source: [],
+    family: [],
+    approvalState: [],
+    licenseType: [],
+  };
+};
+
 export default defineComponent({
   name: 'FilterSets',
   methods: {
@@ -276,16 +286,6 @@ export default defineComponent({
       filter.excludedFilters.forEach((filter: Filter) => {
         excludeFilters.value[filter.name] = filter.values;
       });
-    };
-
-    const createDefaultFilterMap = () => {
-      return {
-        isLicenseChart: [],
-        source: [],
-        family: [],
-        approvalState: [],
-        licenseType: [],
-      };
     };
 
     const setFilterData = (newSelectedFilters: Record<string, string[]>) => {

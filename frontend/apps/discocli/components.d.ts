@@ -84,7 +84,6 @@ declare module 'vue' {
     ExternalLinkDialog: typeof import('./../../libs/shared/components/dialogs/ExternalLinkDialog.vue')['default']
     ExtraMenu: typeof import('./../../libs/shared/components/disco/ExtraMenu.vue')['default']
     FillCustomerApprover: typeof import('./../../libs/portal/components/dialog/FillCustomerApprover.vue')['default']
-    FilterSets: typeof import('./../../libs/shared/components/widgets/FilterSets.vue')['default']
     FossVersionSelector: typeof import('./../../libs/portal/components/approval/FossVersionSelector.vue')['default']
     GeneralSettings: typeof import('./../../libs/portal/components/dialog/project/settings/GeneralSettings.vue')['default']
     GridAliases: typeof import('./../../libs/portal/components/grids/GridAliases.vue')['default']
