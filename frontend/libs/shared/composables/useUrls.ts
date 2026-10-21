@@ -7,7 +7,7 @@ import {ICallback} from '@shared/types/Callback';
 import {useEventKeysStore} from '@shared/stores/eventKeys.store';
 import {storeToRefs} from 'pinia';
 import {openUrlInNewTab} from '@shared/utils/url';
-import {createProjectURL} from '@shared/utils/apiUrls';
+import {createGroupURL, createProjectURL} from '@shared/utils/apiUrls';
 
 export const useUrls = () => {
   const eventKeysStore = useEventKeysStore();
@@ -31,13 +31,14 @@ export const useUrls = () => {
     }
   };
 
-  const openProjectUrlByKey = (_key: string, router: Router) => {
+  const openProjectUrlByKey = (_key: string, router: Router, isGroup = false) => {
+    const url = isGroup ? createGroupURL(_key) : createProjectURL(_key);
     if (controlIsPressed.value) {
-      openUrlInNewTab(createProjectURL(_key));
+      openUrlInNewTab(url);
       return;
     }
 
-    return router.push({path: createProjectURL(_key)});
+    return router.push({path: url});
   };
 
   return {

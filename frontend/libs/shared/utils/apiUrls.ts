@@ -2,12 +2,24 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export function createVersionURL(project: string, version: string) {
-  return `/dashboard/projects/${encodeURIComponent(project)}/versions/${encodeURIComponent(version)}`;
+const DASHBOARD_PATH = '/dashboard';
+
+function createProjectBaseURL(project: string): string {
+  return `${DASHBOARD_PATH}/projects/${encodeURIComponent(project)}`;
 }
-export function createProjectURL(project: string) {
-  return `/dashboard/projects/${encodeURIComponent(project)}/overview`;
+
+export function createProjectURL(project: string): string {
+  return `${createProjectBaseURL(project)}/overview`;
 }
-export function createSBOMURL(project: string, version: string, sbom: string) {
-  return `/dashboard/projects/${encodeURIComponent(project)}/versions/${encodeURIComponent(version)}/component/${encodeURIComponent(sbom)}`;
+
+export function createGroupURL(group: string): string {
+  return `${DASHBOARD_PATH}/groups/${encodeURIComponent(group)}/overview`;
+}
+
+export function createVersionURL(project: string, version: string): string {
+  return `${createProjectBaseURL(project)}/versions/${encodeURIComponent(version)}`;
+}
+
+export function createSBOMURL(project: string, version: string, sbom: string): string {
+  return `${createVersionURL(project, version)}/component/${encodeURIComponent(sbom)}`;
 }
