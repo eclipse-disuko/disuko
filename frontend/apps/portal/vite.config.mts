@@ -17,8 +17,8 @@ import {visualizer} from 'rollup-plugin-visualizer';
 import {type CommonServerOptions, defineConfig} from 'vite';
 import oxlintPlugin from 'vite-plugin-oxlint';
 import vueDevTools from 'vite-plugin-vue-devtools';
-import {apiProxySettings} from '../../libs/shared/utils/proxySettings.js';
-import packageInfo from '../../package.json';
+import {apiProxySettings} from '../../libs/shared/utils/proxySettings.mjs';
+import packageInfo from '../../package.json' with {type: 'json'};
 import {generateTailwindColors} from './generate-tailwind-colors.mjs';
 
 export default defineConfig(({mode}) => {
@@ -29,8 +29,8 @@ export default defineConfig(({mode}) => {
   process.env.VITE_BRANCH = process.env.VITE_BRANCH || 'n/a';
 
   const environment = (mode || 'development') as keyof typeof apiProxySettings;
-  const certPath = path.resolve(__dirname, '../../../backend/server.crt');
-  const keyPath = path.resolve(__dirname, '../../../backend/server.key');
+  const certPath = path.resolve(import.meta.dirname, '../../../backend/server.crt');
+  const keyPath = path.resolve(import.meta.dirname, '../../../backend/server.key');
   const hasCerts = fs.existsSync(certPath) && fs.existsSync(keyPath);
 
   const developmentServerConfig: CommonServerOptions = {
@@ -65,10 +65,10 @@ export default defineConfig(({mode}) => {
           },
         ],
         dirs: [
-          path.resolve(__dirname, './../../libs/portal/components'),
-          path.resolve(__dirname, './../../libs/portal/views'),
-          path.resolve(__dirname, './../../libs/portal/layouts'),
-          path.resolve(__dirname, './../../libs/shared'),
+          path.resolve(import.meta.dirname, './../../libs/portal/components'),
+          path.resolve(import.meta.dirname, './../../libs/portal/views'),
+          path.resolve(import.meta.dirname, './../../libs/portal/layouts'),
+          path.resolve(import.meta.dirname, './../../libs/shared'),
         ],
         deep: true,
       }),
@@ -94,8 +94,8 @@ export default defineConfig(({mode}) => {
     base: '/',
     resolve: {
       alias: {
-        '@disclosure-portal': `${path.resolve(__dirname, './../../libs/portal')}/`, // Alias für Hauptprojekt
-        '@shared': `${path.resolve(__dirname, './../../libs/shared')}/`, // Alias für Hauptprojekt
+        '@disclosure-portal': `${path.resolve(import.meta.dirname, './../../libs/portal')}/`, // Alias fÃ¼r Hauptprojekt
+        '@shared': `${path.resolve(import.meta.dirname, './../../libs/shared')}/`, // Alias fÃ¼r Hauptprojekt
       },
       extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue', ''],
     },
