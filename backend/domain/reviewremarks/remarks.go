@@ -355,7 +355,9 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 			latest = existingRemark
 		}
 	}
-
+	if latest != nil && latest.Status == Cancelled {
+		return nil
+	}
 	return latest
 }
 
