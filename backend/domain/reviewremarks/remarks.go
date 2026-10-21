@@ -116,6 +116,8 @@ type Remark struct {
 
 	Components []ComponentMeta
 	Licenses   []LicenseMeta
+
+	TemplateKey string
 }
 
 type ReviewTemplate struct {
@@ -277,23 +279,26 @@ func (r *Remark) Comment(author, fullName, content string) {
 }
 
 type RrKey struct {
-	sbomId     string
-	components string
-	licenses   string
+	sbomId      string
+	components  string
+	licenses    string
+	templateKey string
 }
 
 type RrCombinationKey struct {
-	components string
-	licenses   string
+	components  string
+	licenses    string
+	templateKey string
 }
 
 func (r *Remark) MakeRrKey() RrKey {
 	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 	combinationKey := r.makeCombinationKey()
 	return RrKey{
-		sbomId:     norm(r.SBOMId),
-		components: combinationKey.components,
-		licenses:   combinationKey.licenses,
+		sbomId:      norm(r.SBOMId),
+		components:  combinationKey.components,
+		licenses:    combinationKey.licenses,
+		templateKey: combinationKey.templateKey,
 	}
 }
 
@@ -321,9 +326,16 @@ func (r *Remark) makeCombinationKey() RrCombinationKey {
 		}, fieldSeparator))
 	}
 	sort.Strings(licenseKeys)
+
+	templateKey := ""
+	if len(r.Components) == 0 && len(r.Licenses) == 0 {
+		templateKey = norm(r.TemplateKey)
+	}
+
 	return RrCombinationKey{
-		components: strings.Join(componentKeys, itemSeparator),
-		licenses:   strings.Join(licenseKeys, itemSeparator),
+		components:  strings.Join(componentKeys, itemSeparator),
+		licenses:    strings.Join(licenseKeys, itemSeparator),
+		templateKey: templateKey,
 	}
 }
 
@@ -355,7 +367,9 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 			latest = existingRemark
 		}
 	}
-
+	if latest != nil && latest.Status == Cancelled {
+		return nil
+	}
 	return latest
 }
 

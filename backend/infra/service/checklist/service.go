@@ -423,23 +423,12 @@ func (e *execution) createRemark(item checklist.Item) *reviewremarks.Remark {
 		SBOMId:       e.spdxBase.Key,
 		SBOMName:     e.spdxBase.MetaInfo.Name,
 		SBOMUploaded: &e.spdxBase.Created,
+		TemplateKey:  item.TargetTemplateKey,
 	}
 }
 
 func (e *execution) createLinkedRemark(item checklist.Item, triggerComps map[string]components.ComponentInfo, triggerLics map[string]*license.License) *reviewremarks.Remark {
-	temp := e.rrLookup[item.TargetTemplateKey]
-	res := reviewremarks.Remark{
-		ChildEntity:  domain.NewChildEntity(),
-		Author:       e.executer,
-		Origin:       "Checklist " + e.cl.Name,
-		Title:        temp.Title,
-		Level:        temp.Level,
-		Description:  temp.Description,
-		Status:       reviewremarks.Open,
-		SBOMId:       e.spdxBase.Key,
-		SBOMName:     e.spdxBase.MetaInfo.Name,
-		SBOMUploaded: &e.spdxBase.Created,
-	}
+	res := e.createRemark(item)
 	for _, comp := range triggerComps {
 		res.Components = append(res.Components, reviewremarks.ComponentMeta{
 			ComponentId:      comp.SpdxId,
@@ -453,7 +442,7 @@ func (e *execution) createLinkedRemark(item checklist.Item, triggerComps map[str
 			LicenseName: lic.Name,
 		})
 	}
-	return &res
+	return res
 }
 
 func (s *Service) findApplicableByIds(rs *logy.RequestSession, pr *project.Project, ids []string) []*checklist.Checklist {
