@@ -92,7 +92,7 @@ declare module 'vue' {
     ExtraMenu: typeof import('./../../libs/shared/components/disco/ExtraMenu.vue')['default']
     FeatureFlags: typeof import('./../../libs/portal/views/admin/FeatureFlags.vue')['default']
     FillCustomerApprover: typeof import('./../../libs/portal/components/dialog/FillCustomerApprover.vue')['default']
-    FilterSets: typeof import('./../../libs/shared/components/widgets/FilterSets.vue')['default']
+    FilterSets: typeof import('./../../libs/portal/components/widgets/FilterSets.vue')['default']
     FossVersionSelector: typeof import('./../../libs/portal/components/approval/FossVersionSelector.vue')['default']
     GeneralSettings: typeof import('./../../libs/portal/components/dialog/project/settings/GeneralSettings.vue')['default']
     GridAliases: typeof import('./../../libs/portal/components/grids/GridAliases.vue')['default']
