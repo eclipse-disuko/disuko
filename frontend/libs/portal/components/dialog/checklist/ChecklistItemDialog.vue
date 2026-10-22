@@ -315,7 +315,6 @@ defineExpose({
             :label="t('LBL_OBLIGATION')"
             :items="allObligations"
             return-object
-            single-line
             variant="outlined"
             hide-details="auto">
             <template v-slot:item="{item, props}">
