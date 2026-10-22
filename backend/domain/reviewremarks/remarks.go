@@ -63,6 +63,13 @@ const (
 	ChangedLevelEvent EventType = "CHANGED_LEVEL"
 )
 
+const (
+	fieldSeparator = "\x1f"
+	itemSeparator  = "\x1e"
+)
+
+func norm(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
+
 type Event struct {
 	domain.ChildEntity `bson:",inline"`
 
@@ -292,7 +299,6 @@ type RrCombinationKey struct {
 }
 
 func (r *Remark) MakeRrKey() RrKey {
-	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
 	combinationKey := r.makeCombinationKey()
 	return RrKey{
 		sbomId:      norm(r.SBOMId),
@@ -303,27 +309,15 @@ func (r *Remark) MakeRrKey() RrKey {
 }
 
 func (r *Remark) makeCombinationKey() RrCombinationKey {
-	norm := func(s string) string { return strings.ToLower(strings.TrimSpace(s)) }
-	const (
-		fieldSeparator = "\x1f"
-		itemSeparator  = "\x1e"
-	)
-
 	componentKeys := make([]string, 0, len(r.Components))
 	for _, cmp := range r.Components {
-		componentKeys = append(componentKeys, strings.Join([]string{
-			norm(cmp.ComponentName),
-			norm(cmp.ComponentVersion),
-		}, fieldSeparator))
+		componentKeys = append(componentKeys, componentSetKey(cmp))
 	}
 	sort.Strings(componentKeys)
 
 	licenseKeys := make([]string, 0, len(r.Licenses))
 	for _, lic := range r.Licenses {
-		licenseKeys = append(licenseKeys, strings.Join([]string{
-			norm(lic.LicenseId),
-			norm(lic.LicenseName),
-		}, fieldSeparator))
+		licenseKeys = append(licenseKeys, licenseSetKey(lic))
 	}
 	sort.Strings(licenseKeys)
 
@@ -371,6 +365,152 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 		return nil
 	}
 	return latest
+}
+
+func FindLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *Remark) []*Remark {
+	if newRemark.SBOMUploaded == nil || newRemark.TemplateKey == "" {
+		return nil
+	}
+
+	var latestSBOMId string
+	var latestUploaded *time.Time
+
+	for _, existingRemark := range existingRemarks {
+		if existingRemark.SBOMId == newRemark.SBOMId || existingRemark.SBOMUploaded == nil {
+			continue
+		}
+		if existingRemark.SBOMUploaded.After(*newRemark.SBOMUploaded) {
+			continue
+		}
+		if existingRemark.TemplateKey != newRemark.TemplateKey {
+			continue
+		}
+
+		if latestUploaded == nil || existingRemark.SBOMUploaded.After(*latestUploaded) {
+			uploaded := *existingRemark.SBOMUploaded
+			latestUploaded = &uploaded
+			latestSBOMId = existingRemark.SBOMId
+		}
+	}
+
+	if latestUploaded == nil {
+		return nil
+	}
+
+	var result []*Remark
+	for _, existingRemark := range existingRemarks {
+		if existingRemark.SBOMId != latestSBOMId {
+			continue
+		}
+		if existingRemark.TemplateKey != newRemark.TemplateKey {
+			continue
+		}
+		result = append(result, existingRemark)
+	}
+
+	return result
+}
+
+func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
+	if len(previousRemarks) == 0 {
+		return []*Remark{r}
+	}
+	if len(r.Components) == 0 && len(r.Licenses) == 0 {
+		return []*Remark{r}
+	}
+
+	remainingComponents := append([]ComponentMeta(nil), r.Components...)
+	remainingLicenses := append([]LicenseMeta(nil), r.Licenses...)
+	result := make([]*Remark, 0, len(previousRemarks)+1)
+
+	for _, previous := range previousRemarks {
+		if previous.Status == Cancelled {
+			continue
+		}
+
+		matchedComponents, restComponents := splitComponents(remainingComponents, previous.Components)
+		matchedLicenses, restLicenses := splitLicenses(remainingLicenses, previous.Licenses)
+
+		if len(matchedComponents) == 0 && len(matchedLicenses) == 0 {
+			continue
+		}
+
+		carried := r.cloneWithCombination(matchedComponents, matchedLicenses)
+		carried.CarryOverStateFrom(previous)
+		result = append(result, carried)
+
+		remainingComponents = restComponents
+		remainingLicenses = restLicenses
+	}
+
+	if len(remainingComponents) > 0 || len(remainingLicenses) > 0 {
+		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
+	}
+
+	if len(result) == 0 {
+		return []*Remark{r}
+	}
+
+	return result
+}
+
+func (r *Remark) cloneWithCombination(components []ComponentMeta, licenses []LicenseMeta) *Remark {
+	clone := *r
+	clone.ChildEntity = domain.NewChildEntity()
+	clone.Components = append([]ComponentMeta(nil), components...)
+	clone.Licenses = append([]LicenseMeta(nil), licenses...)
+	clone.Events = append([]Event(nil), r.Events...)
+
+	if r.Closed != nil {
+		closed := *r.Closed
+		clone.Closed = &closed
+	}
+
+	return &clone
+}
+
+func splitComponents(current, previous []ComponentMeta) ([]ComponentMeta, []ComponentMeta) {
+	previousKeys := make(map[string]struct{}, len(previous))
+	for _, component := range previous {
+		previousKeys[componentSetKey(component)] = struct{}{}
+	}
+
+	matched := make([]ComponentMeta, 0, len(current))
+	remaining := make([]ComponentMeta, 0, len(current))
+	for _, component := range current {
+		if _, exists := previousKeys[componentSetKey(component)]; exists {
+			matched = append(matched, component)
+		} else {
+			remaining = append(remaining, component)
+		}
+	}
+	return matched, remaining
+}
+
+func splitLicenses(current, previous []LicenseMeta) ([]LicenseMeta, []LicenseMeta) {
+	previousKeys := make(map[string]struct{}, len(previous))
+	for _, lic := range previous {
+		previousKeys[licenseSetKey(lic)] = struct{}{}
+	}
+
+	matched := make([]LicenseMeta, 0, len(current))
+	remaining := make([]LicenseMeta, 0, len(current))
+	for _, lic := range current {
+		if _, exists := previousKeys[licenseSetKey(lic)]; exists {
+			matched = append(matched, lic)
+		} else {
+			remaining = append(remaining, lic)
+		}
+	}
+	return matched, remaining
+}
+
+func componentSetKey(component ComponentMeta) string {
+	return norm(component.ComponentName) + fieldSeparator + norm(component.ComponentVersion)
+}
+
+func licenseSetKey(lic LicenseMeta) string {
+	return norm(lic.LicenseId) + fieldSeparator + norm(lic.LicenseName)
 }
 
 func (r *Remark) CarryOverStateFrom(previous *Remark) {

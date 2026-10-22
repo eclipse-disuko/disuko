@@ -64,6 +64,11 @@ type execution struct {
 	licRepo     licRepo.ILicensesRepository
 }
 
+type remarkCandidate struct {
+	remark           *reviewremarks.Remark
+	transferStrategy checklist.RrTransferStrategy
+}
+
 func (s *Service) FindApplicableLists(rs *logy.RequestSession, pr *project.Project) []*checklist.Checklist {
 	var (
 		all = s.ChecklistRepo.FindAll(rs, false)
@@ -107,7 +112,7 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	s.saveRemarks(rs, version.Key, rr, newRemarks)
 }
 
-func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, version *project.ProjectVersion, spdxBase *project.SpdxFileBase, lists []*checklist.Checklist, executer string) []*reviewremarks.Remark {
+func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, version *project.ProjectVersion, spdxBase *project.SpdxFileBase, lists []*checklist.Checklist, executer string) []remarkCandidate {
 	compInfos := s.SpdxService.GetComponentInfos(rs, pr, version.Key, spdxBase)
 	rules := s.PolicyRuleRepo.FindPolicyRulesForLabel(rs, pr.PolicyLabels)
 	policyDecisions := s.PolicyDecisionsRepo.FindByKey(rs, pr.Key, false)
@@ -119,7 +124,7 @@ func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, ve
 
 	scanRemarks := s.ScanRemarksService.GetRemarks(rs, pr, &spdxBase.MetaInfo, evalRes)
 
-	var remarks []*reviewremarks.Remark
+	var remarks []remarkCandidate
 	for _, list := range lists {
 		e := execution{
 			rs:          rs,
@@ -141,23 +146,22 @@ func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, ve
 	return remarks
 }
 
-func (s *Service) prepareNewRemarks(remarks []*reviewremarks.Remark, existing *reviewremarks.ReviewRemarks) []*reviewremarks.Remark {
-	seenIncoming := make(map[reviewremarks.RrKey]struct{}, len(remarks))
-	newRemarks := make([]*reviewremarks.Remark, 0, len(remarks))
+func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *reviewremarks.ReviewRemarks) []*reviewremarks.Remark {
+	seenIncoming := make(map[reviewremarks.RrKey]struct{}, len(candidates))
+	uniqueCandidates := make([]remarkCandidate, 0, len(candidates))
 
-	for _, remark := range remarks {
-		k := remark.MakeRrKey()
-
+	for _, candidate := range candidates {
+		k := candidate.remark.MakeRrKey()
 		if _, exists := seenIncoming[k]; exists {
 			continue
 		}
 
 		seenIncoming[k] = struct{}{}
-		newRemarks = append(newRemarks, remark)
+		uniqueCandidates = append(uniqueCandidates, candidate)
 	}
 
 	if existing == nil {
-		return newRemarks
+		return candidateRemarks(uniqueCandidates)
 	}
 
 	existingKeys := make(map[reviewremarks.RrKey]struct{}, len(existing.Remarks))
@@ -168,26 +172,47 @@ func (s *Service) prepareNewRemarks(remarks []*reviewremarks.Remark, existing *r
 		existingKeys[existingRemark.MakeRrKey()] = struct{}{}
 	}
 
-	newRemarksToSave := make([]*reviewremarks.Remark, 0, len(newRemarks))
+	newRemarksToSave := make([]*reviewremarks.Remark, 0, len(uniqueCandidates))
+	for _, candidate := range uniqueCandidates {
+		newRemark := candidate.remark
 
-	for _, newRemark := range newRemarks {
-		k := newRemark.MakeRrKey()
-
-		if _, exists := existingKeys[k]; exists {
+		if _, exists := existingKeys[newRemark.MakeRrKey()]; exists {
 			continue
 		}
 
+		remarksToSave := []*reviewremarks.Remark{newRemark}
 		if !conf.IsProdEnv() {
-			previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
-			if previous != nil {
-				newRemark.CarryOverStateFrom(previous)
+			switch candidate.transferStrategy {
+			case checklist.RrTransferSplitBySet:
+				previousRemarks := reviewremarks.FindLatestPreviousRemarksByTemplate(existing.Remarks, newRemark)
+				remarksToSave = newRemark.SplitAndCarryOverFrom(previousRemarks)
+			default:
+				previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
+				if previous != nil {
+					newRemark.CarryOverStateFrom(previous)
+				}
 			}
 		}
 
-		existingKeys[k] = struct{}{}
-		newRemarksToSave = append(newRemarksToSave, newRemark)
+		for _, remarkToSave := range remarksToSave {
+			k := remarkToSave.MakeRrKey()
+			if _, exists := existingKeys[k]; exists {
+				continue
+			}
+			existingKeys[k] = struct{}{}
+			newRemarksToSave = append(newRemarksToSave, remarkToSave)
+		}
 	}
+
 	return newRemarksToSave
+}
+
+func candidateRemarks(candidates []remarkCandidate) []*reviewremarks.Remark {
+	remarks := make([]*reviewremarks.Remark, 0, len(candidates))
+	for _, candidate := range candidates {
+		remarks = append(remarks, candidate.remark)
+	}
+	return remarks
 }
 
 func (s *Service) ensureSbomMarks(rs *logy.RequestSession, pr *project.Project, sbomList *sbomlist.SbomList, spdxBase *project.SpdxFileBase) {
@@ -210,14 +235,14 @@ func (s *Service) saveRemarks(rs *logy.RequestSession, versionKey string, existi
 	s.ReviewRemarkRepo.Update(rs, existing)
 }
 
-func (e *execution) do() []*reviewremarks.Remark {
-	var res []*reviewremarks.Remark
+func (e *execution) do() []remarkCandidate {
+	var res []remarkCandidate
 	for _, item := range e.cl.Items {
 		if !e.service.itemApplicable(e.pr, item) {
 			continue
 		}
 		if rr := e.executeItem(item); rr != nil {
-			res = append(res, rr)
+			res = append(res, remarkCandidate{remark: rr, transferStrategy: item.RrTransferStrategy})
 		}
 	}
 	return res
