@@ -29,6 +29,7 @@ export class ChecklistItem {
   componentNames: string[] = [];
   targetTemplateName = '';
   targetTemplateKey = '';
+  rrTransferStrategy = '';
 }
 
 export enum TriggerTypes {
@@ -47,6 +48,11 @@ export enum PolicyStatusTypes {
   UNASSERTED = 'UNASSERTED',
   WARNED = 'WARNED',
   QUESTIONED = 'QUESTIONED',
+}
+
+export enum RrTransferStrategy {
+  DEFAULT = '',
+  SPLIT = 'SPLIT',
 }
 
 export class ExecuteRequest {

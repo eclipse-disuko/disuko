@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import icons from '@disclosure-portal/constants/icons';
-import {ChecklistItem, PolicyStatusTypes, TriggerTypes} from '@disclosure-portal/model/Checklist';
+import {ChecklistItem, PolicyStatusTypes, RrTransferStrategy, TriggerTypes} from '@disclosure-portal/model/Checklist';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import {LicenseSlim} from '@disclosure-portal/model/License';
 import {NameKeyIdentifier} from '@disclosure-portal/model/ProjectsResponse';
@@ -20,6 +20,11 @@ import {SearchOptions} from '@disclosure-portal/utils/Table';
 import {debounce} from 'lodash';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import config from '@shared/utils/config';
+
+const isProd = computed(() => {
+  return config.isProd;
+});
 
 const {t} = useI18n();
 const {minMax, longText, required} = useRules();
@@ -125,6 +130,7 @@ const open = async (existing?: ChecklistItem) => {
       componentNames: existing.componentNames,
       targetTemplateKey: existing.targetTemplateKey,
       targetTemplateName: existing.targetTemplateName,
+      rrTransferStrategy: existing.rrTransferStrategy ?? RrTransferStrategy.DEFAULT,
     };
     selectedLicenses.value = item.value.licenseIds
       ? (await licenseService.lookup(existing.licenseIds)).data.items
@@ -142,6 +148,7 @@ const open = async (existing?: ChecklistItem) => {
     selectedTargetTemplate.value = null;
     item.value = {
       triggerType: TriggerTypes.DEFAULT,
+      rrTransferStrategy: RrTransferStrategy.DEFAULT,
     } as ChecklistItem;
   }
   dialog.value?.reset();
@@ -351,6 +358,13 @@ defineExpose({
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('LBL_COMPONENT_NAME') }}</span>
           </div>
+          <v-checkbox
+            v-if="!isProd"
+            v-model="item.rrTransferStrategy"
+            :true-value="RrTransferStrategy.SPLIT"
+            :false-value="RrTransferStrategy.DEFAULT"
+            :label="t('USE_SPLIT_RR_TARNSFER_STRATEGY')"
+            hide-details />
         </Stack>
       </v-form>
     </DialogLayout>
