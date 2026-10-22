@@ -301,7 +301,7 @@ type RrCombinationKey struct {
 func (r *Remark) MakeRrKey() RrKey {
 	combinationKey := r.makeCombinationKey()
 	return RrKey{
-		sbomId:      norm(r.SBOMId),
+		sbomId:      r.SBOMId,
 		components:  combinationKey.components,
 		licenses:    combinationKey.licenses,
 		templateKey: combinationKey.templateKey,
@@ -323,7 +323,7 @@ func (r *Remark) makeCombinationKey() RrCombinationKey {
 
 	templateKey := ""
 	if len(r.Components) == 0 && len(r.Licenses) == 0 {
-		templateKey = norm(r.TemplateKey)
+		templateKey = r.TemplateKey
 	}
 
 	return RrCombinationKey{
@@ -367,7 +367,29 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 	return latest
 }
 
-func FindLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *Remark) []*Remark {
+func FindRemarksForSplit(existingRemarks []*Remark, newRemark *Remark) []*Remark {
+	current := findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, newRemark.SBOMId)
+	if len(current) > 0 {
+		return current
+	}
+	return findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
+}
+
+func findRemarksByTemplateAndSBOM(existingRemarks []*Remark, templateKey, sbomId string) []*Remark {
+	var result []*Remark
+	for _, existingRemark := range existingRemarks {
+		if existingRemark.SBOMId != sbomId {
+			continue
+		}
+		if existingRemark.TemplateKey != templateKey {
+			continue
+		}
+		result = append(result, existingRemark)
+	}
+	return result
+}
+
+func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *Remark) []*Remark {
 	if newRemark.SBOMUploaded == nil || newRemark.TemplateKey == "" {
 		return nil
 	}
