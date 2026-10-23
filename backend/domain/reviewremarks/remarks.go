@@ -321,15 +321,10 @@ func (r *Remark) makeCombinationKey() RrCombinationKey {
 	}
 	sort.Strings(licenseKeys)
 
-	templateKey := ""
-	if len(r.Components) == 0 && len(r.Licenses) == 0 {
-		templateKey = r.TemplateKey
-	}
-
 	return RrCombinationKey{
 		components:  strings.Join(componentKeys, itemSeparator),
 		licenses:    strings.Join(licenseKeys, itemSeparator),
-		templateKey: templateKey,
+		templateKey: r.TemplateKey,
 	}
 }
 
