@@ -2014,6 +2014,7 @@
   "LBL_TRIGGER_TYPE": "Trigger Typ",
   "LBL_NAME": "Name",
   "LBL_COMPONENT_NAME": "Komponentenname",
+  "USE_SPLIT_RR_TARNSFER_STRATEGY": "Übernimmt bestehende RR-Gruppen und fasst neue Komponenten/Lizenzen in neuen Gruppen zusammen.",
   "HEADER_ENGLISH": "Englisch",
   "HEADER_GERMAN": "Deutsch",
   "RR_DIALOG_MORE_OBLIGATION": "Klassifikation",

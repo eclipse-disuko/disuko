@@ -2053,6 +2053,7 @@
   "LBL_TRIGGER_TYPE": "Trigger Type",
   "LBL_NAME": "Name",
   "LBL_COMPONENT_NAME": "Component Name",
+  "USE_SPLIT_RR_TARNSFER_STRATEGY": "Preserves existing RR groups and groups new components/licenses into new ones.",
   "HEADER_ENGLISH": "English",
   "HEADER_GERMAN": "German",
   "RR_DIALOG_MORE_OBLIGATION": "Classification",

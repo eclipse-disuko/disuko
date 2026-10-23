@@ -21,6 +21,7 @@ type ItemDto struct {
 	TargetTemplateName string                    `json:"targetTemplateName,omitempty"`
 	TargetTemplateKey  string                    `json:"targetTemplateKey,omitempty"`
 	PolicyLabels       []string                  `json:"policyLabels,omitempty"`
+	RrTransferStrategy RrTransferStrategy        `json:"rrTransferStrategy"`
 }
 
 type ChecklistDto struct {
@@ -55,6 +56,7 @@ func (i Item) ToDto() ItemDto {
 		TargetTemplateName: i.TargetTemplateName,
 		TargetTemplateKey:  i.TargetTemplateKey,
 		PolicyLabels:       i.PolicyLabels,
+		RrTransferStrategy: i.RrTransferStrategy,
 	}
 	return result
 }
@@ -101,5 +103,6 @@ func (i ItemDto) ToEntity() Item {
 		TargetTemplateName: i.TargetTemplateName,
 		TargetTemplateKey:  i.TargetTemplateKey,
 		PolicyLabels:       i.PolicyLabels,
+		RrTransferStrategy: i.RrTransferStrategy,
 	}
 }
