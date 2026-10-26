@@ -84,7 +84,7 @@ const reload = async () => {
 
 const onRowClick = (event: Event, item: DataTableItem<ProjectSlim>) => {
   const project: ProjectSlim = item.item;
-  openProjectUrlByKey(project._key, router);
+  openProjectUrlByKey(project._key, router, project.isGroup);
 };
 
 const expanded = ref<string[]>([]);
