@@ -9,11 +9,7 @@ import {ComponentDetails, UnmatchedLicense} from '@disclosure-portal/model/Proje
 import {PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
 import {formatDateAndTime} from '@shared/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import {
-  getIconColorForPolicyType,
-  getIconForPolicyType,
-  policyStateToTranslationKey,
-} from '@shared/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType, policyStateToTranslationKey} from '@shared/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';

@@ -17,11 +17,7 @@ import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import useRules from '@shared/utils/Rules';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import {
-  getIconColorForPolicyType,
-  getIconForPolicyType,
-  policyStateToTranslationKey,
-} from '@shared/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType, policyStateToTranslationKey} from '@shared/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';
