@@ -10,7 +10,7 @@ import {config, mount, VueWrapper} from '@vue/test-utils';
 import {afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import WizardStepSummary from '../WizardStepSummary.vue';
 
-vi.mock('@disclosure-portal/utils/View', () => ({
+vi.mock('@shared/utils/View', () => ({
   getStrWithMaxLength: vi.fn((max: number, str: string) => str.substring(0, max)),
 }));
 

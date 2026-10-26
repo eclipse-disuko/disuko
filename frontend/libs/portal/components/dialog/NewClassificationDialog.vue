@@ -6,8 +6,8 @@
 import {useView} from '@disclosure-portal/composables/useView';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import AdminService from '@disclosure-portal/services/admin';
-import useRules from '@disclosure-portal/utils/Rules';
-import {getClassificationLevels, getClassificationTypes} from '@disclosure-portal/utils/View';
+import useRules from '@shared/utils/Rules';
+import {getClassificationLevels, getClassificationTypes} from '@shared/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';

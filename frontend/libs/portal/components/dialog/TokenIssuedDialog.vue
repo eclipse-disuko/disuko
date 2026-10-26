@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {Token} from '@disclosure-portal/model/Project';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {formatDate} from '@disclosure-portal/utils/View';
+import {formatDate} from '@shared/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import type {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import config from '@shared/utils/config';

@@ -4,7 +4,8 @@
 
 import Label from '@disclosure-portal/model/Label';
 import AdminService from '@disclosure-portal/services/admin';
-import {IMap} from '@disclosure-portal/utils/View';
+import {IMap} from '@shared/utils/View';
+import {camelCaseToLabel} from '@shared/utils/Labels';
 
 export class LabelsTools {
   public schemaLabelItems: Label[] = [] as Label[];
@@ -53,11 +54,6 @@ export class LabelsTools {
   }
 
   public camelCaseToLabel(str: string): string {
-    return str
-      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-      .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
-      .replace(/^./, function (str) {
-        return str.toUpperCase();
-      });
+    return camelCaseToLabel(str);
   }
 }

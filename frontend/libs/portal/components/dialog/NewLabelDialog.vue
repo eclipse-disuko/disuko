@@ -6,7 +6,7 @@
 import Label from '@disclosure-portal/model/Label';
 import AdminService from '@disclosure-portal/services/admin';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref, watch} from 'vue';

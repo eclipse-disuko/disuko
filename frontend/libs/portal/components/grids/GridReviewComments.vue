@@ -74,8 +74,8 @@
 <script lang="ts" setup>
 import {Comment, DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import useRules from '@disclosure-portal/utils/Rules';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import useRules from '@shared/utils/Rules';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';

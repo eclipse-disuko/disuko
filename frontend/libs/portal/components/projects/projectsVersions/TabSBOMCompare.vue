@@ -17,14 +17,8 @@ import ProjectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import {
-  formatDateTimeShort,
-  getIconColorForPolicyType,
-  getIconForDiffType,
-  getIconForPolicyType,
-  getPrStatusSortIndex,
-  sortPolicyStatesByOrder,
-} from '@disclosure-portal/utils/View';
+import {getIconForDiffType} from '@disclosure-portal/utils/View';
+import {formatDateTimeShort, getIconColorForPolicyType, getIconForPolicyType, getPrStatusSortIndex, sortPolicyStatesByOrder} from '@shared/utils/View';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';

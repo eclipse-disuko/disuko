@@ -10,7 +10,7 @@ import ProjectPostRequest from '@disclosure-portal/model/ProjectPostRequest';
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {VForm} from 'vuetify/components';

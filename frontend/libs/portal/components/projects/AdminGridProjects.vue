@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import type {SearchOptions} from '@disclosure-portal/utils/Table';
+import type {SearchOptions} from '@shared/utils/Table';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {storeToRefs} from 'pinia';

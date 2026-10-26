@@ -2,7 +2,7 @@
 import type {AugmentedLicenseRemark, LicenseRemark} from '@cli/models/Sbom';
 import {compareLicenseStatus} from '@cli/models/Sbom';
 import {useView} from '@disclosure-portal/composables/useView';
-import {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

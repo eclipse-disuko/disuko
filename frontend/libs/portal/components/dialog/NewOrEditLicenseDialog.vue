@@ -11,7 +11,7 @@ import License, {ITextValue} from '@disclosure-portal/model/License';
 import adminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {isSpdxIdentifier, isURLOrEmpty} from '@disclosure-portal/utils/Validation';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';

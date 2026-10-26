@@ -10,8 +10,8 @@ import {
   getOverallReviewTranslationKey,
   getVersionStateIcon,
   sbomOutdated,
-} from '@disclosure-portal/utils/Table';
-import {formatDateTime} from '@disclosure-portal/utils/View';
+} from '@shared/utils/Table';
+import {formatDateTime} from '@shared/utils/View';
 import dayjs from 'dayjs';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';

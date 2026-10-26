@@ -7,13 +7,13 @@ import Icons from '@disclosure-portal/constants/icons';
 import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';
 import {ComponentDetails, UnmatchedLicense} from '@disclosure-portal/model/Project';
 import {PolicyRuleStatus} from '@disclosure-portal/model/VersionDetails';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
 import {
   getIconColorForPolicyType,
   getIconForPolicyType,
   policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
+} from '@shared/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';

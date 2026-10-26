@@ -10,7 +10,7 @@ import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import AdminService from '@disclosure-portal/services/admin';
 import policyRuleService from '@disclosure-portal/services/policyrules';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
-import {formatDateTimeShort, IMap} from '@disclosure-portal/utils/View';
+import {formatDateTimeShort, IMap} from '@shared/utils/View';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';

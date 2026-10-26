@@ -6,8 +6,8 @@
 import {Token} from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import useRules from '@disclosure-portal/utils/Rules';
-import {formatDateTimeShort} from '@disclosure-portal/utils/View';
+import useRules from '@shared/utils/Rules';
+import {formatDateTimeShort} from '@shared/utils/View';
 import {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import dayjs from 'dayjs';
 import {computed, nextTick, onMounted, ref, watch} from 'vue';

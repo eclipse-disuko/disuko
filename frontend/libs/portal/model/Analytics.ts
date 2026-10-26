@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import {SearchOptions} from '@shared/utils/Table';
 import {LicenseSlim, PossibleFilterValues} from './License';
 
 export type SbomType = 'LATEST' | 'LATEST_APPROVED' | 'LATEST_AND_LATEST_APPROVED';

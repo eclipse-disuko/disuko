@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';

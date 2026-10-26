@@ -55,7 +55,7 @@ import {IObligation} from '@disclosure-portal/model/IObligation';
 import License from '@disclosure-portal/model/License';
 import {compareLevel} from '@disclosure-portal/model/Quality';
 import {useUserStore} from '@shared/user/stores/user.store';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';

@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import {CustomId} from '@disclosure-portal/model/CustomId';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {DataTableHeader} from '@shared/types/table';
 import {storeToRefs} from 'pinia';
 import {computed, ref} from 'vue';

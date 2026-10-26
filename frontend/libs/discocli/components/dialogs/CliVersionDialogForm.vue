@@ -4,7 +4,7 @@ import {projectService} from '@cli/services/projectService';
 import {useAppStore} from '@cli/stores/app';
 import type {DialogVersionFormConfig} from '@disclosure-portal/components/dialog/DialogConfigs';
 import type {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import type {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import {computed, ref} from 'vue';

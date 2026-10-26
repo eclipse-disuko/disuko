@@ -8,7 +8,7 @@ import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';
 import {default as projectService} from '@disclosure-portal/services/projects';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import {SearchOptions} from '@shared/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs, watch} from 'vue';

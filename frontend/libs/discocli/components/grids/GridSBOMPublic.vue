@@ -3,7 +3,7 @@ import {SBOM, SpdxUploadResponse} from '@cli/models/Sbom';
 import {projectService} from '@cli/services/projectService';
 import {useAppStore} from '@cli/stores/app';
 import {NameKeyIdentifier} from '@disclosure-portal/model/ProjectsResponse';
-import {formatDateTime} from '@disclosure-portal/utils/View';
+import {formatDateTime} from '@shared/utils/View';
 import {isAxiosError} from 'axios';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';

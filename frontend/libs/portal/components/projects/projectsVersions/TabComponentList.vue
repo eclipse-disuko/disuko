@@ -21,18 +21,10 @@ import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@shared/utils/eventbus';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import {
-  getIconColorForPolicyType,
-  getIconColorScanRemarkLevel,
-  getIconForPolicyType,
-  getPrStatusSortIndex,
-  getScanRemarkStatusSortIndex,
-  getWorstScanRemarkLevel,
-  policyStateToTranslationKey,
-  sortPolicyStatesByOrder,
-} from '@disclosure-portal/utils/View';
+import {getIconColorScanRemarkLevel, getScanRemarkStatusSortIndex, getWorstScanRemarkLevel} from '@disclosure-portal/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType, getPrStatusSortIndex, policyStateToTranslationKey, sortPolicyStatesByOrder} from '@shared/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

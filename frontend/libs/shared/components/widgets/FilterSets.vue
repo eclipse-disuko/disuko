@@ -14,10 +14,10 @@ import AdminService from '@disclosure-portal/services/admin';
 import filterSetService from '@disclosure-portal/services/filtersets';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import {LabelsTools} from '@disclosure-portal/utils/Labels';
-import useRules from '@disclosure-portal/utils/Rules';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import {camelCaseToLabel} from '@shared/utils/Labels';
+import useRules from '@shared/utils/Rules';
+import {SearchOptions} from '@shared/utils/Table';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import Statistics from '@disclosure-portal/views/admin/tools/Statistics.vue';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
@@ -52,7 +52,6 @@ export default defineComponent({
     const filterSetName = ref('');
     const filterMap = ref<Nullable<Record<string, ISelectItemWithCount[]>>>(null);
     const activeRules = ref({});
-    const labelTools = new LabelsTools();
     const licensesLoading = ref(true);
     const filterSetLoading = ref(false);
     const selectedTab = ref(0);
@@ -314,7 +313,7 @@ export default defineComponent({
       filterSetName,
       filterMap,
       activeRules,
-      labelTools,
+      camelCaseToLabel,
       licensesLoading,
       selectedTab,
       selectedFilterSet,
@@ -450,7 +449,7 @@ export default defineComponent({
                     multiple
                     clearable
                     variant="outlined"
-                    :label="labelTools.camelCaseToLabel(key)"
+                    :label="camelCaseToLabel(key)"
                     hide-details="auto"
                     v-bind:menu-props="{location: 'bottom'}">
                     <template v-slot:item="{item, props}">
@@ -485,7 +484,7 @@ export default defineComponent({
             <v-row v-if="filterMap && ((selectedFilterSet && selectedFilterSet._key) || isNew)">
               <div v-for="(elements, key) in filterMap" :key="'fm' + key">
                 <div v-if="key != 'classifications'">
-                  <h3 class="d-subtitle-2 font-weight-bold">{{ labelTools.camelCaseToLabel(key) }}</h3>
+                  <h3 class="d-subtitle-2 font-weight-bold">{{ camelCaseToLabel(key) }}</h3>
                   <v-checkbox
                     v-for="element in elements"
                     :key="element.value"

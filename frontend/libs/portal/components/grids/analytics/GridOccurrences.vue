@@ -7,7 +7,7 @@ import {SbomType, SearchOccurrenciesItem} from '@disclosure-portal/model/Analyti
 import {ISelectItemWithCount} from '@disclosure-portal/model/ISelectItem';
 import {PossibleFilterValues, compareFamily, getLicenseApprovalTypeKeys} from '@disclosure-portal/model/License';
 import AnalyticsService from '@disclosure-portal/services/analytics';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
