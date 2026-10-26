@@ -362,6 +362,8 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 	return latest
 }
 
+// FindRemarksForSplit returns all remarks for the same template, preferring the current SBOM.
+// If none exist, it uses the latest previous SBOM containing remarks for that template.
 func FindRemarksForSplit(existingRemarks []*Remark, newRemark *Remark) []*Remark {
 	current := findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, newRemark.SBOMId)
 	if len(current) > 0 {
@@ -370,6 +372,8 @@ func FindRemarksForSplit(existingRemarks []*Remark, newRemark *Remark) []*Remark
 	return findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
 }
 
+// Find all remarks for the same SBOM and template, regardless of
+// their component/license combinations or status (including CANCELLED).
 func findRemarksByTemplateAndSBOM(existingRemarks []*Remark, templateKey, sbomId string) []*Remark {
 	var result []*Remark
 	for _, existingRemark := range existingRemarks {
@@ -389,6 +393,8 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 		return nil
 	}
 
+	// Find the most recent previous SBOM containing remarks for the same
+	// template, excluding the current SBOM and any later uploads.
 	var latestSBOMId string
 	var latestUploaded *time.Time
 
@@ -414,6 +420,9 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 		return nil
 	}
 
+	// Collect all remarks from the latest matching previous SBOM
+	// that belong to the same template, regardless of their
+	// component/license combinations or status (including CANCELLED).
 	var result []*Remark
 	for _, existingRemark := range existingRemarks {
 		if existingRemark.SBOMId != latestSBOMId {
@@ -428,7 +437,11 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 	return result
 }
 
+// SplitAndCarryOverFrom splits the remark based on matching components and
+// licenses from previous remarks. Matching parts inherit their previous state,
+// while unmatched parts form a new remark. CANCELLED remarks are not considered.
 func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
+	// No splitting possible without previous remarks or components/licenses.
 	if len(previousRemarks) == 0 {
 		return []*Remark{r}
 	}
@@ -436,10 +449,12 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		return []*Remark{r}
 	}
 
+	// Initialize the remaining components/licenses to be processed.
 	remainingComponents := append([]ComponentMeta(nil), r.Components...)
 	remainingLicenses := append([]LicenseMeta(nil), r.Licenses...)
 	result := make([]*Remark, 0, len(previousRemarks)+1)
 
+	// Match components/licenses against previous remarks and carry over their state.
 	for _, previous := range previousRemarks {
 		if previous.Status == Cancelled {
 			continue
@@ -460,6 +475,7 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		remainingLicenses = restLicenses
 	}
 
+	// Create a new remark for any components/licenses not matched previously.
 	if len(remainingComponents) > 0 || len(remainingLicenses) > 0 {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
