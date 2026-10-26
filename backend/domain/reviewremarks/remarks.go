@@ -464,10 +464,6 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
 
-	if len(result) == 0 {
-		return []*Remark{r}
-	}
-
 	return result
 }
 
