@@ -372,7 +372,7 @@ func FindRemarksForSplit(existingRemarks []*Remark, newRemark *Remark) []*Remark
 	return findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
 }
 
-// Find all remarks for the same SBOM and template, regardless of
+// Find all remarks for the given SBOM and template, regardless of
 // their component/license combinations or status (including CANCELLED).
 func findRemarksByTemplateAndSBOM(existingRemarks []*Remark, templateKey, sbomId string) []*Remark {
 	var result []*Remark
@@ -420,21 +420,8 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 		return nil
 	}
 
-	// Collect all remarks from the latest matching previous SBOM
-	// that belong to the same template, regardless of their
-	// component/license combinations or status (including CANCELLED).
-	var result []*Remark
-	for _, existingRemark := range existingRemarks {
-		if existingRemark.SBOMId != latestSBOMId {
-			continue
-		}
-		if existingRemark.TemplateKey != newRemark.TemplateKey {
-			continue
-		}
-		result = append(result, existingRemark)
-	}
-
-	return result
+	// Collect all remarks from the latest matching previous SBOM.
+	return findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, latestSBOMId)
 }
 
 // SplitAndCarryOverFrom splits the remark based on matching components and
@@ -483,18 +470,13 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 	return result
 }
 
+// cloneWithCombination creates a new remark from a fresh checklist remark
+// with the given subset of components and licenses.
 func (r *Remark) cloneWithCombination(components []ComponentMeta, licenses []LicenseMeta) *Remark {
 	clone := *r
 	clone.ChildEntity = domain.NewChildEntity()
 	clone.Components = append([]ComponentMeta(nil), components...)
 	clone.Licenses = append([]LicenseMeta(nil), licenses...)
-	clone.Events = append([]Event(nil), r.Events...)
-
-	if r.Closed != nil {
-		closed := *r.Closed
-		clone.Closed = &closed
-	}
-
 	return &clone
 }
 
