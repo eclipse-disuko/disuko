@@ -6,6 +6,7 @@ package reviewremarks
 
 import (
 	"encoding/json"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -475,8 +476,8 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 func (r *Remark) cloneWithCombination(components []ComponentMeta, licenses []LicenseMeta) *Remark {
 	clone := *r
 	clone.ChildEntity = domain.NewChildEntity()
-	clone.Components = append([]ComponentMeta(nil), components...)
-	clone.Licenses = append([]LicenseMeta(nil), licenses...)
+	clone.Components = slices.Clone(components)
+	clone.Licenses = slices.Clone(licenses)
 	return &clone
 }
 
