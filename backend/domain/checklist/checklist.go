@@ -21,6 +21,13 @@ const (
 	ComponentName     TriggerType = "COMPONENT_NAME"
 )
 
+type RrTransferStrategy string
+
+const (
+	RrTransferDefault    RrTransferStrategy = ""
+	RrTransferSplitBySet RrTransferStrategy = "SPLIT"
+)
+
 type PolicyStatusType string
 
 const (
@@ -43,6 +50,7 @@ type Item struct {
 	ComponentNames     []string
 	TargetTemplateName string
 	TargetTemplateKey  string
+	RrTransferStrategy RrTransferStrategy
 }
 
 type Checklist struct {
