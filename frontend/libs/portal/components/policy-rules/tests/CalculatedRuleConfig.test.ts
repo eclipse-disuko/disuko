@@ -9,8 +9,8 @@ import {describe, expect, it, vi} from 'vitest';
 import {nextTick} from 'vue';
 import CalculatedRuleConfig from '../CalculatedRuleConfig.vue';
 
-vi.mock('@disclosure-portal/utils/View', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@disclosure-portal/utils/View')>();
+vi.mock('@shared/utils/View', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@shared/utils/View')>();
   return {
     ...actual,
     default: () => ({

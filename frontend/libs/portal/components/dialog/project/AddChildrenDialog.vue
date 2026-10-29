@@ -9,7 +9,7 @@ import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime, getCssClassForTableRow} from '@shared/utils/Table';
 import DLabel from '@disclosure-portal/components/disco/DLabel.vue';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref, watch} from 'vue';

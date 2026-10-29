@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script lang="ts">
-import {useUpload} from '@disclosure-portal/composables/useUpload';
+import {useUpload} from '@shared/composables/useUpload';
 import SchemaPostRequest from '@shared/model/SchemaPostRequest';
 import {defineComponent, nextTick} from 'vue';
 

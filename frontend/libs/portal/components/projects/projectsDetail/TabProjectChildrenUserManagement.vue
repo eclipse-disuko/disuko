@@ -18,7 +18,7 @@ import {
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';

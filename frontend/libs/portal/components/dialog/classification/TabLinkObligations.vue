@@ -76,8 +76,8 @@
 
 <script lang="ts" setup>
 import {compareLevel} from '@disclosure-portal/model/Quality';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import {getCssClassForTableRow} from '@shared/utils/Table';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';

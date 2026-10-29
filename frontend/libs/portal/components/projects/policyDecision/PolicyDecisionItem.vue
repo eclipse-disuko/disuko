@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {Decision} from '@disclosure-portal/model/Decision';
 import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';
-import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType} from '@shared/utils/View';
 
 defineProps<{
   decision: PolicyDecisionSlim | Decision;

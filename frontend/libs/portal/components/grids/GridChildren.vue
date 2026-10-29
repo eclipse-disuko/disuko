@@ -7,7 +7,7 @@ import {ProjectChildrenCombiDto, ProjectSlimDto} from '@disclosure-portal/model/
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
-import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
+import {getStrWithMaxLength} from '@shared/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

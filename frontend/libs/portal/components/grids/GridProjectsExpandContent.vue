@@ -6,7 +6,7 @@
 import adminService from '@disclosure-portal/services/admin';
 import ProjectService from '@disclosure-portal/services/projects';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import {formatDate} from '@disclosure-portal/utils/Table';
+import {formatDate} from '@shared/utils/Table';
 import {useClipboard} from '@shared/utils/clipboard';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, onMounted, ref} from 'vue';

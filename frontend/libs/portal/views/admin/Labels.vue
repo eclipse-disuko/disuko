@@ -12,7 +12,7 @@ import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import eventBus from '@shared/utils/eventbus';
-import {formatDateAndTime, getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime, getCssClassForTableRow} from '@shared/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {useHead} from '@unhead/vue';
 import {useTabsWindows} from '@shared/composables/useTabsWindows';

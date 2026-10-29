@@ -12,7 +12,7 @@ import versionService from '@disclosure-portal/services/version';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import config from '@shared/utils/config';
 import dayjs from 'dayjs';
 import {computed, nextTick, ref, watch} from 'vue';

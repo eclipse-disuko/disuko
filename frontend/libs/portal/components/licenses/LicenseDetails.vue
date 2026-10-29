@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {useLicense} from '@disclosure-portal/composables/useLicense';
 import LicenseModel from '@disclosure-portal/model/License';
-import {formatDate, formatDateTime, getStrWithMaxLength} from '@disclosure-portal/utils/View';
+import {formatDate, formatDateTime, getStrWithMaxLength} from '@shared/utils/View';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {useI18n} from 'vue-i18n';
 

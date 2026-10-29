@@ -9,7 +9,7 @@ import {ProjectApprovable} from '@disclosure-portal/model/Approval';
 import {ApprovableDto} from '@disclosure-portal/model/Project';
 import {VersionSlim} from '@disclosure-portal/model/VersionDetails';
 import StatsItem from './StatsItem.vue';
-import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime, getCssClassForTableRow, sbomOutdated} from '@shared/utils/Table';
 import {createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem} from '@shared/types/table';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';

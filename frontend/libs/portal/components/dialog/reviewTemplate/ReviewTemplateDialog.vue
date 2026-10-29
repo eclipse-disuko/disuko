@@ -6,7 +6,7 @@
 import {ReviewRemarkLevel} from '@disclosure-portal/model/Quality';
 import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {computed, nextTick, Ref, ref, watch} from 'vue';

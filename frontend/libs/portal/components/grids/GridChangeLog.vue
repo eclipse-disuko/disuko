@@ -5,13 +5,13 @@
 <script setup lang="ts">
 import {ChangeLogResponse, IPolicyRuleChangeLog} from '@disclosure-portal/model/ChangeLog';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {
   getIconColorForPolicyType,
   getIconForChange,
   getIconForPolicyType,
   policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
+} from '@shared/utils/View';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';

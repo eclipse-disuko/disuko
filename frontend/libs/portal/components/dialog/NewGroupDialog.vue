@@ -8,7 +8,7 @@ import {ProjectSlim} from '@disclosure-portal/model/ProjectsResponse';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {LabelsTools} from '@disclosure-portal/utils/Labels';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import DialogLayout from '@shared/layouts/DialogLayout.vue';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

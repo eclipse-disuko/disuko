@@ -6,7 +6,7 @@
 import {getProjectUserTypes, ProjectKeyName, ProjectUser, UserType} from '@disclosure-portal/model/Project';
 import {fetchProjectUserOptions} from '@disclosure-portal/services/autocompleteOptions';
 import {UserDto} from '@shared/types/Users';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

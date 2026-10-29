@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {AugmentedPolicyRule, PolicyRule} from '@cli/models/Sbom';
-import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType} from '@shared/utils/View';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';

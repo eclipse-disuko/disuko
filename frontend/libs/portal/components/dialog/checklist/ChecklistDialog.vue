@@ -8,7 +8,7 @@ import {Checklist} from '@disclosure-portal/model/Checklist';
 import {useChecklistsStore} from '@disclosure-portal/stores/checklists.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {Tags} from '@disclosure-portal/constants/ruleValidations';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';

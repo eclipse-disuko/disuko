@@ -69,8 +69,8 @@ vi.mock('@shared/composables/useSnackbar', () => ({
 // that requires a real Vuetify plugin instance to be installed, which these view tests don't set up.
 // Stub the composable directly (keeping the other named exports of the module intact) so mounting
 // doesn't need a full Vuetify instance.
-vi.mock('@disclosure-portal/utils/View', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@disclosure-portal/utils/View')>();
+vi.mock('@shared/utils/View', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@shared/utils/View')>();
   return {
     ...actual,
     default: () => ({

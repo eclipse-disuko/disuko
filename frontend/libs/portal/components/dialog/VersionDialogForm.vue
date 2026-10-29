@@ -9,7 +9,7 @@ import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

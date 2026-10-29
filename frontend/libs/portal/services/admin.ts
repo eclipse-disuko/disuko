@@ -33,7 +33,7 @@ import {
   UserRequestDto,
 } from '@shared/types/Users';
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import {SearchOptions} from '@shared/utils/Table';
 import {AxiosResponse} from 'axios';
 import {DashboardCounts} from '@shared/types/DashboardCounts';
 

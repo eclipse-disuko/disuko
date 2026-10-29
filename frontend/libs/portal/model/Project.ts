@@ -11,7 +11,7 @@ import {ProjectChildren} from '@disclosure-portal/model/ProjectsResponse';
 import {Group, Rights} from '@shared/user/models/Rights';
 import {UserDto} from '@shared/types/Users';
 import {SupplierExtraData} from '@disclosure-portal/model/Wizard';
-import {IMap} from '@disclosure-portal/utils/View';
+import {IMap} from '@shared/utils/View';
 import {Application} from './Application';
 import License from './License';
 import Schema from './Schema';

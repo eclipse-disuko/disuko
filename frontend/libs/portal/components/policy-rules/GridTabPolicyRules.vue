@@ -17,7 +17,7 @@ import ProjectService from '@disclosure-portal/services/projects';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {removeFromList} from '@disclosure-portal/utils/List';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel, IMap} from '@shared/utils/View';
 import {useCalculatedPolicyRuleStore} from '@disclosure-portal/stores/calculatedPolicyRule.store';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import useSnackbar from '@shared/composables/useSnackbar';

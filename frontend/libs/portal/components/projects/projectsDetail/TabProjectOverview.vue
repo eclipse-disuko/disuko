@@ -7,7 +7,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import type {Project} from '@disclosure-portal/model/Project';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {formatDate, getStrWithMaxLength, formatDateTimeShort} from '@disclosure-portal/utils/View';
+import {formatDate, getStrWithMaxLength, formatDateTimeShort} from '@shared/utils/View';
 import {createReusableTemplate} from '@vueuse/core';
 import {computed} from 'vue';
 import {useI18n} from 'vue-i18n';
