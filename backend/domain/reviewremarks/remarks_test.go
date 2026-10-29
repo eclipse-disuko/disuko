@@ -18,3 +18,32 @@ func TestRemarkCancelSetsGrayLevel(t *testing.T) {
 		t.Errorf("Level = %q, want %q", remark.Level, Gray)
 	}
 }
+
+func TestRemarkHasComments(t *testing.T) {
+	tests := []struct {
+		name   string
+		remark *Remark
+		want   bool
+	}{
+		{name: "nil remark", remark: nil, want: false},
+		{name: "no events", remark: &Remark{}, want: false},
+		{name: "non-comment event", remark: &Remark{Events: []Event{{Type: InProgressEvent}}}, want: false},
+		{name: "comment event", remark: &Remark{Events: []Event{{Type: CommentEvent}}}, want: true},
+		{
+			name: "comment among other events",
+			remark: &Remark{Events: []Event{
+				{Type: InProgressEvent},
+				{Type: CommentEvent},
+			}},
+			want: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.remark.HasComments(); got != tt.want {
+				t.Errorf("HasComments() = %t, want %t", got, tt.want)
+			}
+		})
+	}
+}

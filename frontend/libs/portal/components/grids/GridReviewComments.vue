@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import {Comment, DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
+import {DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@disclosure-portal/utils/Rules';
 import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';

@@ -2624,6 +2624,9 @@ func (projectHandler *ProjectHandler) SetReviewRemarkStatus(w http.ResponseWrite
 	} else if status == reviewremarks.Cancelled {
 		remark.Cancel(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.InProgress {
+		if !remark.HasComments() {
+			exception.ThrowExceptionBadRequestResponse()
+		}
 		remark.InProgress(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
 	} else if status == reviewremarks.Open {
 		remark.Reopen(username, projectHandler.fullNameForUserSafe(requestSession, username, nil))
