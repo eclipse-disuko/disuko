@@ -13,13 +13,19 @@
       @close="close">
       <template #title-right>
         <div v-if="isOpen(item) || isInProgress(item)" class="ml-4 flex gap-2">
-          <DCActionButton
+          <Tooltip
             v-if="isOpen(item)"
-            is-dialog-button
-            size="small"
-            variant="outlined"
-            @click="markInProgress"
-            :text="t('RR_MARK_IN_PROGRESS')" />
+            :text="t('RR_MARK_IN_PROGRESS_REQUIRES_COMMENT')"
+            as-parent
+            :disabled="hasComments">
+            <DCActionButton
+              is-dialog-button
+              size="small"
+              variant="outlined"
+              :disabled="!hasComments"
+              @click="markInProgress"
+              :text="t('RR_MARK_IN_PROGRESS')" />
+          </Tooltip>
           <DCActionButton
             is-dialog-button
             size="small"
@@ -117,7 +123,12 @@
 </template>
 
 <script lang="ts" setup>
-import {CommentReviewRemarkRequest, ReviewRemark, ReviewRemarkStatus} from '@disclosure-portal/model/Quality';
+import {
+  CommentReviewRemarkRequest,
+  EventType,
+  ReviewRemark,
+  ReviewRemarkStatus,
+} from '@disclosure-portal/model/Quality';
 import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {computed, ref} from 'vue';
@@ -143,6 +154,7 @@ const itemKey = ref('');
 const item = computed(
   () => reviewRemarksStore.getRemark(props.projectUuid, props.versionUuid, itemKey.value) ?? openedItem.value,
 );
+const hasComments = computed(() => item.value?.events?.some((event) => event.type === EventType.COMMENT) ?? false);
 const isSubmittingComment = ref(false);
 const {info: snack} = useSnackbar();
 

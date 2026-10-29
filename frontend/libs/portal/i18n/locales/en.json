@@ -680,6 +680,7 @@
   "BTN_COMMENT": "Comment",
   "TT_delete_project_disabled": "please remove children before deletion",
   "RR_MARK_IN_PROGRESS": "Mark In Progress",
+  "RR_MARK_IN_PROGRESS_REQUIRES_COMMENT": "At least one comment must exist.",
   "RR_EVENT_IN_PROGRESS": "moved this remark in progress.",
   "RR_EVENT_CLOSED": "closed this remark.",
   "RR_EVENT_CANCELLED": "cancelled this remark.",

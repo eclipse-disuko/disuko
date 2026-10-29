@@ -679,6 +679,7 @@
   "BTN_SAVE": "Speichern",
   "BTN_COMMENT": "Kommentieren",
   "RR_MARK_IN_PROGRESS": "In Bearbeitung setzen",
+  "RR_MARK_IN_PROGRESS_REQUIRES_COMMENT": "Es muss mindestens ein Kommentar vorhanden sein.",
   "RR_EVENT_IN_PROGRESS": "hat die Bemerkung in Bearbeitung gesetzt.",
   "RR_EVENT_CLOSED": "hat die Bemerkung geschlossen.",
   "RR_EVENT_CANCELLED": "hat die Bemerkung abgebrochen.",

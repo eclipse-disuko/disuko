@@ -253,6 +253,18 @@ func (r *Remark) InProgress(author, fullName string) {
 	r.Status = InProgress
 }
 
+func (r *Remark) HasComments() bool {
+	if r == nil {
+		return false
+	}
+	for _, event := range r.Events {
+		if event.Type == CommentEvent {
+			return true
+		}
+	}
+	return false
+}
+
 func (r *Remark) Cancel(author, fullName string) {
 	r.Events = append(r.Events, Event{
 		ChildEntity:    domain.NewChildEntity(),
