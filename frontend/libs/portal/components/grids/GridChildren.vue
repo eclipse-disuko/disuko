@@ -9,6 +9,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useWizardStore} from '@disclosure-portal/stores/wizard.store';
 import {getStrWithMaxLength} from '@disclosure-portal/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 import {DataTableHeader, DataTableItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS, DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, ref} from 'vue';
@@ -99,14 +100,7 @@ const showAddChildrenProjectDialog = () => {
   }
 };
 
-const customFilter = (_: string, query: string, item?: any) => {
-  if (!query || !item) return true;
-  const searchQuery = query.toLowerCase();
-  const rawItem = item.raw as ProjectChildrenCombiDto;
-  const projectName = rawItem.project?.name?.toLowerCase() || '';
-
-  return projectName.includes(searchQuery);
-};
+const customFilter = useTableSearch(['project.name', 'version.name', 'version.description']);
 
 const getStatusClass = computed(() => (status?: string) => {
   const statusValue = status?.toLowerCase() || 'new';

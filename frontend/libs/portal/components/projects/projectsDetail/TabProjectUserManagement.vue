@@ -22,6 +22,7 @@ import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -222,28 +223,13 @@ const editUser = async (user: ProjectUser, oldUserId: string) => {
     eventBus.emit('on-api-error', error);
   }
 };
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.userId) {
-    const forename = item.userProfile.forename.toLowerCase();
-    const lastname = item.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.responsible;
-  }
-
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
+const customFilterTable = useTableSearch([
+  'userId',
+  'userProfile.forename',
+  'userProfile.lastname',
+  'userType',
+  'comment',
+]);
 
 const closeUserDialog = () => {
   userDialogRef.value?.close();

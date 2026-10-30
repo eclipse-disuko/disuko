@@ -27,6 +27,7 @@ import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const sbomStore = useSbomStore();
 const projectStore = useProjectStore();
@@ -297,27 +298,19 @@ onMounted(async () => {
   await reload();
 });
 
-const customFilter = (_: unknown, searchTerm: string | null, item: unknown): boolean => {
-  if (!searchTerm) return true;
-
-  const itemObj = item as {raw?: ReviewRemark};
-  if (!itemObj?.raw) return false;
-
-  const reviewRemark = itemObj.raw;
-  const searchTerms = searchTerm.toLowerCase().split(' ');
-  const itemText = [
-    reviewRemark.title,
-    reviewRemark.description,
-    reviewRemark.sbomName,
-    ...(reviewRemark.components?.map((c) => `${c.componentName} ${c.componentVersion}`) || []),
-    ...(reviewRemark.licenses?.flatMap((l) => [l.licenseName, l.licenseId]) || []),
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
-
-  return searchTerms.every((term) => itemText.includes(term));
-};
+const customFilter = useTableSearch([
+  'title',
+  'description',
+  'sbomName',
+  'author',
+  'origin',
+  'status',
+  'level',
+  'components.componentName',
+  'components.componentVersion',
+  'licenses.licenseName',
+  'licenses.licenseId',
+]);
 
 const filteredList = computed(() => {
   return items.value.filter((item: ReviewRemark) => filterOnLevel(item) && filterOnStatus(item) && filterOnSbom(item));
