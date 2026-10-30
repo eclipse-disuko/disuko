@@ -17,7 +17,7 @@ import {useRouter, useRoute} from 'vue-router';
 import type {DataTableHeader} from 'vuetify';
 import DSpdxTagDialog from '../dialogs/CliSpdxTagDialog.vue';
 import {useClipboard} from '@shared/utils/clipboard';
-import {useTableFilter} from '@shared/composables/useTableFilter';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 const selectedVersion = ref<NameKeyIdentifier | null>(null);
 
 const appStore = useAppStore();
@@ -214,7 +214,7 @@ const filteredList = computed<SBOM[]>(() => {
   return sboms;
 });
 
-const customFilter = useTableFilter([
+const customFilter = useTableSearch([
   'id',
   'name',
   'version',
