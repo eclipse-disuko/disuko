@@ -26,10 +26,13 @@ import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
+import {useUserStore} from '@shared/user/stores/user.store';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
+const userStore = useUserStore();
+const router = useRouter();
 const {info} = useSnackbar();
 
 const dataAreLoaded = ref(false);
@@ -54,8 +57,15 @@ const route = useRoute();
 
 const projectModel = computed(() => projectStore.currentProject!);
 
+const isCurrentUser = (item: ProjectChildMemberCombi): boolean => {
+  const currentUserId = userStore.getProfile.user;
+  return Boolean(currentUserId) && item.projectMember.userId.toLowerCase() === currentUserId.toLowerCase();
+};
+
 const userHeaders = computed((): DataTableHeader[] => [
-  ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
+  ...(projectModel.value.allowUserManagementUpdate ||
+  projectModel.value.allowUserManagementDelete ||
+  projectChildrenMembers.value.list?.some(isCurrentUser)
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -268,6 +278,12 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (childProjectKey && userId) {
     await projectService.deleteProjectMember(childProjectKey, userId);
     info(t('DIALOG_project_member_delete_success'));
+    const currentUserId = userStore.getProfile.user;
+    if (currentUserId && userId.toLowerCase() === currentUserId.toLowerCase()) {
+      confirmationDialogVisible.value = false;
+      await router.replace({path: '/dashboard/home'});
+      return;
+    }
     await reload();
   }
 };
@@ -327,7 +343,7 @@ const customFilterTable = (value: any, search: string, internalItem: any) => {
   return value.toLowerCase().indexOf(lowerSearch) !== -1;
 };
 
-const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
+const getActionButtons = (item: ProjectChildMemberCombi): TableActionButtonsProps['buttons'] => {
   return [
     {
       icon: 'mdi-pencil',
@@ -339,10 +355,10 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: projectModel.value.allowUserManagementDelete,
+      show: projectModel.value.allowUserManagementDelete || isCurrentUser(item),
     },
   ];
-});
+};
 
 onMounted(async () => {
   await reload();
@@ -419,7 +435,7 @@ watch(
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="compact"
-              :buttons="actionButtons"
+              :buttons="getActionButtons(item)"
               @edit="showEditUserDialog(item)"
               @remove="showDeleteUserDialog(item)" />
           </template>

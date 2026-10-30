@@ -351,11 +351,10 @@ func (projectHandler *ProjectHandler) ProjectMemberDeleteHandler(w http.Response
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.DeprecatedProjectError))
 	}
 	username, rights := roles.GetAndCheckProjectRights(requestSession, r, currentProject, false)
-	if !(rights.AllowProjectUserManagement.Delete || rights.AllowAllProjectUserManagement.Delete) {
+	userId := chi.URLParam(r, "userId")
+	if username != userId && !(rights.AllowProjectUserManagement.Delete || rights.AllowAllProjectUserManagement.Delete) {
 		exception.ThrowExceptionClientMessage3(message.GetI18N(message.UserDeletion))
 	}
-
-	userId := chi.URLParam(r, "userId")
 
 	entity := currentProject.GetMember(userId)
 	if entity == nil {
