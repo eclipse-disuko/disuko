@@ -57,15 +57,10 @@ const route = useRoute();
 
 const projectModel = computed(() => projectStore.currentProject!);
 
-const isCurrentUser = (item: ProjectChildMemberCombi): boolean => {
-  const currentUserId = userStore.getProfile.user;
-  return Boolean(currentUserId) && item.projectMember.userId.toLowerCase() === currentUserId.toLowerCase();
-};
-
 const userHeaders = computed((): DataTableHeader[] => [
   ...(projectModel.value.allowUserManagementUpdate ||
   projectModel.value.allowUserManagementDelete ||
-  projectChildrenMembers.value.list?.some(isCurrentUser)
+  projectChildrenMembers.value.list?.some((item) => userStore.isCurrentUser(item.projectMember.userId))
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -278,8 +273,7 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (childProjectKey && userId) {
     await projectService.deleteProjectMember(childProjectKey, userId);
     info(t('DIALOG_project_member_delete_success'));
-    const currentUserId = userStore.getProfile.user;
-    if (currentUserId && userId.toLowerCase() === currentUserId.toLowerCase()) {
+    if (userStore.isCurrentUser(userId)) {
       confirmationDialogVisible.value = false;
       await router.replace({path: '/dashboard/home'});
       return;
@@ -355,7 +349,7 @@ const getActionButtons = (item: ProjectChildMemberCombi): TableActionButtonsProp
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: projectModel.value.allowUserManagementDelete || isCurrentUser(item),
+      show: projectModel.value.allowUserManagementDelete || userStore.isCurrentUser(item.projectMember.userId),
     },
   ];
 };

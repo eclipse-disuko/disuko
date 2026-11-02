@@ -49,15 +49,10 @@ const errorDialog = ref<ErrorDialogInterface | null>(null);
 const sortItems = ref<SortItem[]>([{key: 'userType', order: 'asc'}]);
 
 const projectModel = computed(() => projectStore.currentProject!);
-const isCurrentUser = (user: ProjectUser): boolean => {
-  const currentUserId = userStore.getProfile.user;
-  return Boolean(currentUserId) && user.userId.toLowerCase() === currentUserId.toLowerCase();
-};
-
 const userHeaders = computed((): DataTableHeader[] => [
   ...(projectModel.value.allowUserManagementUpdate ||
   projectModel.value.allowUserManagementDelete ||
-  users.value.some(isCurrentUser)
+  users.value.some((user) => userStore.isCurrentUser(user.userId))
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -202,8 +197,7 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (config.key) {
     await projectService.deleteProjectMember(projectModel.value._key, config.key);
     info(t('DIALOG_project_member_delete_success'));
-    const currentUserId = userStore.getProfile.user;
-    if (currentUserId && config.key.toLowerCase() === currentUserId.toLowerCase()) {
+    if (userStore.isCurrentUser(config.key)) {
       confirmationDialogVisible.value = false;
       await router.replace({path: '/dashboard/home'});
       return;
@@ -280,7 +274,7 @@ const getActionButtons = (user: ProjectUser): TableActionButtonsProps['buttons']
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: (projectModel.value.allowUserManagementDelete || isCurrentUser(user)) && canModify,
+      show: (projectModel.value.allowUserManagementDelete || userStore.isCurrentUser(user.userId)) && canModify,
     },
   ];
 };
