@@ -27,6 +27,7 @@ import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -304,28 +305,14 @@ const possibleUserTypes = computed((): DataTableHeaderFilterItems[] => {
   }));
 });
 
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.projectMember.userId) {
-    const forename = item.projectMember.userProfile.forename.toLowerCase();
-    const lastname = item.projectMember.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.projectMember.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.projectMember?.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.projectMember.responsible;
-  }
-
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
+const customFilterTable = useTableSearch([
+  'projectMember.userId',
+  'projectMember.userProfile.forename',
+  'projectMember.userProfile.lastname',
+  'projectMember.userType',
+  'projectMember.comment',
+  'projectName',
+]);
 
 const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
   return [
