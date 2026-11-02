@@ -28,7 +28,6 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {useRoute} from 'vue-router';
 import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
