@@ -7,7 +7,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import {AccessRights, ProjectAccessRights} from '@disclosure-portal/model/AccessRights';
 import {ActionRights} from '@shared/types/Credentials';
 import {CRUDRights} from '@shared/user/models/Rights';
-import {IMap} from '@disclosure-portal/utils/View';
+import {IMap} from '@shared/utils/View';
 import {DataTableHeader} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import _ from 'lodash';

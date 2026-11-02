@@ -10,11 +10,8 @@ import VersionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {downloadFile} from '@disclosure-portal/utils/download';
-import {
-  getIconColorScanRemarkLevel,
-  getScanRemarkStatusSortIndex,
-  getStrWithMaxLength,
-} from '@disclosure-portal/utils/View';
+import {getIconColorScanRemarkLevel, getScanRemarkStatusSortIndex} from '@disclosure-portal/utils/View';
+import {getStrWithMaxLength} from '@shared/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';

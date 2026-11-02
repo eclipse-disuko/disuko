@@ -13,7 +13,7 @@ import License, {
 } from '@disclosure-portal/model/License';
 import {PolicyRulesForLicenseDto} from '@disclosure-portal/model/PolicyRule';
 import {AuditLog} from '@disclosure-portal/model/VersionDetails';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import {SearchOptions} from '@shared/utils/Table';
 import {AxiosResponse} from 'axios';
 
 const {api} = useApi();

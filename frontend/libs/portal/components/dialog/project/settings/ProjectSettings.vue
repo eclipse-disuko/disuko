@@ -11,7 +11,7 @@ import {useAppStore} from '@disclosure-portal/stores/app';
 import {useDialogStore} from '@disclosure-portal/stores/dialog.store';
 import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {storeToRefs} from 'pinia';
 import {computed, nextTick, ref, watch} from 'vue';

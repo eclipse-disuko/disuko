@@ -7,7 +7,7 @@ import ConfirmationDialog from '@disclosure-portal/components/dialog/Confirmatio
 import {JOB_STATUS_SUCCESS, JOB_TYPE_TERMS_OF_USE, JobDto, SetConfigDto} from '@disclosure-portal/model/Job';
 import AdminService from '@disclosure-portal/services/admin';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import {computed, nextTick, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

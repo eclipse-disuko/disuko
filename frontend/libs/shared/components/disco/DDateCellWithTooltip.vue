@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import {formatDate, formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDate, formatDateAndTime} from '@shared/utils/Table';
 
 defineOptions({inheritAttrs: false});
 

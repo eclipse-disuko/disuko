@@ -188,7 +188,7 @@
 
 <script setup lang="ts">
 import {SystemStats} from '@disclosure-portal/model/Statistic';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import {useI18n} from 'vue-i18n';
 
 defineProps<{stats: SystemStats[]}>();

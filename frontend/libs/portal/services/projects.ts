@@ -50,7 +50,7 @@ import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import {UserDto} from '@shared/types/Users';
 import {AuditLog, ComponentMultiDiff, NoticeFileFormat} from '@disclosure-portal/model/VersionDetails';
 import {IProjectCreatedResponse, WizardProjectPostRequest} from '@disclosure-portal/model/Wizard';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import {SearchOptions} from '@shared/utils/Table';
 import {AxiosResponse} from 'axios';
 
 const {api, NO_IDLE_PARAM} = useApi();

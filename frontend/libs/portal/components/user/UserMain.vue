@@ -12,7 +12,7 @@ import profileService from '@shared/user/services/profile.service';
 import {useAppStore} from '@disclosure-portal/stores/app';
 import {createNavItemsGroup} from '@disclosure-portal/stores/navigation';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {formatDate} from '@disclosure-portal/utils/View';
+import {formatDate} from '@shared/utils/View';
 import config from '@shared/utils/config';
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';

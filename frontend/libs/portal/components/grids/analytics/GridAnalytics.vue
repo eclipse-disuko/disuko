@@ -10,7 +10,7 @@ import {
   SearchResponseItem,
 } from '@disclosure-portal/model/Analytics';
 import AnalyticsService from '@disclosure-portal/services/analytics';
-import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow, SearchOptions} from '@shared/utils/Table';
 import {createProjectURL, createSBOMURL, createVersionURL} from '@shared/utils/apiUrls';
 import {DataTableHeader} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';

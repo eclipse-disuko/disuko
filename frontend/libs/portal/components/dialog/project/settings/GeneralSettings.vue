@@ -6,7 +6,7 @@
 import icons from '@disclosure-portal/constants/icons';
 import {Project, ProjectSettingsModel} from '@disclosure-portal/model/Project';
 import {useAppStore} from '@disclosure-portal/stores/app';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 

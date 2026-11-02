@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {useApi} from '@shared/api/useApi';
-import SchemaPostRequest from '@disclosure-portal/model/SchemaPostRequest';
-import {AxiosProgressEvent} from 'axios';
+import type SchemaPostRequest from '@shared/model/SchemaPostRequest';
+import type {AxiosProgressEvent} from 'axios';
 
 export const useUpload = () => {
   const {api} = useApi();

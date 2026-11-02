@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import SampleDataCreationState from '@disclosure-portal/model/SampleData';
 import AdminService from '@disclosure-portal/services/admin';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import {onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 

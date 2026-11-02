@@ -13,7 +13,7 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {RightsUtils} from '@shared/user/utils/RightsUtils';
 import {escapeHtml} from '@disclosure-portal/utils/Validation';
-import {formatDateTime} from '@disclosure-portal/utils/View';
+import {formatDateTime} from '@shared/utils/View';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import {computed, onMounted, ref, watch} from 'vue';

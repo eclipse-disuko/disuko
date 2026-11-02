@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {StepId, StepType, stepIds} from '@disclosure-portal/model/NewWizard';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {defineAsyncComponent} from 'vue';
 import {useI18n} from 'vue-i18n';
 

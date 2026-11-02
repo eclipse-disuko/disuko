@@ -54,7 +54,7 @@ import PolicyLicensesDialog from '@cli/components/dialogs/PolicyLicensesDialog.v
 import {PolicyRule} from '@shared/model/PolicyRule';
 import {projectService} from '@cli/services/projectService';
 import {useAppStore} from '@cli/stores/app';
-import {formatDateTime} from '@disclosure-portal/utils/View';
+import {formatDateTime} from '@shared/utils/View';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {useClipboard} from '@shared/utils/clipboard';

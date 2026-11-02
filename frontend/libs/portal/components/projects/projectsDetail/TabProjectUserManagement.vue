@@ -12,7 +12,7 @@ import {ProjectUser, UserType} from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
@@ -24,6 +24,7 @@ import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
 import {useUserStore} from '@shared/user/stores/user.store';
 import {useRouter} from 'vue-router';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -233,28 +234,13 @@ const editUser = async (user: ProjectUser, oldUserId: string) => {
     eventBus.emit('on-api-error', error);
   }
 };
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.userId) {
-    const forename = item.userProfile.forename.toLowerCase();
-    const lastname = item.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.responsible;
-  }
-
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
+const customFilterTable = useTableSearch([
+  'userId',
+  'userProfile.forename',
+  'userProfile.lastname',
+  'userType',
+  'comment',
+]);
 
 const closeUserDialog = () => {
   userDialogRef.value?.close();

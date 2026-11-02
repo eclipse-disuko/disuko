@@ -7,7 +7,7 @@ import type {ReviewRemarkLevel} from '@disclosure-portal/model/Quality';
 import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import TableActionButtons, {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
-import {useTableFilter} from '@shared/composables/useTableFilter';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 import {useClipboard} from '@shared/utils/clipboard';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -111,7 +111,7 @@ const withFormattedComponents = (remark: RemarkWithVersion) => {
   };
 };
 
-const customFilter = useTableFilter([
+const customFilter = useTableSearch([
   'title',
   'description',
   '_componentsText',

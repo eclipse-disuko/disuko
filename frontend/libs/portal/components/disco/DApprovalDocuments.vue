@@ -6,8 +6,8 @@
 import {DocumentDto} from '@disclosure-portal/model/Document';
 import ProjectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
-import {formatDateTimeForFile, formatDateTimeShort} from '@disclosure-portal/utils/View';
+import {formatDateAndTime} from '@shared/utils/Table';
+import {formatDateTimeForFile, formatDateTimeShort} from '@shared/utils/View';
 import DCopyClipboardButton from '@shared/components/disco/DCopyClipboardButton.vue';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';

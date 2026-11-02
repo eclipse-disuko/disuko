@@ -14,7 +14,7 @@ import {useIdleStore} from '@shared/stores/idle.store';
 import {useJobStore} from '@disclosure-portal/stores/jobs';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import config from '@shared/utils/config';
 import {computed, nextTick, ref} from 'vue';

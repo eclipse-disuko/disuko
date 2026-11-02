@@ -17,6 +17,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {useHeaderSettings} from '@shared/composables/useHeaderSettings';
 import {openUrlInNewTab} from '@shared/utils/url';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const router = useRouter();
 const route = useRoute();
@@ -171,28 +172,19 @@ const getActionButtons = (item: TaskDto): TableActionButtonsProps['buttons'] => 
 
 const sortItems: SortItem[] = [{key: 'updated', order: 'desc'}];
 
-const customFilter = (value: any, query: string, item?: any) => {
-  if (!query) return true;
-  const searchLower = query.toLowerCase();
-  const taskItem = item?.raw as TaskDto;
-  if (!taskItem) return false;
-
-  const searchableFields = [
-    taskItem.status,
-    taskItem.creator,
-    taskItem.creatorFullName,
-    taskItem.creatorDepartment,
-    taskItem.creatorDepartmentDescription,
-    taskItem.delegatedTo,
-    taskItem.delegatedToFullName,
-    taskItem.projectName,
-    taskItem.approvalType,
-    taskItem.type,
-    taskItem.resultStatus,
-  ];
-
-  return searchableFields.some((field) => field?.toLowerCase().includes(searchLower));
-};
+const customFilter = useTableSearch([
+  'status',
+  'creator',
+  'creatorFullName',
+  'creatorDepartment',
+  'creatorDepartmentDescription',
+  'delegatedTo',
+  'delegatedToFullName',
+  'projectName',
+  'approvalType',
+  'type',
+  'resultStatus',
+]);
 
 watch(headers, () => {
   headerSettings.resetHeaderSettings({tableName, headers: headers.value});

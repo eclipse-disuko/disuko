@@ -8,7 +8,7 @@ import {useClipboard} from '@shared/utils/clipboard';
 import {computed, ref, ref as vueRef} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from 'vue-router';
-import {getOverallReviewTranslationKey} from '@disclosure-portal/utils/Table';
+import {getOverallReviewTranslationKey} from '@shared/utils/Table';
 
 const maxVersions = 10;
 const appStore = useAppStore();

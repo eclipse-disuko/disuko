@@ -3,14 +3,14 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
 <script setup lang="ts">
-import Icons from '@disclosure-portal/constants/icons';
+import Icons from '@shared/constants/icons';
 import {PolicyState} from '@shared/model/PolicyRule';
 import {
   getIconColorForPolicyType,
   getIconColorForPolicyTypeHighlighted,
   getIconForPolicyType,
   policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
+} from '@shared/utils/View';
 import {IRuleBtnCallbacks} from '@shared/components/disco/interfaces';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
 import {useI18n} from 'vue-i18n';

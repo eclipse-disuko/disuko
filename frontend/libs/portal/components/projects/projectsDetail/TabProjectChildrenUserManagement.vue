@@ -18,7 +18,7 @@ import {
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
@@ -28,6 +28,8 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
 import {useUserStore} from '@shared/user/stores/user.store';
+import {useRoute} from 'vue-router';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -314,28 +316,14 @@ const possibleUserTypes = computed((): DataTableHeaderFilterItems[] => {
   }));
 });
 
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.projectMember.userId) {
-    const forename = item.projectMember.userProfile.forename.toLowerCase();
-    const lastname = item.projectMember.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.projectMember.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.projectMember?.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.projectMember.responsible;
-  }
-
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
+const customFilterTable = useTableSearch([
+  'projectMember.userId',
+  'projectMember.userProfile.forename',
+  'projectMember.userProfile.lastname',
+  'projectMember.userType',
+  'projectMember.comment',
+  'projectName',
+]);
 
 const getActionButtons = (item: ProjectChildMemberCombi): TableActionButtonsProps['buttons'] => {
   return [
