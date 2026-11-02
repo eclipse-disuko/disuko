@@ -9,7 +9,7 @@ import useDimensions from '@disclosure-portal/composables/useDimensions';
 import {ReviewRemarkLevel, compareRRLevel} from '@disclosure-portal/model/Quality';
 import {ReviewTemplate} from '@disclosure-portal/model/ReviewTemplate';
 import adminService from '@disclosure-portal/services/admin';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
 import {downloadFile} from '@disclosure-portal/utils/download';
 import eventBus from '@shared/utils/eventbus';

@@ -7,7 +7,7 @@ import Icons from '@disclosure-portal/constants/icons';
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {UserDto} from '@shared/types/Users';
 import adminService from '@disclosure-portal/services/admin';
-import {getCssClassForTableRow, SearchOptions} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow, SearchOptions} from '@shared/utils/Table';
 import {DataTableHeader, DataTableHeaderFilterItems, DataTableItem, SortItem} from '@shared/types/table';
 import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _ from 'lodash';

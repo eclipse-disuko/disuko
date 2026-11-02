@@ -7,7 +7,7 @@ import {CustomId} from '@disclosure-portal/model/CustomId';
 import adminService from '@disclosure-portal/services/admin';
 import {useCustomIdStore} from '@disclosure-portal/stores/customid.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import {isURL} from '@disclosure-portal/utils/Validation';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref} from 'vue';

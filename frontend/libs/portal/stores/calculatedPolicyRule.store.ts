@@ -7,7 +7,7 @@ import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligat
 import PolicyRule from '@disclosure-portal/model/PolicyRule';
 import {CalculatedRuleConfigType} from '@disclosure-portal/model/CalculatedPolicyRules';
 import AdminService from '@disclosure-portal/services/admin';
-import useViewTools from '@disclosure-portal/utils/View';
+import useViewTools from '@shared/utils/View';
 import {sortByAttribute} from '@shared/utils/sort';
 import {defineStore} from 'pinia';
 import {computed, reactive, toRefs} from 'vue';

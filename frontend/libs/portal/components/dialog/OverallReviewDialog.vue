@@ -7,8 +7,8 @@ import {OverallReviewRequest, OverallReviewState, SpdxFile} from '@disclosure-po
 import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import useRules from '@disclosure-portal/utils/Rules';
-import {formatDateAndTime, getOverallReviewTranslationKey} from '@disclosure-portal/utils/Table';
+import useRules from '@shared/utils/Rules';
+import {formatDateAndTime, getOverallReviewTranslationKey} from '@shared/utils/Table';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

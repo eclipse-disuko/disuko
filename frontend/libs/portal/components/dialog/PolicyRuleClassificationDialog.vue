@@ -14,7 +14,7 @@ import {
 } from '@disclosure-portal/utils/PolicyRuleClassification';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
 import {PolicyRuleStatusColumn} from '@disclosure-portal/model/CalculatedPolicyRules';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import useSnackbar from '@shared/composables/useSnackbar';
 import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import {computed, nextTick, onMounted, ref} from 'vue';

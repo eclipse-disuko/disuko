@@ -3,13 +3,8 @@ import SbomComponentDetailDialog from '@cli/components/dialogs/SbomComponentDeta
 import {comparePolicyStatus, PolicyState} from '@shared/model/PolicyRule';
 import {compareScanRemarkStatus, SpdxStatusComponent, SpdxStatusInformation} from '@cli/models/Sbom';
 import {projectService} from '@cli/services/projectService';
-import {
-  getIconColorForPolicyType,
-  getIconColorScanRemarkLevel,
-  getIconForPolicyType,
-  getWorstScanRemarkLevel,
-  policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
+import {getIconColorScanRemarkLevel, getWorstScanRemarkLevel} from '@disclosure-portal/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType, policyStateToTranslationKey} from '@shared/utils/View';
 import Tooltip from '@shared/components/disco/Tooltip.vue';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, ref, watch} from 'vue';

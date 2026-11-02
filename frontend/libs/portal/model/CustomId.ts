@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {IMap} from '@disclosure-portal/utils/View';
+import {IMap} from '@shared/utils/View';
 
 export class CustomId {
   _key = '';

@@ -9,7 +9,7 @@ import DiscoFileUpload from '../DiscoFileUpload.vue';
 
 const {uploadFormDataFileMock} = vi.hoisted(() => ({uploadFormDataFileMock: vi.fn()}));
 
-vi.mock('@disclosure-portal/composables/useUpload', () => ({
+vi.mock('@shared/composables/useUpload', () => ({
   useUpload: () => ({uploadFormDataFile: uploadFormDataFileMock}),
 }));
 
