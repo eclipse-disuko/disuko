@@ -31,6 +31,12 @@ export const useUserStore = defineStore('user', {
     },
   },
   getters: {
+    isCurrentUser:
+      (state) =>
+      (userId: string): boolean => {
+        const currentUserId = state.simpleProfileData.profile.user;
+        return Boolean(currentUserId) && userId.toLowerCase() === currentUserId.toLowerCase();
+      },
     getRights(): Rights {
       return this.simpleProfileData.rights;
     },

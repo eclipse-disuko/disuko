@@ -22,10 +22,14 @@ import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {useRouter} from 'vue-router';
 import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
+const userStore = useUserStore();
+const router = useRouter();
 const {info} = useSnackbar();
 const {sliderWidth} = useTableActionSlider();
 
@@ -47,7 +51,9 @@ const sortItems = ref<SortItem[]>([{key: 'userType', order: 'asc'}]);
 
 const projectModel = computed(() => projectStore.currentProject!);
 const userHeaders = computed((): DataTableHeader[] => [
-  ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
+  ...(projectModel.value.allowUserManagementUpdate ||
+  projectModel.value.allowUserManagementDelete ||
+  users.value.some((user) => userStore.isCurrentUser(user.userId))
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -192,6 +198,11 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (config.key) {
     await projectService.deleteProjectMember(projectModel.value._key, config.key);
     info(t('DIALOG_project_member_delete_success'));
+    if (userStore.isCurrentUser(config.key)) {
+      confirmationDialogVisible.value = false;
+      await router.replace({path: '/dashboard/home'});
+      return;
+    }
     await reload();
   }
 };
@@ -235,7 +246,7 @@ const closeUserDialog = () => {
   userDialogRef.value?.close();
 };
 
-const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
+const getActionButtons = (user: ProjectUser): TableActionButtonsProps['buttons'] => {
   const canModify = !projectModel.value.isDeprecated;
 
   return [
@@ -249,10 +260,10 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: projectModel.value.allowUserManagementDelete && canModify,
+      show: (projectModel.value.allowUserManagementDelete || userStore.isCurrentUser(user.userId)) && canModify,
     },
   ];
-});
+};
 
 onBeforeMount(async () => {
   await reload();
@@ -309,7 +320,7 @@ onBeforeMount(async () => {
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="slider"
-              :buttons="actionButtons"
+              :buttons="getActionButtons(item)"
               @edit="showEditUserDialog(item)"
               @remove="showDeleteUserDialog(item)" />
           </template>
