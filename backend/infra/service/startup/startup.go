@@ -336,54 +336,33 @@ func (startUpHandler *StartUpHandler) migrateCancelledReviewRemarkLevels(request
 
 func (startUpHandler *StartUpHandler) migrateInformationReviewRemarkLevels(requestSession *logy.RequestSession) {
 	logy.Infof(requestSession, "migrateInformationReviewRemarkLevels - START")
-	exception.TryCatchAndLog(requestSession, func() {
-		for _, remarks := range startUpHandler.ReviewRemarkRepository.FindAllWithDeleted(requestSession, false) {
-			exception.TryCatchAndLog(requestSession, func() {
-				changed := false
-				for _, remark := range remarks.Remarks {
-					if remark != nil && remark.Level == reviewremarksDomain.Green &&
-						(remark.Status == reviewremarksDomain.Open || remark.Status == reviewremarksDomain.InProgress) {
-						remark.Level = reviewremarksDomain.Blue
-						changed = true
-					}
-				}
-				if changed {
-					startUpHandler.ReviewRemarkRepository.UpdateWithoutTimestamp(requestSession, remarks)
-				}
-			})
+	for _, remarks := range startUpHandler.ReviewRemarkRepository.FindAllWithDeleted(requestSession, false) {
+		changed := false
+		for _, remark := range remarks.Remarks {
+			if remark != nil && remark.Level == reviewremarksDomain.Green &&
+				(remark.Status == reviewremarksDomain.Open || remark.Status == reviewremarksDomain.InProgress) {
+				remark.Level = reviewremarksDomain.Blue
+				changed = true
+			}
 		}
-	})
+		if changed {
+			startUpHandler.ReviewRemarkRepository.UpdateWithoutTimestamp(requestSession, remarks)
+		}
+	}
 	logy.Infof(requestSession, "migrateInformationReviewRemarkLevels - END")
 }
 
 func (startUpHandler *StartUpHandler) migrateInformationReviewTemplateLevels(requestSession *logy.RequestSession) {
 	logy.Infof(requestSession, "migrateInformationReviewTemplateLevels - START")
-	exception.TryCatchAndLog(requestSession, func() {
-		for _, template := range startUpHandler.ReviewTemplateRepository.FindAllWithDeleted(requestSession, false) {
-			exception.TryCatchAndLog(requestSession, func() {
-				if template.Level == reviewremarksDomain.Green {
-					template.Level = reviewremarksDomain.Blue
-					startUpHandler.ReviewTemplateRepository.UpdateWithoutTimestamp(requestSession, template)
-				}
-			})
+	for _, template := range startUpHandler.ReviewTemplateRepository.FindAllWithDeleted(requestSession, false) {
+		if template.Level == reviewremarksDomain.Green {
+			template.Level = reviewremarksDomain.Blue
+			startUpHandler.ReviewTemplateRepository.UpdateWithoutTimestamp(requestSession, template)
 		}
-	})
+	}
 	logy.Infof(requestSession, "migrateInformationReviewTemplateLevels - END")
 }
 
-func (startUpHandler *StartUpHandler) migrateReviewRemarkLevelTranslations(requestSession *logy.RequestSession) {
-	logy.Infof(requestSession, "migrateReviewRemarkLevelTranslations - START")
-	for locale, closed := range map[string]string{"en": "Closed", "de": "Geschlossen"} {
-		for _, key := range []string{"REMARK_LEVEL_GREEN", "RR_CHART_ACCEPTABLE"} {
-			exception.TryCatchAndLog(requestSession, func() {
-				if value, found := startUpHandler.I18nRepository.GetTranslation(requestSession, locale, key); found && value == "Information" {
-					startUpHandler.I18nRepository.SetTranslation(requestSession, locale, key, closed, "Closed review remark level", "SYSTEM")
-				}
-			})
-		}
-	}
-	logy.Infof(requestSession, "migrateReviewRemarkLevelTranslations - END")
-}
 
 func (startUpHandler *StartUpHandler) migrateAddProjectLabelDummy(requestSession *logy.RequestSession) {
 	logy.Infof(requestSession, "migrateAddProjectLabelDummy - START")
