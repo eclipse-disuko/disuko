@@ -123,7 +123,6 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRATE_CANCELLED_REVIEW_REMARK_LEVEL", Do: startUpHandler.migrateCancelledReviewRemarkLevels},
 		{Name: "MIGRATE_INFORMATION_REVIEW_REMARK_LEVEL_BLUE", Do: startUpHandler.migrateInformationReviewRemarkLevels},
 		{Name: "MIGRATE_INFORMATION_REVIEW_TEMPLATE_LEVEL_BLUE", Do: startUpHandler.migrateInformationReviewTemplateLevels},
-		{Name: "MIGRATE_REVIEW_REMARK_LEVEL_TRANSLATIONS", Do: startUpHandler.migrateReviewRemarkLevelTranslations},
 		{Name: "MIGRATE_SBOM_UPLOAD_DATES", Do: startUpHandler.migrateSBOMUploadDates},
 		{Name: "MIGRATE_ADD_PROJECT_LABEL_DUMMY", Do: startUpHandler.migrateAddProjectLabelDummy},
 		{Name: "MIGRATE_NEW_JOB_DELETE_DUMMY_PROJECTS", Do: startUpHandler.migrateDeleteDummyProjects},
