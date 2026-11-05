@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {ConfirmationType} from '@disclosure-portal/components/dialog/ConfirmationDialog';
+import {ReviewRemarkLevel, compareRRLevel} from '@disclosure-portal/model/Quality';
+import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
+import en from '@disclosure-portal/i18n/locales/en.json';
+import de from '@disclosure-portal/i18n/locales/de.json';
 import {useBreadcrumbsStore} from '@shared/stores/breadcrumbs.store';
 import {mountView} from '@disclosure-portal/test-utils/view-test-utils';
 import {flushPromises} from '@vue/test-utils';
@@ -36,7 +40,7 @@ const reviewTemplates = [
   {
     _key: 'rt-1',
     title: 'Template One',
-    level: 'GREEN',
+    level: 'BLUE',
     description: 'desc',
     source: 'source',
     created: '2026-01-01T10:00:00Z',
@@ -46,7 +50,7 @@ const reviewTemplates = [
 
 const childStubs = {
   TableLayout: {template: '<div><slot name="buttons"/><slot name="table"/></div>'},
-  ReviewTemplateDialog: true,
+  ReviewTemplateDialog: {props: ['levels'], template: '<div class="template-levels">{{ levels.join(",") }}</div>'},
   ConfirmationDialog: true,
   'v-data-table': {
     props: ['items'],
@@ -81,6 +85,39 @@ describe('ReviewTemplates', () => {
     expect(wrapper.exists()).toBe(true);
     expect(getReviewTemplatesMock).toHaveBeenCalledTimes(1);
     expect(wrapper.find('.v-data-table').text()).toContain('Template One');
+  });
+
+  it('offers BLUE Information instead of GREEN Closed in the template selector', async () => {
+    const {wrapper} = mountView(ReviewTemplates, {childStubs});
+    await flushPromises();
+
+    expect(wrapper.find('.template-levels').text()).toBe('BLUE,YELLOW,RED');
+    expect(wrapper.find('.v-data-table').text()).toContain('BLUE');
+  });
+
+  it('distinguishes Information and Closed in labels, icons, colors and sorting', () => {
+    expect([en.REMARK_LEVEL_BLUE, de.REMARK_LEVEL_BLUE]).toEqual(['Information', 'Information']);
+    expect([en.REMARK_LEVEL_GREEN, de.REMARK_LEVEL_GREEN]).toEqual(['Closed', 'Geschlossen']);
+    expect([en.RR_CHART_INFORMATION, en.RR_CHART_ACCEPTABLE]).toEqual(['Information', 'Closed']);
+    expect(getIconColorReviewRemarkLevel(ReviewRemarkLevel.BLUE)).toBe('blue');
+    expect(getIconColorReviewRemarkLevel(ReviewRemarkLevel.GREEN)).toBe('green');
+    expect(getIconReviewRemarkLevel(ReviewRemarkLevel.BLUE)).toBe('mdi-comment-text');
+    expect(getIconReviewRemarkLevel(ReviewRemarkLevel.GREEN)).toBe('mdi-comment-check');
+    expect(
+      [
+        ReviewRemarkLevel.RED,
+        ReviewRemarkLevel.BLUE,
+        ReviewRemarkLevel.GREEN,
+        ReviewRemarkLevel.YELLOW,
+        ReviewRemarkLevel.GRAY,
+      ].sort(compareRRLevel),
+    ).toEqual([
+      ReviewRemarkLevel.GRAY,
+      ReviewRemarkLevel.GREEN,
+      ReviewRemarkLevel.BLUE,
+      ReviewRemarkLevel.YELLOW,
+      ReviewRemarkLevel.RED,
+    ]);
   });
 
   it('deletes a review template on confirm and shows a success snackbar', async () => {

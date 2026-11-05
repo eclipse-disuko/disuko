@@ -29,6 +29,9 @@ export function getIconColorReviewRemarkLevel(level: ReviewRemarkLevel) {
 
 export function getIconReviewRemarkLevel(level: ReviewRemarkLevel) {
   switch (level) {
+    case ReviewRemarkLevel.BLUE: {
+      return 'mdi-comment-text';
+    }
     case ReviewRemarkLevel.GREEN: {
       return 'mdi-comment-check';
     }

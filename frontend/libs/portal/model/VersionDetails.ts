@@ -109,6 +109,7 @@ export class LicenseFamilyStats {
 }
 export class ReviewRemarkStats {
   public total = 0;
+  public information = 0;
   public acceptable = 0;
   public acceptableAfterChanges = 0;
   public notAcceptable = 0;

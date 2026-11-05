@@ -47,12 +47,16 @@ func CreateCSV(w *http.ResponseWriter, requestSession *logy.RequestSession, temp
 	for _, template := range reviewTemplates {
 		var lvlInWords string
 		switch template.Level {
-		case reviewremarks.Green:
+		case reviewremarks.Blue:
 			lvlInWords = "information"
+		case reviewremarks.Green:
+			lvlInWords = "closed"
 		case reviewremarks.Yellow:
 			lvlInWords = "investigation"
 		case reviewremarks.Red:
 			lvlInWords = "problem"
+		case reviewremarks.Gray:
+			lvlInWords = "cancelled"
 		}
 
 		var row = []string{

@@ -106,6 +106,7 @@ export class LicenseMeta {
 
 export enum ReviewRemarkLevel {
   NOT_SET = '',
+  BLUE = 'BLUE',
   GREEN = 'GREEN',
   YELLOW = 'YELLOW',
   RED = 'RED',
@@ -179,8 +180,9 @@ export function compareLevel(a: string, b: string): number {
 
 export function compareRRLevel(a: ReviewRemarkLevel, b: ReviewRemarkLevel): number {
   const levelWeight: Map<ReviewRemarkLevel, number> = new Map<ReviewRemarkLevel, number>([
-    [ReviewRemarkLevel.GRAY, -1],
-    [ReviewRemarkLevel.GREEN, 0],
+    [ReviewRemarkLevel.GRAY, -2],
+    [ReviewRemarkLevel.GREEN, -1],
+    [ReviewRemarkLevel.BLUE, 0],
     [ReviewRemarkLevel.YELLOW, 1],
     [ReviewRemarkLevel.RED, 2],
   ]);
