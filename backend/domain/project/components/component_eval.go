@@ -67,6 +67,7 @@ type LicenseFamilyStats struct {
 
 type ReviewRemarkStats struct {
 	Total                  int `json:"total"`
+	Information            int `json:"information"`
 	Acceptable             int `json:"acceptable"`
 	AcceptableAfterChanges int `json:"acceptableAfterChanges"`
 	NotAcceptable          int `json:"notAcceptable"`

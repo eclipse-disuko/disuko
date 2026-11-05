@@ -39,10 +39,12 @@ import (
 	"github.com/eclipse-disuko/disuko/infra/repository/approvallist"
 	"github.com/eclipse-disuko/disuko/infra/repository/database"
 	"github.com/eclipse-disuko/disuko/infra/repository/dpconfig"
+	i18nRepo "github.com/eclipse-disuko/disuko/infra/repository/i18n"
 	"github.com/eclipse-disuko/disuko/infra/repository/migration"
 	"github.com/eclipse-disuko/disuko/infra/repository/policyrules"
 	projectRepo "github.com/eclipse-disuko/disuko/infra/repository/project"
 	"github.com/eclipse-disuko/disuko/infra/repository/reviewremarks"
+	reviewtemplates "github.com/eclipse-disuko/disuko/infra/repository/reviewtemplates"
 	sbomlistRepo "github.com/eclipse-disuko/disuko/infra/repository/sbomlist"
 	"github.com/eclipse-disuko/disuko/logy"
 )
@@ -53,6 +55,8 @@ type StartUpHandler struct {
 	PolicyRulesRepository         policyrules.IPolicyRulesRepository
 	MigrationRepository           migration.IMigrationRepository
 	ReviewRemarkRepository        reviewremarks.IReviewRemarksRepository
+	ReviewTemplateRepository      reviewtemplates.IReviewTemplateRepository
+	I18nRepository                i18nRepo.II18nRepository
 	AnalyticsComponentsRepository analyticscomponents.IComponentsRepository
 	ApprovalRepository            approvallist.IApprovalListRepository
 	ProjectRepository             projectRepo.IProjectRepository
@@ -117,6 +121,9 @@ func (startUpHandler *StartUpHandler) MigrateDatabase(requestSession *logy.Reque
 		{Name: "MIGRAGE_APP_SEC_ID_2", Do: startUpHandler.migrateAppSecId},
 		{Name: "MIGRATE_REVIEW_REMARK", Do: startUpHandler.migrateReviewRemarks},
 		{Name: "MIGRATE_CANCELLED_REVIEW_REMARK_LEVEL", Do: startUpHandler.migrateCancelledReviewRemarkLevels},
+		{Name: "MIGRATE_INFORMATION_REVIEW_REMARK_LEVEL_BLUE", Do: startUpHandler.migrateInformationReviewRemarkLevels},
+		{Name: "MIGRATE_INFORMATION_REVIEW_TEMPLATE_LEVEL_BLUE", Do: startUpHandler.migrateInformationReviewTemplateLevels},
+		{Name: "MIGRATE_REVIEW_REMARK_LEVEL_TRANSLATIONS", Do: startUpHandler.migrateReviewRemarkLevelTranslations},
 		{Name: "MIGRATE_SBOM_UPLOAD_DATES", Do: startUpHandler.migrateSBOMUploadDates},
 		{Name: "MIGRATE_ADD_PROJECT_LABEL_DUMMY", Do: startUpHandler.migrateAddProjectLabelDummy},
 		{Name: "MIGRATE_NEW_JOB_DELETE_DUMMY_PROJECTS", Do: startUpHandler.migrateDeleteDummyProjects},
@@ -325,6 +332,57 @@ func (startUpHandler *StartUpHandler) migrateCancelledReviewRemarkLevels(request
 	}
 
 	logy.Infof(requestSession, "migrateCancelledReviewRemarkLevels - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateInformationReviewRemarkLevels(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateInformationReviewRemarkLevels - START")
+	exception.TryCatchAndLog(requestSession, func() {
+		for _, remarks := range startUpHandler.ReviewRemarkRepository.FindAllWithDeleted(requestSession, false) {
+			exception.TryCatchAndLog(requestSession, func() {
+				changed := false
+				for _, remark := range remarks.Remarks {
+					if remark != nil && remark.Level == reviewremarksDomain.Green &&
+						(remark.Status == reviewremarksDomain.Open || remark.Status == reviewremarksDomain.InProgress) {
+						remark.Level = reviewremarksDomain.Blue
+						changed = true
+					}
+				}
+				if changed {
+					startUpHandler.ReviewRemarkRepository.UpdateWithoutTimestamp(requestSession, remarks)
+				}
+			})
+		}
+	})
+	logy.Infof(requestSession, "migrateInformationReviewRemarkLevels - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateInformationReviewTemplateLevels(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateInformationReviewTemplateLevels - START")
+	exception.TryCatchAndLog(requestSession, func() {
+		for _, template := range startUpHandler.ReviewTemplateRepository.FindAllWithDeleted(requestSession, false) {
+			exception.TryCatchAndLog(requestSession, func() {
+				if template.Level == reviewremarksDomain.Green {
+					template.Level = reviewremarksDomain.Blue
+					startUpHandler.ReviewTemplateRepository.UpdateWithoutTimestamp(requestSession, template)
+				}
+			})
+		}
+	})
+	logy.Infof(requestSession, "migrateInformationReviewTemplateLevels - END")
+}
+
+func (startUpHandler *StartUpHandler) migrateReviewRemarkLevelTranslations(requestSession *logy.RequestSession) {
+	logy.Infof(requestSession, "migrateReviewRemarkLevelTranslations - START")
+	for locale, closed := range map[string]string{"en": "Closed", "de": "Geschlossen"} {
+		for _, key := range []string{"REMARK_LEVEL_GREEN", "RR_CHART_ACCEPTABLE"} {
+			exception.TryCatchAndLog(requestSession, func() {
+				if value, found := startUpHandler.I18nRepository.GetTranslation(requestSession, locale, key); found && value == "Information" {
+					startUpHandler.I18nRepository.SetTranslation(requestSession, locale, key, closed, "Closed review remark level", "SYSTEM")
+				}
+			})
+		}
+	}
+	logy.Infof(requestSession, "migrateReviewRemarkLevelTranslations - END")
 }
 
 func (startUpHandler *StartUpHandler) migrateAddProjectLabelDummy(requestSession *logy.RequestSession) {

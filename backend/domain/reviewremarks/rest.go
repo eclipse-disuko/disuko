@@ -395,6 +395,8 @@ func (r *Remark) ToExternV1Dto() RemarkDtoExternV1 {
 
 func ParseLevel(level string) (valid bool, res Level) {
 	switch level {
+	case string(Blue):
+		valid, res = true, Blue
 	case string(Green):
 		valid, res = true, Green
 	case string(Yellow):

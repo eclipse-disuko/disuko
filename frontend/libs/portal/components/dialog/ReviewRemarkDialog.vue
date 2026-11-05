@@ -25,7 +25,7 @@ import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 
-const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
+const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.BLUE, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
 
 const {t} = useI18n();
 const sbomStore = useSbomStore();

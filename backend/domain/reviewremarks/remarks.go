@@ -44,6 +44,7 @@ const (
 type Level string
 
 const (
+	Blue       Level = "BLUE"
 	Green      Level = "GREEN"
 	Yellow     Level = "YELLOW"
 	Red        Level = "RED"
@@ -283,6 +284,9 @@ func (r *Remark) Reopen(author, fullName string) {
 		Author:         author,
 		AuthorFullName: fullName,
 	})
+	if r.Level == Green {
+		r.Level = Blue
+	}
 	r.Status = Open
 	r.Closed = nil
 }

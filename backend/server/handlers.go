@@ -184,6 +184,8 @@ func (s *Server) setupHandlers() {
 		DpConfigRepo:                  s.repos.dpConfig,
 		MigrationRepository:           s.repos.migration,
 		ReviewRemarkRepository:        s.repos.reviewRemarks,
+		ReviewTemplateRepository:      s.repos.reviewTemplate,
+		I18nRepository:                s.repos.i18nLocale,
 		AnalyticsComponentsRepository: s.repos.analyticsComponents,
 		ApprovalRepository:            s.repos.approvalList,
 		ProjectRepository:             s.repos.project,
