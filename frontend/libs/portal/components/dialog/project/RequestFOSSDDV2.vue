@@ -295,7 +295,7 @@ const doDialogAction = async () => {
     metaDoc.c4 = c4.value;
     metaDoc.c5 = c5.value;
   }
-  metaDoc.c6 = noFOSS.value || !selectedSbom.value;
+  metaDoc.c6 = noFOSS.value || (!projectModel.value.isGroup && !selectedSbom.value);
 
   const req: ExternalApprovalRequest = {
     comment: comment.value,
