@@ -542,7 +542,7 @@ func licenseSetKey(lic LicenseMeta) string {
 }
 
 func (r *Remark) CarryOverStateFrom(previous *Remark) {
-	// r.Author = previous.Author // todo: Initial Author or a new one???
+	r.Author = previous.Author
 	r.Level = previous.Level
 	r.Status = previous.Status
 
