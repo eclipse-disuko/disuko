@@ -1983,6 +1983,7 @@
   "ERROR_GROUP_HAS_ACTIVE_CHILDREN": "The group has active children",
   "COL_GROUP": "Group",
   "COL_FREEWARE": "Freeware",
+  "OBLIGATION_FREEWARE_CHANGE_WARNING": "Changing the freeware flag removes this obligation from all licenses it is currently assigned to.",
   "BOTH_OR_NONE_OWNER_APPROVERS_ALLOWED_ERROR_MESSAGE": "Both or none owner approvers are allowed",
   "DENIED_OR_UNASSARETED_MESSAGE": "FOSS Disclosure Document Generation disabled for Product projects containing denied or unasserted components. Please resolve accordingly.",
   "ENTERPRISE_MOBILE_OTHER_MESSAGE": "This FOSS Disclosure contains components that are denied or unasserted and are in violation. Please resolve accordingly before generating the FOSS Disclosure Document.",
