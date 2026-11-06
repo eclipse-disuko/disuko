@@ -1941,6 +1941,8 @@
   "STATUS_active": "ACTIVE",
   "ERROR_GROUP_HAS_ACTIVE_CHILDREN": "Die Gruppe hat aktive Teilprojekte",
   "COL_GROUP": "Gruppe",
+  "COL_FREEWARE": "Freeware",
+  "OBLIGATION_FREEWARE_CHANGE_WARNING": "Das Ändern des Freeware-Kennzeichens entfernt diese Verpflichtung von allen Lizenzen, denen sie aktuell zugewiesen ist.",
   "BOTH_OR_NONE_OWNER_APPROVERS_ALLOWED_ERROR_MESSAGE": "Beide oder keine Personen zur Freigabe zulässig",
   "DENIED_OR_UNASSARETED_MESSAGE": "Die Generierung von FOSS-Offenlegungsdokumenten ist für Produkt-Projekte deaktiviert, die verweigerte oder unzugeordnete Komponenten enthalten. Bitte lösen Sie die Konflikte entsprechend.",
   "ENTERPRISE_MOBILE_OTHER_MESSAGE": "Diese FOSS-Offenlegung enthält Komponenten, die verweigert oder unzugeordnet sind und gegen Richtlinien verstoßen. Bitte lösen Sie die Konflikte entsprechend, bevor Sie das FOSS-Offenlegungsdokument erstellen.",

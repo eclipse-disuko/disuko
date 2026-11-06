@@ -30,6 +30,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/text/unicode/norm"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	auditHelper "github.com/eclipse-disuko/disuko/helper/audit"
 	"github.com/eclipse-disuko/disuko/helper/exception"
@@ -801,6 +802,7 @@ func (licensesHandler *LicensesHandler) handleUpdate(requestSession *logy.Reques
 	existingLicense.Updated = time.Now()
 
 	existingLicense.Meta = *licenseData.Meta.ToEntity()
+	licensesHandler.filterObligationsByFreeware(requestSession, &existingLicense.Meta)
 	existingLicense.Text = licenseData.Text
 	if existingLicense.Source == license.CUSTOM {
 		existingLicense.LicenseId = licenseData.LicenseId
@@ -990,6 +992,7 @@ func (licensesHandler *LicensesHandler) LicensePostHandler(w http.ResponseWriter
 	licenseData.Source = license.CUSTOM
 
 	l := licenseData.ToEntity()
+	licensesHandler.filterObligationsByFreeware(requestSession, &l.Meta)
 	licenseAudit := l.ToAudit(requestSession, licensesHandler.ObligationRepository)
 	l.Aliases = aliases
 	auditHelper.CreateAndAddAuditEntry(&l.Container, username, message.LicenseCreated, audit.DiffWithReporter, licenseAudit, &license.LicenseAudit{})
@@ -1214,4 +1217,22 @@ func simplifyText(input string) string {
 	simplified := norm.NFC.String(lowerCaseText)
 
 	return simplified
+}
+
+func (licensesHandler *LicensesHandler) filterObligationsByFreeware(requestSession *logy.RequestSession, meta *license.MetaData) {
+	if conf.IsProdEnv() {
+		return
+	}
+	isFreewareLicense := meta.LicenseType == license.Freeware
+	freewareByKey := make(map[string]bool)
+	for _, o := range licensesHandler.ObligationRepository.FindAll(requestSession, false) {
+		freewareByKey[o.Key] = o.Freeware
+	}
+	filtered := make([]string, 0, len(meta.ObligationsKeyList))
+	for _, key := range meta.ObligationsKeyList {
+		if isFreeware, ok := freewareByKey[key]; ok && isFreeware == isFreewareLicense {
+			filtered = append(filtered, key)
+		}
+	}
+	meta.ObligationsKeyList = filtered
 }

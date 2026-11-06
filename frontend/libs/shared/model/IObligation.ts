@@ -11,6 +11,7 @@ export interface IObligation {
   description: string;
   descriptionDe: string;
   autoApproved: boolean;
+  freeware: boolean;
   created: string;
   updated: string;
   spdxid: string;
@@ -34,6 +35,7 @@ export interface ISelectItemWithCount extends IDefaultSelectItem {
 export class ObligationDTO implements IObligation {
   _key = '';
   autoApproved = false;
+  freeware = false;
   created = '';
   description = '';
   descriptionDe = '';

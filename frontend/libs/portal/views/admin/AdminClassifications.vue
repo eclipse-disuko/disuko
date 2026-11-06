@@ -24,6 +24,7 @@ import dayjs from 'dayjs';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import config from '@shared/utils/config';
 import {useLanguageStore} from '@shared/stores/language.store';
 import {storeToRefs} from 'pinia';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
@@ -59,6 +60,9 @@ const headers = computed((): DataTableHeader[] => {
       width: 140,
       value: 'type',
     },
+    ...(config.useFreewareObligations
+      ? [{title: t('COL_FREEWARE'), align: 'center', width: 140, value: 'freeware', sortable: true} as DataTableHeader]
+      : []),
     {
       title: t('COL_WARN_LEVEL'),
       align: 'start',
@@ -113,6 +117,12 @@ const possibleLevel = computed((): DataTableHeaderFilterItems[] => {
     icon: getIconOfLevel(item),
   }));
 });
+
+const selectedFilterFreeware = ref<string[]>([]);
+const possibleFreeware = computed((): DataTableHeaderFilterItems[] => [
+  {text: t('BTN_YES'), value: 'true'},
+  {text: t('BTN_NO'), value: 'false'},
+]);
 
 const confirmConfig = ref<IConfirmationDialogConfig>({} as IConfirmationDialogConfig);
 const confirmVisible = ref(false);
@@ -187,6 +197,9 @@ const filterOnType = (item: IObligation): boolean => {
 const filterOnLevel = (item: IObligation): boolean => {
   return selectedFilterLevel.value.length === 0 || indexOf(selectedFilterLevel.value, item.warnLevel) !== -1;
 };
+const filterOnFreeware = (item: IObligation): boolean => {
+  return selectedFilterFreeware.value.length === 0 || selectedFilterFreeware.value.includes(String(!!item.freeware));
+};
 const openDialog = (item?: IObligation) => {
   classificationDlg.value?.open(item);
 };
@@ -195,7 +208,7 @@ const onRowClick = (event: Event, item: DataTableItem<IObligation>) => {
   openDialog(item.item);
 };
 const filteredList = computed(() => {
-  return _.chain(items.value).filter(filterOnType).filter(filterOnLevel).value();
+  return _.chain(items.value).filter(filterOnType).filter(filterOnLevel).filter(filterOnFreeware).value();
 });
 
 const reload = async () => {
@@ -280,6 +293,17 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
             <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
           </template>
 
+          <template #[`header.freeware`]="{column, getSortIcon, toggleSort}">
+            <span class="mr-1">{{ column.title }}</span>
+            <GridHeaderFilterIcon
+              v-model="selectedFilterFreeware"
+              :column="column"
+              :label="t('COL_FREEWARE')"
+              :allItems="possibleFreeware">
+            </GridHeaderFilterIcon>
+            <v-icon class="v-data-table-header__sort-icon" :icon="getSortIcon(column)" @click="toggleSort(column)" />
+          </template>
+
           <template #[`header.warnLevel`]="{column, getSortIcon, toggleSort}">
             <span class="mr-1">{{ column.title }}</span>
             <GridHeaderFilterIcon
@@ -301,6 +325,10 @@ const getActionButtons = (_: IObligation): TableActionButtonsProps['buttons'] =>
 
           <template #[`item.description`]="{item}">
             <Truncated>{{ appLanguage === 'en' ? item.description : item.descriptionDe }}</Truncated>
+          </template>
+
+          <template #[`item.freeware`]="{item}">
+            <v-icon icon="mdi-check" :color="item.freeware ? 'primary' : 'tableBorderColor'" />
           </template>
 
           <template #[`item.created`]="{item}">

@@ -21,6 +21,7 @@ type Obligation struct {
 	Description       string    `json:"description"`
 	DescriptionDe     string    `json:"descriptionDe"`
 	AutoApproved      bool      `json:"autoApproved"`
+	Freeware          bool      `json:"freeware"`
 }
 
 type Type string
@@ -65,6 +66,7 @@ func (entity *Obligation) Update(obligation *ObligationDto) {
 	entity.Description = obligation.Description
 	entity.DescriptionDe = obligation.DescriptionDe
 	entity.AutoApproved = obligation.AutoApproved
+	entity.Freeware = obligation.Freeware
 	entity.Updated = time.Now()
 }
 
