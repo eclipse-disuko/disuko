@@ -92,7 +92,7 @@ export const setup = async () => {
       useWinterTheme: false,
       personalAccessToken: runtimeConfig.data.PERSONAL_ACCESS_TOKEN ?? true,
       useRefactoredApproval: runtimeConfig.data.VITE_USE_REFACTORED_APPROVAL,
-      useFreewareObligations: runtimeConfig.data.VITE_USE_FREEWARE_OBLIGATIONS ?? false,
+      useFreewareObligations: !runtimeConfig.data.IS_PROD && (runtimeConfig.data.VITE_USE_FREEWARE_OBLIGATIONS ?? false),
     };
   }
 };
