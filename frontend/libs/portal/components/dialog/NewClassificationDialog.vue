@@ -7,6 +7,7 @@ import {useView} from '@disclosure-portal/composables/useView';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import AdminService from '@disclosure-portal/services/admin';
 import useRules from '@shared/utils/Rules';
+import config from '@shared/utils/config';
 import {getClassificationLevels, getClassificationTypes} from '@shared/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
@@ -28,6 +29,7 @@ const obligationWarnLevels = ref<IDefaultSelectItem[]>([]);
 const item = reactive<IObligation>({
   _key: '',
   autoApproved: false,
+  freeware: false,
   created: new Date().toISOString(),
   updated: new Date().toISOString(),
   name: '',
@@ -82,6 +84,7 @@ const resetForm = () => {
     warnLevel: '',
     description: '',
     descriptionDe: '',
+    freeware: false,
   });
   if (classificationDialog.value) classificationDialog.value.reset();
 };
@@ -188,6 +191,11 @@ defineExpose({
                 :items="obligationWarnLevels"
                 :label="t('LABEL_OBLIGATION_WARN_LEVEL')"
                 hide-details="auto"></v-select>
+            </v-col>
+          </v-row>
+          <v-row v-if="config.useFreewareObligations">
+            <v-col cols="12" xs="12">
+              <v-checkbox v-model="item.freeware" :label="t('COL_FREEWARE')" hide-details="auto" />
             </v-col>
           </v-row>
           <v-row>
