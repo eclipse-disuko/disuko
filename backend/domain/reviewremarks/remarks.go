@@ -288,6 +288,10 @@ func (r *Remark) Reopen(author, fullName string) {
 }
 
 func (r *Remark) Comment(author, fullName, content string) {
+	cc := slices.ContainsFunc(r.Events, func(e Event) bool { return e.Type == CommentEvent })
+	if r.Status == Open && !cc {
+		r.Status = InProgress
+	}
 	data, _ := json.Marshal(Comment(content))
 	r.Events = append(r.Events, Event{
 		ChildEntity:    domain.NewChildEntity(),
