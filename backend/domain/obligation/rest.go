@@ -17,6 +17,7 @@ type ObligationDto struct {
 	Description   string    `json:"description" validate:"lte=1000"`
 	DescriptionDe string    `json:"descriptionDe" validate:"lte=1000"`
 	AutoApproved  bool      `json:"autoApproved"`
+	Freeware      bool      `json:"freeware"`
 }
 
 type ObligationSlimDto struct {
@@ -25,6 +26,7 @@ type ObligationSlimDto struct {
 	NameDe    string    `json:"nameDe" validate:"required,gte=3,lte=80"`
 	Type      Type      `json:"type" validate:"required,gt=1,lte=20"`
 	WarnLevel WarnLevel `json:"warnLevel" validate:"required,gt=1,lte=20"`
+	Freeware  bool      `json:"freeware"`
 }
 
 func (dto *ObligationDto) ToEntity() *Obligation {
@@ -36,6 +38,7 @@ func (dto *ObligationDto) ToEntity() *Obligation {
 		Description:   dto.Description,
 		DescriptionDe: dto.DescriptionDe,
 		AutoApproved:  dto.AutoApproved,
+		Freeware:      dto.Freeware,
 	}
 	domain.SetBaseValues(dto, entity)
 	return entity
@@ -48,6 +51,7 @@ func (dto *ObligationDto) ToSlimDto() *ObligationSlimDto {
 		NameDe:    dto.NameDe,
 		Type:      dto.Type,
 		WarnLevel: dto.WarnLevel,
+		Freeware:  dto.Freeware,
 	}
 }
 
@@ -64,6 +68,7 @@ func ToDto(entity *Obligation) *ObligationDto {
 		Description:   entity.Description,
 		DescriptionDe: entity.DescriptionDe,
 		AutoApproved:  entity.AutoApproved,
+		Freeware:      entity.Freeware,
 	}
 	domain.SetBaseValues(entity, dto)
 	return dto
