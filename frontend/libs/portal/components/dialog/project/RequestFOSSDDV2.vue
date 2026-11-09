@@ -289,10 +289,11 @@ const doDialogAction = async () => {
     metaDoc.c4 = false;
     metaDoc.c5 = false;
   } else {
+    const isDefaultIt = config.useFutureIt && fossVersion.value === 'default';
     metaDoc.c1 = c1.value;
-    metaDoc.c2 = c2.value;
+    metaDoc.c2 = isDefaultIt ? false : c2.value;
     metaDoc.c3 = c3.value;
-    metaDoc.c4 = c4.value;
+    metaDoc.c4 = isDefaultIt ? false : c4.value;
     metaDoc.c5 = c5.value;
   }
   metaDoc.c6 = noFOSS.value || (!projectModel.value.isGroup && !selectedSbom.value);
