@@ -498,7 +498,9 @@ func mergeOpenRemarksWithoutEvents(remarks []*Remark) []*Remark {
 	var mergeTarget *Remark
 	result := make([]*Remark, 0, len(remarks))
 	for _, remark := range remarks {
-		if remark.Status != Open || len(remark.Events) != 0 {
+		if remark.Status != Open || slices.ContainsFunc(remark.Events, func(event Event) bool {
+			return event.Type != CarriedOverEvent
+		}) {
 			result = append(result, remark)
 			continue
 		}
@@ -511,6 +513,7 @@ func mergeOpenRemarksWithoutEvents(remarks []*Remark) []*Remark {
 
 		mergeTarget.Components = append(mergeTarget.Components, remark.Components...)
 		mergeTarget.Licenses = append(mergeTarget.Licenses, remark.Licenses...)
+		mergeTarget.Events = append(mergeTarget.Events, remark.Events...)
 	}
 	return result
 }
@@ -582,4 +585,11 @@ func (r *Remark) CarryOverStateFrom(previous *Remark) {
 	}
 
 	r.Events = append([]Event(nil), previous.Events...)
+	if previous.SBOMId != r.SBOMId {
+		r.Events = append(r.Events, Event{
+			ChildEntity: domain.NewChildEntity(),
+			Type:        CarriedOverEvent,
+			Author:      "SYSTEM",
+		})
+	}
 }
