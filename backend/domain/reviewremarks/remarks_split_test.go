@@ -295,29 +295,6 @@ func mustTime(value string) time.Time {
 	return t
 }
 
-func TestSplitAndCarryOverFrom_MergesOnlyUntouchedOpenRemarks(t *testing.T) {
-	component := func(name string) ComponentMeta { return ComponentMeta{ComponentName: name, ComponentVersion: "1"} }
-	newRemark := &Remark{
-		SBOMId: "sbom2", TemplateKey: "template", Status: Open,
-		Components: []ComponentMeta{component("A"), component("B"), component("C"), component("D")},
-	}
-	previous := []*Remark{
-		{SBOMId: "sbom1", TemplateKey: "template", Status: Open, Components: []ComponentMeta{component("A")}},
-		{SBOMId: "sbom1", TemplateKey: "template", Status: InProgress, Components: []ComponentMeta{component("B")}},
-		{SBOMId: "sbom1", TemplateKey: "template", Status: Open, Components: []ComponentMeta{component("C")}, Events: []Event{{Type: ChangedLevelEvent}}},
-	}
-	actual := newRemark.SplitAndCarryOverFrom(previous)
-	if len(actual) != 3 {
-		t.Fatalf("want 3 remarks, got %d", len(actual))
-	}
-	if actual[1].Status != InProgress || len(actual[1].Components) != 1 || actual[1].Components[0].ComponentName != "B" {
-		t.Errorf("IN_PROGRESS remark changed: %+v", actual[1])
-	}
-	if len(previous[0].Components) != 1 || len(newRemark.Components) != 4 {
-		t.Fatal("source remarks must not be mutated")
-	}
-}
-
 func TestMergeOpenRemarksWithoutEvents_AllUntouched(t *testing.T) {
 	remarks := []*Remark{
 		{SBOMId: "s", TemplateKey: "t", Status: Open, Licenses: []LicenseMeta{{LicenseId: "MIT"}}},

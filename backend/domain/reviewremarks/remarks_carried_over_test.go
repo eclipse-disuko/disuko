@@ -55,6 +55,11 @@ func TestMergeOpenRemarksWithoutEvents_AllowsOnlyCarryOverEvents(t *testing.T) {
 	if merged[1] != items[3] || merged[2] != items[4] {
 		t.Error("business event history or status must prevent merge")
 	}
+	for _, event := range merged[0].Events {
+		if event.Type != CarriedOverEvent {
+			t.Errorf("expected only CARRIED_OVER events, got %s", event.Type)
+		}
+	}
 }
 
 func TestSplitAndCarryOverFrom_MergePreservesCarryOverEvents(t *testing.T) {
@@ -76,5 +81,8 @@ func TestSplitAndCarryOverFrom_MergePreservesCarryOverEvents(t *testing.T) {
 	}
 	if result[1].Status != InProgress || len(result[1].Events) != 1 || result[1].Events[0].Type != CarriedOverEvent {
 		t.Errorf("want {B} as IN_PROGRESS with carry-over event, got %+v", result[1])
+	}
+	if len(previous[0].Components) != 1 || len(current.Components) != 3 {
+		t.Fatal("source remarks must not be mutated")
 	}
 }
