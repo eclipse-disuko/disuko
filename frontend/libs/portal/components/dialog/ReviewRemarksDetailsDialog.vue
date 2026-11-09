@@ -168,12 +168,13 @@ const componentsDisplay = computed(() => {
   if (!item.value?.components) {
     return [];
   }
+  const sbomId = item.value.sbomId || currentSbom.value;
 
   return item.value.components
     .map((c, index) => ({
       key: `${c.componentName}-${c.componentVersion}-${index}`,
       id: c.componentId,
-      to: `/dashboard/projects/${props.projectUuid}/versions/${props.versionUuid}/component/${currentSbom.value}/${c.componentId}`,
+      to: `/dashboard/projects/${props.projectUuid}/versions/${props.versionUuid}/component/${sbomId}/${c.componentId}`,
       name: c.componentName ?? '',
       version: c.componentVersion ?? '',
     }))
