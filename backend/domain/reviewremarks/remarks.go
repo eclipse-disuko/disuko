@@ -63,6 +63,7 @@ const (
 	ChangedTitleEvent EventType = "CHANGED_TITLE"
 	ChangedDescEvent  EventType = "CHANGED_DESCRIPTION"
 	ChangedLevelEvent EventType = "CHANGED_LEVEL"
+	CarriedOverEvent  EventType = "CARRIED_OVER"
 )
 
 const (
@@ -488,6 +489,29 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
 
+	return mergeOpenRemarksWithoutEvents(result)
+}
+
+// mergeOpenRemarksWithoutEvents combines untouched OPEN remarks produced by one
+// SPLIT operation. Remarks with an event history retain their own identity.
+func mergeOpenRemarksWithoutEvents(remarks []*Remark) []*Remark {
+	var mergeTarget *Remark
+	result := make([]*Remark, 0, len(remarks))
+	for _, remark := range remarks {
+		if remark.Status != Open || len(remark.Events) != 0 {
+			result = append(result, remark)
+			continue
+		}
+
+		if mergeTarget == nil {
+			mergeTarget = remark
+			result = append(result, remark)
+			continue
+		}
+
+		mergeTarget.Components = append(mergeTarget.Components, remark.Components...)
+		mergeTarget.Licenses = append(mergeTarget.Licenses, remark.Licenses...)
+	}
 	return result
 }
 
