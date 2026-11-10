@@ -64,6 +64,7 @@ export enum EventType {
   CHANGED_LEVEL = 'CHANGED_LEVEL',
   CHANGED_TITLE = 'CHANGED_TITLE',
   CHANGED_DESCRIPTION = 'CHANGED_DESCRIPTION',
+  CARRIED_OVER = 'CARRIED_OVER',
 }
 export interface LevelChange {
   before: ReviewRemarkLevel;
@@ -82,6 +83,10 @@ export interface DescriptionChange {
 
 export type Comment = string;
 
+export interface CarryOverInfo {
+  sourceRemarkId: string;
+}
+
 export class Event {
   public key = '';
   public created = '';
@@ -90,7 +95,7 @@ export class Event {
   public type: EventType = EventType.NOT_SET;
   public author = '';
   public authorFullName = '';
-  public content?: LevelChange | TitleChange | DescriptionChange | Comment;
+  public content?: LevelChange | TitleChange | DescriptionChange | Comment | CarryOverInfo;
 }
 
 export class ComponentMeta {

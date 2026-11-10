@@ -130,6 +130,10 @@ type Remark struct {
 	TemplateKey string
 }
 
+type CarryOverInfo struct {
+	SourceRemarkId string `json:"sourceRemarkId"`
+}
+
 type ReviewTemplate struct {
 	domain.RootEntity `bson:",inline"`
 	domain.SoftDelete `bson:",inline"`
@@ -586,10 +590,14 @@ func (r *Remark) CarryOverStateFrom(previous *Remark) {
 
 	r.Events = append([]Event(nil), previous.Events...)
 	if previous.SBOMId != r.SBOMId {
+		data, _ := json.Marshal(CarryOverInfo{
+			SourceRemarkId: previous.Key,
+		})
 		r.Events = append(r.Events, Event{
 			ChildEntity: domain.NewChildEntity(),
 			Type:        CarriedOverEvent,
 			Author:      "SYSTEM",
+			Content:     data,
 		})
 	}
 }
