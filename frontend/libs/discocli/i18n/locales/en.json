@@ -215,6 +215,7 @@
   "RR_EVENT_CHANGED_DESCRIPTION": "Description changed",
   "RR_EVENT_CHANGED_STATUS": "Status changed",
   "RR_EVENT_CHANGED_LEVEL": "Level changed",
+  "RR_EVENT_CARRIED_OVER": "This remark was carried over from a previous SBOM.",
   "RR_WARN_TEXT": "All review remarks and comments are visible to all users and suppliers with access rights to this project!",
   "LICENSES": "Licenses",
   "LICENSES_REMARKS": "License Remarks",

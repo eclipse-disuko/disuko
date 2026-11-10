@@ -273,6 +273,7 @@
   "RR_EVENT_CLOSED": "hat die Bemerkung geschlossen.",
   "RR_EVENT_CANCELLED": "hat die Bemerkung abgebrochen.",
   "RR_EVENT_CHANGED_STATUS": "hat den Status der Bemerkung geändert.",
+  "RR_EVENT_CARRIED_OVER": "Diese Bemerkung wurde aus einer früheren SBOM übernommen.",
   "TABLE_DESC_PROJECT_ALL_REVIEW_REMARKS": "Diese Tabelle zeigt alle Review-Bemerkungen aller SBOMs in diesem Projekt. Um Bemerkungen für ein bestimmtes SBOM/Kanal anzuzeigen, Navigieren Sie zu diesem Kanal.",
   "TABLE_DESC_POLICY_LICENSES": "Diese Tabelle zeigt alle Lizenzen an, die mit dieser Policy-Regel verknüpft sind, kategorisiert nach Policy-Typ (Erlaubt, Warnung oder Verboten).",
   "RULE_MIN_MAX": "{fieldName} muss zwischen {min} und {max} Zeichen liegen",

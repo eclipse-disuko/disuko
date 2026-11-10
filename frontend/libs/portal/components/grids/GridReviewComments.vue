@@ -63,6 +63,15 @@
             {{ (item.content as DescriptionChange)?.after }}
           </i>
         </span>
+        <span v-else-if="item.type === EventType.CARRIED_OVER && item.content">
+          <i
+            >{{ t('RR_EVENT_' + item.type) }}
+            <!-- TODO: do we want to have it navigable?
+            {{ t('DIALOG_remark_from') }}
+            {{ (item.content as CarryOverInfo)?.sourceRemarkId }}
+            -->
+          </i>
+        </span>
         <span v-else>
           <i>{{ t('RR_EVENT_' + item.type) }}</i>
         </span>

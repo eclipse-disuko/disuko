@@ -687,6 +687,7 @@
   "RR_EVENT_CHANGED_LEVEL": "hat das Level der Bemerkung geändert",
   "RR_EVENT_CHANGED_TITLE": "hat den Titel der Bemerkung geändert",
   "RR_EVENT_CHANGED_DESCRIPTION": "hat die Beschreibung der Bemerkung geändert",
+  "RR_EVENT_CARRIED_OVER": "Diese Bemerkung wurde aus einer früheren SBOM übernommen.",
   "RR_WARN_TEXT": "Alle Review-Bemerkungen und Kommentare sind sichtbar für alle Benutzer und Lieferanten mit Zugriffsrechten auf dieses Projekt!",
   "TITLE_POLICY_RULE_SAVED": "Aktualisierung der Policy-Regel",
   "SBOM_REFERENCE": "SBOM Referenz",
