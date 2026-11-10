@@ -63,6 +63,9 @@ func NewUsersRepository(requestSession *logy.RequestSession) IUsersRepository {
 func (ur *usersRepositoryStruct) Find5UsersBySearchFragment(requestSession *logy.RequestSession, searchFragment string, userFilter UserFilter) []*user.User {
 	searchFragment = strings.TrimSpace(searchFragment)
 	searchFragments := strings.Fields(searchFragment)
+	if len(searchFragments) == 0 {
+		return []*user.User{}
+	}
 
 	filter := ""
 	qc := &database.QueryConfig{}
