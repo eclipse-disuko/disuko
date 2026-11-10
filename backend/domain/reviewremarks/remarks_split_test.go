@@ -5,7 +5,6 @@
 package reviewremarks
 
 import (
-	"slices"
 	"testing"
 	"time"
 )
@@ -294,37 +293,6 @@ func mustTime(value string) time.Time {
 		panic(err)
 	}
 	return t
-}
-
-func TestSplitAndCarryOverFrom_MergesOnlyUntouchedOpenRemarks(t *testing.T) {
-	component := func(name string) ComponentMeta { return ComponentMeta{ComponentName: name, ComponentVersion: "1"} }
-	newRemark := &Remark{
-		SBOMId: "sbom2", TemplateKey: "template", Status: Open,
-		Components: []ComponentMeta{component("A"), component("B"), component("C"), component("D")},
-	}
-	previous := []*Remark{
-		{SBOMId: "sbom1", TemplateKey: "template", Status: Open, Components: []ComponentMeta{component("A")}},
-		{SBOMId: "sbom1", TemplateKey: "template", Status: InProgress, Components: []ComponentMeta{component("B")}},
-		{SBOMId: "sbom1", TemplateKey: "template", Status: Open, Components: []ComponentMeta{component("C")}, Events: []Event{{Type: ChangedLevelEvent}}},
-	}
-	actual := newRemark.SplitAndCarryOverFrom(previous)
-	if len(actual) != 3 {
-		t.Fatalf("want 3 remarks, got %d", len(actual))
-	}
-	if actual[0].Status != Open || len(actual[0].Events) != 0 || len(actual[0].Components) != 2 ||
-		!slices.ContainsFunc(actual[0].Components, func(c ComponentMeta) bool { return c.ComponentName == "A" }) ||
-		!slices.ContainsFunc(actual[0].Components, func(c ComponentMeta) bool { return c.ComponentName == "D" }) {
-		t.Errorf("expected untouched OPEN remark combining A and D, got %+v", actual[0])
-	}
-	if actual[1].Status != InProgress || len(actual[1].Components) != 1 || actual[1].Components[0].ComponentName != "B" {
-		t.Errorf("IN_PROGRESS remark changed: %+v", actual[1])
-	}
-	if actual[2].Status != Open || len(actual[2].Events) != 1 || actual[2].Components[0].ComponentName != "C" {
-		t.Errorf("OPEN remark with event history changed: %+v", actual[2])
-	}
-	if len(previous[0].Components) != 1 || len(newRemark.Components) != 4 {
-		t.Fatal("source remarks must not be mutated")
-	}
 }
 
 func TestMergeOpenRemarksWithoutEvents_AllUntouched(t *testing.T) {

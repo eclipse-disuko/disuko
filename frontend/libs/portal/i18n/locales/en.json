@@ -688,6 +688,7 @@
   "RR_EVENT_CHANGED_LEVEL": "changed the level of this remark",
   "RR_EVENT_CHANGED_TITLE": "changed the title of this remark",
   "RR_EVENT_CHANGED_DESCRIPTION": "changed the description of this remark",
+  "RR_EVENT_CARRIED_OVER": "This remark was carried over from a previous SBOM.",
   "RR_WARN_TEXT": "All review remarks and comments are visible to all users and suppliers with access rights to this project!",
   "TITLE_POLICY_RULE_SAVED": "Policy Rule update",
   "DESCRIPTION_POLICY_RULE_SAVED": "Policy Rule saved successfully",
