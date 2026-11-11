@@ -2194,6 +2194,8 @@
   "BTN_DOWNLOAD_XLSX": "XLSX herunterladen",
   "sbom_auto_approved_title": "Automatisch genehmigt",
   "sbom_auto_approved_message": "Ihre SBOM wurde automatisch genehmigt.",
+  "OVERVIEW_LOAD_ERROR": "Statistiken konnten nicht geladen werden.",
+  "OVERVIEW_NO_REMARKS": "Keine Bemerkungen",
   "TT_COMPONENTS_OVERVIEW_TOTAL": "Liste aller Komponenten dieser SBOM",
   "TT_COMPONENTS_OVERVIEW_DENIED": "Diese Komponenten sollten entfernt oder ersetzt werden",
   "TT_COMPONENTS_OVERVIEW_NOASSERTION": "Etwas fehlt und muss behoben werden",
