@@ -26,6 +26,7 @@ type RrTransferStrategy string
 const (
 	RrTransferDefault    RrTransferStrategy = ""
 	RrTransferSplitBySet RrTransferStrategy = "SPLIT"
+	RrTransferMerge      RrTransferStrategy = "MERGE"
 )
 
 type PolicyStatusType string

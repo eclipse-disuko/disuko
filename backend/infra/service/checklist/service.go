@@ -186,6 +186,11 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 			case checklist.RrTransferSplitBySet:
 				baseRemarks := reviewremarks.FindRemarksForSplit(existing.Remarks, newRemark)
 				remarksToSave = newRemark.SplitAndCarryOverFrom(baseRemarks)
+			case checklist.RrTransferMerge:
+				previous := reviewremarks.FindRemarkForMerge(existing.Remarks, newRemark)
+				if previous != nil {
+					newRemark.CarryOverStateFrom(previous)
+				}
 			default:
 				previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
 				if previous != nil {
