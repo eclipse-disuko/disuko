@@ -164,6 +164,7 @@
   "JOB_MANUAL_START": "Job started",
   "JOB_ONETIME_START": "Job restarted",
   "BTN_RELOAD": "Reload",
+  "OVERVIEW_LOAD_ERROR": "Statistics could not be loaded.",
   "TT_CREATE_SAMPLE_DATA_WITH_FILE": "Start (with file upload)",
   "TT_CLEAR_SAMPLE_DATA_STATE": "Stop",
   "TT_GET_SAMPLE_DATA_STATE": "Get",
