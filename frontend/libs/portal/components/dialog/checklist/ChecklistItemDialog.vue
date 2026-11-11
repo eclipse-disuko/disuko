@@ -73,6 +73,15 @@ const psTypes = computed(
     })) as NameKeyIdentifier[],
 );
 
+const rrTransferStrategies = computed(
+  () =>
+    [
+      {key: RrTransferStrategy.DEFAULT, name: t('USE_DEFAULT_RR_TARNSFER_STRATEGY')},
+      {key: RrTransferStrategy.SPLIT, name: t('USE_SPLIT_RR_TARNSFER_STRATEGY')},
+      {key: RrTransferStrategy.MERGE, name: t('USE_MERGE_RR_TARNSFER_STRATEGY')},
+    ] as NameKeyIdentifier[],
+);
+
 const rules = {
   name: minMax(t('NPV_DIALOG_TF_NAME'), 3, 80, false),
   description: longText(t('NP_DIALOG_TF_DESCRIPTION')),
@@ -146,12 +155,11 @@ const open = async (existing?: ChecklistItem) => {
     selectedClassification.value = [null];
     selectedCompNames.value = [null];
     selectedTargetTemplate.value = null;
-    item.value = {
-      triggerType: TriggerTypes.DEFAULT,
-      rrTransferStrategy: RrTransferStrategy.DEFAULT,
-    } as ChecklistItem;
+    item.value = new ChecklistItem();
+    item.value.triggerType = TriggerTypes.DEFAULT;
+    item.value.rrTransferStrategy = RrTransferStrategy.DEFAULT;
   }
-  dialog.value?.reset();
+  dialog.value?.resetValidation();
   title.value = existing ? 'CHECKLIST_ITEM_DIALOG_EDIT_TITLE' : 'CHECKLIST_ITEM_DIALOG_ADD_TITLE';
   confirmText.value = existing ? 'NP_DIALOG_BTN_EDIT' : 'NP_DIALOG_BTN_CREATE';
   isVisible.value = true;
@@ -358,13 +366,19 @@ defineExpose({
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('LBL_COMPONENT_NAME') }}</span>
           </div>
-          <v-checkbox
-            v-if="!isProd"
-            v-model="item.rrTransferStrategy"
-            :true-value="RrTransferStrategy.SPLIT"
-            :false-value="RrTransferStrategy.DEFAULT"
-            :label="t('USE_SPLIT_RR_TARNSFER_STRATEGY')"
-            hide-details />
+          <ExpansionPanel v-if="!isProd" :title="t('EXPERT_MODE')">
+            <template #body>
+              <v-select
+                v-if="!isProd"
+                v-model="item.rrTransferStrategy"
+                :label="t('RR_TARNSFER_STRATEGY_LABEL')"
+                :items="rrTransferStrategies"
+                item-title="name"
+                item-value="key"
+                variant="outlined"
+                hide-details />
+            </template>
+          </ExpansionPanel>
         </Stack>
       </v-form>
     </DialogLayout>
