@@ -183,9 +183,14 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 		remarksToSave := []*reviewremarks.Remark{newRemark}
 		if !conf.IsProdEnv() {
 			switch candidate.transferStrategy {
-			case checklist.RrTransferSplitBySet:
+			case checklist.RrTransferSplit:
 				baseRemarks := reviewremarks.FindRemarksForSplit(existing.Remarks, newRemark)
 				remarksToSave = newRemark.SplitAndCarryOverFrom(baseRemarks)
+			case checklist.RrTransferMerge:
+				previous := reviewremarks.FindRemarkForMerge(existing.Remarks, newRemark)
+				if previous != nil {
+					newRemark.CarryOverStateFrom(previous)
+				}
 			default:
 				previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
 				if previous != nil {

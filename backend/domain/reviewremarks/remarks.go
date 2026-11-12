@@ -388,6 +388,24 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 	return latest
 }
 
+// FindRemarkForMerge finds a remark for the same template, preferring
+// the current SBOM over the latest previous SBOM.
+// CANCELLED remarks prevent carry-over from older SBOMs.
+func FindRemarkForMerge(existingRemarks []*Remark, newRemark *Remark) *Remark {
+	current := findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, newRemark.SBOMId)
+	if len(current) > 0 {
+		if len(current) == 1 && current[0].Status != Cancelled {
+			return current[0]
+		}
+		return nil
+	}
+	previous := findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
+	if len(previous) == 1 && previous[0].Status != Cancelled {
+		return previous[0]
+	}
+	return nil
+}
+
 // FindRemarksForSplit returns all remarks for the same template, preferring the current SBOM.
 // If none exist, it uses the latest previous SBOM containing remarks for that template.
 func FindRemarksForSplit(existingRemarks []*Remark, newRemark *Remark) []*Remark {
