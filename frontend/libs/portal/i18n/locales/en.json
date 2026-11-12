@@ -2060,7 +2060,7 @@
   "LBL_NAME": "Name",
   "LBL_COMPONENT_NAME": "Component Name",
   "EXPERT_MODE": "Expert mode",
-  "RR_TARNSFER_STRATEGY_LABEL": "Remarks creation behaviour",
+  "RR_TARNSFER_STRATEGY_LABEL": "Remarks creation behavior",
   "USE_DEFAULT_RR_TARNSFER_STRATEGY": "Preserve exact matches",
   "USE_SPLIT_RR_TARNSFER_STRATEGY": "Preserve existing groups, separate new items",
   "USE_MERGE_RR_TARNSFER_STRATEGY": "Combine all items into one Remark",
