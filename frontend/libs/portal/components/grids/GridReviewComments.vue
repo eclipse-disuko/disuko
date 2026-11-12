@@ -63,6 +63,15 @@
             {{ (item.content as DescriptionChange)?.after }}
           </i>
         </span>
+        <span v-else-if="item.type === EventType.CARRIED_OVER && item.content">
+          <i
+            >{{ t('RR_EVENT_' + item.type) }}
+            <!-- TODO: do we want to have it navigable?
+            {{ t('DIALOG_remark_from') }}
+            {{ (item.content as CarryOverInfo)?.sourceRemarkId }}
+            -->
+          </i>
+        </span>
         <span v-else>
           <i>{{ t('RR_EVENT_' + item.type) }}</i>
         </span>
@@ -74,8 +83,8 @@
 <script lang="ts" setup>
 import {DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
-import useRules from '@disclosure-portal/utils/Rules';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import useRules from '@shared/utils/Rules';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import {DataTableHeader} from '@shared/types/table';
 import {computed, ref} from 'vue';

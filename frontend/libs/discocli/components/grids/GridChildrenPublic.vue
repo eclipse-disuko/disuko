@@ -3,7 +3,7 @@ import {Project, Version} from '@shared/model/Project';
 import {useAppStore} from '@cli/stores/app';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import DVersionStateWithTooltip from '@shared/components/disco/DVersionStateWithTooltip.vue';
-import {useTableFilter} from '@shared/composables/useTableFilter';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 import TableLayout from '@shared/layouts/TableLayout.vue';
 import {computed, defineProps, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -36,7 +36,7 @@ const childrenList = computed(() => {
 const sortItems = [{key: 'version.lastSbomUploaded', order: 'desc' as const}];
 const groupBy = [{key: 'projectKey'}];
 
-const customFilter = useTableFilter(['projectName', 'version.name', 'description']);
+const customFilter = useTableSearch(['projectName', 'version.name', 'description']);
 
 const showSbomStatus = async (
   item: {project: Project; version: Version} | {raw?: {project: Project; version: Version}},

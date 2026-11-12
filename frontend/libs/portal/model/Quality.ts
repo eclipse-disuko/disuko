@@ -64,6 +64,7 @@ export enum EventType {
   CHANGED_LEVEL = 'CHANGED_LEVEL',
   CHANGED_TITLE = 'CHANGED_TITLE',
   CHANGED_DESCRIPTION = 'CHANGED_DESCRIPTION',
+  CARRIED_OVER = 'CARRIED_OVER',
 }
 export interface LevelChange {
   before: ReviewRemarkLevel;
@@ -82,6 +83,10 @@ export interface DescriptionChange {
 
 export type Comment = string;
 
+export interface CarryOverInfo {
+  sourceRemarkId: string;
+}
+
 export class Event {
   public key = '';
   public created = '';
@@ -90,7 +95,7 @@ export class Event {
   public type: EventType = EventType.NOT_SET;
   public author = '';
   public authorFullName = '';
-  public content?: LevelChange | TitleChange | DescriptionChange | Comment;
+  public content?: LevelChange | TitleChange | DescriptionChange | Comment | CarryOverInfo;
 }
 
 export class ComponentMeta {
@@ -106,6 +111,7 @@ export class LicenseMeta {
 
 export enum ReviewRemarkLevel {
   NOT_SET = '',
+  BLUE = 'BLUE',
   GREEN = 'GREEN',
   YELLOW = 'YELLOW',
   RED = 'RED',
@@ -179,8 +185,9 @@ export function compareLevel(a: string, b: string): number {
 
 export function compareRRLevel(a: ReviewRemarkLevel, b: ReviewRemarkLevel): number {
   const levelWeight: Map<ReviewRemarkLevel, number> = new Map<ReviewRemarkLevel, number>([
-    [ReviewRemarkLevel.GRAY, -1],
-    [ReviewRemarkLevel.GREEN, 0],
+    [ReviewRemarkLevel.GRAY, -2],
+    [ReviewRemarkLevel.GREEN, -1],
+    [ReviewRemarkLevel.BLUE, 0],
     [ReviewRemarkLevel.YELLOW, 1],
     [ReviewRemarkLevel.RED, 2],
   ]);

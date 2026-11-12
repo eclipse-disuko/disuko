@@ -8,7 +8,7 @@ import {IObligation} from '@disclosure-portal/model/IObligation';
 import {compareLevel} from '@disclosure-portal/model/Quality';
 import {Rights} from '@shared/user/models/Rights';
 import {useUserStore} from '@shared/user/stores/user.store';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';

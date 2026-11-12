@@ -6,7 +6,7 @@
 import Label from '@disclosure-portal/model/Label';
 import SchemaPostRequest from '@disclosure-portal/model/SchemaPostRequest';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
 import config from '@shared/utils/config';
 import {computed, nextTick, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';

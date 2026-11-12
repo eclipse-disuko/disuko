@@ -53,6 +53,7 @@ export enum PolicyStatusTypes {
 export enum RrTransferStrategy {
   DEFAULT = '',
   SPLIT = 'SPLIT',
+  MERGE = 'MERGE',
 }
 
 export class ExecuteRequest {

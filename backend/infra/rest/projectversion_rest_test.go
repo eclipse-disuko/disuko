@@ -7,8 +7,39 @@ package rest
 import (
 	"testing"
 
+	"github.com/eclipse-disuko/disuko/domain/project/components"
+	"github.com/eclipse-disuko/disuko/domain/reviewremarks"
+	remarkRepo "github.com/eclipse-disuko/disuko/infra/repository/reviewremarks"
+	"github.com/eclipse-disuko/disuko/logy"
 	"github.com/stretchr/testify/assert"
 )
+
+type remarkStatsRepository struct {
+	remarkRepo.IReviewRemarksRepository
+	remarks *reviewremarks.ReviewRemarks
+}
+
+func (repo *remarkStatsRepository) FindByKey(*logy.RequestSession, string, bool) *reviewremarks.ReviewRemarks {
+	return repo.remarks
+}
+
+func TestCalculateReviewRemarkStatsSeparatesInformationAndClosed(t *testing.T) {
+	repo := &remarkStatsRepository{remarks: &reviewremarks.ReviewRemarks{Remarks: []*reviewremarks.Remark{
+		{Level: reviewremarks.Blue, Status: reviewremarks.Open},
+		{Level: reviewremarks.Blue, Status: reviewremarks.InProgress},
+		{Level: reviewremarks.Green, Status: reviewremarks.Closed},
+		{Level: reviewremarks.Yellow, Status: reviewremarks.Open},
+		{Level: reviewremarks.Red, Status: reviewremarks.InProgress},
+		{Level: reviewremarks.Gray, Status: reviewremarks.Cancelled},
+	}}}
+	handler := ProjectHandler{ReviewRemarksRepository: repo}
+	stats := handler.calculateReviewRemarkStats(logy.NewRequestSession(), "version")
+	assert.Equal(t, components.ReviewRemarkStats{
+		Total: 6, Information: 2, Acceptable: 1, AcceptableAfterChanges: 1, NotAcceptable: 1, Cancelled: 1,
+	}, stats)
+	repo.remarks = nil
+	assert.Equal(t, components.ReviewRemarkStats{}, handler.calculateReviewRemarkStats(logy.NewRequestSession(), "version"))
+}
 
 func TestShouldValidateFilename(t *testing.T) {
 	//given

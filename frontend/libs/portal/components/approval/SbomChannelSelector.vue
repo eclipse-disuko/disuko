@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import {useApprovalCheck} from '@disclosure-portal/composables/useApprovalCheck';
 import {SpdxFile, VersionSlim} from '@disclosure-portal/model/VersionDetails';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime} from '@shared/utils/Table';
 import config from '@shared/utils/config';
 import {useI18n} from 'vue-i18n';
 

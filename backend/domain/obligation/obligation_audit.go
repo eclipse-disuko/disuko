@@ -27,6 +27,7 @@ type ObligationAudit struct {
 	Description   string    `json:"description"`
 	DescriptionDe string    `json:"descriptionDe"`
 	AutoApproved  bool      `json:"autoApproved"`
+	Freeware      bool      `json:"freeware"`
 }
 
 func (entity *Obligation) ToAudit() *ObligationAudit {
@@ -40,5 +41,6 @@ func (entity *Obligation) ToAudit() *ObligationAudit {
 		Description:   entity.Description,
 		DescriptionDe: entity.DescriptionDe,
 		AutoApproved:  entity.AutoApproved,
+		Freeware:      entity.Freeware,
 	}
 }

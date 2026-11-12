@@ -4,14 +4,9 @@
 
 <script setup lang="ts">
 import {OverallReview} from '@disclosure-portal/model/VersionDetails';
-import {
-  formatDateAndTime,
-  getOverallReviewColor,
-  getOverallReviewIcon,
-  getOverallReviewTranslationKey,
-  sbomOutdated,
-} from '@disclosure-portal/utils/Table';
-import {formatDateTime} from '@disclosure-portal/utils/View';
+import {getOverallReviewColor, getOverallReviewIcon} from '@disclosure-portal/utils/Table';
+import {formatDateAndTime, getOverallReviewTranslationKey, sbomOutdated} from '@shared/utils/Table';
+import {formatDateTime} from '@shared/utils/View';
 import {useI18n} from 'vue-i18n';
 import {Anchor} from 'vuetify/framework';
 

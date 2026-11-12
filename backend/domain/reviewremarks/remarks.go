@@ -44,6 +44,7 @@ const (
 type Level string
 
 const (
+	Blue       Level = "BLUE"
 	Green      Level = "GREEN"
 	Yellow     Level = "YELLOW"
 	Red        Level = "RED"
@@ -62,6 +63,7 @@ const (
 	ChangedTitleEvent EventType = "CHANGED_TITLE"
 	ChangedDescEvent  EventType = "CHANGED_DESCRIPTION"
 	ChangedLevelEvent EventType = "CHANGED_LEVEL"
+	CarriedOverEvent  EventType = "CARRIED_OVER"
 )
 
 const (
@@ -126,6 +128,10 @@ type Remark struct {
 	Licenses   []LicenseMeta
 
 	TemplateKey string
+}
+
+type CarryOverInfo struct {
+	SourceRemarkId string `json:"sourceRemarkId"`
 }
 
 type ReviewTemplate struct {
@@ -283,11 +289,18 @@ func (r *Remark) Reopen(author, fullName string) {
 		Author:         author,
 		AuthorFullName: fullName,
 	})
+	if r.Level == Green {
+		r.Level = Blue
+	}
 	r.Status = Open
 	r.Closed = nil
 }
 
 func (r *Remark) Comment(author, fullName, content string) {
+	cc := slices.ContainsFunc(r.Events, func(e Event) bool { return e.Type == CommentEvent })
+	if r.Status == Open && !cc {
+		r.Status = InProgress
+	}
 	data, _ := json.Marshal(Comment(content))
 	r.Events = append(r.Events, Event{
 		ChildEntity:    domain.NewChildEntity(),
@@ -373,6 +386,24 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 		return nil
 	}
 	return latest
+}
+
+// FindRemarkForMerge finds a remark for the same template, preferring
+// the current SBOM over the latest previous SBOM.
+// CANCELLED remarks prevent carry-over from older SBOMs.
+func FindRemarkForMerge(existingRemarks []*Remark, newRemark *Remark) *Remark {
+	current := findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, newRemark.SBOMId)
+	if len(current) > 0 {
+		if len(current) == 1 && current[0].Status != Cancelled {
+			return current[0]
+		}
+		return nil
+	}
+	previous := findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
+	if len(previous) == 1 && previous[0].Status != Cancelled {
+		return previous[0]
+	}
+	return nil
 }
 
 // FindRemarksForSplit returns all remarks for the same template, preferring the current SBOM.
@@ -480,6 +511,32 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
 
+	return mergeOpenRemarksWithoutEvents(result)
+}
+
+// mergeOpenRemarksWithoutEvents combines untouched OPEN remarks produced by one
+// SPLIT operation. Remarks with an event history retain their own identity.
+func mergeOpenRemarksWithoutEvents(remarks []*Remark) []*Remark {
+	var mergeTarget *Remark
+	result := make([]*Remark, 0, len(remarks))
+	for _, remark := range remarks {
+		if remark.Status != Open || slices.ContainsFunc(remark.Events, func(event Event) bool {
+			return event.Type != CarriedOverEvent
+		}) {
+			result = append(result, remark)
+			continue
+		}
+
+		if mergeTarget == nil {
+			mergeTarget = remark
+			result = append(result, remark)
+			continue
+		}
+
+		mergeTarget.Components = append(mergeTarget.Components, remark.Components...)
+		mergeTarget.Licenses = append(mergeTarget.Licenses, remark.Licenses...)
+		mergeTarget.Events = append(mergeTarget.Events, remark.Events...)
+	}
 	return result
 }
 
@@ -538,7 +595,7 @@ func licenseSetKey(lic LicenseMeta) string {
 }
 
 func (r *Remark) CarryOverStateFrom(previous *Remark) {
-	// r.Author = previous.Author // todo: Initial Author or a new one???
+	r.Author = previous.Author
 	r.Level = previous.Level
 	r.Status = previous.Status
 
@@ -550,4 +607,15 @@ func (r *Remark) CarryOverStateFrom(previous *Remark) {
 	}
 
 	r.Events = append([]Event(nil), previous.Events...)
+	if previous.SBOMId != r.SBOMId {
+		data, _ := json.Marshal(CarryOverInfo{
+			SourceRemarkId: previous.Key,
+		})
+		r.Events = append(r.Events, Event{
+			ChildEntity: domain.NewChildEntity(),
+			Type:        CarriedOverEvent,
+			Author:      "SYSTEM",
+			Content:     data,
+		})
+	}
 }

@@ -950,7 +950,9 @@ func (projectHandler *ProjectHandler) ComponentReviewRemarksGetHandler(w http.Re
 		levelWeight := map[reviewremarks.Level]int{
 			reviewremarks.Red:    3,
 			reviewremarks.Yellow: 2,
-			reviewremarks.Green:  1,
+			reviewremarks.Blue:   1,
+			reviewremarks.Green:  0,
+			reviewremarks.Gray:   -1,
 		}
 		return levelWeight[ri.Level] > levelWeight[rj.Level]
 	})
@@ -1691,8 +1693,10 @@ func (projectHandler *ProjectHandler) calculateReviewRemarkStats(requestSession 
 	}
 
 	for _, remark := range remarksList.Remarks {
-		if remark.Status == reviewremarks.Open || remark.Status == reviewremarks.Closed || remark.Status == reviewremarks.Cancelled {
+		if remark.Status == reviewremarks.Open || remark.Status == reviewremarks.InProgress || remark.Status == reviewremarks.Closed || remark.Status == reviewremarks.Cancelled {
 			switch remark.Level {
+			case reviewremarks.Blue:
+				reviewRemarkStats.Information++
 			case reviewremarks.Green:
 				reviewRemarkStats.Acceptable++
 			case reviewremarks.Yellow:

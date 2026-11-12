@@ -13,37 +13,25 @@ import {
   ReviewRemarkStats,
   ScanRemarkStats,
 } from '@disclosure-portal/model/VersionDetails';
-import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import {getColor, getColorRGB} from '@disclosure-portal/utils/Tools';
-import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  ChartEvent,
-  Chart as ChartJS,
-  ChartOptions,
-  ChartType,
-  CoreChartOptions,
-  Legend,
-  LinearScale,
-  Title,
-  Tooltip,
-} from 'chart.js';
+import {getColor} from '@disclosure-portal/utils/Tools';
+import useSnackbar from '@shared/composables/useSnackbar';
+import Stack from '@shared/layouts/Stack.vue';
+import {ArcElement, ChartEvent, Chart as ChartJS, ChartOptions, ChartType, Legend, Title, Tooltip} from 'chart.js';
 import {computed, onMounted, ref, watch} from 'vue';
-import {Bar, Doughnut} from 'vue-chartjs';
+import {Doughnut} from 'vue-chartjs';
 import {useI18n} from 'vue-i18n';
 import {useRoute, useRouter} from 'vue-router';
-import {applyChartDefaults} from './ChartSettings';
+import {addTransparencyToHex, applyChartDefaults, chartColorMap, createPattern, rgbToHex} from './ChartSettings';
 import {useAppStore} from '@disclosure-portal/stores/app';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
 type ChartData = {
   labels: string[];
   datasets: {
     data: (number | null)[];
-    backgroundColor: string[];
+    backgroundColor: (string | CanvasPattern | null)[];
     borderColor: string[];
     borderWidth: number;
     minBarLength: number;
@@ -51,13 +39,33 @@ type ChartData = {
   }[];
 };
 
+type LegendItem = {
+  text: string;
+  color: string | CanvasPattern | null;
+  borderColor: string;
+  count: number;
+};
+
+type OverviewCard = {
+  id: 'policyStates' | 'licenseFamily' | 'scanRemarks' | 'reviewRemarks' | 'licenseRemarks';
+  type: 'bar' | 'doughnut';
+  header: string;
+  help: string;
+  path: string;
+  total: number | undefined;
+  legend: LegendItem[];
+  max?: number;
+  data?: any;
+  options?: any;
+};
+
 const {t} = useI18n();
 const router = useRouter();
 const route = useRoute();
 const sbomStore = useSbomStore();
+const snackbar = useSnackbar();
 applyChartDefaults();
 
-const projectModel = computed(() => useProjectStore().currentProject);
 const versionDetails = computed(() => sbomStore.getCurrentVersion);
 const spdxFileHistory = computed(() => sbomStore.getChannelSpdxs);
 const currentSpdx = computed(() => sbomStore.getSelectedSBOM);
@@ -67,22 +75,19 @@ const reviewRemarksStats = ref<ReviewRemarkStats>({} as ReviewRemarkStats);
 const scanRemarkStats = ref<ScanRemarkStats>({} as ScanRemarkStats);
 const licenseRemarkStats = ref<LicenseRemarkStats>({} as LicenseRemarkStats);
 const isLoaded = ref(false);
-const legendItemsReviewRemarks = ref<any[]>([]);
-const legendItemsScanRemarks = ref<any[]>([]);
-const legendItemsLicenseRemarks = ref<any[]>([]);
-const testColor = ref('#ffffff');
-const legendItemsPolicyStates = ref<any[]>([]);
-const legendItemsLicenseFamily = ref<any[]>([]);
-const alternateRender = ref(useAppStore().alternateRender);
+const hasLoadError = ref(false);
+const legendItemsReviewRemarks = ref<LegendItem[]>([]);
+const legendItemsScanRemarks = ref<LegendItem[]>([]);
+const legendItemsLicenseRemarks = ref<LegendItem[]>([]);
+const legendItemsPolicyStates = ref<LegendItem[]>([]);
+const legendItemsLicenseFamily = ref<LegendItem[]>([]);
+const alternateRender = computed(() => useAppStore().alternateRender);
 
 onMounted(async () => {
-  testColor.value = getColor('--v-theme-licenceChartIcon');
   if (spdxFileHistory.value.length === 0) {
     return;
   }
   await loadChartData();
-  isLoaded.value = true;
-  updateLegends();
 });
 
 watch(
@@ -91,10 +96,7 @@ watch(
     if (!currentSpdx.value) {
       return;
     }
-    isLoaded.value = false;
     await loadChartData();
-    isLoaded.value = true;
-    updateLegends();
   },
 );
 
@@ -116,18 +118,129 @@ function updateLegends() {
   legendItemsLicenseRemarks.value = generateLegend(chartDataLicenseRemarks.value);
 }
 
-function generateLegend(data: ChartData) {
-  return data.labels.map((label: string, index: number) => {
-    return {
-      text: label,
-      color: data.datasets[0].backgroundColor[index],
-      borderColor: data.datasets[0].borderColor[index],
-      value: data.datasets[0],
-    };
-  });
+function generateLegend(data: ChartData): LegendItem[] {
+  return data.labels.map((label: string, index: number) => ({
+    text: label,
+    color: data.datasets[0].backgroundColor[index],
+    borderColor: data.datasets[0].borderColor[index],
+    count: data.datasets[0].data[index] ?? 0,
+  }));
 }
 
-const chartOptionsLicenseFamily = createChartOptions('bar', openFamilyFilteredComponents);
+function maxCount(items: LegendItem[]) {
+  return Math.max(0, ...items.map((i) => i.count));
+}
+
+function barStyle(item: LegendItem, max = 0) {
+  const width = max > 0 && item.count > 0 ? Math.max((item.count / max) * 100, 2) : 0;
+  const background = alternateRender.value
+    ? `repeating-linear-gradient(45deg, ${item.borderColor} 0 2px, transparent 2px 6px)`
+    : item.borderColor;
+  return {width: `${width}%`, background, borderColor: item.borderColor};
+}
+
+const gridClass = 'grid w-full max-w-[80rem] grid-cols-1 gap-4 p-3 sm:p-5 md:grid-cols-2 lg:grid-cols-4';
+const spanClass = (type: OverviewCard['type']) => (type === 'bar' ? 'md:col-span-2' : 'col-span-1');
+const cardClass =
+  'overview-card @container relative flex min-w-0 min-h-60 flex-col gap-5 overflow-hidden rounded-xl px-5 pt-4 pb-5';
+const rowClass =
+  'grid w-full cursor-pointer items-center rounded border-0 px-2 text-left text-inherit transition-colors duration-200 hover:bg-[rgba(var(--v-theme-on-surface),0.06)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[rgb(var(--v-theme-primary))] active:translate-y-px motion-reduce:transform-none motion-reduce:transition-none';
+
+const hovered = ref<{cardId: OverviewCard['id']; index: number} | null>(null);
+
+function setHovered(cardId: OverviewCard['id'], index: number | null) {
+  hovered.value = index === null ? null : {cardId, index};
+}
+
+function hoveredItem(card: OverviewCard): LegendItem | null {
+  return hovered.value?.cardId === card.id ? (card.legend[hovered.value.index] ?? null) : null;
+}
+
+function isHovered(card: OverviewCard, index: number) {
+  return hovered.value?.cardId === card.id && hovered.value.index === index;
+}
+
+function countClass(count: number) {
+  return [
+    'text-right text-sm tabular-nums',
+    count ? 'font-semibold' : 'font-normal text-[color:rgba(var(--v-theme-on-surface),0.5)]',
+  ];
+}
+
+function labelClass(count: number) {
+  return [
+    'text-sm leading-snug break-words',
+    count ? 'text-[color:rgba(var(--v-theme-on-surface),0.87)]' : 'text-[color:rgba(var(--v-theme-on-surface),0.5)]',
+  ];
+}
+
+// Legends are ordered worst-first, so the first non-zero entry is the card's most severe state.
+function accentColor(card: OverviewCard) {
+  return card.legend.find((i) => i.count > 0)?.borderColor ?? 'transparent';
+}
+
+function dotStyle(item: LegendItem) {
+  return {
+    borderColor: item.borderColor,
+    backgroundColor: typeof item.color === 'string' ? item.color : 'transparent',
+  };
+}
+
+const cards = computed<OverviewCard[]>(() => [
+  {
+    id: 'policyStates',
+    type: 'bar',
+    header: 'POLICY_STATE',
+    help: 'PS_CHART_HELP',
+    path: unfilteredComponentsPath(),
+    total: policyStateStats.value.total,
+    legend: legendItemsPolicyStates.value,
+    max: maxCount(legendItemsPolicyStates.value),
+  },
+  {
+    id: 'scanRemarks',
+    type: 'doughnut',
+    header: 'TAB_SCAN_REMARKS',
+    help: 'SR_CHART_HELP',
+    path: unfilteredScanRemarksPath(),
+    total: scanRemarkStats.value.total,
+    legend: legendItemsScanRemarks.value,
+    data: chartDataScanRemarks.value,
+    options: chartOptionsScanRemark,
+  },
+  {
+    id: 'reviewRemarks',
+    type: 'doughnut',
+    header: 'TAB_REVIEW_REMARKS',
+    help: 'RR_CHART_HELP',
+    path: unfilteredReviewRemarksPath(),
+    total: reviewRemarksStats.value.total,
+    legend: legendItemsReviewRemarks.value,
+    data: chartDataReviewRemarks.value,
+    options: chartOptionsReviewRemark,
+  },
+  {
+    id: 'licenseFamily',
+    type: 'bar',
+    header: 'LICENSE_FAMILY',
+    help: 'LF_CHART_HELP',
+    path: unfilteredComponentsPath(),
+    total: licenseFamilyStats.value.total,
+    legend: legendItemsLicenseFamily.value,
+    max: maxCount(legendItemsLicenseFamily.value),
+  },
+  {
+    id: 'licenseRemarks',
+    type: 'doughnut',
+    header: 'TAB_LICENSE_REMARKS',
+    help: 'LR_CHART_HELP',
+    path: unfilteredLicenseRemarksPath(),
+    total: licenseRemarkStats.value.total,
+    legend: legendItemsLicenseRemarks.value,
+    data: chartDataLicenseRemarks.value,
+    options: chartOptionsLicenseRemark,
+  },
+]);
 
 const chartDataPolicyStates = computed(() => {
   return createChartData(
@@ -139,11 +252,15 @@ const chartDataPolicyStates = computed(() => {
   );
 });
 
-const chartOptionsPolicyStates = createChartOptions('bar', openFilteredComponents);
-
 const chartDataReviewRemarks = computed(() => {
   return createChartData(
-    ['notAcceptable', 'acceptableAfterChanges', 'acceptable', 'cancelled'] as (keyof ReviewRemarkStats)[],
+    [
+      'notAcceptable',
+      'acceptableAfterChanges',
+      'information',
+      'acceptable',
+      'cancelled',
+    ] as (keyof ReviewRemarkStats)[],
     'RR_CHART',
     reviewRemarksStats.value,
     (label) => getColorForLabel('reviewRemark', label),
@@ -151,7 +268,7 @@ const chartDataReviewRemarks = computed(() => {
   );
 });
 
-const chartOptionsReviewRemark = createChartOptions('doughnut', openFilteredReviewRemarks);
+const chartOptionsReviewRemark = createChartOptions('doughnut', openFilteredReviewRemarks, true, 'reviewRemarks');
 
 const chartDataScanRemarks = computed(() => {
   return createChartData(
@@ -163,7 +280,7 @@ const chartDataScanRemarks = computed(() => {
   );
 });
 
-const chartOptionsScanRemark = createChartOptions('doughnut', openFilteredScanRemarks);
+const chartOptionsScanRemark = createChartOptions('doughnut', openFilteredScanRemarks, true, 'scanRemarks');
 
 const chartDataLicenseRemarks = computed(() => {
   return createChartData(
@@ -175,42 +292,7 @@ const chartDataLicenseRemarks = computed(() => {
   );
 });
 
-const chartOptionsLicenseRemark = createChartOptions('doughnut', openLicenseRemarks);
-
-function createPattern(color: string, patternType: string): CanvasPattern | null {
-  const canvas = document.createElement('canvas');
-  canvas.width = 20;
-  canvas.height = 20;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-
-  if (patternType === 'diagonal-stripes') {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(20, 20);
-    ctx.stroke();
-  } else if (patternType === 'dots') {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(10, 10, 4, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (patternType === 'crosshatch') {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(20, 20);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(20, 0);
-    ctx.lineTo(0, 20);
-    ctx.stroke();
-  }
-
-  return ctx.createPattern(canvas, 'repeat');
-}
+const chartOptionsLicenseRemark = createChartOptions('doughnut', openLicenseRemarks, true, 'licenseRemarks');
 
 function createChartData<T>(
   keys: (keyof T)[],
@@ -220,7 +302,7 @@ function createChartData<T>(
   borderColorFunction: (key: string) => string,
 ) {
   const labels = keys.map((key) => t(`${chartLabelPrefix}_${key.toString().toUpperCase()}`));
-  let backgroundColors = keys.map((key) => colorFunction(key.toString()));
+  let backgroundColors: (string | CanvasPattern | null)[] = keys.map((key) => colorFunction(key.toString()));
   if (alternateRender.value) {
     backgroundColors = keys.map((key, index) => {
       const color = colorFunction(key.toString());
@@ -271,13 +353,16 @@ function handleLegendClick(index: number, chartType: string) {
 }
 
 function createChartOptions(
-  chartType: ChartType = 'bar',
+  chartType: ChartType,
   onClick?: (event: ChartEvent, elements: any[]) => void,
   addHoverForChartSegments = true,
+  cardId?: OverviewCard['id'],
 ) {
   let options: ChartOptions = {
     maintainAspectRatio: false,
     plugins: {
+      // Canvas is too small for the built-in tooltip; the hovered value is shown in the donut center instead.
+      tooltip: {enabled: false},
       legend: {
         display: false,
         onHover: (event) => {
@@ -295,82 +380,22 @@ function createChartOptions(
       if (event.native && event.native.target) {
         (event.native.target as HTMLElement).style.cursor = chartElement[0] ? 'pointer' : 'default';
       }
+      if (cardId) {
+        setHovered(cardId, chartElement[0]?.index ?? null);
+      }
     };
   }
 
   if (chartType === 'doughnut') {
     const doptions = options as ChartOptions<'doughnut'>;
-    doptions.cutout = '70%';
+    doptions.cutout = '74%';
     return doptions;
-  }
-  if (chartType === 'bar') {
-    const bOptions = options as ChartOptions<'bar'>;
-    bOptions.indexAxis = 'y';
-    bOptions.scales = {
-      x: {
-        grid: {
-          color: getColorRGB('--v-theme-chartGrey'),
-          lineWidth: 0.4,
-        },
-        beginAtZero: true,
-        ticks: {
-          font: {size: 12},
-          stepSize: 40,
-          color: getColorRGB('--v-theme-chartLabelColor'),
-        },
-      },
-      y: {
-        display: false,
-        grid: {
-          color: getColorRGB('--v-theme-chartGrey'),
-          lineWidth: 0.4,
-        },
-        ticks: {
-          font: {size: 12},
-          autoSkip: false,
-          color: getColorRGB('--v-theme-chartLabelColor'),
-        },
-      },
-    };
-    return bOptions;
   }
   return options;
 }
 
 function getColorForLabel(type: string, label: string, transparent = true) {
-  const colorMap: {[key: string]: {[key: string]: string}} = {
-    licenseFamily: {
-      other: '--v-theme-chartFLRed',
-      networkCopyLeft: '--v-theme-chartFLRed',
-      strongCopyLeft: '--v-theme-chartFLRed',
-      weakCopyLeft: '--v-theme-chartFLYellow',
-      permissive: '--v-theme-chartFLGreen',
-    },
-    policyState: {
-      allowed: '--v-theme-chartGreen',
-      warned: '--v-theme-chartYellow',
-      noAssertion: '--v-theme-chartRed',
-      denied: '--v-theme-chartRed',
-      questioned: '--v-theme-chartGreen',
-    },
-    reviewRemark: {
-      acceptable: '--v-theme-chartGreen',
-      acceptableAfterChanges: '--v-theme-chartYellow',
-      notAcceptable: '--v-theme-chartRed',
-      cancelled: '--v-theme-chartGrey',
-    },
-    scanRemark: {
-      information: '--v-theme-chartGrey',
-      warning: '--v-theme-chartYellow',
-      problem: '--v-theme-chartRed',
-    },
-    licenseRemark: {
-      information: '--v-theme-chartGrey',
-      warning: '--v-theme-chartYellow',
-      alarm: '--v-theme-chartRed',
-    },
-  };
-  const colorVariable = (colorMap[type] && colorMap[type][label]) || '--v-theme-chartGrey';
+  const colorVariable = (chartColorMap[type] && chartColorMap[type][label]) || '--v-theme-chartGrey';
   const color = getColor(colorVariable);
   if (alternateRender.value) {
     return `rgb(${color})`;
@@ -378,23 +403,6 @@ function getColorForLabel(type: string, label: string, transparent = true) {
     const hexColor = rgbToHex(color);
     return transparent ? addTransparencyToHex(hexColor) : `rgb(${color})`;
   }
-}
-
-function rgbToHex(rgb: string): string {
-  const [r, g, b] = rgb.split(',').map((v) => parseInt(v.trim(), 10));
-  return (
-    '#' +
-    [r, g, b]
-      .map((x) => x.toString(16).padStart(2, '0'))
-      .join('')
-      .toUpperCase()
-  );
-}
-function addTransparencyToHex(hex: string, alpha = 0.3) {
-  const opacity = Math.round(alpha * 255)
-    .toString(16)
-    .padStart(2, '0');
-  return `${hex}${opacity}`;
 }
 
 function openLicenseRemarks(event: ChartEvent, elements: ArcElement[]): void {
@@ -405,12 +413,7 @@ function openLicenseRemarks(event: ChartEvent, elements: ArcElement[]): void {
   };
 
   const mapped = resolveBarLabel<string>(elements, chartDataLicenseRemarks.value, labelMapping);
-  router.push({
-    path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-      versionDetails.value._key,
-    )}/sbomQuality/${currentSpdx.value._key}/licenseRemarks`,
-    query: mapped ? {licenseRemarkLevel: mapped} : undefined,
-  });
+  navigateToPath(unfilteredLicenseRemarksPath(), mapped ? {licenseRemarkLevel: mapped} : undefined);
 }
 
 function resolveBarLabel<T extends string | (string | null)[] | null | undefined>(
@@ -441,12 +444,7 @@ function openFilteredComponents(_: ChartEvent, elements: {index: number}[]) {
   if (!mapped) {
     return;
   }
-  router.push({
-    path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-      versionDetails.value._key,
-    )}/component/${encodeURIComponent(currentSpdx.value._key)}`,
-    query: {policyFilter: mapped.toLowerCase()},
-  });
+  navigateToPath(unfilteredComponentsPath(), {policyFilter: mapped.toLowerCase()});
 }
 
 function openFamilyFilteredComponents(_: ChartEvent, elements: {index: number}[]) {
@@ -462,16 +460,12 @@ function openFamilyFilteredComponents(_: ChartEvent, elements: {index: number}[]
   if (!mapped) {
     return;
   }
-  router.push({
-    path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-      versionDetails.value._key,
-    )}/component/${encodeURIComponent(currentSpdx.value._key)}`,
-    query: {family: mapped},
-  });
+  navigateToPath(unfilteredComponentsPath(), {family: mapped});
 }
 
 function openFilteredReviewRemarks(event: ChartEvent, elements: ArcElement[]) {
   const labelMapping = {
+    [t('RR_CHART_INFORMATION')]: ReviewRemarkLevel.BLUE,
     [t('RR_CHART_ACCEPTABLE')]: ReviewRemarkLevel.GREEN,
     [t('RR_CHART_ACCEPTABLEAFTERCHANGES')]: ReviewRemarkLevel.YELLOW,
     [t('RR_CHART_NOTACCEPTABLE')]: ReviewRemarkLevel.RED,
@@ -482,12 +476,7 @@ function openFilteredReviewRemarks(event: ChartEvent, elements: ArcElement[]) {
   if (!mapped) {
     return;
   }
-  router.push({
-    path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-      versionDetails.value._key,
-    )}/sbomQuality/${encodeURIComponent(currentSpdx.value._key)}/reviewRemarks`,
-    query: {reviewRemarkLevel: mapped},
-  });
+  navigateToPath(unfilteredReviewRemarksPath(), {reviewRemarkLevel: mapped});
 }
 
 function openFilteredScanRemarks(event: ChartEvent, elements: ArcElement[]) {
@@ -501,385 +490,256 @@ function openFilteredScanRemarks(event: ChartEvent, elements: ArcElement[]) {
   if (!mapped) {
     return;
   }
-  router.push({
-    path: `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-      versionDetails.value._key,
-    )}/sbomQuality/${encodeURIComponent(currentSpdx.value._key)}/scanRemarks`,
-    query: {scanRemarkLevel: mapped},
-  });
+  navigateToPath(unfilteredScanRemarksPath(), {scanRemarkLevel: mapped});
 }
 
 async function loadChartData() {
-  await Promise.all([sbomStore.fetchSBOMStats(currentSpdx.value._key), sbomStore.fetchGeneralVersionStats()]);
+  const spdxKey = currentSpdx.value?._key;
+  if (!spdxKey) {
+    return;
+  }
+  const isStale = () => currentSpdx.value?._key !== spdxKey;
+  isLoaded.value = false;
+  hasLoadError.value = false;
+  try {
+    await Promise.all([sbomStore.fetchSBOMStats(spdxKey), sbomStore.fetchGeneralVersionStats()]);
+    if (isStale()) {
+      return;
+    }
 
-  const sbomStatsData = sbomStore.getSbomStats;
-  const generalStatsData = sbomStore.getGeneralStats;
+    const sbomStatsData = sbomStore.getSbomStats;
+    const generalStatsData = sbomStore.getGeneralStats;
 
-  policyStateStats.value = sbomStatsData.policyState;
-  licenseFamilyStats.value = sbomStatsData.licenseFamily;
-  reviewRemarksStats.value = generalStatsData.reviewRemark;
-  scanRemarkStats.value = sbomStatsData.scanRemark;
-  licenseRemarkStats.value = sbomStatsData.licenseRemark;
-  legendItemsReviewRemarks.value = generateLegend(chartDataReviewRemarks.value);
-  legendItemsLicenseRemarks.value = generateLegend(chartDataLicenseRemarks.value);
-  legendItemsScanRemarks.value = generateLegend(chartDataScanRemarks.value);
+    policyStateStats.value = sbomStatsData.policyState;
+    licenseFamilyStats.value = sbomStatsData.licenseFamily;
+    reviewRemarksStats.value = generalStatsData.reviewRemark;
+    scanRemarkStats.value = sbomStatsData.scanRemark;
+    licenseRemarkStats.value = sbomStatsData.licenseRemark;
+    updateLegends();
+  } catch {
+    if (isStale()) {
+      return;
+    }
+    hasLoadError.value = true;
+    snackbar.error(t('OVERVIEW_LOAD_ERROR'));
+  } finally {
+    if (!isStale()) {
+      isLoaded.value = true;
+    }
+  }
+}
+
+function navigateToPath(path: string, query?: Record<string, string>) {
+  if (!path) {
+    return;
+  }
+  router.push({path, query});
+}
+
+function overviewPath(tab: 'component' | 'scanRemarks' | 'licenseRemarks' | 'reviewRemarks') {
+  const spdx = currentSpdx.value;
+  if (!spdx) {
+    return '';
+  }
+  const suffix =
+    tab === 'component'
+      ? `component/${encodeURIComponent(spdx._key)}`
+      : `sbomQuality/${encodeURIComponent(spdx._key)}/${tab}`;
+  return `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
+    versionDetails.value._key,
+  )}/${suffix}`;
 }
 
 function unfilteredComponentsPath() {
-  return `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-    versionDetails.value._key,
-  )}/component/${currentSpdx.value._key}`;
+  return overviewPath('component');
 }
 
 function unfilteredScanRemarksPath() {
-  return `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-    versionDetails.value._key,
-  )}/sbomQuality/${currentSpdx.value._key}/scanRemarks`;
+  return overviewPath('scanRemarks');
 }
 
 function unfilteredLicenseRemarksPath() {
-  return `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-    versionDetails.value._key,
-  )}/sbomQuality/${currentSpdx.value._key}/licenseRemarks`;
+  return overviewPath('licenseRemarks');
 }
 
 function unfilteredReviewRemarksPath() {
-  return `/dashboard/projects/${encodeURIComponent(route.params.uuid as string)}/versions/${encodeURIComponent(
-    versionDetails.value._key,
-  )}/sbomQuality/${currentSpdx.value._key}/reviewRemarks`;
+  return overviewPath('reviewRemarks');
 }
 </script>
 <template>
   <TableLayout has-title has-tab>
     <template #table>
-      <v-row v-if="spdxFileHistory.length <= 0" class="m-0">
-        <v-col cols="12" xs="12" align="center">
-          <span>{{ t('MISSING_SBOM_UPLOAD_INFO') }}</span>
-        </v-col>
-      </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol m-0 justify-start">
-        <v-col xs="12" md="6" lg="4">
-          <v-card class="bar-container pa-4 card-border">
-            <v-card-text>
-              <ChartHeader
-                :header-text="'POLICY_STATE'"
-                :help-text="'PS_CHART_HELP'"
-                :navigation-path="unfilteredComponentsPath()"></ChartHeader>
-            </v-card-text>
-            <v-card v-if="policyStateStats.total === 0" class="empty-container justify-center text-center">
+      <Stack
+        v-if="spdxFileHistory.length <= 0 || !currentSpdx"
+        align="center"
+        justify="center"
+        class="gap-2 px-4 py-16 text-center text-[13px] text-[color:rgba(var(--v-theme-on-surface),0.5)]">
+        <v-icon icon="mdi-file-upload-outline" size="32" />
+        <span>{{ t('MISSING_SBOM_UPLOAD_INFO') }}</span>
+      </Stack>
+
+      <Stack v-else-if="hasLoadError" role="alert" align="center" class="gap-4 px-4 py-16">
+        <span>{{ t('OVERVIEW_LOAD_ERROR') }}</span>
+        <v-btn prepend-icon="mdi-reload" variant="text" @click="loadChartData">{{ t('BTN_RELOAD') }}</v-btn>
+      </Stack>
+
+      <section v-else-if="!isLoaded" :class="gridClass" aria-busy="true">
+        <div
+          v-for="n in 5"
+          :key="n"
+          :class="[
+            cardClass,
+            spanClass(n === 1 || n === 4 ? 'bar' : 'doughnut'),
+            'animate-pulse motion-reduce:animate-none',
+          ]">
+          <span class="block h-4 w-2/5 rounded bg-[rgba(var(--v-theme-on-surface),0.08)]"></span>
+          <div v-if="n === 1 || n === 4" class="flex flex-col gap-4 pt-1">
+            <div v-for="r in 5" :key="r" class="flex items-center gap-3">
+              <span class="block h-3 w-28 rounded bg-[rgba(var(--v-theme-on-surface),0.08)]"></span>
+              <span class="block h-2 flex-1 rounded-sm bg-[rgba(var(--v-theme-on-surface),0.05)]"></span>
+            </div>
+          </div>
+          <div v-else class="flex flex-1 items-center gap-4">
+            <span
+              class="block size-28 flex-none rounded-full border-[0.9rem] border-solid border-[rgba(var(--v-theme-on-surface),0.08)]"></span>
+            <div class="flex flex-1 flex-col gap-3">
+              <span v-for="r in 3" :key="r" class="block h-3 rounded bg-[rgba(var(--v-theme-on-surface),0.08)]"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section v-else :class="gridClass">
+        <article
+          v-for="(card, cardIndex) in cards"
+          :key="card.id"
+          :class="[
+            cardClass,
+            'overview-card--interactive starting:translate-y-2 starting:opacity-0',
+            spanClass(card.type),
+          ]"
+          :style="{'--enter-delay': `${cardIndex * 50}ms`}">
+          <span
+            class="pointer-events-none absolute inset-x-0 top-0 h-0.5"
+            :style="{background: `linear-gradient(90deg, transparent, ${accentColor(card)} 30%, transparent)`}"
+            aria-hidden="true"></span>
+          <ChartHeader
+            :header-text="card.header"
+            :help-text="card.help"
+            :navigation-path="card.path"
+            :total="card.type === 'bar' ? card.total : undefined" />
+
+          <Stack
+            v-if="card.total === 0"
+            align="center"
+            justify="center"
+            class="min-h-36 flex-1 gap-2 text-sm text-[color:rgba(var(--v-theme-on-surface),0.65)]">
+            <template v-if="card.type === 'doughnut'">
+              <v-icon icon="mdi-check-circle-outline" size="32" color="chartGreen" />
+              <span>{{ t('OVERVIEW_NO_REMARKS') }}</span>
+            </template>
+            <template v-else>
+              <v-icon icon="mdi-chart-bar" size="32" />
               <span>{{ t('NO_DATA') }}</span>
-            </v-card>
-            <v-sheet v-else color="transparent">
-              <v-row>
-                <v-col cols="4" class="pr-0">
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsPolicyStates"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'policyStates')">
-                      <span class="text-caption">{{ item.text }}</span>
-                    </li>
-                  </ul>
-                </v-col>
-                <v-col cols="8" class="pl-0">
-                  <Bar
-                    :data="chartDataPolicyStates"
-                    :options="chartOptionsPolicyStates as _DeepPartialObject<CoreChartOptions<'bar'>>"></Bar>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-card>
-        </v-col>
-        <v-col xs="12" sm="8" md="4" lg="3" xl="2" class="d-none d-md-block">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_SCAN_REMARKS'"
-                :help-text="'SR_CHART_HELP'"
-                :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="scanRemarkStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div style="width: 90px; height: 90px">
-                  <Doughnut :data="chartDataScanRemarks" :options="chartOptionsScanRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsScanRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'scanRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-        <v-col xs="12" sm="6" md="4" lg="3" xl="2" class="hidden-md-and-down">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_REVIEW_REMARKS'"
-                :help-text="'RR_CHART_HELP'"
-                :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div style="width: 85px; height: 85px">
-                  <Doughnut :data="chartDataReviewRemarks" :options="chartOptionsReviewRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsReviewRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'reviewRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol m-0 justify-start">
-        <v-col xs="12" md="6" lg="4">
-          <v-card class="bar-container pa-4 card-border">
-            <v-card-text>
-              <ChartHeader
-                :navigation-path="unfilteredComponentsPath()"
-                :header-text="'LICENSE_FAMILY'"
-                :help-text="'LF_CHART_HELP'"></ChartHeader>
-            </v-card-text>
-            <v-card v-if="licenseFamilyStats.total === 0" class="empty-container justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card>
-            <v-sheet v-else color="transparent">
-              <v-row>
-                <v-col cols="4" class="pr-0">
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsLicenseFamily"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'licenseFamily')">
-                      <span class="text-caption">{{ item.text }}</span>
-                    </li>
-                  </ul>
-                </v-col>
-                <v-col cols="8" class="pl-0">
-                  <Bar :data="chartDataLicenseFamily" :options="chartOptionsLicenseFamily"></Bar>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-card>
-        </v-col>
-        <v-col xs="12" sm="8" md="4" lg="3" xl="2" class="d-none d-md-block">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_LICENSE_REMARKS'"
-                :help-text="'LR_CHART_HELP'"
-                :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div style="width: 90px; height: 90px">
-                  <Doughnut :data="chartDataLicenseRemarks" :options="chartOptionsLicenseRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsLicenseRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'licenseRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-md-none m-0">
-        <v-col xs="12" sm="6">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_SCAN_REMARKS'"
-                :help-text="'SR_CHART_HELP'"
-                :navigation-path="unfilteredScanRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="scanRemarkStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div style="width: 90px; height: 90px">
-                  <Doughnut :data="chartDataScanRemarks" :options="chartOptionsScanRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsScanRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'scanRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-        <v-col xs="12" sm="6">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_LICENSE_REMARKS'"
-                :help-text="'LR_CHART_HELP'"
-                :navigation-path="unfilteredLicenseRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="licenseRemarkStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div style="width: 90px; height: 90px">
-                  <Doughnut :data="chartDataLicenseRemarks" :options="chartOptionsLicenseRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsLicenseRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'licenseRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="spdxFileHistory.length > 0 && isLoaded" class="d-flex discoCol d-lg-none m-0 justify-start">
-        <v-col xs="12" md="6" lg="3" class="d-none d-md-block">
-          <div style="min-height: 230px"></div>
-        </v-col>
-        <v-col xs="12" sm="6" md="4" lg="3" class="d-lg-none">
-          <v-card class="doughnut-container pa-4 card-border">
-            <v-card-text class="mb-4">
-              <ChartHeader
-                :header-text="'TAB_REVIEW_REMARKS'"
-                :help-text="'RR_CHART_HELP'"
-                :navigation-path="unfilteredReviewRemarksPath()"></ChartHeader>
-            </v-card-text>
-            <v-card-text v-if="reviewRemarksStats.total === 0" class="justify-center text-center">
-              <span>{{ t('NO_DATA') }}</span>
-            </v-card-text>
-            <v-row v-else>
-              <v-sheet class="d-flex d-inline-flex align-center pa-2" color="transparent">
-                <div class="h-[85px] w-[85px]">
-                  <Doughnut :data="chartDataReviewRemarks" :options="chartOptionsReviewRemark"></Doughnut>
-                </div>
-                <div>
-                  <ul class="chart-legend">
-                    <li
-                      v-for="(item, index) in legendItemsReviewRemarks"
-                      v-bind:key="index"
-                      class="legend-item"
-                      @click="handleLegendClick(index, 'reviewRemarks')">
-                      <span
-                        class="legend-indicator"
-                        :style="{backgroundColor: item.color, borderColor: item.borderColor}"></span>
-                      <span class="text-caption"
-                        >{{ item.text }}: {{ item.value.data[index] ? item.value.data[index] : '0' }}</span
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row class="m-0 justify-center" v-if="spdxFileHistory.length > 0">
-        <v-col v-if="!isLoaded" cols="12" lg="6" md="6" sm="12" class="px-16 pt-16 text-center">
-          <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
-        </v-col>
-      </v-row>
+            </template>
+          </Stack>
+
+          <ul v-else-if="card.type === 'bar'" class="m-0 flex list-none flex-col gap-0.5 p-0">
+            <li v-for="(item, index) in card.legend" :key="item.text">
+              <button
+                type="button"
+                :class="[rowClass, 'grid-cols-[minmax(0,11rem)_minmax(0,1fr)_2.5rem] gap-3 py-2']"
+                :aria-label="`${item.text}: ${item.count}`"
+                @click="handleLegendClick(index, card.id)">
+                <span :class="labelClass(item.count)">{{ item.text }}</span>
+                <span class="relative h-2 overflow-hidden rounded-sm bg-[rgba(var(--v-theme-on-surface),0.06)]">
+                  <span
+                    v-if="item.count > 0"
+                    class="absolute inset-y-0 left-0 origin-left rounded-sm border border-solid opacity-70 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none starting:scale-x-0"
+                    :style="barStyle(item, card.max)"></span>
+                </span>
+                <span :class="countClass(item.count)">{{ item.count }}</span>
+              </button>
+            </li>
+          </ul>
+
+          <Stack v-else direction="row" align="center" class="flex-1 gap-3 py-1 @[18rem]:gap-4">
+            <div class="relative size-24 flex-none @[18rem]:size-28">
+              <Doughnut :data="card.data" :options="card.options" />
+              <div
+                class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
+                aria-live="polite">
+                <span
+                  class="text-2xl leading-none font-semibold tracking-normal tabular-nums @[18rem]:text-[1.75rem]"
+                  >{{ hoveredItem(card)?.count ?? card.total }}</span
+                >
+                <span
+                  class="mt-1 max-w-16 text-center text-[11px] leading-tight tracking-normal break-words text-[color:rgba(var(--v-theme-on-surface),0.7)]"
+                  >{{ hoveredItem(card)?.text ?? t('TOTAL') }}</span
+                >
+              </div>
+            </div>
+            <ul class="m-0 min-w-0 flex-1 list-none p-0">
+              <li v-for="(item, index) in card.legend" :key="item.text">
+                <button
+                  type="button"
+                  :class="[
+                    rowClass,
+                    'grid-cols-[8px_minmax(0,1fr)_auto] gap-2.5 py-2',
+                    {'bg-[rgba(var(--v-theme-on-surface),0.08)]': isHovered(card, index)},
+                  ]"
+                  :aria-label="`${item.text}: ${item.count}`"
+                  @mouseenter="setHovered(card.id, index)"
+                  @mouseleave="setHovered(card.id, null)"
+                  @focus="setHovered(card.id, index)"
+                  @blur="setHovered(card.id, null)"
+                  @click="handleLegendClick(index, card.id)">
+                  <span
+                    :class="['size-2 rounded-full border-2 border-solid', {'opacity-40': !item.count}]"
+                    :style="dotStyle(item)"></span>
+                  <span :class="labelClass(item.count)">{{ item.text }}</span>
+                  <span :class="countClass(item.count)">{{ item.count }}</span>
+                </button>
+              </li>
+            </ul>
+          </Stack>
+        </article>
+      </section>
     </template>
   </TableLayout>
 </template>
+
 <style scoped>
-.doughnut-container {
-  min-height: 236px;
-}
-.chart-legend {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.legend-item {
-  padding-left: 14px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
-  cursor: pointer;
+/* Gradient hairline border: transparent border reveals the border-box gradient layer. */
+.overview-card {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(var(--v-theme-on-surface), 0.03), transparent 45%) padding-box,
+    linear-gradient(rgb(var(--v-theme-surface)), rgb(var(--v-theme-surface))) padding-box,
+    linear-gradient(180deg, rgba(var(--v-theme-on-surface), 0.18), rgba(var(--v-theme-on-surface), 0.05)) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(var(--v-theme-on-surface), 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
-.legend-indicator {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 6px;
-  border: 2px solid;
-  border-radius: 50%;
+.overview-card--interactive {
+  transition:
+    opacity 300ms ease-out var(--enter-delay, 0ms),
+    translate 300ms ease-out var(--enter-delay, 0ms),
+    box-shadow 250ms ease-out;
+}
+
+.overview-card--interactive:hover,
+.overview-card--interactive:focus-within {
+  box-shadow:
+    inset 0 1px 0 rgba(var(--v-theme-on-surface), 0.06),
+    0 0 0 1px rgba(var(--v-theme-on-surface), 0.08),
+    0 12px 28px -16px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview-card--interactive {
+    transition: none;
+  }
 }
 </style>

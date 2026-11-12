@@ -76,8 +76,8 @@
 
 <script lang="ts" setup>
 import {compareLevel} from '@disclosure-portal/model/Quality';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
-import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@disclosure-portal/utils/View';
+import {getCssClassForTableRow} from '@shared/utils/Table';
+import useViewTools, {getIconColorOfLevel, getIconOfLevel} from '@shared/utils/View';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {TOOLTIP_OPEN_DELAY_IN_MS} from '@shared/utils/constant';
@@ -87,6 +87,7 @@ import {useI18n} from 'vue-i18n';
 import {useView} from '@disclosure-portal/composables/useView';
 import {IObligation} from '@disclosure-portal/model/IObligation';
 import AdminService from '@disclosure-portal/services/admin';
+import config from '@shared/utils/config';
 import {computed} from 'vue';
 
 const {t} = useI18n();
@@ -96,6 +97,7 @@ const {getTextOfLevel, getTextOfType} = useView();
 const emits = defineEmits(['update:obligations']);
 const props = defineProps<{
   obligations: IObligation[];
+  licenseType?: string;
 }>();
 
 const selectedObligations = computed({
@@ -105,10 +107,15 @@ const selectedObligations = computed({
   },
 });
 
-const allObligations = ref<IObligation[]>([]);
+const loadedObligations = ref<IObligation[]>([]);
+const allObligations = computed(() =>
+  config.useFreewareObligations
+    ? loadedObligations.value.filter((o) => !!o.freeware === (props.licenseType === 'freeware'))
+    : loadedObligations.value,
+);
 onMounted(async () => {
   const response = (await AdminService.getAllObligations()).data;
-  allObligations.value = response.items;
+  loadedObligations.value = response.items;
 });
 
 const headers = ref<DataTableHeader[]>([

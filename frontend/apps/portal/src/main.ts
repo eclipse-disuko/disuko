@@ -11,7 +11,7 @@
 import '@mdi/font/css/materialdesignicons.min.css';
 import {setup} from '@shared/utils/config';
 import dayjs from 'dayjs';
-import dayjsPluginUTC from 'dayjs-plugin-utc';
+import dayjsPluginUTC from 'dayjs/plugin/utc';
 import {createApp} from 'vue';
 import App from './App.vue';
 import {registerPlugins} from './plugins';

@@ -294,3 +294,15 @@ func mustTime(value string) time.Time {
 	}
 	return t
 }
+
+func TestMergeOpenRemarksWithoutEvents_AllUntouched(t *testing.T) {
+	remarks := []*Remark{
+		{SBOMId: "s", TemplateKey: "t", Status: Open, Licenses: []LicenseMeta{{LicenseId: "MIT"}}},
+		{SBOMId: "s", TemplateKey: "t", Status: Open, Components: []ComponentMeta{{ComponentName: "A"}}},
+		{SBOMId: "s", TemplateKey: "t", Status: Open, Components: []ComponentMeta{{ComponentName: "B"}}},
+	}
+	got := mergeOpenRemarksWithoutEvents(remarks)
+	if len(got) != 1 || len(got[0].Components) != 2 || len(got[0].Licenses) != 1 {
+		t.Errorf("expected one combined remark: %+v", got)
+	}
+}

@@ -16,8 +16,8 @@ import {useIdleStore} from '@shared/stores/idle.store';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import eventBus from '@shared/utils/eventbus';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
-import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@disclosure-portal/utils/View';
+import {formatDateAndTime} from '@shared/utils/Table';
+import {formatDateTime, formatDateTimeShort, originShort, originTooltip} from '@shared/utils/View';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {

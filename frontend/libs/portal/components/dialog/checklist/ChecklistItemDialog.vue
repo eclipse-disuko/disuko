@@ -15,8 +15,8 @@ import licenseService from '@disclosure-portal/services/license';
 import {useChecklistsStore} from '@disclosure-portal/stores/checklists.store';
 import {useLabelStore} from '@disclosure-portal/stores/label.store';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
-import {SearchOptions} from '@disclosure-portal/utils/Table';
+import useRules from '@shared/utils/Rules';
+import {SearchOptions} from '@shared/utils/Table';
 import {debounce} from 'lodash';
 import {computed, nextTick, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
@@ -71,6 +71,15 @@ const psTypes = computed(
       key: value,
       name: t(`CHECKLIST_PC_${value}`) || value,
     })) as NameKeyIdentifier[],
+);
+
+const rrTransferStrategies = computed(
+  () =>
+    [
+      {key: RrTransferStrategy.DEFAULT, name: t('USE_DEFAULT_RR_TARNSFER_STRATEGY')},
+      {key: RrTransferStrategy.SPLIT, name: t('USE_SPLIT_RR_TARNSFER_STRATEGY')},
+      {key: RrTransferStrategy.MERGE, name: t('USE_MERGE_RR_TARNSFER_STRATEGY')},
+    ] as NameKeyIdentifier[],
 );
 
 const rules = {
@@ -146,12 +155,11 @@ const open = async (existing?: ChecklistItem) => {
     selectedClassification.value = [null];
     selectedCompNames.value = [null];
     selectedTargetTemplate.value = null;
-    item.value = {
-      triggerType: TriggerTypes.DEFAULT,
-      rrTransferStrategy: RrTransferStrategy.DEFAULT,
-    } as ChecklistItem;
+    item.value = new ChecklistItem();
+    item.value.triggerType = TriggerTypes.DEFAULT;
+    item.value.rrTransferStrategy = RrTransferStrategy.DEFAULT;
   }
-  dialog.value?.reset();
+  dialog.value?.resetValidation();
   title.value = existing ? 'CHECKLIST_ITEM_DIALOG_EDIT_TITLE' : 'CHECKLIST_ITEM_DIALOG_ADD_TITLE';
   confirmText.value = existing ? 'NP_DIALOG_BTN_EDIT' : 'NP_DIALOG_BTN_CREATE';
   isVisible.value = true;
@@ -358,13 +366,18 @@ defineExpose({
             <v-icon color="primary">mdi-plus</v-icon>
             <span class="font-weight-light pl-1">{{ t('LBL_COMPONENT_NAME') }}</span>
           </div>
-          <v-checkbox
-            v-if="!isProd"
-            v-model="item.rrTransferStrategy"
-            :true-value="RrTransferStrategy.SPLIT"
-            :false-value="RrTransferStrategy.DEFAULT"
-            :label="t('USE_SPLIT_RR_TARNSFER_STRATEGY')"
-            hide-details />
+          <ExpansionPanel v-if="!isProd" :title="t('EXPERT_MODE')">
+            <template #body>
+              <v-select
+                v-model="item.rrTransferStrategy"
+                :label="t('RR_TARNSFER_STRATEGY_LABEL')"
+                :items="rrTransferStrategies"
+                item-title="name"
+                item-value="key"
+                variant="outlined"
+                hide-details />
+            </template>
+          </ExpansionPanel>
         </Stack>
       </v-form>
     </DialogLayout>

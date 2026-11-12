@@ -6,6 +6,45 @@ package reviewremarks
 
 import "testing"
 
+func TestRemarkCloseSetsGreenLevel(t *testing.T) {
+	remark := &Remark{Level: Blue, Status: Open}
+	remark.Close("user", "User")
+	if remark.Level != Green || remark.Status != Closed || remark.Closed == nil {
+		t.Fatalf("Close() = level %q, status %q, closed %v", remark.Level, remark.Status, remark.Closed)
+	}
+}
+
+func TestRemarkReopenResetsOnlyGreenLevel(t *testing.T) {
+	for _, level := range []Level{Blue, Green, Yellow, Red, Gray} {
+		t.Run(string(level), func(t *testing.T) {
+			remark := &Remark{Level: level, Status: Closed}
+			remark.Reopen("user", "User")
+			want := level
+			if level == Green {
+				want = Blue
+			}
+			if remark.Level != want || remark.Status != Open || remark.Closed != nil {
+				t.Fatalf("Reopen() = level %q, status %q, closed %v; want level %q, OPEN, nil", remark.Level, remark.Status, remark.Closed, want)
+			}
+		})
+	}
+}
+
+func TestParseLevelSupportsBlueAndExistingLevels(t *testing.T) {
+	for _, level := range []Level{Blue, Green, Yellow, Red, Gray} {
+		valid, parsed := ParseLevel(string(level))
+		if !valid || parsed != level {
+			t.Errorf("ParseLevel(%q) = %t, %q", level, valid, parsed)
+		}
+	}
+	for _, invalid := range []string{"", "blue", "UNKNOWN"} {
+		valid, parsed := ParseLevel(invalid)
+		if valid || parsed != UnsetLevel {
+			t.Errorf("ParseLevel(%q) = %t, %q; want false, unset", invalid, valid, parsed)
+		}
+	}
+}
+
 func TestRemarkCancelSetsGrayLevel(t *testing.T) {
 	remark := &Remark{Level: Red, Status: Open}
 

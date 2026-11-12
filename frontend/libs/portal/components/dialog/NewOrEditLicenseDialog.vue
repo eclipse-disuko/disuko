@@ -11,7 +11,8 @@ import License, {ITextValue} from '@disclosure-portal/model/License';
 import adminService from '@disclosure-portal/services/admin';
 import licenseService from '@disclosure-portal/services/license';
 import {DiscoForm} from '@disclosure-portal/types/discobasics';
-import useRules from '@disclosure-portal/utils/Rules';
+import useRules from '@shared/utils/Rules';
+import config from '@shared/utils/config';
 import {isSpdxIdentifier, isURLOrEmpty} from '@disclosure-portal/utils/Validation';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
@@ -259,6 +260,17 @@ const showDialog = async () => {
   await reset();
   visible.value = true;
 };
+
+watch(
+  () => item.value.meta.licenseType,
+  (newType) => {
+    if (!config.useFreewareObligations || !item.value.meta.obligationsList) return;
+    const freewareByKey = new Map(obligationList.value.map((o) => [o._key, !!o.freeware]));
+    item.value.meta.obligationsList = item.value.meta.obligationsList.filter(
+      (o) => freewareByKey.get(o._key) === (newType === 'freeware'),
+    );
+  },
+);
 
 watch(
   () => item.value.meta.reviewState,
@@ -599,7 +611,10 @@ defineExpose({
                     :label="t('CD_LICENSE_TEXT')" />
                 </v-tabs-window-item>
                 <v-tabs-window-item :key="2" :value="2">
-                  <TabLinkObligations ref="tabContent2" v-model:obligations="item.meta.obligationsList" />
+                  <TabLinkObligations
+                    ref="tabContent2"
+                    v-model:obligations="item.meta.obligationsList"
+                    :licenseType="item.meta.licenseType" />
                 </v-tabs-window-item>
                 <v-tabs-window-item :value="3" :key="3" class="expanding-container no-scrollbar" ref="tabItemWYSIWYG">
                   <v-textarea

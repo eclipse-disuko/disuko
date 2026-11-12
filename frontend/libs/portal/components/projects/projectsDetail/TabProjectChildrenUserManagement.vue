@@ -18,7 +18,7 @@ import {
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader, DataTableHeaderFilterItems, SortItem} from '@shared/types/table';
@@ -26,10 +26,14 @@ import {DEFAULT_ITEMS_PER_PAGE} from '@shared/utils/constant';
 import _, {indexOf} from 'lodash';
 import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
+const userStore = useUserStore();
+const router = useRouter();
 const {info} = useSnackbar();
 
 const dataAreLoaded = ref(false);
@@ -55,7 +59,9 @@ const route = useRoute();
 const projectModel = computed(() => projectStore.currentProject!);
 
 const userHeaders = computed((): DataTableHeader[] => [
-  ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
+  ...(projectModel.value.allowUserManagementUpdate ||
+  projectModel.value.allowUserManagementDelete ||
+  projectChildrenMembers.value.list?.some((item) => userStore.isCurrentUser(item.projectMember.userId))
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -268,6 +274,11 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (childProjectKey && userId) {
     await projectService.deleteProjectMember(childProjectKey, userId);
     info(t('DIALOG_project_member_delete_success'));
+    if (userStore.isCurrentUser(userId)) {
+      confirmationDialogVisible.value = false;
+      await router.replace({path: '/dashboard/home'});
+      return;
+    }
     await reload();
   }
 };
@@ -304,30 +315,16 @@ const possibleUserTypes = computed((): DataTableHeaderFilterItems[] => {
   }));
 });
 
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.projectMember.userId) {
-    const forename = item.projectMember.userProfile.forename.toLowerCase();
-    const lastname = item.projectMember.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.projectMember.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.projectMember?.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.projectMember.responsible;
-  }
+const customFilterTable = useTableSearch([
+  'projectMember.userId',
+  'projectMember.userProfile.forename',
+  'projectMember.userProfile.lastname',
+  'projectMember.userType',
+  'projectMember.comment',
+  'projectName',
+]);
 
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
-
-const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
+const getActionButtons = (item: ProjectChildMemberCombi): TableActionButtonsProps['buttons'] => {
   return [
     {
       icon: 'mdi-pencil',
@@ -339,10 +336,10 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: projectModel.value.allowUserManagementDelete,
+      show: projectModel.value.allowUserManagementDelete || userStore.isCurrentUser(item.projectMember.userId),
     },
   ];
-});
+};
 
 onMounted(async () => {
   await reload();
@@ -419,7 +416,7 @@ watch(
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="compact"
-              :buttons="actionButtons"
+              :buttons="getActionButtons(item)"
               @edit="showEditUserDialog(item)"
               @remove="showDeleteUserDialog(item)" />
           </template>

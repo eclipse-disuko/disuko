@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import {PolicyDecisionSlim} from '@disclosure-portal/model/PolicyDecision';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
-import {getIconColorForPolicyType, getIconForPolicyType} from '@disclosure-portal/utils/View';
+import {formatDateAndTime} from '@shared/utils/Table';
+import {getIconColorForPolicyType, getIconForPolicyType} from '@shared/utils/View';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();

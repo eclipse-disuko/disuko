@@ -6,12 +6,13 @@
 import {useView} from '@disclosure-portal/composables/useView';
 import {IDefaultSelectItem, IObligation} from '@disclosure-portal/model/IObligation';
 import AdminService from '@disclosure-portal/services/admin';
-import useRules from '@disclosure-portal/utils/Rules';
-import {getClassificationLevels, getClassificationTypes} from '@disclosure-portal/utils/View';
+import useRules from '@shared/utils/Rules';
+import config from '@shared/utils/config';
+import {getClassificationLevels, getClassificationTypes} from '@shared/utils/View';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DCloseButton from '@shared/components/disco/DCloseButton.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
-import {nextTick, reactive, ref, watch} from 'vue';
+import {computed, nextTick, reactive, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 
 const {t} = useI18n();
@@ -25,9 +26,12 @@ const title = ref('');
 const obligationTypes = ref<IDefaultSelectItem[]>([]);
 const obligationWarnLevels = ref<IDefaultSelectItem[]>([]);
 
+const originalFreeware = ref(false);
+
 const item = reactive<IObligation>({
   _key: '',
   autoApproved: false,
+  freeware: false,
   created: new Date().toISOString(),
   updated: new Date().toISOString(),
   name: '',
@@ -49,6 +53,10 @@ const activeRules = ref({
 
 const classificationDialog = ref();
 
+const showFreewareWarning = computed(
+  () => config.useFreewareObligations && mode.value === 'edit' && !!item.freeware !== originalFreeware.value,
+);
+
 const initializeDropdowns = () => {
   obligationTypes.value = getClassificationTypes().map((type) => ({
     value: type,
@@ -66,10 +74,12 @@ const open = (model?: IObligation) => {
     mode.value = 'edit';
     title.value = t('DIALOG_TITLE_EDIT_CLASSIFICATION');
     Object.assign(item, model);
+    originalFreeware.value = !!model.freeware;
   } else {
     mode.value = 'create';
     title.value = t('DIALOG_TITLE_CREATE_CLASSIFICATION');
     resetForm();
+    originalFreeware.value = false;
   }
   show.value = true;
 };
@@ -82,6 +92,7 @@ const resetForm = () => {
     warnLevel: '',
     description: '',
     descriptionDe: '',
+    freeware: false,
   });
   if (classificationDialog.value) classificationDialog.value.reset();
 };
@@ -188,6 +199,14 @@ defineExpose({
                 :items="obligationWarnLevels"
                 :label="t('LABEL_OBLIGATION_WARN_LEVEL')"
                 hide-details="auto"></v-select>
+            </v-col>
+          </v-row>
+          <v-row v-if="config.useFreewareObligations">
+            <v-col cols="12" xs="12">
+              <v-checkbox v-model="item.freeware" :label="t('COL_FREEWARE')" hide-details="auto" />
+              <v-alert v-if="showFreewareWarning" type="warning" variant="tonal" density="compact" class="mt-2">
+                {{ t('OBLIGATION_FREEWARE_CHANGE_WARNING') }}
+              </v-alert>
             </v-col>
           </v-row>
           <v-row>

@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 
+	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/domain/audit"
 	"github.com/eclipse-disuko/disuko/helper/exception"
 	"github.com/eclipse-disuko/disuko/helper/message"
@@ -48,7 +50,17 @@ func (handler *ObligationsHandler) UpdateHandler(w http.ResponseWriter, r *http.
 	current := handler.ObligationRepository.FindByKey(requestSession, request.Key, false)
 	oldObligationAudit := current.ToAudit()
 
+	freewareChanged := current.Freeware != request.Freeware
 	current.Update(request)
+
+	if freewareChanged && !conf.IsProdEnv() {
+		for _, l := range handler.LicenseRepository.FindByObligationKey(requestSession, current.Key) {
+			l.Meta.ObligationsKeyList = slices.DeleteFunc(l.Meta.ObligationsKeyList, func(key string) bool {
+				return key == current.Key
+			})
+			handler.LicenseRepository.Update(requestSession, l)
+		}
+	}
 
 	newObligationAudit := current.ToAudit()
 	handler.AuditLogListRepository.CreateAuditEntryByKey(requestSession, current.Key, username, message.ClassificationUpdated, audit.DiffWithReporter, newObligationAudit, oldObligationAudit)

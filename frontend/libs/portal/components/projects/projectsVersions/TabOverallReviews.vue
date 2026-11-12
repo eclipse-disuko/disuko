@@ -12,7 +12,7 @@ import {
   getIconColor,
   getOverallReviewTranslationKey,
   getVersionStateIcon,
-} from '@disclosure-portal/utils/Table';
+} from '@shared/utils/Table';
 import {DataTableHeader, SortItem} from '@shared/types/table';
 import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';

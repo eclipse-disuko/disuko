@@ -12,7 +12,7 @@ import {ProjectUser, UserType} from '@disclosure-portal/model/Project';
 import projectService from '@disclosure-portal/services/projects';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import eventBus from '@shared/utils/eventbus';
-import {getCssClassForTableRow} from '@disclosure-portal/utils/Table';
+import {getCssClassForTableRow} from '@shared/utils/Table';
 import {TableActionButtonsProps} from '@shared/components/TableActionButtons.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import TableLayout from '@shared/layouts/TableLayout.vue';
@@ -22,9 +22,14 @@ import _ from 'lodash';
 import {computed, onBeforeMount, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {useUserStore} from '@shared/user/stores/user.store';
+import {useRouter} from 'vue-router';
+import {useTableSearch} from '@shared/composables/useTableSearch';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
+const userStore = useUserStore();
+const router = useRouter();
 const {info} = useSnackbar();
 const {sliderWidth} = useTableActionSlider();
 
@@ -46,7 +51,9 @@ const sortItems = ref<SortItem[]>([{key: 'userType', order: 'asc'}]);
 
 const projectModel = computed(() => projectStore.currentProject!);
 const userHeaders = computed((): DataTableHeader[] => [
-  ...(projectModel.value.allowUserManagementUpdate || projectModel.value.allowUserManagementDelete
+  ...(projectModel.value.allowUserManagementUpdate ||
+  projectModel.value.allowUserManagementDelete ||
+  users.value.some((user) => userStore.isCurrentUser(user.userId))
     ? [
         {
           title: t('COL_ACTIONS'),
@@ -191,6 +198,11 @@ const deleteUser = async (config: IConfirmationDialogConfig) => {
   if (config.key) {
     await projectService.deleteProjectMember(projectModel.value._key, config.key);
     info(t('DIALOG_project_member_delete_success'));
+    if (userStore.isCurrentUser(config.key)) {
+      confirmationDialogVisible.value = false;
+      await router.replace({path: '/dashboard/home'});
+      return;
+    }
     await reload();
   }
 };
@@ -222,34 +234,19 @@ const editUser = async (user: ProjectUser, oldUserId: string) => {
     eventBus.emit('on-api-error', error);
   }
 };
-const customFilterTable = (value: any, search: string, internalItem: any) => {
-  const item = internalItem.raw;
-  const lowerSearch = search.toLowerCase();
-  if (value === item.userId) {
-    const forename = item.userProfile.forename.toLowerCase();
-    const lastname = item.userProfile.lastname.toLowerCase();
-    return (
-      forename.indexOf(lowerSearch) !== -1 ||
-      lastname.indexOf(lowerSearch) !== -1 ||
-      item.userId.toLowerCase().indexOf(lowerSearch) !== -1
-    );
-  }
-  if (value === item.responsible && 'project responsible'.includes(lowerSearch)) {
-    return item.responsible;
-  }
-
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  return value.toLowerCase().indexOf(lowerSearch) !== -1;
-};
+const customFilterTable = useTableSearch([
+  'userId',
+  'userProfile.forename',
+  'userProfile.lastname',
+  'userType',
+  'comment',
+]);
 
 const closeUserDialog = () => {
   userDialogRef.value?.close();
 };
 
-const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
+const getActionButtons = (user: ProjectUser): TableActionButtonsProps['buttons'] => {
   const canModify = !projectModel.value.isDeprecated;
 
   return [
@@ -263,10 +260,10 @@ const actionButtons = computed((): TableActionButtonsProps['buttons'] => {
       icon: 'mdi-close',
       hint: t('TT_remove_user'),
       event: 'remove',
-      show: projectModel.value.allowUserManagementDelete && canModify,
+      show: (projectModel.value.allowUserManagementDelete || userStore.isCurrentUser(user.userId)) && canModify,
     },
   ];
-});
+};
 
 onBeforeMount(async () => {
   await reload();
@@ -323,7 +320,7 @@ onBeforeMount(async () => {
           <template #[`item.actions`]="{item}">
             <TableActionButtons
               variant="slider"
-              :buttons="actionButtons"
+              :buttons="getActionButtons(item)"
               @edit="showEditUserDialog(item)"
               @remove="showDeleteUserDialog(item)" />
           </template>

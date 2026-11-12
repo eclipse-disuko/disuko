@@ -16,13 +16,8 @@ import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
 import {useUserStore} from '@shared/user/stores/user.store';
-import {
-  getIconColorForPolicyType,
-  getIconColorReviewRemarkLevel,
-  getIconForPolicyType,
-  getIconReviewRemarkLevel,
-  policyStateToTranslationKey,
-} from '@disclosure-portal/utils/View';
+import {getIconColorReviewRemarkLevel, getIconReviewRemarkLevel} from '@disclosure-portal/utils/View';
+import {getIconColorForPolicyType, getIconForPolicyType, policyStateToTranslationKey} from '@shared/utils/View';
 import useSnackbar from '@shared/composables/useSnackbar';
 import {DataTableHeader} from '@shared/types/table';
 import _l from 'lodash';

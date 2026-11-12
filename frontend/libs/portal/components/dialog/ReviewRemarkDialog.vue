@@ -13,8 +13,8 @@ import versionService from '@disclosure-portal/services/version';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import {useReviewRemarksStore} from '@disclosure-portal/stores/reviewRemarks.store';
 import {useSbomStore} from '@disclosure-portal/stores/sbom.store';
-import useRules from '@disclosure-portal/utils/Rules';
-import {formatDateAndTime} from '@disclosure-portal/utils/Table';
+import useRules from '@shared/utils/Rules';
+import {formatDateAndTime} from '@shared/utils/Table';
 import DialogLayout, {DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import useSnackbar from '@shared/composables/useSnackbar';
 import _ from 'lodash';
@@ -25,7 +25,7 @@ import ErrorDialogConfig from '@shared/types/ErrorDialogConfig';
 import {ErrorDialogInterface} from '@disclosure-portal/components/dialog/DialogInterfaces';
 import ErrorDialog from '@disclosure-portal/components/dialog/ErrorDialog.vue';
 
-const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.GREEN, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
+const level: ReviewRemarkLevel[] = [ReviewRemarkLevel.BLUE, ReviewRemarkLevel.YELLOW, ReviewRemarkLevel.RED];
 
 const {t} = useI18n();
 const sbomStore = useSbomStore();
