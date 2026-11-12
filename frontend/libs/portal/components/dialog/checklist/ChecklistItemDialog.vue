@@ -369,7 +369,6 @@ defineExpose({
           <ExpansionPanel v-if="!isProd" :title="t('EXPERT_MODE')">
             <template #body>
               <v-select
-                v-if="!isProd"
                 v-model="item.rrTransferStrategy"
                 :label="t('RR_TARNSFER_STRATEGY_LABEL')"
                 :items="rrTransferStrategies"
