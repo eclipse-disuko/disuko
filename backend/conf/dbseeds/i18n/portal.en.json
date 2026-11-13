@@ -2032,6 +2032,7 @@
   "USE_DEFAULT_RR_TARNSFER_STRATEGY": "Preserve exact matches",
   "USE_SPLIT_RR_TARNSFER_STRATEGY": "Preserve existing groups, separate new items",
   "USE_MERGE_RR_TARNSFER_STRATEGY": "Combine all items into one Remark",
+  "CANCEL_RR_AFTER_TRANSFER": "Cancel existing open or in-progress Remarks after transfer",
   "HEADER_ENGLISH": "English",
   "HEADER_GERMAN": "German",
   "RR_DIALOG_MORE_OBLIGATION": "Classification",

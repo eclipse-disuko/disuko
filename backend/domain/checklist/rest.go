@@ -11,17 +11,18 @@ import (
 
 type ItemDto struct {
 	domain.BaseDto
-	Name               string                    `json:"name" validate:"required,gte=3,lte=80"`
-	TriggerType        TriggerType               `json:"triggerType"`
-	Classifications    []string                  `json:"classifications,omitempty"`
-	PolicyStatus       []PolicyStatusType        `json:"policyStatus,omitempty"`
-	ScanRemarks        *project.ScanRemarkStatus `json:"scanRemarks,omitempty"`
-	LicensesIds        []string                  `json:"licenseIds,omitempty"`
-	ComponentNames     []string                  `json:"componentNames,omitempty"`
-	TargetTemplateName string                    `json:"targetTemplateName,omitempty"`
-	TargetTemplateKey  string                    `json:"targetTemplateKey,omitempty"`
-	PolicyLabels       []string                  `json:"policyLabels,omitempty"`
-	RrTransferStrategy RrTransferStrategy        `json:"rrTransferStrategy"`
+	Name                  string                    `json:"name" validate:"required,gte=3,lte=80"`
+	TriggerType           TriggerType               `json:"triggerType"`
+	Classifications       []string                  `json:"classifications,omitempty"`
+	PolicyStatus          []PolicyStatusType        `json:"policyStatus,omitempty"`
+	ScanRemarks           *project.ScanRemarkStatus `json:"scanRemarks,omitempty"`
+	LicensesIds           []string                  `json:"licenseIds,omitempty"`
+	ComponentNames        []string                  `json:"componentNames,omitempty"`
+	TargetTemplateName    string                    `json:"targetTemplateName,omitempty"`
+	TargetTemplateKey     string                    `json:"targetTemplateKey,omitempty"`
+	PolicyLabels          []string                  `json:"policyLabels,omitempty"`
+	RrTransferStrategy    RrTransferStrategy        `json:"rrTransferStrategy"`
+	CancelRrAfterTransfer bool                      `json:"cancelRrAfterTransfer"`
 }
 
 type ChecklistDto struct {
@@ -46,17 +47,18 @@ func (i Item) ToDto() ItemDto {
 			Updated: i.Updated,
 			Created: i.Created,
 		},
-		Name:               i.Name,
-		TriggerType:        i.TriggerType,
-		Classifications:    i.Classifications,
-		PolicyStatus:       i.PolicyStatus,
-		ScanRemarks:        i.ScanRemarks,
-		LicensesIds:        i.LicenseIds,
-		ComponentNames:     i.ComponentNames,
-		TargetTemplateName: i.TargetTemplateName,
-		TargetTemplateKey:  i.TargetTemplateKey,
-		PolicyLabels:       i.PolicyLabels,
-		RrTransferStrategy: i.RrTransferStrategy,
+		Name:                  i.Name,
+		TriggerType:           i.TriggerType,
+		Classifications:       i.Classifications,
+		PolicyStatus:          i.PolicyStatus,
+		ScanRemarks:           i.ScanRemarks,
+		LicensesIds:           i.LicenseIds,
+		ComponentNames:        i.ComponentNames,
+		TargetTemplateName:    i.TargetTemplateName,
+		TargetTemplateKey:     i.TargetTemplateKey,
+		PolicyLabels:          i.PolicyLabels,
+		RrTransferStrategy:    i.RrTransferStrategy,
+		CancelRrAfterTransfer: i.CancelRrAfterTransfer,
 	}
 	return result
 }
@@ -93,16 +95,17 @@ func (i ItemDto) ToEntity() Item {
 			Created: i.Created,
 			Updated: i.Updated,
 		},
-		Name:               i.Name,
-		TriggerType:        i.TriggerType,
-		Classifications:    i.Classifications,
-		PolicyStatus:       i.PolicyStatus,
-		ScanRemarks:        i.ScanRemarks,
-		LicenseIds:         i.LicensesIds,
-		ComponentNames:     i.ComponentNames,
-		TargetTemplateName: i.TargetTemplateName,
-		TargetTemplateKey:  i.TargetTemplateKey,
-		PolicyLabels:       i.PolicyLabels,
-		RrTransferStrategy: i.RrTransferStrategy,
+		Name:                  i.Name,
+		TriggerType:           i.TriggerType,
+		Classifications:       i.Classifications,
+		PolicyStatus:          i.PolicyStatus,
+		ScanRemarks:           i.ScanRemarks,
+		LicenseIds:            i.LicensesIds,
+		ComponentNames:        i.ComponentNames,
+		TargetTemplateName:    i.TargetTemplateName,
+		TargetTemplateKey:     i.TargetTemplateKey,
+		PolicyLabels:          i.PolicyLabels,
+		RrTransferStrategy:    i.RrTransferStrategy,
+		CancelRrAfterTransfer: i.CancelRrAfterTransfer,
 	}
 }

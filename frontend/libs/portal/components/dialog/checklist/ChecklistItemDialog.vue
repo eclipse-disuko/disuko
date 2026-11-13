@@ -140,6 +140,7 @@ const open = async (existing?: ChecklistItem) => {
       targetTemplateKey: existing.targetTemplateKey,
       targetTemplateName: existing.targetTemplateName,
       rrTransferStrategy: existing.rrTransferStrategy ?? RrTransferStrategy.DEFAULT,
+      cancelRrAfterTransfer: existing.cancelRrAfterTransfer ?? false,
     };
     selectedLicenses.value = item.value.licenseIds
       ? (await licenseService.lookup(existing.licenseIds)).data.items
@@ -376,6 +377,7 @@ defineExpose({
                 item-value="key"
                 variant="outlined"
                 hide-details />
+              <v-checkbox v-model="item.cancelRrAfterTransfer" :label="t('CANCEL_RR_AFTER_TRANSFER')" hide-details />
             </template>
           </ExpansionPanel>
         </Stack>

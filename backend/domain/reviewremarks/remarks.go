@@ -272,12 +272,20 @@ func (r *Remark) HasComments() bool {
 }
 
 func (r *Remark) Cancel(author, fullName string) {
-	r.Events = append(r.Events, Event{
+	r.CancelWithComment("", author, fullName)
+}
+
+func (r *Remark) CancelWithComment(comment, author, fullName string) {
+	event := Event{
 		ChildEntity:    domain.NewChildEntity(),
 		Type:           CancelledEvent,
 		Author:         author,
 		AuthorFullName: fullName,
-	})
+	}
+	if comment != "" {
+		event.Content, _ = json.Marshal(Comment(comment))
+	}
+	r.Events = append(r.Events, event)
 	r.Level = Gray
 	r.Status = Cancelled
 }
@@ -356,6 +364,10 @@ func (r *Remark) makeCombinationKey() RrCombinationKey {
 
 func (r *Remark) PreventsDuplicate() bool {
 	return r.Status != Cancelled
+}
+
+func (r *Remark) CanBeCancelled() bool {
+	return r.Status == Open || r.Status == InProgress
 }
 
 func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Remark {
@@ -471,19 +483,20 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 // SplitAndCarryOverFrom splits the remark based on matching components and
 // licenses from previous remarks. Matching parts inherit their previous state,
 // while unmatched parts form a new remark. CANCELLED remarks are not considered.
-func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
+func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) ([]*Remark, []*Remark) {
 	// No splitting possible without previous remarks or components/licenses.
 	if len(previousRemarks) == 0 {
-		return []*Remark{r}
+		return []*Remark{r}, nil
 	}
 	if len(r.Components) == 0 && len(r.Licenses) == 0 {
-		return []*Remark{r}
+		return []*Remark{r}, nil
 	}
 
 	// Initialize the remaining components/licenses to be processed.
 	remainingComponents := append([]ComponentMeta(nil), r.Components...)
 	remainingLicenses := append([]LicenseMeta(nil), r.Licenses...)
 	result := make([]*Remark, 0, len(previousRemarks)+1)
+	var usedSources []*Remark
 
 	// Match components/licenses against previous remarks and carry over their state.
 	for _, previous := range previousRemarks {
@@ -501,6 +514,7 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		carried := r.cloneWithCombination(matchedComponents, matchedLicenses)
 		carried.CarryOverStateFrom(previous)
 		result = append(result, carried)
+		usedSources = append(usedSources, previous)
 
 		remainingComponents = restComponents
 		remainingLicenses = restLicenses
@@ -511,7 +525,7 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
 
-	return mergeOpenRemarksWithoutEvents(result)
+	return mergeOpenRemarksWithoutEvents(result), usedSources
 }
 
 // mergeOpenRemarksWithoutEvents combines untouched OPEN remarks produced by one
