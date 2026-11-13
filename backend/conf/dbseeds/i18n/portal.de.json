@@ -2025,6 +2025,7 @@
   "USE_DEFAULT_RR_TARNSFER_STRATEGY": "Exakte Übereinstimmungen übernehmen",
   "USE_SPLIT_RR_TARNSFER_STRATEGY": "Bestehende Gruppen erhalten, neue Elemente trennen",
   "USE_MERGE_RR_TARNSFER_STRATEGY": "Alle Elemente zu einer Bemerkung zusammenfassen",
+  "CANCEL_RR_AFTER_TRANSFER": "Bestehende offene oder in Bearbeitung befindliche Bemerkungen nach der Übertragung abbrechen",
   "HEADER_ENGLISH": "Englisch",
   "HEADER_GERMAN": "Deutsch",
   "RR_DIALOG_MORE_OBLIGATION": "Klassifikation",

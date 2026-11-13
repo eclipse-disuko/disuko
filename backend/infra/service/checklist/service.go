@@ -65,8 +65,9 @@ type execution struct {
 }
 
 type remarkCandidate struct {
-	remark           *reviewremarks.Remark
-	transferStrategy checklist.RrTransferStrategy
+	remark              *reviewremarks.Remark
+	transferStrategy    checklist.RrTransferStrategy
+	cancelAfterTransfer bool
 }
 
 func (s *Service) FindApplicableLists(rs *logy.RequestSession, pr *project.Project) []*checklist.Checklist {
@@ -173,6 +174,7 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 	}
 
 	newRemarksToSave := make([]*reviewremarks.Remark, 0, len(uniqueCandidates))
+	sourcesToCancel := make(map[string]*reviewremarks.Remark)
 	for _, candidate := range uniqueCandidates {
 		newRemark := candidate.remark
 
@@ -181,24 +183,28 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 		}
 
 		remarksToSave := []*reviewremarks.Remark{newRemark}
+		var sources []*reviewremarks.Remark
 		if !conf.IsProdEnv() {
 			switch candidate.transferStrategy {
 			case checklist.RrTransferSplit:
 				baseRemarks := reviewremarks.FindRemarksForSplit(existing.Remarks, newRemark)
-				remarksToSave = newRemark.SplitAndCarryOverFrom(baseRemarks)
+				remarksToSave, sources = newRemark.SplitAndCarryOverFrom(baseRemarks)
 			case checklist.RrTransferMerge:
 				previous := reviewremarks.FindRemarkForMerge(existing.Remarks, newRemark)
 				if previous != nil {
 					newRemark.CarryOverStateFrom(previous)
+					sources = append(sources, previous)
 				}
 			default:
 				previous := reviewremarks.FindLatestMatchingRemark(existing.Remarks, newRemark)
 				if previous != nil {
 					newRemark.CarryOverStateFrom(previous)
+					sources = append(sources, previous)
 				}
 			}
 		}
 
+		added := false
 		for _, remarkToSave := range remarksToSave {
 			k := remarkToSave.MakeRrKey()
 			if _, exists := existingKeys[k]; exists {
@@ -206,7 +212,19 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 			}
 			existingKeys[k] = struct{}{}
 			newRemarksToSave = append(newRemarksToSave, remarkToSave)
+			added = true
 		}
+		if candidate.cancelAfterTransfer && added {
+			for _, source := range sources {
+				if source.CanBeCancelled() {
+					sourcesToCancel[source.Key] = source
+				}
+			}
+		}
+	}
+
+	for _, source := range sourcesToCancel {
+		source.CancelWithComment(message.ReviewRemarkCancelledAfterTransfer, "SYSTEM", "")
 	}
 
 	return newRemarksToSave
@@ -247,7 +265,11 @@ func (e *execution) do() []remarkCandidate {
 			continue
 		}
 		if rr := e.executeItem(item); rr != nil {
-			res = append(res, remarkCandidate{remark: rr, transferStrategy: item.RrTransferStrategy})
+			res = append(res, remarkCandidate{
+				remark:              rr,
+				transferStrategy:    item.RrTransferStrategy,
+				cancelAfterTransfer: item.CancelRrAfterTransfer,
+			})
 		}
 	}
 	return res

@@ -72,6 +72,10 @@
             -->
           </i>
         </span>
+        <span v-else-if="item.type === EventType.CANCELLED && item.content">
+          <i>{{ t('RR_EVENT_' + item.type) }}</i>
+          {{ getCommentContent(item.content) }}
+        </span>
         <span v-else>
           <i>{{ t('RR_EVENT_' + item.type) }}</i>
         </span>

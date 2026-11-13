@@ -40,18 +40,19 @@ const (
 )
 
 type Item struct {
-	domain.ChildEntity `bson:"inline"`
-	Name               string
-	TriggerType        TriggerType
-	Classifications    []string
-	PolicyStatus       []PolicyStatusType
-	PolicyLabels       []string
-	ScanRemarks        *project.ScanRemarkStatus
-	LicenseIds         []string
-	ComponentNames     []string
-	TargetTemplateName string
-	TargetTemplateKey  string
-	RrTransferStrategy RrTransferStrategy
+	domain.ChildEntity    `bson:"inline"`
+	Name                  string
+	TriggerType           TriggerType
+	Classifications       []string
+	PolicyStatus          []PolicyStatusType
+	PolicyLabels          []string
+	ScanRemarks           *project.ScanRemarkStatus
+	LicenseIds            []string
+	ComponentNames        []string
+	TargetTemplateName    string
+	TargetTemplateKey     string
+	RrTransferStrategy    RrTransferStrategy
+	CancelRrAfterTransfer bool
 }
 
 type Checklist struct {
