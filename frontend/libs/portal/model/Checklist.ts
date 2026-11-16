@@ -30,6 +30,7 @@ export class ChecklistItem {
   targetTemplateName = '';
   targetTemplateKey = '';
   rrTransferStrategy = '';
+  cancelRrAfterTransfer = false;
 }
 
 export enum TriggerTypes {

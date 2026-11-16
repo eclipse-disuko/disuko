@@ -272,12 +272,20 @@ func (r *Remark) HasComments() bool {
 }
 
 func (r *Remark) Cancel(author, fullName string) {
-	r.Events = append(r.Events, Event{
+	r.CancelWithComment("", author, fullName)
+}
+
+func (r *Remark) CancelWithComment(comment, author, fullName string) {
+	event := Event{
 		ChildEntity:    domain.NewChildEntity(),
 		Type:           CancelledEvent,
 		Author:         author,
 		AuthorFullName: fullName,
-	})
+	}
+	if comment != "" {
+		event.Content, _ = json.Marshal(Comment(comment))
+	}
+	r.Events = append(r.Events, event)
 	r.Level = Gray
 	r.Status = Cancelled
 }
@@ -358,6 +366,10 @@ func (r *Remark) PreventsDuplicate() bool {
 	return r.Status != Cancelled
 }
 
+func (r *Remark) CanBeCancelled() bool {
+	return r.Status == Open || r.Status == InProgress
+}
+
 func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Remark {
 	if newRemark.SBOMUploaded == nil {
 		return nil
@@ -388,22 +400,31 @@ func FindLatestMatchingRemark(existingRemarks []*Remark, newRemark *Remark) *Rem
 	return latest
 }
 
-// FindRemarkForMerge finds a remark for the same template, preferring
-// the current SBOM over the latest previous SBOM.
-// CANCELLED remarks prevent carry-over from older SBOMs.
+// FindRemarkForMerge finds a single non-CANCELLED remark for the same template,
+// preferring the current SBOM over the latest previous SBOM.
+// CANCELLED remarks are ignored, but prevent fallback to older SBOMs
+// when only CANCELLED remarks exist on the current SBOM.
 func FindRemarkForMerge(existingRemarks []*Remark, newRemark *Remark) *Remark {
 	current := findRemarksByTemplateAndSBOM(existingRemarks, newRemark.TemplateKey, newRemark.SBOMId)
 	if len(current) > 0 {
-		if len(current) == 1 && current[0].Status != Cancelled {
+		current = removeCancelledRemarks(current)
+		if len(current) == 1 {
 			return current[0]
 		}
 		return nil
 	}
 	previous := findLatestPreviousRemarksByTemplate(existingRemarks, newRemark)
-	if len(previous) == 1 && previous[0].Status != Cancelled {
+	previous = removeCancelledRemarks(previous)
+	if len(previous) == 1 {
 		return previous[0]
 	}
 	return nil
+}
+
+func removeCancelledRemarks(remarks []*Remark) []*Remark {
+	return slices.DeleteFunc(slices.Clone(remarks), func(r *Remark) bool {
+		return r.Status == Cancelled
+	})
 }
 
 // FindRemarksForSplit returns all remarks for the same template, preferring the current SBOM.
@@ -471,19 +492,20 @@ func findLatestPreviousRemarksByTemplate(existingRemarks []*Remark, newRemark *R
 // SplitAndCarryOverFrom splits the remark based on matching components and
 // licenses from previous remarks. Matching parts inherit their previous state,
 // while unmatched parts form a new remark. CANCELLED remarks are not considered.
-func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
+func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) ([]*Remark, []*Remark) {
 	// No splitting possible without previous remarks or components/licenses.
 	if len(previousRemarks) == 0 {
-		return []*Remark{r}
+		return []*Remark{r}, nil
 	}
 	if len(r.Components) == 0 && len(r.Licenses) == 0 {
-		return []*Remark{r}
+		return []*Remark{r}, nil
 	}
 
 	// Initialize the remaining components/licenses to be processed.
 	remainingComponents := append([]ComponentMeta(nil), r.Components...)
 	remainingLicenses := append([]LicenseMeta(nil), r.Licenses...)
 	result := make([]*Remark, 0, len(previousRemarks)+1)
+	var usedSources []*Remark
 
 	// Match components/licenses against previous remarks and carry over their state.
 	for _, previous := range previousRemarks {
@@ -501,6 +523,7 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		carried := r.cloneWithCombination(matchedComponents, matchedLicenses)
 		carried.CarryOverStateFrom(previous)
 		result = append(result, carried)
+		usedSources = append(usedSources, previous)
 
 		remainingComponents = restComponents
 		remainingLicenses = restLicenses
@@ -511,7 +534,7 @@ func (r *Remark) SplitAndCarryOverFrom(previousRemarks []*Remark) []*Remark {
 		result = append(result, r.cloneWithCombination(remainingComponents, remainingLicenses))
 	}
 
-	return mergeOpenRemarksWithoutEvents(result)
+	return mergeOpenRemarksWithoutEvents(result), usedSources
 }
 
 // mergeOpenRemarksWithoutEvents combines untouched OPEN remarks produced by one

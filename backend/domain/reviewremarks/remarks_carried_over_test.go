@@ -72,7 +72,7 @@ func TestSplitAndCarryOverFrom_MergePreservesCarryOverEvents(t *testing.T) {
 		{SBOMId: "sbom1", TemplateKey: "template", Status: Open, Components: []ComponentMeta{component("A")}, Events: []Event{{Type: CarriedOverEvent}}},
 		{SBOMId: "sbom1", TemplateKey: "template", Status: InProgress, Components: []ComponentMeta{component("B")}},
 	}
-	result := current.SplitAndCarryOverFrom(previous)
+	result, sources := current.SplitAndCarryOverFrom(previous)
 	if len(result) != 2 {
 		t.Fatalf("want merged {A,C} and separate {B}, got %d", len(result))
 	}
@@ -81,6 +81,9 @@ func TestSplitAndCarryOverFrom_MergePreservesCarryOverEvents(t *testing.T) {
 	}
 	if result[1].Status != InProgress || len(result[1].Events) != 1 || result[1].Events[0].Type != CarriedOverEvent {
 		t.Errorf("want {B} as IN_PROGRESS with carry-over event, got %+v", result[1])
+	}
+	if len(sources) != 2 || sources[0] != previous[0] || sources[1] != previous[1] {
+		t.Fatalf("expected both matched sources, got %+v", sources)
 	}
 	if len(previous[0].Components) != 1 || len(current.Components) != 3 {
 		t.Fatal("source remarks must not be mutated")
