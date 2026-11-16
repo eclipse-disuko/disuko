@@ -117,9 +117,19 @@ func TestSplitAndCarryOverFrom(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.current.SplitAndCarryOverFrom(tt.previous)
+			got, sources := tt.current.SplitAndCarryOverFrom(tt.previous)
 			if len(got) != len(tt.want) {
 				t.Fatalf("got %d remarks, want %d", len(got), len(tt.want))
+			}
+			wantSources := 0
+			if tt.previous[0].Status != Cancelled {
+				wantSources = 1
+			}
+			if len(sources) != wantSources {
+				t.Fatalf("got %d used sources, want %d", len(sources), wantSources)
+			}
+			if wantSources == 1 && sources[0] != tt.previous[0] {
+				t.Fatal("used source should reference the matched previous remark")
 			}
 			for i := range tt.want {
 				assertComponents(t, got[i].Components, tt.want[i].components)
@@ -228,9 +238,12 @@ func TestSplitAndCarryOverFrom_AllCurrentCancelledCreatesFreshAggregate(t *testi
 		{Status: Cancelled, Licenses: lics("L2")},
 	}
 
-	got := current.SplitAndCarryOverFrom(currentExisting)
+	got, sources := current.SplitAndCarryOverFrom(currentExisting)
 	if len(got) != 1 {
 		t.Fatalf("got %d remarks, want one fresh aggregate remark", len(got))
+	}
+	if len(sources) != 0 {
+		t.Fatalf("all cancelled: expected no used sources, got %d", len(sources))
 	}
 	assertComponents(t, got[0].Components, []string{"A", "B", "C"})
 	assertLicenses(t, got[0].Licenses, []string{"L1", "L2"})
@@ -249,9 +262,12 @@ func TestSplitAndCarryOverFrom_CurrentMixedStatusRecreatesOnlyCancelledPart(t *t
 		{Status: Cancelled, Components: comps("C")},
 	}
 
-	got := current.SplitAndCarryOverFrom(currentExisting)
+	got, sources := current.SplitAndCarryOverFrom(currentExisting)
 	if len(got) != 2 {
 		t.Fatalf("got %d remarks, want carried and fresh remark", len(got))
+	}
+	if len(sources) != 1 || sources[0] != currentExisting[0] {
+		t.Fatalf("expected only the CLOSED source to be used, got %+v", sources)
 	}
 	assertComponents(t, got[0].Components, []string{"A", "B"})
 	if got[0].Status != Closed {
