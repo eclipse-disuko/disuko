@@ -39,7 +39,7 @@ const errorDialog = ref<ErrorDialogInterface | null>(null);
 const selectedPolicy = ref<PolicyRuleStatus | undefined>(undefined);
 
 const policyDecisionRule = rules.required(t('POLICY_DECISION'));
-const commentRulesMinMaxRule = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
+const commentRulesMinMaxRule = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 255, true);
 const commentRequiredRule = rules.required(t('LICENSE_RULE_COMMENT'));
 
 const config = ref<DialogPolicyDecisionConfig>({
