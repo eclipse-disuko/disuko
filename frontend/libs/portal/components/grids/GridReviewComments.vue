@@ -74,7 +74,7 @@
         </span>
         <span v-else-if="item.type === EventType.CANCELLED && item.content">
           <i>{{ t('RR_EVENT_' + item.type) }}</i>
-          {{ getCommentContent(item.content) }}
+          {{ t(item.content as Comment) }}
         </span>
         <span v-else>
           <i>{{ t('RR_EVENT_' + item.type) }}</i>
@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts" setup>
-import {DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
+import {Comment, DescriptionChange, Event, EventType, LevelChange, TitleChange} from '@disclosure-portal/model/Quality';
 import {useProjectStore} from '@disclosure-portal/stores/project.store';
 import useRules from '@shared/utils/Rules';
 import {getCssClassForTableRow} from '@shared/utils/Table';
