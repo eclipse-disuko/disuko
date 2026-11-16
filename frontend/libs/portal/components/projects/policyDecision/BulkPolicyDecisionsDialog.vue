@@ -46,7 +46,7 @@ const errorDialog = ref<ErrorDialogInterface | null>(null);
 const tableItems = ref<TableItem[]>([]);
 const selected = ref<string[]>([]);
 
-const commentRules = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 80, true);
+const commentRules = rules.minMax(t('LICENSE_RULE_COMMENT'), 0, 255, true);
 
 const config = ref<DialogBulkPolicyDecisionsConfig>({
   items: [],

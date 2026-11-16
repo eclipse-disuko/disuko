@@ -22,7 +22,7 @@ type PolicyDecisionRequestDto struct {
 	PolicyId          string     `json:"policyId" validate:"required"`
 	PolicyEvaluated   string     `json:"policyEvaluated" validate:"required"`
 	PolicyDecision    string     `json:"policyDecision" validate:"required"`
-	Comment           string     `json:"comment" validate:"lte=80"`
+	Comment           string     `json:"comment" validate:"lte=255"`
 	Creator           string     `json:"creator"`
 }
 
