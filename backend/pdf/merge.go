@@ -80,7 +80,9 @@ func ConvertAndMerge(rs *logy.RequestSession, outfile string, pageHeader, pageFo
 	}
 
 	if len(uniteArgs) == 1 {
-		os.Rename(uniteArgs[0], outfile)
+		if err := os.Rename(uniteArgs[0], outfile); err != nil {
+			return fmt.Errorf("renaming %s to %s: %w", uniteArgs[0], outfile, err)
+		}
 		return nil
 	}
 
