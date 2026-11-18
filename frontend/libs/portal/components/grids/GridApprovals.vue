@@ -135,8 +135,7 @@ const abortTooltipKey = (type: ApprovalType) => {
 const canToggleCurrent = () => {
   return (
     !projectModel.value.isDeprecated &&
-    ((projectModel.value.responsible ?? '').toLowerCase() === user.value.toLowerCase() ||
-      RightsUtils.isFOSSOffice())
+    ((projectModel.value.responsible ?? '').toLowerCase() === user.value.toLowerCase() || RightsUtils.isFOSSOffice())
   );
 };
 
