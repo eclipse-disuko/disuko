@@ -476,29 +476,41 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		approvedFound                 bool
 		externalFound                 bool
 		latestExternal                approval.Approval
+		flaggedInternal               *approval.Approval
+		flaggedExternal               *approval.Approval
 		latestApprovalUpdated         time.Time
 		approvedApprovalUpdated       time.Time
 		latestExternalApprovalUpdated time.Time
 	)
-	for _, a := range approvals.Approvals {
+	for i := range approvals.Approvals {
+		a := &approvals.Approvals[i]
 		switch a.Type {
 		case approval.TypeInternal:
+			if a.IsCurrent {
+				flaggedInternal = a
+			}
 			if !a.Internal.Aborted && (a.Internal.CustomerDone() || a.Internal.ApprovedBySuppliersOnly()) {
 				approvedFound = true
-				latestApproved = a
+				latestApproved = *a
 			}
-			internals = append(internals, a)
+			internals = append(internals, *a)
 		case approval.TypeExternal:
+			if a.IsCurrent {
+				flaggedExternal = a
+			}
 			if a.External.State == approval.CustomerApproved || a.External.State == approval.SupplierApproved {
 				approvedFound = true
-				latestApproved = a
+				latestApproved = *a
 			}
 			externalFound = true
-			latestExternal = a
+			latestExternal = *a
 		}
 	}
 	if len(internals) > 0 {
 		latest := internals[len(internals)-1]
+		if flaggedInternal != nil {
+			latest = *flaggedInternal
+		}
 		stats := g.sumSbomStats(latest)
 		res.LatestApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
 		res.LatestApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)
@@ -558,6 +570,9 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 	}
 	if externalFound {
 		latest := latestExternal
+		if flaggedExternal != nil {
+			latest = *flaggedExternal
+		}
 		stats := g.sumSbomStats(latest)
 		res.LatestExternalApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
 		res.LatestExternalApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)

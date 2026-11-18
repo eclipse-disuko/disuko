@@ -20,6 +20,7 @@ import {computed, onMounted, ref, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRoute} from 'vue-router';
 import {useTableActionSlider} from '@shared/composables/useTableActionSlider';
+import {RightsUtils} from '@shared/user/utils/RightsUtils';
 
 const {t} = useI18n();
 const projectStore = useProjectStore();
@@ -129,6 +130,24 @@ const abortTooltipKey = (type: ApprovalType) => {
     key = 'TT_BTN_ABORT_REVIEW';
   }
   return key;
+};
+
+const canToggleCurrent = () => {
+  return (
+    !projectModel.value.isDeprecated &&
+    ((projectModel.value.responsible ?? '').toLowerCase() === user.value.toLowerCase() ||
+      RightsUtils.isFOSSOffice())
+  );
+};
+
+const toggleCurrent = async (item: Approval) => {
+  const wasCurrent = item.isCurrent;
+  await projectService.toggleApprovalCurrent(projectModel.value._key, item.key).then((response) => {
+    if (response.data as unknown as ApprovalResponse) {
+      info(t(wasCurrent ? 'APPROVAL_UNMARKED_CURRENT' : 'APPROVAL_MARKED_CURRENT'));
+      reloadInternal(true);
+    }
+  });
 };
 
 const canBeFilledIn = (item: Approval) => {
@@ -280,6 +299,12 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
       event: 'abort',
       show: canBeAborted(item) && !projectModel.value.isDeprecated,
     },
+    {
+      icon: item.isCurrent ? 'mdi-check-decagram' : 'mdi-check-decagram-outline',
+      hint: t(item.isCurrent ? 'TT_TAD_BTN_UNMARK_CURRENT' : 'TT_TAD_BTN_MARK_CURRENT'),
+      event: 'toggleCurrent',
+      show: canToggleCurrent(),
+    },
   ];
 };
 </script>
@@ -351,6 +376,16 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
             <span v-if="item.type == ApprovalType.External" :style="{color: getColorForApproval(item.external.state)}">
               {{ t('COL_APPROVAL_STATUS_EXTERNAL_' + item.external.state) }}
             </span>
+            <v-chip
+              v-if="item.isCurrent"
+              color="primary"
+              variant="tonal"
+              size="small"
+              label
+              class="ms-2"
+              prepend-icon="mdi-check-decagram">
+              {{ t('COL_APPROVAL_CURRENT') }}
+            </v-chip>
           </template>
           <template #[`item.created`]="{item}">
             <DDateCellWithTooltip :value="item.created" />
@@ -364,7 +399,8 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
                 variant="slider"
                 :buttons="getActionButtons(item)"
                 @fill="openFillDialog(item)"
-                @abort="abort(item)" />
+                @abort="abort(item)"
+                @toggleCurrent="toggleCurrent(item)" />
             </Stack>
           </template>
         </v-data-table>
