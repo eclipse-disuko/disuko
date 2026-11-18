@@ -11,6 +11,13 @@ export interface I18nLocaleListItem {
   entryCount: number;
 }
 
+export interface I18nEntryMeta {
+  created: string;
+  updated: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
 export interface I18nLocaleResponse {
   localeCode: string;
   displayName: string;
@@ -19,6 +26,7 @@ export interface I18nLocaleResponse {
   scope: string;
   entryCount: number;
   entries: Record<string, string>;
+  meta?: Record<string, I18nEntryMeta>;
   fallbackUsed: boolean;
 }
 

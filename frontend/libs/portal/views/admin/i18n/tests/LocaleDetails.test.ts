@@ -73,6 +73,14 @@ const localeResponse = {
   localeCode: 'en',
   nativeName: 'English',
   entries: {GREETING: 'Hello', FAREWELL: 'Bye'},
+  meta: {
+    GREETING: {
+      created: '2026-11-01T10:00:00Z',
+      updated: '2026-11-01T11:00:00Z',
+      createdBy: 'creator',
+      updatedBy: 'editor',
+    },
+  },
 };
 
 const createWrapper = () => mountView(LocaleDetails, {childStubs});
@@ -99,6 +107,8 @@ describe('LocaleDetails', () => {
     expect(getLocaleMock).toHaveBeenCalledWith('en');
     expect(wrapper.find('.v-data-table').text()).toContain('GREETING');
     expect(wrapper.find('.v-data-table').text()).toContain('Hello');
+    expect(wrapper.find('.v-data-table').text()).toContain('"createdBy":"creator"');
+    expect(wrapper.find('.v-data-table').text()).toContain('"updatedBy":"editor"');
 
     const breadcrumbs = useBreadcrumbsStore(pinia);
     expect(breadcrumbs.setCurrentBreadcrumbs).toHaveBeenCalledWith([
@@ -133,12 +143,26 @@ describe('LocaleDetails', () => {
     };
     vm.newEntryKey = 'NEW_KEY';
     vm.newEntryTranslation = 'New Value';
+    getLocaleMock.mockResolvedValue({
+      data: {
+        ...localeResponse,
+        entries: {...localeResponse.entries, NEW_KEY: 'New Value'},
+        meta: {
+          ...localeResponse.meta,
+          NEW_KEY: {...localeResponse.meta.GREETING, createdBy: 'new-author', updatedBy: 'new-author'},
+        },
+      },
+    });
     await vm.addEntry();
     await flushPromises();
 
     expect(upsertTranslationMock).toHaveBeenCalledWith('en', 'NEW_KEY', 'New Value');
     expect(snackbarInfoMock).toHaveBeenCalledWith('Entry saved successfully.');
     expect(vm.entries.some((entry) => entry.key === 'NEW_KEY')).toBe(true);
+    expect(vm.entries.find((entry) => entry.key === 'NEW_KEY')).toMatchObject({
+      createdBy: 'new-author',
+      updatedBy: 'new-author',
+    });
   });
 
   it('shows an error snackbar when adding an entry fails', async () => {
@@ -176,12 +200,30 @@ describe('LocaleDetails', () => {
     };
     vm.editRowKey = 'GREETING';
     vm.draftTranslation = 'Hi there';
+    getLocaleMock.mockResolvedValue({
+      data: {
+        ...localeResponse,
+        entries: {...localeResponse.entries, GREETING: 'Hi there'},
+        meta: {
+          GREETING: {
+            ...localeResponse.meta.GREETING,
+            updated: '2026-11-02T12:00:00Z',
+            updatedBy: 'new-editor',
+          },
+        },
+      },
+    });
     await vm.saveEdit();
     await flushPromises();
 
     expect(upsertTranslationMock).toHaveBeenCalledWith('en', 'GREETING', 'Hi there');
     expect(snackbarInfoMock).toHaveBeenCalledWith('Entry saved successfully.');
     expect(vm.entries.find((entry) => entry.key === 'GREETING')?.translation).toBe('Hi there');
+    expect(vm.entries.find((entry) => entry.key === 'GREETING')).toMatchObject({
+      createdBy: 'creator',
+      updatedBy: 'new-editor',
+      updated: '2026-11-02T12:00:00Z',
+    });
     expect(wrapper.vm.$t('GREETING')).toBe('Hi there');
   });
 

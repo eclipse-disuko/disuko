@@ -3,15 +3,25 @@
 
 package i18n
 
+import "time"
+
+type I18nEntryMetaDto struct {
+	Created   time.Time `json:"created"`
+	Updated   time.Time `json:"updated"`
+	CreatedBy string    `json:"createdBy"`
+	UpdatedBy string    `json:"updatedBy"`
+}
+
 type I18nLocaleResponseDto struct {
-	LocaleCode   string            `json:"localeCode"`
-	DisplayName  string            `json:"displayName"`
-	NativeName   string            `json:"nativeName"`
-	IsDefault    bool              `json:"isDefault"`
-	Scope        string            `json:"scope"`
-	EntryCount   int               `json:"entryCount"`
-	Entries      map[string]string `json:"entries"`
-	FallbackUsed bool              `json:"fallbackUsed"`
+	LocaleCode   string                      `json:"localeCode"`
+	DisplayName  string                      `json:"displayName"`
+	NativeName   string                      `json:"nativeName"`
+	IsDefault    bool                        `json:"isDefault"`
+	Scope        string                      `json:"scope"`
+	EntryCount   int                         `json:"entryCount"`
+	Entries      map[string]string           `json:"entries"`
+	Meta         map[string]I18nEntryMetaDto `json:"meta"`
+	FallbackUsed bool                        `json:"fallbackUsed"`
 }
 
 type I18nLocaleListResponseDto struct {

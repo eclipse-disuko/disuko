@@ -20,10 +20,10 @@ type I18nLocale struct {
 
 type I18nEntry struct {
 	domain.ChildEntity `bson:",inline"`
-	Value       string
-	Description string
-	CreatedBy   string
-	UpdatedBy   string
+	Value              string
+	Description        string
+	CreatedBy          string
+	UpdatedBy          string
 }
 
 func NewI18nLocale(localeCode string) *I18nLocale {
@@ -75,8 +75,15 @@ func (locale *I18nLocale) ToListDTO() I18nLocaleListResponseDto {
 
 func (locale *I18nLocale) ToDTO(fallbackUsed bool) I18nLocaleResponseDto {
 	entries := make(map[string]string, len(locale.Entries))
-	for key, value := range locale.Entries {
-		entries[key] = value.Value
+	meta := make(map[string]I18nEntryMetaDto, len(locale.Entries))
+	for key, entry := range locale.Entries {
+		entries[key] = entry.Value
+		meta[key] = I18nEntryMetaDto{
+			Created:   entry.Created,
+			Updated:   entry.Updated,
+			CreatedBy: entry.CreatedBy,
+			UpdatedBy: entry.UpdatedBy,
+		}
 	}
 	return I18nLocaleResponseDto{
 		LocaleCode:   locale.Key,
@@ -86,6 +93,7 @@ func (locale *I18nLocale) ToDTO(fallbackUsed bool) I18nLocaleResponseDto {
 		Scope:        locale.Scope,
 		EntryCount:   len(entries),
 		Entries:      entries,
+		Meta:         meta,
 		FallbackUsed: fallbackUsed,
 	}
 }

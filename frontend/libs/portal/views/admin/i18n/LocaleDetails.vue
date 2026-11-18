@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import {type I18nImportResponse, type I18nLocaleListItem, type I18nLocaleResponse} from '@disclosure-portal/model/I18n';
+import {type I18nEntryMeta, type I18nImportResponse, type I18nLocaleListItem, type I18nLocaleResponse} from '@disclosure-portal/model/I18n';
 import i18nService from '@disclosure-portal/services/i18n.service';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
+import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
 import DIconButton from '@shared/components/disco/DIconButton.vue';
 import DialogLayout, {type DialogLayoutConfig} from '@shared/layouts/DialogLayout.vue';
 import Stack from '@shared/layouts/Stack.vue';
@@ -18,6 +19,10 @@ import useSnackbar from '@shared/composables/useSnackbar';
 interface LocaleEntry {
   key: string;
   translation: string;
+  created?: string;
+  updated?: string;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 const {t, mergeLocaleMessage} = useI18n({useScope: 'global'});
@@ -137,10 +142,14 @@ const extractApiErrorMessage = (error: any): string => {
   return t('ERROR_500_TITLE');
 };
 
-const syncEntries = (data: Record<string, string> = {}) => {
+const syncEntries = (data: Record<string, string> = {}, details: Record<string, I18nEntryMeta> = {}) => {
   entries.value = Object.entries(data).map(([key, value]) => ({
     key,
     translation: normalizeValue(value),
+    created: details[key]?.created,
+    updated: details[key]?.updated,
+    createdBy: details[key]?.createdBy,
+    updatedBy: details[key]?.updatedBy,
   }));
 };
 
@@ -155,7 +164,7 @@ const fetchLocale = async () => {
   try {
     const response = await i18nService.getLocale(localeCode.value);
     localeMeta.value = response.data;
-    syncEntries(response.data?.entries || {});
+    syncEntries(response.data?.entries || {}, response.data?.meta || {});
   } catch {
     actionError.value = t('ERROR_500_TITLE');
     entries.value = [];
@@ -335,13 +344,7 @@ const addEntry = async () => {
     return;
   }
 
-  entries.value = [
-    {
-      key,
-      translation: newEntryTranslation.value,
-    },
-    ...entries.value,
-  ];
+  await fetchLocale();
 
   snackbar.info(t('ADMIN_I18N_SUCCESS_SAVED'));
   resetAddEntryDialog();
@@ -359,16 +362,7 @@ const saveEdit = async () => {
     return;
   }
 
-  entries.value = entries.value.map((item) => {
-    if (item.key !== key) {
-      return item;
-    }
-
-    return {
-      ...item,
-      translation: draftTranslation.value,
-    };
-  });
+  await fetchLocale();
 
   snackbar.info(t('ADMIN_I18N_SUCCESS_SAVED'));
   cancelEdit();
@@ -448,6 +442,34 @@ const headers = computed((): DataTableHeader[] => [
     value: 'translation',
     sortable: true,
     minWidth: 500,
+  },
+  {
+    title: t('COL_CREATED').trim(),
+    align: 'start',
+    value: 'created',
+    sortable: true,
+    width: 140,
+  },
+  {
+    title: t('COL_CREATED_BY'),
+    align: 'start',
+    value: 'createdBy',
+    sortable: true,
+    width: 160,
+  },
+  {
+    title: t('COL_UPDATED').trim(),
+    align: 'start',
+    value: 'updated',
+    sortable: true,
+    width: 140,
+  },
+  {
+    title: t('COL_UPDATED_BY'),
+    align: 'start',
+    value: 'updatedBy',
+    sortable: true,
+    width: 160,
   },
   {
     title: t('COL_ACTIONS').trim(),
@@ -561,6 +583,12 @@ watch(
               <v-text-field v-else v-model="draftTranslation" density="compact" variant="outlined" hide-details />
             </div>
             <span v-else class="text-body-2" style="white-space: pre-wrap">{{ getRowTranslation(item) }}</span>
+          </template>
+          <template #[`item.created`]="{item}">
+            <DDateCellWithTooltip class="text-body-2 text-no-wrap" :value="getRow(item).created" />
+          </template>
+          <template #[`item.updated`]="{item}">
+            <DDateCellWithTooltip class="text-body-2 text-no-wrap" :value="getRow(item).updated" />
           </template>
           <template #[`item.actions`]="{item}">
             <div class="d-flex ga-1 justify-center">
