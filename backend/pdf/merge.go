@@ -12,8 +12,8 @@ import (
 	"os/exec"
 	"sync"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/emulation"
-	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 	"github.com/eclipse-disuko/disuko/conf"
 	"github.com/eclipse-disuko/disuko/logy"
@@ -28,47 +28,61 @@ func ConvertAndMerge(rs *logy.RequestSession, outfile string, pageHeader, pageFo
 	var uniteArgs []string
 	for _, file := range contentFiles {
 		pdfPath := fmt.Sprintf("%s.pdf", file)
-		tasks := chromedp.Tasks{
-			emulation.SetUserAgentOverride("Disco Browser"),
-			chromedp.Navigate("file://" + file),
-			chromedp.WaitVisible(`body`, chromedp.ByQuery),
-			chromedp.ActionFunc(func(ctx context.Context) error {
-				print := page.PrintToPDF().
-					WithPrintBackground(true).
-					WithPreferCSSPageSize(true).
-					WithHeaderTemplate("<span></span>").
-					WithFooterTemplate("<span></span>").
-					WithDisplayHeaderFooter(true)
 
-				if pageHeader != nil {
-					print = print.WithHeaderTemplate(*pageHeader)
-				}
-				if pageFooter != nil {
-					print = print.WithFooterTemplate(*pageFooter)
-				}
-				buf, _, err := print.Do(ctx)
-				if err != nil {
-					logy.Errorf(rs, "printing %s to pdf failed: %s", file, pdfPath, err.Error())
-					return err
-				}
-				if err := os.WriteFile(pdfPath, buf, 0644); err != nil {
-					logy.Errorf(rs, "writing %s to pdf %s failed: %s", file, pdfPath, err.Error())
-					return err
-				}
-				return nil
-			}),
+		headerTemplate := "<span></span>"
+		if pageHeader != nil {
+			headerTemplate = *pageHeader
 		}
+		footerTemplate := "<span></span>"
+		if pageFooter != nil {
+			footerTemplate = *pageFooter
+		}
+
 		uniteArgs = append(uniteArgs, pdfPath)
 		ctx, cancelChrome := setupChrome()
-		err := chromedp.Run(ctx, tasks)
-		cancelChrome()
+		err := func() error {
+			defer cancelChrome()
+
+			setUserAgent := chromedp.Func(func(ctx context.Context, t *chromedp.Target) error {
+				_, err := cdp.Call(ctx, t, emulation.SetUserAgentOverride, emulation.SetUserAgentOverrideParams{
+					UserAgent: "Disco Browser",
+				})
+				return err
+			})
+
+			if err := chromedp.Do(ctx,
+				setUserAgent,
+				chromedp.Navigate("file://"+file),
+				chromedp.WaitVisible(`body`),
+			); err != nil {
+				return err
+			}
+
+			buf, err := chromedp.Run(ctx, chromedp.PrintToPDF(
+				chromedp.PDFPrintBackground(),
+				chromedp.PDFPreferCSSPageSize(),
+				chromedp.PDFHeaderTemplate(headerTemplate),
+				chromedp.PDFFooterTemplate(footerTemplate),
+			))
+			if err != nil {
+				logy.Errorf(rs, "printing %s to pdf failed: %s", file, pdfPath, err.Error())
+				return err
+			}
+			if err := os.WriteFile(pdfPath, buf, 0644); err != nil {
+				logy.Errorf(rs, "writing %s to pdf %s failed: %s", file, pdfPath, err.Error())
+				return err
+			}
+			return nil
+		}()
 		if err != nil {
 			return fmt.Errorf("running chromedp: %w", err)
 		}
 	}
 
 	if len(uniteArgs) == 1 {
-		os.Rename(uniteArgs[0], outfile)
+		if err := os.Rename(uniteArgs[0], outfile); err != nil {
+			return fmt.Errorf("renaming %s to %s: %w", uniteArgs[0], outfile, err)
+		}
 		return nil
 	}
 
