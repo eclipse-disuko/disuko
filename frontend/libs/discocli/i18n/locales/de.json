@@ -275,6 +275,7 @@
   "RR_EVENT_CHANGED_STATUS": "hat den Status der Bemerkung geändert.",
   "RR_EVENT_CARRIED_OVER": "Diese Bemerkung wurde aus einer früheren SBOM übernommen.",
   "REVIEW_REMARK_CANCELLED_AFTER_TRANSFER": "Der Status wurde auf eine neue Bemerkung übertragen.",
+  "REVIEW_REMARK_CANCELLED_AS_NO_LONGER_APPLICABLE": "Die Bemerkung ist nicht mehr relevant.",
   "TABLE_DESC_PROJECT_ALL_REVIEW_REMARKS": "Diese Tabelle zeigt alle Review-Bemerkungen aller SBOMs in diesem Projekt. Um Bemerkungen für ein bestimmtes SBOM/Kanal anzuzeigen, Navigieren Sie zu diesem Kanal.",
   "TABLE_DESC_POLICY_LICENSES": "Diese Tabelle zeigt alle Lizenzen an, die mit dieser Policy-Regel verknüpft sind, kategorisiert nach Policy-Typ (Erlaubt, Warnung oder Verboten).",
   "RULE_MIN_MAX": "{fieldName} muss zwischen {min} und {max} Zeichen liegen",

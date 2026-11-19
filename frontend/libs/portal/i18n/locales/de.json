@@ -2061,6 +2061,7 @@
   "USE_MERGE_RR_TARNSFER_STRATEGY": "Alle Elemente zu einer Bemerkung zusammenfassen",
   "CANCEL_RR_AFTER_TRANSFER": "Bestehende offene oder in Bearbeitung befindliche Bemerkungen nach der Übertragung abbrechen",
   "REVIEW_REMARK_CANCELLED_AFTER_TRANSFER": "Der Status wurde auf eine neue Bemerkung übertragen.",
+  "REVIEW_REMARK_CANCELLED_AS_NO_LONGER_APPLICABLE": "Die Bemerkung ist nicht mehr relevant.",
   "HEADER_ENGLISH": "Englisch",
   "HEADER_GERMAN": "Deutsch",
   "RR_DIALOG_MORE_OBLIGATION": "Klassifikation",

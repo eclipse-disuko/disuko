@@ -2067,6 +2067,7 @@
   "USE_MERGE_RR_TARNSFER_STRATEGY": "Combine all items into one Remark",
   "CANCEL_RR_AFTER_TRANSFER": "Cancel existing open or in-progress Remarks after transfer",
   "REVIEW_REMARK_CANCELLED_AFTER_TRANSFER": "The state was transferred to a new remark.",
+  "REVIEW_REMARK_CANCELLED_AS_NO_LONGER_APPLICABLE": "The remark is no longer applicable.",
   "HEADER_ENGLISH": "English",
   "HEADER_GERMAN": "German",
   "RR_DIALOG_MORE_OBLIGATION": "Classification",

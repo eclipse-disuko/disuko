@@ -422,6 +422,7 @@ const (
 	LockedByPublicApiCall                     = "LOCKED_BY_PUBLIC_API_CALL"
 	ErrorS3ConnectionCheck                    = "ERROR_S3_CONNECTION_CHECK"
 	ReviewRemarkCancelledAfterTransfer        = "REVIEW_REMARK_CANCELLED_AFTER_TRANSFER"
+	ReviewRemarkCancelledAsNoLongerApplicable = "REVIEW_REMARK_CANCELLED_AS_NO_LONGER_APPLICABLE"
 )
 
 func InitI18N() {
