@@ -196,7 +196,8 @@ type ApprovalDto struct {
 	Plausibility PlausibilityDto     `json:"plausibility"`
 	External     ExternalApprovalDto `json:"external"`
 
-	Status StateInfo `json:"status"`
+	Status    StateInfo `json:"status"`
+	IsCurrent bool      `json:"isCurrent"`
 }
 
 func (a *Approval) ToDto(creatorFullName string, approverFullNames [4]string) (res ApprovalDto) {
@@ -219,6 +220,7 @@ func (a *Approval) ToDto(creatorFullName string, approverFullNames [4]string) (r
 	res.Info = a.Info.ToDto()
 
 	res.Status = a.ToApprovalDtoStatus()
+	res.IsCurrent = a.IsCurrent
 	res.Documents = make([]pdocument.PDocumentDto, 0)
 	return
 }

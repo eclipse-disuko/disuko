@@ -155,6 +155,7 @@ type Approval struct {
 	Internal     InternalApproval
 	Plausibility PlausibilityCheck
 	External     ExternalApproval
+	IsCurrent    bool
 }
 
 func (p *PlausibilityCheck) GetPendingApprover() string {

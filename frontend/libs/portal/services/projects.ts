@@ -204,6 +204,12 @@ class ProjectService {
     );
   }
 
+  public async toggleApprovalCurrent(projectUid: string, appId: string) {
+    return api.put<ISuccessRsponse>(
+      `api/v1/${modelName}/${encodeURIComponent(projectUid)}/approval/${encodeURIComponent(appId)}/toggleCurrent`,
+    );
+  }
+
   public async getApproval(approvalId: string, projectUid: string) {
     return api.get<Approval>(
       `api/v1/${modelName}/${encodeURIComponent(projectUid)}/approval/${encodeURIComponent(approvalId)}`,

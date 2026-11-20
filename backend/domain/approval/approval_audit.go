@@ -15,6 +15,7 @@ type ApprovalAudit struct {
 	Internal     InternalApproval  `json:"internal"`
 	Plausibility PlausibilityCheck `json:"plausibility"`
 	External     ExternalApproval  `json:"external"`
+	IsCurrent    bool              `json:"isCurrent"`
 }
 
 // TODO: refactor approval audit logs
@@ -30,6 +31,7 @@ func (a *Approval) ToAudit() ApprovalAudit {
 		Internal:     a.Internal,
 		Plausibility: a.Plausibility,
 		External:     a.External,
+		IsCurrent:    a.IsCurrent,
 
 		//CustomerApprover1: a.CustomerApprover1,
 		//CustomerApprover2: a.CustomerApprover2,

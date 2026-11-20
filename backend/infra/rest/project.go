@@ -1264,6 +1264,48 @@ func (projectHandler *ProjectHandler) ProjectUpdateApproval(w http.ResponseWrite
 	render.JSON(w, r, response)
 }
 
+func (projectHandler *ProjectHandler) ProjectToggleApprovalCurrent(w http.ResponseWriter, r *http.Request) {
+	pr, requestSession := projectHandler.retrieveProject2(r, false)
+	if pr.IsDeprecated() {
+		exception.ThrowExceptionClientMessage3(message.GetI18N(message.DeprecatedProjectError))
+	}
+
+	username, rights := roles.GetAccessAndRolesRightsFromRequest(requestSession, r)
+	if !pr.IsResponsible(username) && !rights.IsFossOffice() {
+		exception.ThrowExceptionSendDeniedResponse()
+	}
+
+	appId := extractAppIdFromRequest(r)
+	lockKey := ApprovalLockPrefix + pr.Key
+	logy.Infof(requestSession, "Acquiring lock %s", lockKey)
+	l, acquired := projectHandler.LockService.Acquire(locks.Options{
+		Key:      lockKey,
+		Blocking: true,
+		Timeout:  time.Second * 10,
+	})
+	if !acquired {
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ResourceInUse), "")
+	}
+	logy.Infof(requestSession, "Acquired!")
+	defer func() {
+		projectHandler.LockService.Release(l)
+		logy.Infof(requestSession, "Released lock %s", lockKey)
+	}()
+	pr, _ = projectHandler.retrieveProject2(r, true)
+
+	as := approvalService.ApprovalService{
+		RequestSession:   requestSession,
+		ApprovalListRepo: projectHandler.ApprovalListRepository,
+		AuditLogListRepo: projectHandler.AuditLogListRepository,
+	}
+
+	as.ToggleApprovalCurrent(pr, appId, username)
+
+	render.JSON(w, r, approval.ResponseApprovalDto{
+		Success: true,
+	})
+}
+
 func (projectHandler *ProjectHandler) ProjectGetApproval(w http.ResponseWriter, r *http.Request) {
 	pr, requestSession := projectHandler.retrieveProject2(r, true)
 
