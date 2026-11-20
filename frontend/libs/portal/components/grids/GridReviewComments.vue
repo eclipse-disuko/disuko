@@ -15,12 +15,20 @@
         variant="outlined"
         :rules="activeRules.comment"
         hide-details="auto"></v-textarea>
-      <DCActionButton
-        :hint="t('BTN_COMMENT')"
-        icon="mdi-comment"
-        :text="t('BTN_COMMENT')"
-        @click="comment"
-        :disabled="isDeprecated || disableClick" />
+      <div class="flex flex-wrap gap-2">
+        <DCActionButton
+          :hint="t('BTN_COMMENT')"
+          icon="mdi-comment"
+          :text="t('BTN_COMMENT')"
+          @click="comment()"
+          :disabled="isDeprecated || disableClick" />
+        <DCActionButton
+          v-if="allowCloseWithComment"
+          icon="mdi-check"
+          :text="t('RR_CLOSE_WITH_COMMENT')"
+          @click="comment(true)"
+          :disabled="isDeprecated || disableClick || !currentComment.trim()" />
+      </div>
     </v-form>
 
     <v-data-table
@@ -102,6 +110,7 @@ defineProps<{
   events: Event[];
   readonly: boolean;
   disableClick?: boolean;
+  allowCloseWithComment?: boolean;
 }>();
 
 const activeRules = {
@@ -137,6 +146,7 @@ const currentComment = ref('');
 
 const emit = defineEmits<{
   (e: 'comment', content: string): void;
+  (e: 'close-with-comment', content: string): void;
 }>();
 
 const getCommentContent = computed(() => (content: unknown) => {
@@ -146,11 +156,18 @@ const getCommentContent = computed(() => (content: unknown) => {
   return content;
 });
 
-const comment = async () => {
+const comment = async (closeWithComment = false) => {
+  if (closeWithComment && !currentComment.value.trim()) {
+    return;
+  }
   if (!(await form.value?.validate())?.valid) {
     return;
   }
-  emit('comment', currentComment.value);
+  if (closeWithComment) {
+    emit('close-with-comment', currentComment.value);
+  } else {
+    emit('comment', currentComment.value);
+  }
   currentComment.value = '';
   form.value?.resetValidation();
 };

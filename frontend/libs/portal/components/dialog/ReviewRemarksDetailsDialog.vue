@@ -22,7 +22,7 @@
               is-dialog-button
               size="small"
               variant="outlined"
-              :disabled="!hasComments"
+              :disabled="!hasComments || isSubmittingComment"
               @click="markInProgress"
               :text="t('RR_MARK_IN_PROGRESS')" />
           </Tooltip>
@@ -30,6 +30,7 @@
             is-dialog-button
             size="small"
             variant="outlined"
+            :disabled="isSubmittingComment"
             @click="closeRemark"
             :text="t('TT_BULK_CLOSE_REMARK')" />
         </div>
@@ -110,7 +111,9 @@
             :reviewId="item.key"
             :events="item.events"
             :disableClick="isSubmittingComment"
-            @comment="comment" />
+            allow-close-with-comment
+            @comment="comment"
+            @close-with-comment="comment($event, true)" />
         </v-tabs-window-item>
       </v-tabs-window>
       <template #left>
@@ -246,8 +249,9 @@ const isInProgress = (remark?: ReviewRemark): boolean => {
   return remark?.status === ReviewRemarkStatus.IN_PROGRESS;
 };
 
-const comment = async (content: string) => {
-  if (isSubmittingComment.value) {
+const comment = async (content: string, closeWithComment = false) => {
+  const remark = item.value;
+  if (!remark || isSubmittingComment.value) {
     return;
   }
 
@@ -256,7 +260,14 @@ const comment = async (content: string) => {
     const req: CommentReviewRemarkRequest = {
       content: content,
     };
-    await reviewRemarksStore.commentOnRemark(props.projectUuid, props.versionUuid, item.value!.key, req);
+    await reviewRemarksStore.commentOnRemark(props.projectUuid, props.versionUuid, remark.key, req);
+    if (closeWithComment) {
+      await reviewRemarksStore.setRemarkStatus(props.projectUuid, props.versionUuid, remark.key, {
+        status: ReviewRemarkStatus.CLOSED,
+      });
+      snack(t('DIALOG_remark_closed'));
+      close();
+    }
   } finally {
     isSubmittingComment.value = false;
   }

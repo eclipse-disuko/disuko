@@ -653,6 +653,7 @@
   "TAB_NOTICE": "Third Party Notices",
   "BTN_SAVE": "Save",
   "BTN_COMMENT": "Comment",
+  "RR_CLOSE_WITH_COMMENT": "Close with comment",
   "TT_delete_project_disabled": "please remove children before deletion",
   "RR_MARK_IN_PROGRESS": "Mark In Progress",
   "RR_MARK_IN_PROGRESS_REQUIRES_COMMENT": "At least one comment must exist.",

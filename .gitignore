@@ -3,6 +3,7 @@
 
 # Agent instruction files (local only)
 .github/agents/
+.windsurf/
 
 # Docker compose env variables
 *.cert
