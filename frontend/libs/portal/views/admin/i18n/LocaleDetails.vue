@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-import {
-  type I18nEntryMeta,
-  type I18nImportResponse,
-  type I18nLocaleListItem,
-  type I18nLocaleResponse,
-} from '@disclosure-portal/model/I18n';
+import {type I18nEntryMeta, type I18nImportResponse, type I18nLocaleResponse} from '@disclosure-portal/model/I18n';
 import i18nService from '@disclosure-portal/services/i18n.service';
 import DCActionButton from '@shared/components/disco/DCActionButton.vue';
 import DDateCellWithTooltip from '@shared/components/disco/DDateCellWithTooltip.vue';
