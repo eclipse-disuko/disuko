@@ -5,6 +5,7 @@
 package checklist
 
 import (
+	"maps"
 	"slices"
 	"strings"
 
@@ -98,14 +99,11 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 		exception.ThrowExceptionBadRequestResponse()
 	}
 
-	remarks := s.createRemarks(rs, pr, version, spdxBase, lists, executer)
-	if len(remarks) == 0 {
-		return
-	}
+	remarks, nonTriggeredTemplateKeys := s.createRemarks(rs, pr, version, spdxBase, lists, executer)
 
 	rr := s.ReviewRemarkRepo.FindByKey(rs, version.Key, false)
-	newRemarks := s.prepareNewRemarks(remarks, rr)
-	if len(newRemarks) == 0 {
+	newRemarks, hasChanges := s.prepareNewRemarks(remarks, nonTriggeredTemplateKeys, rr, spdxBase)
+	if !hasChanges {
 		return
 	}
 
@@ -113,7 +111,7 @@ func (s *Service) Execute(rs *logy.RequestSession, pr *project.Project, version 
 	s.saveRemarks(rs, version.Key, rr, newRemarks)
 }
 
-func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, version *project.ProjectVersion, spdxBase *project.SpdxFileBase, lists []*checklist.Checklist, executer string) []remarkCandidate {
+func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, version *project.ProjectVersion, spdxBase *project.SpdxFileBase, lists []*checklist.Checklist, executer string) ([]remarkCandidate, map[string]struct{}) {
 	compInfos := s.SpdxService.GetComponentInfos(rs, pr, version.Key, spdxBase)
 	rules := s.PolicyRuleRepo.FindPolicyRulesForLabel(rs, pr.PolicyLabels)
 	policyDecisions := s.PolicyDecisionsRepo.FindByKey(rs, pr.Key, false)
@@ -126,6 +124,7 @@ func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, ve
 	scanRemarks := s.ScanRemarksService.GetRemarks(rs, pr, &spdxBase.MetaInfo, evalRes)
 
 	var remarks []remarkCandidate
+	nonTriggeredTemplateKeys := make(map[string]struct{})
 	for _, list := range lists {
 		e := execution{
 			rs:          rs,
@@ -142,12 +141,16 @@ func (s *Service) createRemarks(rs *logy.RequestSession, pr *project.Project, ve
 			licLookup:   licLookup,
 			licRepo:     s.LicenseRepo,
 		}
-		remarks = append(remarks, e.do()...)
+		candidates, nonTriggered := e.do()
+		remarks = append(remarks, candidates...)
+		for templateKey := range nonTriggered {
+			nonTriggeredTemplateKeys[templateKey] = struct{}{}
+		}
 	}
-	return remarks
+	return remarks, nonTriggeredTemplateKeys
 }
 
-func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *reviewremarks.ReviewRemarks) []*reviewremarks.Remark {
+func (s *Service) prepareNewRemarks(candidates []remarkCandidate, nonTriggeredTemplateKeys map[string]struct{}, existing *reviewremarks.ReviewRemarks, spdxBase *project.SpdxFileBase) ([]*reviewremarks.Remark, bool) {
 	seenIncoming := make(map[reviewremarks.RrKey]struct{}, len(candidates))
 	uniqueCandidates := make([]remarkCandidate, 0, len(candidates))
 
@@ -162,7 +165,8 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 	}
 
 	if existing == nil {
-		return candidateRemarks(uniqueCandidates)
+		remarks := candidateRemarks(uniqueCandidates)
+		return remarks, len(remarks) > 0
 	}
 
 	existingKeys := make(map[reviewremarks.RrKey]struct{}, len(existing.Remarks))
@@ -227,7 +231,37 @@ func (s *Service) prepareNewRemarks(candidates []remarkCandidate, existing *revi
 		source.CancelWithComment(message.ReviewRemarkCancelledAfterTransfer, "SYSTEM", "")
 	}
 
-	return newRemarksToSave
+	hasChanges := len(newRemarksToSave) > 0 || len(sourcesToCancel) > 0
+
+	if !conf.IsProdEnv() {
+		nonTriggered := maps.Clone(nonTriggeredTemplateKeys)
+
+		// Safety: never cancel a template that produced an RR.
+		for _, candidate := range candidates {
+			delete(nonTriggered, candidate.remark.TemplateKey)
+		}
+
+		for templateKey := range nonTriggered {
+			newRemarkVirtual := &reviewremarks.Remark{
+				SBOMId:       spdxBase.Key,
+				SBOMUploaded: &spdxBase.Created,
+				TemplateKey:  templateKey,
+			}
+
+			sources := reviewremarks.FindRemarksForSplit(existing.Remarks, newRemarkVirtual)
+
+			for _, source := range sources {
+				if !source.CanBeCancelled() {
+					continue
+				}
+
+				source.CancelWithComment(message.ReviewRemarkCancelledAsNoLongerApplicable, "SYSTEM", "")
+				hasChanges = true
+			}
+		}
+	}
+
+	return newRemarksToSave, hasChanges
 }
 
 func candidateRemarks(candidates []remarkCandidate) []*reviewremarks.Remark {
@@ -258,8 +292,9 @@ func (s *Service) saveRemarks(rs *logy.RequestSession, versionKey string, existi
 	s.ReviewRemarkRepo.Update(rs, existing)
 }
 
-func (e *execution) do() []remarkCandidate {
+func (e *execution) do() ([]remarkCandidate, map[string]struct{}) {
 	var res []remarkCandidate
+	nonTriggeredTemplateKeys := make(map[string]struct{})
 	for _, item := range e.cl.Items {
 		if !e.service.itemApplicable(e.pr, item) {
 			continue
@@ -270,9 +305,11 @@ func (e *execution) do() []remarkCandidate {
 				transferStrategy:    item.RrTransferStrategy,
 				cancelAfterTransfer: item.CancelRrAfterTransfer,
 			})
+		} else {
+			nonTriggeredTemplateKeys[item.TargetTemplateKey] = struct{}{}
 		}
 	}
-	return res
+	return res, nonTriggeredTemplateKeys
 }
 
 func (e *execution) executeItem(item checklist.Item) *reviewremarks.Remark {
