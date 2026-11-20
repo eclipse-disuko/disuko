@@ -132,8 +132,9 @@ const abortTooltipKey = (type: ApprovalType) => {
   return key;
 };
 
-const canToggleCurrent = () => {
+const canToggleCurrent = (item: Approval) => {
   return (
+    (item.type === ApprovalType.Internal || item.type === ApprovalType.External) &&
     !projectModel.value.isDeprecated &&
     ((projectModel.value.responsible ?? '').toLowerCase() === user.value.toLowerCase() || RightsUtils.isFOSSOffice())
   );
@@ -302,7 +303,7 @@ const getActionButtons = (item: Approval): TableActionButtonsProps['buttons'] =>
       icon: item.isCurrent ? 'mdi-check-decagram' : 'mdi-check-decagram-outline',
       hint: t(item.isCurrent ? 'TT_TAD_BTN_UNMARK_CURRENT' : 'TT_TAD_BTN_MARK_CURRENT'),
       event: 'toggleCurrent',
-      show: canToggleCurrent(),
+      show: canToggleCurrent(item),
     },
   ];
 };
