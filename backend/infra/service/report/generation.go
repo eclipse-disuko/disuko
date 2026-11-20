@@ -471,13 +471,9 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		return
 	}
 	var (
-		internals                     []approval.Approval
-		latestApproved                approval.Approval
-		approvedFound                 bool
-		externalFound                 bool
-		latestExternal                approval.Approval
-		flaggedInternal               *approval.Approval
-		flaggedExternal               *approval.Approval
+		latestInternal                *approval.Approval
+		latestApproved                *approval.Approval
+		latestExternal                *approval.Approval
 		latestApprovalUpdated         time.Time
 		approvedApprovalUpdated       time.Time
 		latestExternalApprovalUpdated time.Time
@@ -486,31 +482,23 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		a := &approvals.Approvals[i]
 		switch a.Type {
 		case approval.TypeInternal:
-			if a.IsCurrent {
-				flaggedInternal = a
+			if latestInternal == nil || a.IsCurrent || !latestInternal.IsCurrent {
+				latestInternal = a
 			}
 			if !a.Internal.Aborted && (a.Internal.CustomerDone() || a.Internal.ApprovedBySuppliersOnly()) {
-				approvedFound = true
-				latestApproved = *a
+				latestApproved = a
 			}
-			internals = append(internals, *a)
 		case approval.TypeExternal:
-			if a.IsCurrent {
-				flaggedExternal = a
+			if latestExternal == nil || a.IsCurrent || !latestExternal.IsCurrent {
+				latestExternal = a
 			}
 			if a.External.State == approval.CustomerApproved || a.External.State == approval.SupplierApproved {
-				approvedFound = true
-				latestApproved = *a
+				latestApproved = a
 			}
-			externalFound = true
-			latestExternal = *a
 		}
 	}
-	if len(internals) > 0 {
-		latest := internals[len(internals)-1]
-		if flaggedInternal != nil {
-			latest = *flaggedInternal
-		}
+	if latestInternal != nil {
+		latest := *latestInternal
 		stats := g.sumSbomStats(latest)
 		res.LatestApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
 		res.LatestApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)
@@ -550,7 +538,7 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		res.LatestApprovalQuestioned = strconv.Itoa(latest.Info.CompStats.Questioned)
 		res.LatestApprovalUnasserted = strconv.Itoa(latest.Info.CompStats.NoAssertion)
 	}
-	if approvedFound {
+	if latestApproved != nil {
 		approvedApprovalUpdated = latestApproved.Updated
 		res.ApprovedApprovalAllowed = strconv.Itoa(latestApproved.Info.CompStats.Allowed)
 		res.ApprovedApprovalTotal = strconv.Itoa(latestApproved.Info.CompStats.Allowed +
@@ -568,11 +556,8 @@ func (g *generation) fillApprovalStats(pr *project.Project, res *report.Project)
 		}
 		res.ApprovedApprovalLink += "/approvals"
 	}
-	if externalFound {
-		latest := latestExternal
-		if flaggedExternal != nil {
-			latest = *flaggedExternal
-		}
+	if latestExternal != nil {
+		latest := *latestExternal
 		stats := g.sumSbomStats(latest)
 		res.LatestExternalApprovalWeakCopyLeft = strconv.Itoa(stats.weakCopyLeftCount)
 		res.LatestExternalApprovalStrongCopyLeft = strconv.Itoa(stats.strongCopyLeftCount)

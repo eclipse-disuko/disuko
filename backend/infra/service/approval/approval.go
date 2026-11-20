@@ -102,6 +102,9 @@ func (s *ApprovalService) ToggleApprovalCurrent(pr *project.Project, appId, user
 	if targetApproval == nil {
 		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
 	}
+	if targetApproval.Type != approval.TypeInternal && targetApproval.Type != approval.TypeExternal {
+		exception.ThrowExceptionClient400Message(message.GetI18N(message.ErrorUnexpectedType), "")
+	}
 
 	before := targetApproval.ToAudit()
 	targetApproval.IsCurrent = !targetApproval.IsCurrent
