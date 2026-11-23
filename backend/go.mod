@@ -3,9 +3,9 @@ module github.com/eclipse-disuko/disuko
 go 1.27.4
 
 require (
-	github.com/adhocore/gronx v1.20.7
-	github.com/chromedp/cdproto v0.0.0-20260922220944-a19bff23514f
-	github.com/chromedp/chromedp v0.16.0
+	github.com/adhocore/gronx v1.20.8
+	github.com/chromedp/cdproto v0.160.7
+	github.com/chromedp/chromedp v0.24.0
 	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-chi/cors v1.2.2
@@ -25,14 +25,14 @@ require (
 	github.com/oapi-codegen/runtime v1.9.0
 	github.com/pdfcpu/pdfcpu v0.16.4
 	github.com/stretchr/testify v1.12.1
-	github.com/tidwall/gjson v1.20.3
-	github.com/valkey-io/valkey-go v1.0.79
+	github.com/tidwall/gjson v1.20.5
+	github.com/valkey-io/valkey-go v1.0.80
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/xuri/excelize/v2 v2.11.1
-	go.mongodb.org/mongo-driver/v2 v2.10.0
+	go.mongodb.org/mongo-driver/v2 v2.10.1
 	go.uber.org/zap v1.28.0
 	golang.org/x/image v0.48.0
-	golang.org/x/net v0.62.0
+	golang.org/x/net v0.63.0
 	golang.org/x/oauth2 v0.38.0
 	golang.org/x/text v0.44.0
 )
@@ -42,18 +42,14 @@ require (
 	github.com/ajg/form v1.9.0 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
 	github.com/dustin/go-humanize v1.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.9 // indirect
-	github.com/go-json-experiment/json v0.0.0-20260820222146-c27c302e5fc3 // indirect
+	github.com/go-json-experiment/json v1.27.2 // indirect
 	github.com/go-playground/locales v0.14.2 // indirect
 	github.com/go-playground/universal-translator v0.18.2 // indirect
-	github.com/gobwas/httphead v0.1.0 // indirect
-	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/goccy/go-json v0.12.0 // indirect
 	github.com/hhrutter/tiff v1.0.8 // indirect
 	github.com/klauspost/compress v1.20.4 // indirect
@@ -81,7 +77,7 @@ require (
 	github.com/tinylib/msgp v1.6.5 // indirect
 	github.com/valyala/fastjson v1.6.10 // indirect
 	github.com/xdg-go/scram v1.4.0 // indirect
-	github.com/xdg-go/stringprep v1.0.4 // indirect
+	github.com/xdg-go/stringprep v1.0.5 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xuri/efp v0.0.3-0.20260924042702-217b81952dec // indirect
