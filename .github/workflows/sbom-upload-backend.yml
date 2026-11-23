@@ -33,9 +33,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
-          go-version: 1.27.1
+          go-version-file: 'backend/go.mod'
           cache-dependency-path: 'backend/go.sum'
 
       - name: Determine project version
@@ -60,7 +60,7 @@ jobs:
             -output sbom.cyclonedx.json
         working-directory: backend
 
-      - uses: eclipse-csi/workflows/upload-sbom@d83da6f2897e985d9d2b9541174c7ee5ee6d88ad # releases do not exist
+      - uses: eclipse-csi/workflows/upload-sbom@d2d3dbbc0a1907f41892c1698b3c6353235c87cb # releases do not exist - 2026-11-18
         if: ${{ inputs.upload }}
         with:
           sbom-file: 'backend/sbom.cyclonedx.json'
