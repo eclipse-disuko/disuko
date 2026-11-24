@@ -132,14 +132,14 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 			licenseExist := err == nil && existingLicense != nil
 
 			if licenseExist {
-				var oldLicenseAudit = existingLicense.ToAudit(rs, j.obligationRepository)
+				oldLicenseAudit := existingLicense.ToAudit(rs, j.obligationRepository)
 
 				logMessage := ""
 				diff := false
 				updated := false
 				licenseDiff := ""
 				licenseUpdated := ""
-				//Name
+				// Name
 				if len(existingLicense.Name) > 0 {
 					if existingLicense.Name != newLicense.Name {
 						diff = true
@@ -155,7 +155,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 					}
 				}
 
-				//Text
+				// Text
 				if len(existingLicense.Text) > 0 {
 					if existingLicense.Text != newLicense.Text {
 						diff = true
@@ -171,7 +171,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 					}
 				}
 
-				//LicenseUrl
+				// LicenseUrl
 				if len(existingLicense.Meta.LicenseUrl) > 0 {
 					if existingLicense.Meta.LicenseUrl != newLicense.Meta.LicenseUrl {
 						diff = true
@@ -187,7 +187,7 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 					}
 				}
 
-				//SourceUrl
+				// SourceUrl
 				if len(existingLicense.Meta.SourceUrl) > 0 {
 					if existingLicense.Meta.SourceUrl != newLicense.Meta.SourceUrl {
 						diff = true
@@ -256,17 +256,17 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 
 		countHandledLicenses := countNewLicenses + countUnchangedLicenses + countDiffLicenses + countUpdatedLicenses + len(errorLicenseIds)
 		res := struct {
-			Added       int      `json:"added"`
-			Unchanged   int      `json:"unchanged"`
-			Changed     int      `json:"changed"`
-			Differences int      `json:"differences"`
-			Errors      int      `json:"errors"`
-			Handled     int      `json:"handled"`
-			Total       int      `json:"total"`
-			AddedLics   []string `json:"addedLics"`
-			UpdatedLics []string `json:"updatedLics"`
-			DiffLics    []string `json:"diffLics"`
-			ErrorLics   []string `json:"errorLics"`
+			Added       int
+			Unchanged   int
+			Changed     int
+			Differences int
+			Errors      int
+			Handled     int
+			Total       int
+			AddedLics   []string
+			UpdatedLics []string
+			DiffLics    []string
+			ErrorLics   []string
 		}{
 			countNewLicenses,
 			countUnchangedLicenses,
@@ -301,8 +301,7 @@ type IRetrieveJsonBytes interface {
 	RetrieveJsonBytesFromUrl(url string) ([]byte, error)
 }
 
-type retrieveJsonBytes struct {
-}
+type retrieveJsonBytes struct{}
 
 func (retrieveJsonBytes *retrieveJsonBytes) RetrieveJsonBytesFromUrl(url string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
