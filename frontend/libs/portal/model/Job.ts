@@ -45,10 +45,10 @@ export class RefreshRes {
   handled: number;
   total: number;
   unchanged: number;
-  addedLics: string[];
-  updatedLics: string[];
-  diffLics: string[];
-  errorLics: string[];
+  addedlics: string[];
+  updatedlics: string[];
+  difflics: string[];
+  errorlics: string[];
 
   constructor() {
     this.added = 0;
@@ -58,10 +58,10 @@ export class RefreshRes {
     this.handled = 0;
     this.total = 0;
     this.unchanged = 0;
-    this.addedLics = [];
-    this.updatedLics = [];
-    this.diffLics = [];
-    this.errorLics = [];
+    this.addedlics = [];
+    this.updatedlics = [];
+    this.difflics = [];
+    this.errorlics = [];
   }
 }
 export class JobDto {
