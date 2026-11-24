@@ -256,17 +256,17 @@ func (j *Job) Execute(rs *logy.RequestSession, info job.Job) scheduler.Execution
 
 		countHandledLicenses := countNewLicenses + countUnchangedLicenses + countDiffLicenses + countUpdatedLicenses + len(errorLicenseIds)
 		res := struct {
-			Added       int
-			Unchanged   int
-			Changed     int
-			Differences int
-			Errors      int
-			Handled     int
-			Total       int
-			AddedLics   []string
-			UpdatedLics []string
-			DiffLics    []string
-			ErrorLics   []string
+			Added       int      `json:"added"`
+			Unchanged   int      `json:"unchanged"`
+			Changed     int      `json:"changed"`
+			Differences int      `json:"differences"`
+			Errors      int      `json:"errors"`
+			Handled     int      `json:"handled"`
+			Total       int      `json:"total"`
+			AddedLics   []string `json:"addedlics"`
+			UpdatedLics []string `json:"updatedlics"`
+			DiffLics    []string `json:"difflics"`
+			ErrorLics   []string `json:"errorlics"`
 		}{
 			countNewLicenses,
 			countUnchangedLicenses,
