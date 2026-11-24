@@ -5,6 +5,12 @@
 name: Upload Documentation SBOM to Dependency Track
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/app/package.json'
+      - 'docs/app/package-lock.json'
   workflow_dispatch:
     inputs:
       project_version:
@@ -60,7 +66,7 @@ jobs:
             --output-file sbom.cyclonedx.json
 
       - uses: eclipse-csi/workflows/upload-sbom@d83da6f2897e985d9d2b9541174c7ee5ee6d88ad # releases do not exist
-        if: ${{ inputs.upload }}
+        if: ${{ github.event_name == 'push' || inputs.upload }}
         with:
           sbom-file: 'docs/app/sbom.cyclonedx.json'
           product-name: 'disuko-documentation'
