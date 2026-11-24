@@ -5,6 +5,12 @@
 name: Upload Backend SBOM to Dependency Track
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/go.mod'
+      - 'backend/go.sum'
   workflow_dispatch:
     inputs:
       project_version:
@@ -61,7 +67,7 @@ jobs:
         working-directory: backend
 
       - uses: eclipse-csi/workflows/upload-sbom@d2d3dbbc0a1907f41892c1698b3c6353235c87cb # releases do not exist - 2026-11-18
-        if: ${{ inputs.upload }}
+        if: ${{ github.event_name == 'push' || inputs.upload }}
         with:
           sbom-file: 'backend/sbom.cyclonedx.json'
           product-name: 'disuko-backend'
