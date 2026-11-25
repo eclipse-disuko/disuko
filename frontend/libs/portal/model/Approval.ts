@@ -110,6 +110,7 @@ export class Approval {
   public external: ExternalApproval = {} as ExternalApproval;
 
   public status: ApprovalStates = ApprovalStates.Pending;
+  public isCurrent = false;
 }
 
 export enum PowerOfAttorneyType {

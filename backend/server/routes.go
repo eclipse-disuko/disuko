@@ -94,6 +94,7 @@ func (s *Server) setupRoutes(extenders ...RouteExtender) {
 					r.Route("/{appId}", func(r chi.Router) {
 						r.Put("/", s.handlers.project.ProjectUpdateApproval)
 						r.Get("/", s.handlers.project.ProjectGetApproval)
+						r.Put("/toggleCurrent", s.handlers.project.ProjectToggleApprovalCurrent)
 						r.Post("/fillCustomer", s.handlers.project.ProjectFillCustomer)
 						r.Get("/approver/{approver}", s.handlers.project.GetApproverUser)
 					})

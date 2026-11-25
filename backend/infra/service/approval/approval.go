@@ -93,6 +93,39 @@ func (s *ApprovalService) ProcessRandomApprovalUpdate(pr *project.Project, appId
 	return targetApproval
 }
 
+func (s *ApprovalService) ToggleApprovalCurrent(pr *project.Project, appId, username string) *approval.Approval {
+	approvalList := s.ApprovalListRepo.FindByKey(s.RequestSession, pr.Key, false)
+	if approvalList == nil {
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
+	}
+	targetApproval := approvalList.GetApproval(appId)
+	if targetApproval == nil {
+		exception.ThrowExceptionServerMessage(message.GetI18N(message.ErrorDbNotFound), "")
+	}
+	if targetApproval.Type != approval.TypeInternal && targetApproval.Type != approval.TypeExternal {
+		exception.ThrowExceptionClient400Message(message.GetI18N(message.ErrorUnexpectedType), "")
+	}
+
+	before := targetApproval.ToAudit()
+	targetApproval.IsCurrent = !targetApproval.IsCurrent
+	if targetApproval.IsCurrent {
+		for i := range approvalList.Approvals {
+			other := &approvalList.Approvals[i]
+			if other.Key != targetApproval.Key && other.Type == targetApproval.Type {
+				other.IsCurrent = false
+			}
+		}
+	}
+	s.ApprovalListRepo.Update(s.RequestSession, approvalList)
+
+	auditMessage := message.ApprovalUnmarkedCurrent
+	if targetApproval.IsCurrent {
+		auditMessage = message.ApprovalMarkedCurrent
+	}
+	s.AuditLogListRepo.CreateAuditEntryByKey(s.RequestSession, pr.Key, username, auditMessage, audit.DiffWithReporter, targetApproval.ToAudit(), before)
+	return targetApproval
+}
+
 func (s *ApprovalService) GetApprovalInfo(targetProject *project.Project, takeLatestSbom bool) approval.Info {
 	return s.getApprovalInfo(targetProject, nil, false, takeLatestSbom)
 }
