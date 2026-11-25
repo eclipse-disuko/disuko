@@ -68,10 +68,10 @@ const lrStatusText = computed(() => {
       '/' +
       res.total +
       '\n' +
-      licList('Added IDs', res.addedLics) +
-      licList('Updated IDs', res.updatedLics) +
-      licList('Diff IDs', res.diffLics) +
-      licList('Error IDs', res.errorLics)
+      licList('Added IDs', res.addedlics) +
+      licList('Updated IDs', res.updatedlics) +
+      licList('Diff IDs', res.difflics) +
+      licList('Error IDs', res.errorlics)
     );
   } else if (refreshLicensesJob.value.status === JOB_STATUS_IN_PROGRESS) {
     isReloadingLicenses.value = true;
