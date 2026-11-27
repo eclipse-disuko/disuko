@@ -74,7 +74,7 @@ services:
       timeout: 10s
       retries: 3
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5.0
+    image: quay.io/keycloak/keycloak:26.8.2
     environment:
       KC_LOG_LEVEL: info
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
